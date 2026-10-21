@@ -32,6 +32,7 @@ Dados brutos da CVM e arquivos gerados ficam em `data/`, que não vai para o Git
 - Tela: `streamlit run app.py`.
 
 ## Cuidados
+- Siga o `REGRAS-IA.md` (regras do time para uso de IA). Em especial: nada de `.env` ou dado bruto no Git, e rodar os testes antes de dizer que algo está pronto.
 - Não leia, mostre nem envie o conteúdo de `.env` (chave do Gemini, plano pré-pago).
 - Toda chamada ao Gemini gasta crédito (≈ US$ 0,0008 por raio-x). Avise antes de rodar em lote.
 - O Eduardo está aprendendo: explique cada mudança em português simples e prefira passos pequenos.
