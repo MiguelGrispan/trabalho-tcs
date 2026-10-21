@@ -1,0 +1,152 @@
+cd_cvm,nome,ano,demonstracao,cd_conta,ds_conta,valor
+90001,ALFA NORTE S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,4913773387.88
+90001,ALFA NORTE S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,826579930.49
+90001,ALFA NORTE S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,201362975.25
+90001,ALFA NORTE S.A.,2025,BPA,1,Ativo Total,8219456097.87
+90001,ALFA NORTE S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,4340947681.33
+90002,BETA NORTE S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,4348626629.0
+90002,BETA NORTE S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,497520641.89
+90002,BETA NORTE S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,424373599.34
+90002,BETA NORTE S.A.,2025,BPA,1,Ativo Total,4415170485.24
+90002,BETA NORTE S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,1780781678.54
+90003,DELTA NORTE S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,4166862880.13
+90003,DELTA NORTE S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,475944187.21
+90003,DELTA NORTE S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,364079709.49
+90003,DELTA NORTE S.A.,2025,BPA,1,Ativo Total,5413058141.17
+90003,DELTA NORTE S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,2747305399.66
+90004,GAMA NORTE S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,7303568223.08
+90004,GAMA NORTE S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,873303089.75
+90004,GAMA NORTE S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,762863739.3
+90004,GAMA NORTE S.A.,2025,BPA,1,Ativo Total,11556282376.69
+90004,GAMA NORTE S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,5307474249.33
+90005,SIGMA NORTE S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,2961431239.49
+90005,SIGMA NORTE S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,447067497.58
+90005,SIGMA NORTE S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,261360084.15
+90005,SIGMA NORTE S.A.,2025,BPA,1,Ativo Total,3909234060.04
+90005,SIGMA NORTE S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,1658104518.7
+90006,OMEGA NORTE S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,17478102432.82
+90006,OMEGA NORTE S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,2020238247.55
+90006,OMEGA NORTE S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,1613571223.51
+90006,OMEGA NORTE S.A.,2025,BPA,1,Ativo Total,20855620275.81
+90006,OMEGA NORTE S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,7972304077.78
+90007,ALFA SUL S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,3679728383.34
+90007,ALFA SUL S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,586982116.09
+90007,ALFA SUL S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,349077740.06
+90007,ALFA SUL S.A.,2025,BPA,1,Ativo Total,4063223839.94
+90007,ALFA SUL S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,1696033285.67
+90008,BANCO FICTICIO DO SUL S.A.,2025,DRE,3.01,Receitas da Intermediação Financeira,2513894731.61
+90008,BANCO FICTICIO DO SUL S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,879863156.06
+90008,BANCO FICTICIO DO SUL S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,452501051.69
+90008,BANCO FICTICIO DO SUL S.A.,2025,BPA,1,Ativo Total,30166736779.3
+90008,BANCO FICTICIO DO SUL S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,2413338942.34
+90009,DELTA SUL S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,6363177953.16
+90009,DELTA SUL S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,1011354893.07
+90009,DELTA SUL S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,323611400.51
+90009,DELTA SUL S.A.,2025,BPA,1,Ativo Total,10233466022.6
+90009,DELTA SUL S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,4801340382.03
+90010,GAMA SUL S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,2876657808.82
+90010,GAMA SUL S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,531745131.14
+90010,GAMA SUL S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,180318627.9
+90010,GAMA SUL S.A.,2025,BPA,1,Ativo Total,2950925341.62
+90010,GAMA SUL S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,1156477375.67
+90011,SIGMA SUL S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,495608867.83
+90011,SIGMA SUL S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,30591183.11
+90011,SIGMA SUL S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,12005892.68
+90011,SIGMA SUL S.A.,2025,BPA,1,Ativo Total,729162806.21
+90011,SIGMA SUL S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,184040084.08
+90012,OMEGA SUL S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,1245611124.74
+90012,OMEGA SUL S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,57514740.33
+90012,OMEGA SUL S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,-19324070.27
+90012,OMEGA SUL S.A.,2025,BPA,1,Ativo Total,1361610162.36
+90012,OMEGA SUL S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,501068771.96
+90013,ALFA LESTE S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,839777654.14
+90013,ALFA LESTE S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,53585966.12
+90013,ALFA LESTE S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,1221832.04
+90013,ALFA LESTE S.A.,2025,BPA,1,Ativo Total,977698018.17
+90013,ALFA LESTE S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,284009168.95
+90014,BETA LESTE S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,2441614627.99
+90014,BETA LESTE S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,89757370.19
+90014,BETA LESTE S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,6687394.63
+90014,BETA LESTE S.A.,2025,BPA,1,Ativo Total,3986224836.01
+90014,BETA LESTE S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,1287169035.24
+90015,PARTICIPACOES FICTICIAS S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,2000000.0
+90015,PARTICIPACOES FICTICIAS S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,-1200000.0
+90015,PARTICIPACOES FICTICIAS S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,7000000.0
+90015,PARTICIPACOES FICTICIAS S.A.,2025,DRE,3.04,Despesas/Receitas Operacionais,7700000.0
+90015,PARTICIPACOES FICTICIAS S.A.,2025,BPA,1,Ativo Total,5000000000.0
+90015,PARTICIPACOES FICTICIAS S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,4500000000.0
+90016,GAMA LESTE S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,2509663721.09
+90016,GAMA LESTE S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,121481868.02
+90016,GAMA LESTE S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,-59596203.07
+90016,GAMA LESTE S.A.,2025,BPA,1,Ativo Total,2939721905.42
+90016,GAMA LESTE S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,1137163065.71
+90017,SIGMA LESTE S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,635609114.53
+90017,SIGMA LESTE S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,20269840.91
+90017,SIGMA LESTE S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,1548819.82
+90017,SIGMA LESTE S.A.,2025,BPA,1,Ativo Total,1091800154.55
+90017,SIGMA LESTE S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,242430186.99
+90018,OMEGA LESTE S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,1239141233.32
+90018,OMEGA LESTE S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,56865738.69
+90018,OMEGA LESTE S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,-11152817.68
+90018,OMEGA LESTE S.A.,2025,BPA,1,Ativo Total,1616367239.37
+90018,OMEGA LESTE S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,517790289.23
+90019,ALFA OESTE S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,2831994732.53
+90019,ALFA OESTE S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,155065056.1
+90019,ALFA OESTE S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,-5332643.57
+90019,ALFA OESTE S.A.,2025,BPA,1,Ativo Total,3328616052.46
+90019,ALFA OESTE S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,1287387098.95
+90020,BETA OESTE S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,1665861350.62
+90020,BETA OESTE S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,84021120.42
+90020,BETA OESTE S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,70025444.45
+90020,BETA OESTE S.A.,2025,BPA,1,Ativo Total,2147101600.91
+90020,BETA OESTE S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,-536775400.23
+90021,DELTA OESTE S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,123865611.84
+90021,DELTA OESTE S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,14959946.97
+90021,DELTA OESTE S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,625934.73
+90021,DELTA OESTE S.A.,2025,BPA,1,Ativo Total,116118159.25
+90021,DELTA OESTE S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,18829308.14
+90022,GAMA OESTE S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,690225289.17
+90022,GAMA OESTE S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,36031638.72
+90022,GAMA OESTE S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,-21876203.31
+90022,GAMA OESTE S.A.,2025,BPA,1,Ativo Total,727175583.19
+90022,GAMA OESTE S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,180946232.58
+90023,SIGMA OESTE S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,389533.92
+90023,SIGMA OESTE S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,19294.64
+90023,SIGMA OESTE S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,-4126.95
+90023,SIGMA OESTE S.A.,2025,BPA,1,Ativo Total,686632.73
+90023,SIGMA OESTE S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,94819.63
+90024,OMEGA OESTE S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,997744327.84
+90024,OMEGA OESTE S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,50200364.83
+90024,OMEGA OESTE S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,-83771999.06
+90024,OMEGA OESTE S.A.,2025,BPA,1,Ativo Total,1740109818.42
+90024,OMEGA OESTE S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,289927400.11
+90025,ALFA CENTRO S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,143257600.09
+90025,ALFA CENTRO S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,10855527.07
+90025,ALFA CENTRO S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,1716141.09
+90025,ALFA CENTRO S.A.,2025,BPA,1,Ativo Total,185521502.29
+90025,ALFA CENTRO S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,31937076.1
+90026,BETA CENTRO S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,225117651.23
+90026,BETA CENTRO S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,14725117.27
+90026,BETA CENTRO S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,-4865575.07
+90026,BETA CENTRO S.A.,2025,BPA,1,Ativo Total,224603970.35
+90026,BETA CENTRO S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,20574510.77
+90027,DELTA CENTRO S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,274841529.31
+90027,DELTA CENTRO S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,12217169.64
+90027,DELTA CENTRO S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,-13454455.59
+90027,DELTA CENTRO S.A.,2025,BPA,1,Ativo Total,473939663.13
+90027,DELTA CENTRO S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,102494809.2
+90028,GAMA CENTRO S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,1092800587.28
+90028,GAMA CENTRO S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,57822466.47
+90028,GAMA CENTRO S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,8684694.32
+90028,GAMA CENTRO S.A.,2025,BPA,1,Ativo Total,1778452443.56
+90028,GAMA CENTRO S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,285890590.52
+90029,SIGMA CENTRO S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,225428401.09
+90029,SIGMA CENTRO S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,21050992.38
+90029,SIGMA CENTRO S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,-7585553.98
+90029,SIGMA CENTRO S.A.,2025,BPA,1,Ativo Total,392795285.8
+90029,SIGMA CENTRO S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,94773759.76
+90030,OMEGA CENTRO S.A.,2025,DRE,3.01,Receita de Venda de Bens e/ou Serviços,103900760.82
+90030,OMEGA CENTRO S.A.,2025,DRE,3.05,Resultado Antes do Resultado Financeiro e dos Tributos,8810758.38
+90030,OMEGA CENTRO S.A.,2025,DRE,3.11,Lucro/Prejuízo Consolidado do Período,-2447813.59
+90030,OMEGA CENTRO S.A.,2025,BPA,1,Ativo Total,163513533.23
+90030,OMEGA CENTRO S.A.,2025,BPP,2.03,Patrimônio Líquido Consolidado,27095613.88

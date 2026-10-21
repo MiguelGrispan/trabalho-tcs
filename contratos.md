@@ -1,0 +1,78 @@
+# Contratos do Raio-X Comercial
+
+Formato do que passa de uma pessoa para outra. Quem precisar mudar um formato avisa antes quem recebe.
+Enquanto o colega não entrega, use um arquivo falso no mesmo formato (pasta `falsos/`).
+
+## C1 · `dados.py` · Marcos → Miguel
+
+```python
+buscar_empresas(texto: str) -> list[dict]
+# só companhias ativas e com indicadores, ordenadas por nome
+# [{"cd_cvm": 99991, "nome": "TRANSVALE LOGISTICA S.A.", "setor": "Transporte e logística"}]
+
+registrar_consulta(registro: dict) -> None   # grava uma linha na tabela consultas
+```
+
+## C2 · `indicadores.csv` (e tabela `indicadores` no `catalogo.db`) · Marcos → Eduardo
+
+Uma linha por empresa. Valores em reais (já convertidos da escala MIL). Margens e crescimento como fração (0.062 = 6,2%).
+
+| coluna | tipo | exemplo |
+|---|---|---|
+| cd_cvm | int | 99991 |
+| nome | texto | TRANSVALE LOGISTICA S.A. |
+| setor | texto | Transporte e logística |
+| ano | int | 2025 |
+| receita | float | 2400000000.0 |
+| receita_2a_antes | float ou vazio | 2030000000.0 |
+| cresc_2a | float ou vazio | 0.18 |
+| margem_ebit | float | 0.062 |
+| margem_liquida | float | 0.021 |
+| ativo_total | float | 3100000000.0 |
+| endividamento | float | 0.68 |
+| origem | texto | con (consolidado) ou ind (individual) |
+| versao | int | 1 |
+
+## C3 · `ia.py` · Eduardo → Miguel
+
+```python
+preparar_raio_x(cd_cvm: int, produto: str, objetivo: str) -> dict
+```
+
+```json
+{
+  "empresa": "TRANSVALE LOGISTICA S.A.", "setor": "Transporte e logística", "ano": 2025,
+  "indicadores": [{"id": "margem_ebit", "nome": "Margem EBIT", "valor": "6,2%", "grupo": "11,8%",
+                   "posicao": "abaixo", "fonte": "DFP 2025 · DRE consolidada · 3.05/3.01",
+                   "valor_num": 6.2, "grupo_num": 11.8, "unidade": "%"}],
+  "grupo": {"numero": 3, "tamanho": 41},
+  "parecidas": [{"cd_cvm": 0, "nome": "...", "setor": "..."}],
+  "resumo": "...",
+  "perguntas": [{"texto": "...", "base": "margem_ebit"}],
+  "lacunas": ["..."],
+  "removidos": [{"texto": "...", "motivo": "dígito fora de marcador"}],
+  "uso": {"tokens_entrada": 1850, "tokens_saida": 640, "custo_usd": 0.0014, "tempo_s": 3.2}
+}
+```
+
+> `valor_num`, `grupo_num` e `unidade` ("%" ou "R$ milhões") servem para o gráfico da tela. `posicao` pode ser: acima, abaixo, em linha, sem dado.
+
+## C4 · pasta `avaliacao/` · Náthally ⇄ Eduardo → Marcos
+
+| arquivo | quem escreve | colunas |
+|---|---|---|
+| regras_prompt.md | Náthally | texto das regras da instrução |
+| casos_avaliacao.csv | Náthally | caso_id, cd_cvm, produto, objetivo |
+| tempo_manual.csv | Náthally | empresa, minutos, fontes |
+| resultados.csv | Eduardo | caso_id, raio_x_json, n_removidos, tokens_entrada, tokens_saida, custo_usd, tempo_s |
+| revisao.csv | Náthally | caso_id, item, comparacao_certa, ligada_ao_produto, clara, utilidade |
+| conferencia.csv | Náthally | cd_cvm, indicador, valor_sistema, valor_ri, diferenca_pct |
+| testes_usuarios.csv | Náthally | pessoa_id, cargo, minutos, utilidade, usaria, comentario |
+
+## Datas de entrega entre pessoas
+
+- qui 22/10: Marcos manda no grupo quantas empresas têm receita na DFP 2025
+- qua 28/10: Eduardo manda 3 raio-x reais para a Náthally ajustar as regras
+- dom 01/11: Marcos entrega `indicadores.csv` ao Eduardo e `dados.py` ao Miguel
+- ter 03/11: dados.py, ia.py, app + infra congelados na interface
+- qui 12/11: todos mandam à Náthally o conteúdo dos seus slides
