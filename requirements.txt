@@ -1,0 +1,11 @@
+pandas
+numpy
+scikit-learn
+pydantic
+python-dotenv
+langchain-google-genai
+streamlit
+matplotlib
+pytest
+requests
+jupyter

@@ -1,0 +1,39 @@
+Silhueta por k: {3: 0.562, 4: 0.478, 5: 0.361, 6: 0.278, 7: 0.271, 8: 0.31} → k escolhido: 3
+Grupos × perfil real (deve ficar quase diagonal):
+perfil_real  cresce_margem_baixa  grande_estavel  pequena_endividada
+grupo                                                               
+0                             10               0                   1
+1                              0               0                   9
+2                              0              10                   0 
+
+========================================================================
+ALFA NORTE S.A. · grupo 2 · software de roteirização e telemetria para frotas
+Resumo: Em 2025, a ALFA NORTE S.A. apresenta uma receita líquida (R$ 4,9 bi) acima do grupo de empresas parecidas (R$ 4,3 bi), embora o crescimento em dois anos (+2%) esteja abaixo do grupo (+5%). A margem EBIT (16,8%) está acima do grupo (14,9%), mas a margem líquida (4,1%) encontra-se abaixo do grupo (9,0%).
+  ? Como a diretoria de operações tem buscado acelerar o crescimento em dois anos (+2%) para se aproximar do grupo (+5%) e como a solução de software de roteirização e telemetria para frotas poderia apoiar esse movimento?  [cresc_2a]
+  ? Considerando que a margem líquida (4,1%) está abaixo do grupo (9,0%), quais são os principais desafios operacionais que impactam a rentabilidade final da ALFA NORTE S.A.?  [margem_liquida]
+  ? Com um ativo total (R$ 8,2 bi) acima do grupo (R$ 4,9 bi), de que maneira a gestão de ativos e a eficiência da frota são priorizadas na estratégia atual da ALFA NORTE S.A.?  [ativo_total]
+Lacunas: Quem são os principais tomadores de decisão na diretoria de operações para a contratação de tecnologia.; Qual é o fornecedor atual de software de roteirização e telemetria utilizado pela empresa.; Como está estruturado o orçamento anual destinado à inovação e digitalização da frota.
+Parecidas: DELTA SUL S.A., GAMA SUL S.A., SIGMA NORTE S.A., ALFA SUL S.A., BETA SUL S.A.
+Removidos: nenhum
+Uso: {'tokens_entrada': 914, 'tokens_saida': 421, 'tempo_s': 2.8}
+========================================================================
+ALFA LESTE S.A. · grupo 0 · consultoria de eficiência energética
+Resumo: Em 2025, a ALFA LESTE S.A. apresenta um ritmo de expansão superior ao grupo de empresas parecidas, apesar de possuir uma escala menor. A eficiência operacional medida pela margem EBIT (6,4%) está acima do grupo (5,0%), embora a rentabilidade final esteja em linha com o grupo de empresas parecidas.
+  ? Considerando que o crescimento em dois anos (+29%) está acima do grupo (+22%), como a ALFA LESTE S.A. tem planejado a sustentabilidade dessa expansão com a solução de consultoria de eficiência energética?  [cresc_2a]
+  ? Como a gestão da ALFA LESTE S.A. avalia o impacto do endividamento (71,0%), que está acima do grupo (68,6%), na priorização de novos projetos de eficiência?  [endividamento]
+  ? Dado que a margem EBIT (6,4%) está acima do grupo (5,0%), quais são os principais desafios para converter essa eficiência operacional em uma margem líquida (0,1%) mais robusta?  [margem_ebit]
+Lacunas: Quem são os responsáveis pela decisão de contratação de consultorias de eficiência energética na ALFA LESTE S.A.?; Qual é o fornecedor atual de soluções de gestão de energia e quais são as principais dores no contrato vigente?; Existe orçamento reservado para projetos de melhoria operacional neste ciclo?
+Parecidas: DELTA LESTE S.A., OMEGA LESTE S.A., SIGMA SUL S.A., OMEGA SUL S.A., BETA LESTE S.A.
+Removidos: nenhum
+Uso: {'tokens_entrada': 903, 'tokens_saida': 388, 'tempo_s': 2.3}
+========================================================================
+BETA CENTRO S.A. · grupo 1 · plataforma de gestão financeira
+Resumo: Em 2025, a BETA CENTRO S.A. apresenta uma receita líquida (R$ 225 mi) em linha com o grupo de empresas parecidas (R$ 225 mi), embora seu crescimento em dois anos (-11%) esteja abaixo do grupo (-6%). O perfil financeiro revela um endividamento (90,8%) acima do grupo (83,4%) e uma margem EBIT (6,5%) em linha com o grupo (6,5%).
+  ? Como a BETA CENTRO S.A. planeja reverter o cenário de crescimento em dois anos (-11%) que se encontra abaixo do grupo (-6%)?  [cresc_2a]
+  ? Considerando que o endividamento (90,8%) está acima do grupo (83,4%), quais são as prioridades do CFO para a gestão de passivos?  [endividamento]
+  ? De que maneira a implementação da solução de plataforma de gestão financeira poderia auxiliar na otimização da margem EBIT (6,5%) que está em linha com o grupo (6,5%)?  [margem_ebit]
+  ? Quem são os principais tomadores de decisão envolvidos na avaliação de novas ferramentas de gestão financeira?  [lacuna]
+Lacunas: Identificar quem é o atual fornecedor de software de gestão financeira da BETA CENTRO S.A..; Entender quais são os principais gargalos operacionais que impactam o fluxo de caixa.; Mapear o processo de aprovação de orçamento para novos investimentos em tecnologia.
+Parecidas: SIGMA OESTE S.A., ALFA CENTRO S.A., OMEGA CENTRO S.A., SIGMA CENTRO S.A., GAMA CENTRO S.A.
+Removidos: nenhum
+Uso: {'tokens_entrada': 905, 'tokens_saida': 433, 'tempo_s': 2.5}
