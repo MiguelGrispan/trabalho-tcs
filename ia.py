@@ -72,7 +72,7 @@ def montar(seg: pd.DataFrame, cd_cvm: int, produto: str, objetivo: str):
 
     indicadores_c3, para_llm = [], {}
     valores = {"empresa": emp["nome"], "setor": emp["setor"], "ano": str(ano), "produto": produto}
-    for i, (nome, _, tipo, fonte) in INDICADORES.items():
+    for i, (nome, nome_no_texto, tipo, fonte) in INDICADORES.items():
         v, med = emp[i], do_grupo[i].median()
         if pd.isna(v):
             posicao = "sem dado"
@@ -85,7 +85,7 @@ def montar(seg: pd.DataFrame, cd_cvm: int, produto: str, objetivo: str):
             "fonte": f"DFP {ano} · " + fonte.format(d=demonstracao, ano=ano, ano2=ano - 2),
             "valor_num": num(v, tipo), "grupo_num": num(med, tipo),
             "unidade": "R$ milhões" if tipo == "dinheiro" else "%"})
-        para_llm[i] = {"nome": nome, "valor": fmt(v, tipo), "grupo": fmt(med, tipo), "posicao": posicao}
+        para_llm[i] = {"nome": nome_no_texto, "valor": fmt(v, tipo), "grupo": fmt(med, tipo), "posicao": posicao}
         valores[i], valores[f"{i}_grupo"] = fmt(v, tipo), fmt(med, tipo)
 
     entrada = {"setor": emp["setor"], "produto": produto, "objetivo": objetivo,

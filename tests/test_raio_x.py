@@ -12,6 +12,7 @@ sys.path.insert(0, str(PASTA))
 
 import checar_indicadores as checador  # noqa: E402
 import ia  # noqa: E402
+import segmentos  # noqa: E402
 
 VALORES = {"empresa": "3R PETROLEUM S.A.", "produto": "ERP 360", "setor": "Petróleo", "ano": "2025",
            "margem_ebit": "6,2%", "margem_ebit_grupo": "11,8%"}
@@ -64,6 +65,15 @@ def test_preparar_raio_x_segue_o_contrato_c3():
         assert i["posicao"] in {"acima", "abaixo", "em linha", "sem dado"}
     assert len(r["parecidas"]) == 5
     assert r["removidos"] == []
+
+
+# ---------------------------------------------------------------- segmentos
+def test_segmentar_aguenta_receita_zero():
+    df, _ = segmentos.carregar_indicadores()
+    df.loc[0, "receita"] = 0
+    seg, _, _ = segmentos.segmentar(df)
+    assert seg["grupo"].notna().all()
+    assert all(len(p) == 5 for p in seg["parecidas"])
 
 
 # ---------------------------------------------------------------- checador de dados

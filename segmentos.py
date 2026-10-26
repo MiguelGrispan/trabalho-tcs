@@ -43,7 +43,8 @@ def carregar_indicadores() -> tuple[pd.DataFrame, bool]:
 
 def segmentar(df: pd.DataFrame):
     """Devolve (tabela com grupo, percentis e parecidas; silhueta por k; k escolhido)."""
-    X = df.assign(log_receita=np.log10(df["receita"]))[VARIAVEIS].copy()
+    # receita zero ou negativa não tem log: vira vazio e recebe a mediana logo abaixo
+    X = df.assign(log_receita=np.log10(df["receita"].where(df["receita"] > 0)))[VARIAVEIS].copy()
     for c in VARIAVEIS:                                   # cortar extremos (percentis 1 e 99)
         X[c] = X[c].clip(X[c].quantile(0.01), X[c].quantile(0.99))
     X = X.fillna(X.median())                              # nulos: mediana, só para o modelo
