@@ -13,6 +13,9 @@ como `{margem_ebit}`, um validador remove qualquer dígito fora de marcador e o 
 
 Projeto final da trilha IA Aplicada (SENAI/TCS) · Marcos, Eduardo, Náthally e Miguel.
 
+**Começando agora?** Leia [docs/entenda-o-projeto.md](docs/entenda-o-projeto.md) (o projeto explicado para iniciantes)
+e [docs/seguindo-o-projeto.md](docs/seguindo-o-projeto.md) (o que falta e quem faz).
+
 ## Fluxo
 
 ```
@@ -45,7 +48,7 @@ scripts/        preparação dos dados da CVM: verificar_dfp, carregar_dfp, indi
 avaliacao/      avaliação do raio-x (contrato C4) · Náthally e Eduardo
 tests/          testes automáticos (não chamam a API)
 falsos/         dados e módulos falsos no formato dos contratos, para ninguém esperar ninguém
-docs/graficos/  gráficos gerados
+docs/           explicação para iniciantes, o que falta fazer e gráficos (docs/graficos/)
 infra/          implantação · Miguel
 atalhos/        .command de dois cliques (Mac)
 data/           dados da CVM e arquivos gerados: fica só no seu computador, não vai para o Git
@@ -56,7 +59,7 @@ Na raiz: `contratos.md`, `REGRAS-IA.md` (regras do time para uso de IA), `CLAUDE
 
 ## Como rodar
 
-Todos os comandos rodam na **raiz do repositório**.
+Pré-requisitos: Python 3.10 ou mais novo e Git. Todos os comandos rodam na **raiz do repositório**.
 
 ```bash
 python -m venv .venv
@@ -93,7 +96,7 @@ python -m raiox.checagem --teste   # checador com dados que têm erros de propó
 ## Dados
 
 - `data/indicadores.csv` vem do `scripts/indicadores.py`. Enquanto ele não existir, tudo usa `falsos/tabela_falsa.csv` (30 empresas inventadas).
-- `falsos/`: arquivos de mentira no formato dos contratos.
+- `falsos/`: tabela de empresas inventadas e versões falsas do C1 e do C3 (o falso do C3 chama o `raiox/ia.py` real, sem IA).
 - Nada de `data/` (fora o `.gitkeep`) nem `.env` vai para o Git.
 
 ## Atalhos (Mac, dois cliques)
@@ -103,6 +106,4 @@ python -m raiox.checagem --teste   # checador com dados que têm erros de propó
 | `atalhos/rodar_tela.command` | abre a tela com texto montado sem IA | não |
 | `atalhos/rodar_tela_com_ia.command` | abre a tela com o Gemini escrevendo o raio-x | sim (≈ US$ 0,0008 por raio-x) |
 | `atalhos/rodar_testes.command` | roda os testes automáticos | não |
-| `atalhos/rodar_segmentos.command` | refaz os grupos e o gráfico da silhueta | não |
-| `atalhos/checar_teste_com_ia.command` | testa o checador com dados que têm erros de propósito | sim (centavos) |
 | `atalhos/configurar_chave.command` | guarda a chave do Gemini no `.env` | não |
