@@ -1,2 +1,108 @@
-# trabalho-tcs
-Repositório oficial do trabalho Bootcamp TCS
+# Raio-X Comercial
+
+Ferramenta para vendedores B2B prepararem a primeira reunião com uma companhia aberta.
+O vendedor escolhe a empresa, diz o que vende e o objetivo da reunião, e recebe:
+
+- 6 indicadores das demonstrações entregues à CVM (DFP), cada um com a fonte;
+- a posição de cada indicador contra o grupo de empresas de perfil parecido (K-means);
+- 3 a 5 perguntas para a reunião, ligadas ao produto, e o que os números não mostram;
+- 5 empresas parecidas para prospectar (vizinhos mais próximos).
+
+O texto é escrito por um LLM (Gemini via LangChain) que **nunca escreve números**: ele usa marcadores
+como `{margem_ebit}`, um validador remove qualquer dígito fora de marcador e o código troca os marcadores pelos valores da tabela.
+
+Projeto final da trilha IA Aplicada (SENAI/TCS) · Marcos, Eduardo, Náthally e Miguel.
+
+## Fluxo
+
+```
+CVM (ZIPs da DFP 2023–2025 + cadastro)
+   │  scripts/carregar_dfp.py      limpa contas, prefere consolidado      → data/contas.csv, data/catalogo.db
+   ▼
+scripts/indicadores.py             6 indicadores por empresa (C2)        → data/indicadores.csv
+   │
+   ▼
+raiox/checagem.py                  regras de sanidade; IA só aponta suspeitas, pessoa decide
+   │
+   ▼
+raiox/segmentos.py                 K-means + 5 vizinhos                   → data/segmentos.csv, docs/graficos/silhueta.png
+   │
+   ▼
+raiox/ia.py                        preparar_raio_x() (C3): números por código, texto pelo LLM com marcadores, validador
+   │
+   ▼
+app/streamlit_app.py               tela: busca a empresa (raiox/dados.py, C1), mostra o raio-x, registra a consulta
+```
+
+Os formatos entre as partes (C1 a C4) estão em [contratos.md](contratos.md).
+
+## Pastas
+
+```
+raiox/          código do produto: ia.py, segmentos.py (Eduardo) · dados.py, checagem.py (Marcos)
+app/            tela Streamlit e tema (.streamlit/config.toml) · Miguel
+scripts/        preparação dos dados da CVM: verificar_dfp, carregar_dfp, indicadores · Marcos
+avaliacao/      avaliação do raio-x (contrato C4) · Náthally e Eduardo
+tests/          testes automáticos (não chamam a API)
+falsos/         dados e módulos falsos no formato dos contratos, para ninguém esperar ninguém
+docs/graficos/  gráficos gerados
+infra/          implantação · Miguel
+atalhos/        .command de dois cliques (Mac)
+data/           dados da CVM e arquivos gerados: fica só no seu computador, não vai para o Git
+```
+
+Na raiz: `contratos.md`, `REGRAS-IA.md` (regras do time para uso de IA), `CLAUDE.md` (contexto e donos de cada pasta),
+`requirements.txt` e `.env.example`.
+
+## Como rodar
+
+Todos os comandos rodam na **raiz do repositório**.
+
+```bash
+python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+
+Chave do Gemini (só para os modos com IA): copie `.env.example` para `.env` e cole a chave,
+ou dê dois cliques em `atalhos/configurar_chave.command`. O `.env` nunca vai para o Git.
+
+**Testes** (não gastam crédito):
+
+```bash
+python -m pytest -q
+```
+
+**Tela** (de dentro de `app/`, para o Streamlit ler o tema):
+
+```bash
+cd app && streamlit run streamlit_app.py                     # texto montado sem IA, sem custo
+cd app && RAIOX_IA_REAL=1 streamlit run streamlit_app.py     # Gemini escreve o texto (≈ US$ 0,0008 por raio-x)
+```
+
+Enquanto o `raiox/dados.py` não estiver pronto, a tela usa as empresas inventadas de `falsos/`.
+
+**Outros módulos**:
+
+```bash
+python -m raiox.ia --cvm 90001 --produto "software de gestão de frota" --objetivo "primeira conversa" --sem-ia
+python -m raiox.segmentos          # refaz os grupos e o gráfico da silhueta
+python -m raiox.checagem --teste   # checador com dados que têm erros de propósito (sem IA)
+```
+
+## Dados
+
+- `data/indicadores.csv` vem do `scripts/indicadores.py`. Enquanto ele não existir, tudo usa `falsos/tabela_falsa.csv` (30 empresas inventadas).
+- `falsos/`: arquivos de mentira no formato dos contratos.
+- Nada de `data/` (fora o `.gitkeep`) nem `.env` vai para o Git.
+
+## Atalhos (Mac, dois cliques)
+
+| atalho | o que faz | gasta crédito? |
+|---|---|---|
+| `atalhos/rodar_tela.command` | abre a tela com texto montado sem IA | não |
+| `atalhos/rodar_tela_com_ia.command` | abre a tela com o Gemini escrevendo o raio-x | sim (≈ US$ 0,0008 por raio-x) |
+| `atalhos/rodar_testes.command` | roda os testes automáticos | não |
+| `atalhos/rodar_segmentos.command` | refaz os grupos e o gráfico da silhueta | não |
+| `atalhos/checar_teste_com_ia.command` | testa o checador com dados que têm erros de propósito | sim (centavos) |
+| `atalhos/configurar_chave.command` | guarda a chave do Gemini no `.env` | não |
