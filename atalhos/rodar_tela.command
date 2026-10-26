@@ -1,6 +1,6 @@
 #!/bin/zsh
-# Dê dois cliques neste arquivo no Finder para rodar a prova SEM chamar a IA.
-cd "$(dirname "$0")"
+# Dê dois cliques para abrir a tela do Raio-X no navegador (versão com dados falsos).
+cd "$(dirname "$0")/.."   # raiz do repositório (onde ficam .venv, .env e requirements.txt)
 # Ambiente Python: .venv do repositório; se não existir, o venv ~/bootcamp do Eduardo; senão, cria a .venv.
 if [ -f .venv/bin/activate ]; then
   source .venv/bin/activate
@@ -10,6 +10,5 @@ else
   python3 -m venv .venv && source .venv/bin/activate
 fi
 pip install -q -r requirements.txt
-python prova_ia.py --sem-llm
-echo ""
-echo "Pronto. Pode fechar esta janela."
+echo "Abrindo a tela em http://localhost:8501 ... Para parar, feche esta janela."
+cd app && streamlit run streamlit_app.py   # dentro de app/ para ler o tema em app/.streamlit

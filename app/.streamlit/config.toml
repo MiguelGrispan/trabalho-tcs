@@ -1,0 +1,9 @@
+# Tema da tela do Raio-X. O Streamlit só lê este arquivo quando roda de dentro de app/:
+#   cd app && streamlit run streamlit_app.py
+[theme]
+base = "light"
+primaryColor = "#2563a8"          # mesma cor do gráfico da silhueta
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f3f5f9"
+textColor = "#1f2937"
+font = "sans serif"

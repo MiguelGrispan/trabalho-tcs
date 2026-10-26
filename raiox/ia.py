@@ -6,9 +6,9 @@ ia.py · Eduardo · contrato C3 (passo 6 do fluxo)
 O LLM escreve o texto usando marcadores como {margem_ebit}; nunca escreve números.
 O validador remove qualquer trecho com dígito, e o código troca os marcadores pelos valores da tabela.
 
-Rodar um exemplo:
-    python ia.py --cvm 90001 --produto "software de gestão de frota" --objetivo "primeira conversa com operações"
-    python ia.py --cvm 90001 --produto "..." --objetivo "..." --sem-ia     # texto montado sem IA (não gasta crédito)
+Rodar um exemplo (na raiz do repositório):
+    python -m raiox.ia --cvm 90001 --produto "software de gestão de frota" --objetivo "primeira conversa com operações"
+    python -m raiox.ia --cvm 90001 --produto "..." --objetivo "..." --sem-ia     # texto montado sem IA (não gasta crédito)
 """
 import argparse
 import json
@@ -19,7 +19,7 @@ from functools import lru_cache
 import pandas as pd
 from pydantic import BaseModel, Field
 
-import segmentos
+from raiox import segmentos
 
 MODELO = "gemini-3.1-flash-lite"
 PRECO_US_POR_MILHAO = {"entrada": 0.25, "saida": 1.50}  # página oficial de preços do Google, 20/10/2026
@@ -72,7 +72,7 @@ def montar(seg: pd.DataFrame, cd_cvm: int, produto: str, objetivo: str):
 
     indicadores_c3, para_llm = [], {}
     valores = {"empresa": emp["nome"], "setor": emp["setor"], "ano": str(ano), "produto": produto}
-    for i, (nome, _, tipo, fonte) in INDICADORES.items():
+    for i, (nome, nome_no_texto, tipo, fonte) in INDICADORES.items():
         v, med = emp[i], do_grupo[i].median()
         if pd.isna(v):
             posicao = "sem dado"
@@ -85,7 +85,7 @@ def montar(seg: pd.DataFrame, cd_cvm: int, produto: str, objetivo: str):
             "fonte": f"DFP {ano} · " + fonte.format(d=demonstracao, ano=ano, ano2=ano - 2),
             "valor_num": num(v, tipo), "grupo_num": num(med, tipo),
             "unidade": "R$ milhões" if tipo == "dinheiro" else "%"})
-        para_llm[i] = {"nome": nome, "valor": fmt(v, tipo), "grupo": fmt(med, tipo), "posicao": posicao}
+        para_llm[i] = {"nome": nome_no_texto, "valor": fmt(v, tipo), "grupo": fmt(med, tipo), "posicao": posicao}
         valores[i], valores[f"{i}_grupo"] = fmt(v, tipo), fmt(med, tipo)
 
     entrada = {"setor": emp["setor"], "produto": produto, "objetivo": objetivo,
@@ -110,7 +110,7 @@ class RaioX(BaseModel):
     lacunas: list[str] = Field(description="De 2 a 4 coisas úteis para a venda que os números não mostram.")
 
 
-# Regras v3. A Náthally é dona do texto das regras (prompts/regras_prompt.md); quando ela mandar a versão dela,
+# Regras v3. A Náthally é dona do texto das regras (avaliacao/regras_prompt.md); quando ela mandar a versão dela,
 # troque aqui. ATENÇÃO: no ChatPromptTemplate, {x} é variável. Marcadores precisam de chave dupla: {{margem_ebit}}.
 REGRAS = """Você prepara um raio-x para a primeira reunião comercial de um vendedor B2B.
 Regras:

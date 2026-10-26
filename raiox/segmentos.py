@@ -4,10 +4,10 @@ segmentos.py · Eduardo · ML (passo 4 do fluxo)
 Lê a tabela de indicadores (contrato C2), separa as empresas em grupos de perfil parecido (K-means)
 e acha as 5 empresas mais parecidas com cada uma (vizinhos mais próximos).
 
-Rodar:
-    python segmentos.py      → gera data/segmentos.csv e docs/graficos/silhueta.png
+Rodar (na raiz do repositório):
+    python -m raiox.segmentos      → gera data/segmentos.csv e docs/graficos/silhueta.png
 
-Entrada: data/indicadores.csv (vem do Marcos). Enquanto ele não existir, usa tabela_falsa.csv.
+Entrada: data/indicadores.csv (vem do Marcos). Enquanto ele não existir, usa falsos/tabela_falsa.csv.
 """
 from pathlib import Path
 
@@ -18,9 +18,9 @@ from sklearn.metrics import silhouette_score
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 
-PASTA = Path(__file__).parent
+PASTA = Path(__file__).resolve().parent.parent   # raiz do repositório
 ARQ_INDICADORES = PASTA / "data" / "indicadores.csv"
-ARQ_FALSO = PASTA / "tabela_falsa.csv"
+ARQ_FALSO = PASTA / "falsos" / "tabela_falsa.csv"
 ARQ_SEGMENTOS = PASTA / "data" / "segmentos.csv"
 ARQ_SILHUETA = PASTA / "docs" / "graficos" / "silhueta.png"
 
@@ -35,15 +35,13 @@ def carregar_indicadores() -> tuple[pd.DataFrame, bool]:
     """Devolve (tabela, usando_dados_falsos)."""
     if ARQ_INDICADORES.exists():
         return pd.read_csv(ARQ_INDICADORES), False
-    if not ARQ_FALSO.exists():
-        from prova_ia import tabela_falsa
-        tabela_falsa().to_csv(ARQ_FALSO, index=False)
     return pd.read_csv(ARQ_FALSO), True
 
 
 def segmentar(df: pd.DataFrame):
     """Devolve (tabela com grupo, percentis e parecidas; silhueta por k; k escolhido)."""
-    X = df.assign(log_receita=np.log10(df["receita"]))[VARIAVEIS].copy()
+    # receita zero ou negativa não tem log: vira vazio e recebe a mediana logo abaixo
+    X = df.assign(log_receita=np.log10(df["receita"].where(df["receita"] > 0)))[VARIAVEIS].copy()
     for c in VARIAVEIS:                                   # cortar extremos (percentis 1 e 99)
         X[c] = X[c].clip(X[c].quantile(0.01), X[c].quantile(0.99))
     X = X.fillna(X.median())                              # nulos: mediana, só para o modelo
@@ -111,7 +109,7 @@ def grafico_silhueta(silhuetas: dict, k: int) -> None:
 if __name__ == "__main__":
     df, falso = carregar_indicadores()
     if falso:
-        print("Aviso: data/indicadores.csv ainda não existe. Usando tabela_falsa.csv.")
+        print("Aviso: data/indicadores.csv ainda não existe. Usando falsos/tabela_falsa.csv.")
     seg, silhuetas, k = segmentar(df)
     salvar(seg)
     grafico_silhueta(silhuetas, k)

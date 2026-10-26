@@ -9,10 +9,10 @@ Etapa do fluxo de dados que roda DEPOIS do indicadores.py e ANTES de entregar o 
      A IA diz a causa provável e sugere uma ação. ELA NÃO ALTERA NENHUM NÚMERO.
   3. O Marcos lê auditoria_ia.csv e decide o que corrigir no código ou excluir.
 
-Como rodar:
-  python checar_indicadores.py indicadores.csv contas.csv            # só as regras (sem IA, sem custo)
-  python checar_indicadores.py indicadores.csv contas.csv --com-ia   # regras + auditoria pelo Gemini
-  python checar_indicadores.py --teste                               # usa os arquivos falsos com erros de propósito
+Como rodar (na raiz do repositório):
+  python -m raiox.checagem indicadores.csv contas.csv            # só as regras (sem IA, sem custo)
+  python -m raiox.checagem indicadores.csv contas.csv --com-ia   # regras + auditoria pelo Gemini
+  python -m raiox.checagem --teste                               # usa os arquivos falsos com erros de propósito
 
 Formato esperado:
   indicadores.csv = contrato C2 (cd_cvm, nome, setor, ano, receita, receita_2a_antes, cresc_2a,
@@ -165,7 +165,7 @@ if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     com_ia = "--com-ia" in sys.argv
     if "--teste" in sys.argv:
-        pasta = Path(__file__).parent / "falsos"
+        pasta = Path(__file__).resolve().parent.parent / "falsos"
         args = [str(pasta / "indicadores_com_erros.csv"), str(pasta / "contas_falsas.csv")]
     if not args:
         print(__doc__)

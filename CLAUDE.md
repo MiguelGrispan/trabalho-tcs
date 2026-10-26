@@ -1,7 +1,11 @@
 # Raio-X Comercial · contexto para o Claude Code
 
 Projeto final da trilha IA Aplicada (SENAI/TCS). Equipe: Marcos (dados), Eduardo (IA e gestão),
-Náthally (produto e métricas, deck), Miguel (tela e infraestrutura). Entrega na semana de 09–15/11/2026.
+Náthally (produto e métricas, deck), Miguel (tela e infraestrutura). Banca na semana de 09–15/11/2026
+(professores + especialistas da TCS). Os entregáveis vão **48 h antes** da apresentação.
+
+Antes de qualquer tarefa grande, leia `docs/seguindo-o-projeto.md` (o que falta e de quem é).
+Explicação para iniciantes: `docs/entenda-o-projeto.md`.
 
 ## O produto
 O vendedor escolhe uma companhia aberta da CVM, informa o produto e o objetivo da reunião e recebe:
@@ -13,26 +17,67 @@ O LLM (Gemini via LangChain) nunca escreve números. Ele usa marcadores como {ma
 o validador remove qualquer dígito fora de marcador; o código troca os marcadores pelos valores da tabela.
 Não quebre essa regra em nenhuma mudança.
 
-## Repositório
-github.com/MiguelGrispan/trabalho-tcs (privado). Cada pessoa trabalha na sua branch (`eduardo`, `tratamento_dados`...) e junta na `main` por pull request.
-Dados brutos da CVM e arquivos gerados ficam em `data/`, que não vai para o Git.
+## O que o guia oficial exige (e onde fica no projeto)
+Todo trabalho precisa servir a um destes itens. Se uma tarefa não serve a nenhum, pergunte antes de fazer.
 
-## Estrutura
-- `checar_indicadores.py` (Marcos): regras de sanidade; `--com-ia` pede ao Gemini a causa provável. A IA não altera dados.
-- `segmentos.py` (Eduardo): K-means (k pela silhueta) e 5 vizinhos → `data/segmentos.csv`.
-- `ia.py` (Eduardo): `preparar_raio_x(cd_cvm, produto, objetivo)` no formato do contrato C3.
-- `app.py` (Miguel): Streamlit. `RAIOX_IA_REAL=1` usa o Gemini; sem isso, texto sem IA.
-- `falsos/`: dados e módulos falsos no formato dos contratos. `tabela_falsa.csv`: 30 empresas inventadas.
-- `prova_ia.py`: arquivo de estudo da semana 1. Não é o código oficial.
-- `contratos.md`: formatos entre as partes (C1 a C4). Não mude um formato sem avisar quem recebe.
+| Requisito do guia | Onde fica | Dono |
+|---|---|---|
+| BPMN 2.0 do processo | `docs/bpmn/` (`.bpmn` + `.png`) | Marcos |
+| Python/Pandas: limpeza, nulos, estruturação | `scripts/carregar_dfp.py`, `scripts/indicadores.py` | Marcos |
+| SQL (consultas ou persistência) | `data/catalogo.db` via `scripts/carregar_dfp.py` e `raiox/dados.py` | Marcos |
+| Visualização explicativa (Matplotlib/Seaborn ou dashboard) | `notebooks/`, `docs/graficos/`, gráfico da tela | Marcos, Eduardo |
+| Modelo de ML | `raiox/segmentos.py` (K-means + vizinhos) | Eduardo |
+| GenAI: prompt engineering, LangChain, API | `raiox/ia.py` (+ auditoria em `raiox/checagem.py`) | Eduardo |
+| Interface funcional | `app/streamlit_app.py` | Miguel |
+| Boas práticas e agentic coding | `tests/`, `contratos.md`, `REGRAS-IA.md`, este arquivo, pull requests | todos |
+| Arquitetura + Terraform ou contêiner | `Dockerfile`, `infra/` | Miguel |
+| Governança e ética (viabilidade, limites, viés, confiabilidade, uso responsável) | validador, texto de ética no PDF | Náthally, todos |
 
-## Como rodar
-- Ambiente Python: `.venv` na raiz do repositório (`python -m venv .venv`). No Mac do Eduardo, os atalhos `.command` usam o venv `~/bootcamp` se a `.venv` não existir.
+**Entregáveis (48 h antes):** (1) repositório organizado, com README de arquitetura, pré-requisitos e como rodar,
+e os scripts de infraestrutura e notebooks; (2) PDF com BPMN 2.0, justificativa técnica (inclui por que não
+RAG nem fine-tuning) e análise de ética e segurança; (3) deck em PDF ou PPTX. Também: vídeo gravado da demo (plano B).
+
+**Apresentação (20 min, tempo é avaliado):** contexto e problema 3 · BPMN e arquitetura 3 · demo ao vivo 6 ·
+detalhe técnico 4 · governança e ética 2 · conclusão 2.
+**Pesos da banca:** inovação e valor de negócio (ROI) 20% · qualidade técnica e arquitetura 30% ·
+protótipo funcional 20% · governança e ética 15% · comunicação e equipe 15%.
+
+## Estrutura e donos
+
+| caminho | dono |
+|---|---|
+| `raiox/ia.py`, `raiox/segmentos.py`, `avaliacao/avaliar.py` | Eduardo |
+| `scripts/`, `raiox/dados.py`, `raiox/checagem.py`, `docs/bpmn/`, `notebooks/` | Marcos |
+| `app/`, `Dockerfile`, `infra/` | Miguel |
+| `avaliacao/*.csv`, `avaliacao/regras_prompt.md`, `docs/produto/` | Náthally |
+
+Pastas comuns (avise o grupo antes de mexer): `tests/`, `falsos/` (dados falsos no formato dos contratos;
+os falsos chamam o código real sem IA), `docs/`, `atalhos/` (`.command` do Mac), `contratos.md`, `README.md`.
+`data/`: dados da CVM e arquivos gerados; só o `.gitkeep` vai para o Git.
+Caminhos: todo código que usa `data/` ou `docs/` aponta para a **raiz** do repositório (`Path(__file__).resolve().parent.parent`).
+
+## Regras
+1. **Não mexa em pasta de outro dono.** Precisa de mudança lá? Peça ao dono ou combine antes no grupo.
+2. **Contrato antes de código.** Mudou um formato entre partes? Primeiro o `contratos.md`, avisando quem recebe; depois o código.
+3. **Testes antes de dizer "pronto".** Rode `python -m pytest -q` e mostre o resultado. Mudou a tela? Abra a tela também.
+4. **O LLM nunca escreve números** (regra de ouro). Acima/abaixo/em linha é calculado por código.
+5. **Nada de dados nem `.env` no Git.** Antes de todo commit, rode `git status` e leia a lista.
+6. **A demo não pode quebrar.** O modo sem IA (sem `RAIOX_IA_REAL`) é o plano B: precisa continuar funcionando.
+7. **`main` só por pull request**, com testes passando e 1 pessoa revisando. No PR, 2 linhas: o que foi feito com IA e o que você conferiu.
+
+## Como responder ao time (iniciantes)
+- Português simples. Explique o porquê de cada mudança, não só o quê.
+- Toda afirmação sobre o código vem com a prova: arquivo e linha, ou um comando que a pessoa roda e vê o mesmo resultado.
+- Separe "verifiquei" de "estou supondo". Se não abriu o arquivo, diga.
+- Passos pequenos, um commit por passo.
+
+## Como rodar (sempre a partir da raiz do repositório)
+- Ambiente: `python -m venv .venv` e `pip install -r requirements.txt`. No Mac do Eduardo, os atalhos usam `~/bootcamp` se a `.venv` não existir.
 - Testes: `python -m pytest -q` (não chamam a API).
-- Tela: `streamlit run app.py`.
+- Módulos: `python -m raiox.ia ... --sem-ia`, `python -m raiox.segmentos`, `python -m raiox.checagem --teste`.
+- Tela: `cd app && streamlit run streamlit_app.py`. `RAIOX_IA_REAL=1` liga o Gemini. Até o `raiox/dados.py` ficar pronto, a tela usa `falsos/`.
 
 ## Cuidados
-- Siga o `REGRAS-IA.md` (regras do time para uso de IA). Em especial: nada de `.env` ou dado bruto no Git, e rodar os testes antes de dizer que algo está pronto.
+- Siga o `REGRAS-IA.md` (regras do time para uso de IA).
 - Não leia, mostre nem envie o conteúdo de `.env` (chave do Gemini, plano pré-pago).
-- Toda chamada ao Gemini gasta crédito (≈ US$ 0,0008 por raio-x). Avise antes de rodar em lote.
-- O Eduardo está aprendendo: explique cada mudança em português simples e prefira passos pequenos.
+- Toda chamada ao Gemini gasta crédito (≈ US$ 0,0008 por raio-x). Mais de 10 chamadas: avise o grupo antes.
