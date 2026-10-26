@@ -2,8 +2,9 @@
 
 Formato do que passa de uma pessoa para outra. Quem precisar mudar um formato avisa antes quem recebe.
 Enquanto o colega não entrega, use um arquivo falso no mesmo formato (pasta `falsos/`).
+Este é o único arquivo de contratos do repositório.
 
-## C1 · `dados.py` · Marcos → Miguel
+## C1 · `raiox/dados.py` · Marcos → Miguel
 
 ```python
 buscar_empresas(texto: str) -> list[dict]
@@ -13,8 +14,11 @@ buscar_empresas(texto: str) -> list[dict]
 registrar_consulta(registro: dict) -> None   # grava uma linha na tabela consultas
 ```
 
-## C2 · `indicadores.csv` (e tabela `indicadores` no `catalogo.db`) · Marcos → Eduardo
+> Pendente: o `raiox/dados.py` de hoje devolve `cd_cvm` como texto (`"99991"`). O contrato pede int.
 
+## C2 · `data/indicadores.csv` (e tabela `indicadores` no `data/catalogo.db`) · Marcos → Eduardo
+
+Gerado pelo `scripts/indicadores.py` a partir do `data/contas.csv` (`scripts/carregar_dfp.py`).
 Uma linha por empresa. Valores em reais (já convertidos da escala MIL). Margens e crescimento como fração (0.062 = 6,2%).
 
 | coluna | tipo | exemplo |
@@ -33,7 +37,10 @@ Uma linha por empresa. Valores em reais (já convertidos da escala MIL). Margens
 | origem | texto | con (consolidado) ou ind (individual) |
 | versao | int | 1 |
 
-## C3 · `ia.py` · Eduardo → Miguel
+> Decisão sobre `cd_cvm`: o `scripts/carregar_dfp.py` lê `CD_CVM` como texto (`dtype=str`). No C2 o tipo é **int**:
+> a conversão para int é feita no `scripts/indicadores.py`, antes de gravar o `indicadores.csv`.
+
+## C3 · `raiox/ia.py` · Eduardo → Miguel
 
 ```python
 preparar_raio_x(cd_cvm: int, produto: str, objetivo: str) -> dict
@@ -59,6 +66,8 @@ preparar_raio_x(cd_cvm: int, produto: str, objetivo: str) -> dict
 
 ## C4 · pasta `avaliacao/` · Náthally ⇄ Eduardo → Marcos
 
+`avaliacao/avaliar.py` (Eduardo) gera o `resultados.csv`; os outros arquivos são da Náthally. Resumo em `avaliacao/README.md`.
+
 | arquivo | quem escreve | colunas |
 |---|---|---|
 | regras_prompt.md | Náthally | texto das regras da instrução |
@@ -73,6 +82,6 @@ preparar_raio_x(cd_cvm: int, produto: str, objetivo: str) -> dict
 
 - qui 22/10: Marcos manda no grupo quantas empresas têm receita na DFP 2025
 - qua 28/10: Eduardo manda 3 raio-x reais para a Náthally ajustar as regras
-- dom 01/11: Marcos entrega `indicadores.csv` ao Eduardo e `dados.py` ao Miguel
-- ter 03/11: dados.py, ia.py, app + infra congelados na interface
+- dom 01/11: Marcos entrega `data/indicadores.csv` ao Eduardo e `raiox/dados.py` ao Miguel
+- ter 03/11: raiox/dados.py, raiox/ia.py, app/ + infra/ congelados na interface
 - qui 12/11: todos mandam à Náthally o conteúdo dos seus slides

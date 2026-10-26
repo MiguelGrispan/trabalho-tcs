@@ -36,7 +36,7 @@ def carregar_indicadores() -> tuple[pd.DataFrame, bool]:
     if ARQ_INDICADORES.exists():
         return pd.read_csv(ARQ_INDICADORES), False
     if not ARQ_FALSO.exists():
-        from prova_ia import tabela_falsa
+        from falsos.gerar_tabela_falsa import tabela_falsa
         tabela_falsa().to_csv(ARQ_FALSO, index=False)
     return pd.read_csv(ARQ_FALSO), True
 
