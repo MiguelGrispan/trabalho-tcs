@@ -1,5 +1,5 @@
 """
-Testes automáticos do Raio-X. Rodar na pasta do projeto:  python -m pytest -q
+Testes automáticos do Raio-X. Rodar na raiz do repositório:  python -m pytest -q
 Nenhum teste chama a API do Gemini (não gasta crédito).
 """
 import sys
@@ -10,9 +10,9 @@ import pandas as pd
 PASTA = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PASTA))
 
-import checar_indicadores as checador  # noqa: E402
-import ia  # noqa: E402
-import segmentos  # noqa: E402
+from raiox import checagem as checador  # noqa: E402
+from raiox import ia  # noqa: E402
+from raiox import segmentos  # noqa: E402
 
 VALORES = {"empresa": "3R PETROLEUM S.A.", "produto": "ERP 360", "setor": "Petróleo", "ano": "2025",
            "margem_ebit": "6,2%", "margem_ebit_grupo": "11,8%"}

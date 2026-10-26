@@ -1,6 +1,6 @@
 #!/bin/zsh
 # Dê dois cliques para rodar os testes automáticos (não chamam a IA, não gastam crédito).
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."   # raiz do repositório (onde ficam .venv, .env e requirements.txt)
 # Ambiente Python: .venv do repositório; se não existir, o venv ~/bootcamp do Eduardo; senão, cria a .venv.
 if [ -f .venv/bin/activate ]; then
   source .venv/bin/activate

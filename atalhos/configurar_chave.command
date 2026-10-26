@@ -1,6 +1,6 @@
 #!/bin/zsh
 # Dê dois cliques para guardar a sua chave do Gemini no arquivo .env (fica só no seu Mac).
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."   # raiz do repositório (onde ficam .venv, .env e requirements.txt)
 echo "Cole a sua chave do Google AI Studio e aperte Enter."
 echo "(Por segurança, o texto não aparece enquanto você cola.)"
 read -rs "CHAVE?Chave: "

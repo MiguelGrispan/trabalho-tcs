@@ -4,10 +4,10 @@ segmentos.py · Eduardo · ML (passo 4 do fluxo)
 Lê a tabela de indicadores (contrato C2), separa as empresas em grupos de perfil parecido (K-means)
 e acha as 5 empresas mais parecidas com cada uma (vizinhos mais próximos).
 
-Rodar:
-    python segmentos.py      → gera data/segmentos.csv e docs/graficos/silhueta.png
+Rodar (na raiz do repositório):
+    python -m raiox.segmentos      → gera data/segmentos.csv e docs/graficos/silhueta.png
 
-Entrada: data/indicadores.csv (vem do Marcos). Enquanto ele não existir, usa tabela_falsa.csv.
+Entrada: data/indicadores.csv (vem do Marcos). Enquanto ele não existir, usa falsos/tabela_falsa.csv.
 """
 from pathlib import Path
 
@@ -18,9 +18,9 @@ from sklearn.metrics import silhouette_score
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 
-PASTA = Path(__file__).parent
+PASTA = Path(__file__).resolve().parent.parent   # raiz do repositório
 ARQ_INDICADORES = PASTA / "data" / "indicadores.csv"
-ARQ_FALSO = PASTA / "tabela_falsa.csv"
+ARQ_FALSO = PASTA / "falsos" / "tabela_falsa.csv"
 ARQ_SEGMENTOS = PASTA / "data" / "segmentos.csv"
 ARQ_SILHUETA = PASTA / "docs" / "graficos" / "silhueta.png"
 
@@ -112,7 +112,7 @@ def grafico_silhueta(silhuetas: dict, k: int) -> None:
 if __name__ == "__main__":
     df, falso = carregar_indicadores()
     if falso:
-        print("Aviso: data/indicadores.csv ainda não existe. Usando tabela_falsa.csv.")
+        print("Aviso: data/indicadores.csv ainda não existe. Usando falsos/tabela_falsa.csv.")
     seg, silhuetas, k = segmentar(df)
     salvar(seg)
     grafico_silhueta(silhuetas, k)

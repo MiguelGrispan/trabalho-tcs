@@ -1,23 +1,28 @@
 """
 Raio-X Comercial · tela em Streamlit · versão 0 (Miguel)
 
-Rodar:
-    pip install streamlit pandas
-    streamlit run app.py
+Rodar (o tema em .streamlit/config.toml só vale rodando de dentro de app/):
+    pip install -r requirements.txt
+    cd app && streamlit run streamlit_app.py
 
 Hoje a tela usa arquivos FALSOS (pasta falsos/) com o mesmo formato dos contratos:
-  C1 · buscar_empresas, registrar_consulta  → dados.py do Marcos
-  C3 · preparar_raio_x                       → ia.py do Eduardo
-Quando o dados.py do Marcos existir, troque USAR_DADOS_FALSOS para False.
-Para usar a IA de verdade (ia.py do Eduardo), rode com RAIOX_IA_REAL=1 (o rodar_tela_com_ia.command faz isso).
+  C1 · buscar_empresas, registrar_consulta  → raiox/dados.py do Marcos
+  C3 · preparar_raio_x                       → raiox/ia.py do Eduardo
+Quando o raiox/dados.py do Marcos estiver pronto, troque USAR_DADOS_FALSOS para False.
+Para usar a IA de verdade (raiox/ia.py do Eduardo), rode com RAIOX_IA_REAL=1 (o atalhos/rodar_tela_com_ia.command faz isso).
 """
 import os
+import sys
 import time
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 
-# Troque para False quando o dados.py do Marcos existir.
+# A raiz do repositório entra no caminho do Python para achar raiox/ e falsos/ (o Streamlit só põe app/).
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+# Troque para False quando o raiox/dados.py do Marcos estiver pronto.
 USAR_DADOS_FALSOS = True
 # IA de verdade (Gemini, gasta crédito) só quando a variável RAIOX_IA_REAL=1 estiver definida:
 # o rodar_tela_com_ia.command faz isso. Sem ela, o texto é montado sem IA.
@@ -26,10 +31,10 @@ USAR_IA_REAL = os.getenv("RAIOX_IA_REAL") == "1"
 if USAR_DADOS_FALSOS:
     from falsos.falso_dados import buscar_empresas, registrar_consulta
 else:
-    from dados import buscar_empresas, registrar_consulta
+    from raiox.dados import buscar_empresas, registrar_consulta
 
 if USAR_IA_REAL:
-    from ia import preparar_raio_x
+    from raiox.ia import preparar_raio_x
 else:
     from falsos.falso_ia import preparar_raio_x
 
