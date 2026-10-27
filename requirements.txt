@@ -1,11 +1,14 @@
-pandas
-numpy
-scikit-learn
-pydantic
-python-dotenv
-langchain-google-genai
-streamlit
-matplotlib
-pytest
-requests
-jupyter
+# Versões testadas em 27/10/2026 com Python 3.14 (python -m pytest -q: 8 passed).
+# Para trocar uma versão: mude aqui, rode os testes e avise o grupo (o Docker e o CI usam este arquivo).
+pandas==3.0.6
+numpy==2.5.4
+scikit-learn==1.9.1
+pydantic==2.14.1
+python-dotenv==1.2.4
+langchain-core==1.6.12
+langchain-google-genai==4.4.2
+streamlit==1.66.1
+matplotlib==3.11.2
+pytest==9.1.1
+requests==2.34.2
+jupyter==1.1.1
