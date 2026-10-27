@@ -1,37 +1,70 @@
-# Plano até a banca
+# Plano até a banca (versão acelerada)
 
-Versão de **ter 27/10/2026**. A matriz do que o guia exige está em [REQUISITOS.md](REQUISITOS.md).
-Os detalhes técnicos do que está quebrado (com comandos de prova) estão em [seguindo-o-projeto.md](seguindo-o-projeto.md).
+Versão de **ter 27/10/2026, noite**. Meta: **feito, não perfeito**. O código congela na **sex 06/11** e tudo fica pronto
+para entregar na **qua 11/11**, com folga até a entrega de seg 16/11. Se a banca cair na semana de 09–15/11, já estamos prontos.
 
-**Como usar:**
+A matriz do que o guia exige está em [REQUISITOS.md](REQUISITOS.md). Os detalhes técnicos do que estava quebrado, com
+comandos de prova, estão em [seguindo-o-projeto.md](seguindo-o-projeto.md).
+
+**Como usar este plano:**
 - Cada linha das tabelas da seção 3 é uma sessão de trabalho, com um código (por exemplo, MA2).
 - Para começar, abra o Claude Code (ou o Codex) e diga:
   > Leia o CLAUDE.md e faça a sessão MA2 do docs/PLANO.md.
-- Quando terminar, marque a sessão como feita aqui e atualize a linha correspondente no REQUISITOS.md, no mesmo PR.
+- **Ao terminar uma sessão:**
+  1. atualize a seção 0 (situação atual) e a coluna "status" da sessão, no mesmo PR;
+  2. se a sessão fecha uma linha do REQUISITOS.md, atualize essa linha também.
 
 **Hipóteses deste plano:**
 - Cada pessoa tem de 6 a 12 h por semana, fora a aula.
 - Eduardo e Marcos usam Claude Code. O Miguel usa Codex ou Claude Code. A Náthally não usa IA para programar: ela sobe arquivos pelo navegador.
-- Banca prevista para **qua 18/11 (a confirmar)**, com entrega na seg 16/11.
+- Banca prevista para **qua 18/11 (a confirmar)**.
+
+---
+
+## 0. Situação atual (atualize a cada sessão)
+
+**Em 27/10, noite:**
+
+| PR | o que traz | quem revisa | ordem de merge |
+|---|---|---|---|
+| [#3](https://github.com/MiguelGrispan/trabalho-tcs/pull/3) `eduardo-padronizacao` | este plano, REQUISITOS, CLAUDE/AGENTS/REGRAS-IA, contratos (CSV padrão, `cd_cvm` int), versões fixas, `pytest.ini`, CI, modelo de PR | Miguel (CI), Marcos (contratos) | **1º**: o CI só existe a partir dele |
+| [#4](https://github.com/MiguelGrispan/trabalho-tcs/pull/4) `marcos-porta-dados` | MA1: o código de dados do Marcos (27/10) na estrutura da `main`, 28 testes dele | Marcos | depois do #3 (`git merge main` antes) |
+| [#5](https://github.com/MiguelGrispan/trabalho-tcs/pull/5) `nathally-produto` | NA1 (parte 1): `docs/produto/`, regras v1, 10 casos no formato C4 (`cd_cvm` vazio) | Náthally | depois do #3 |
+| [#6](https://github.com/MiguelGrispan/trabalho-tcs/pull/6) `eduardo-ia-testes` | ED2, ED5, código do ED4, ED6: testes sem `data/`, `avaliar.py`, gráfico dos grupos, teste ponta a ponta | Marcos, Miguel | depois do #3 |
+
+**Testes:**
+- Na `main` hoje: 8.
+- Com os PRs #4 e #6 juntos: 45 passam, mais 4 pulados que esperam os dados reais.
+
+**Próximo passo de cada um:**
+- **Miguel:** MG1 (revisar e mesclar o #3; configurar o GitHub).
+- **Marcos:** revisar o #4 e começar a MA2.
+- **Náthally:** revisar o #5 e escrever as regras v2.
+- **Eduardo:** ED1 (3 raio-x reais).
+
+**Decisões em aberto:**
+- data e horário da banca;
+- `scripts/dados.py` duplicado (Marcos decide, no #4);
+- apagar as branches `eduardo` e `fundacao`, que já estão na `main`.
 
 ---
 
 ## 1. Fundação: arquivos iguais para todos
 
-Entram no PR de padronização do Eduardo (sessão ED0), exceto os da última linha.
+Todos entram no PR #3, menos os da última linha.
 
 | arquivo | conteúdo mínimo | por quê |
 |---|---|---|
 | `docs/REQUISITOS.md`, `docs/PLANO.md` | a matriz do guia e este plano | um só lugar para "o que falta" e "quem faz quando" |
-| `CLAUDE.md` | data da banca, leitura do PLANO, regras de Git | é o que o Claude Code lê em toda sessão |
-| `AGENTS.md` (novo) | aponta para CLAUDE.md, REGRAS-IA.md e contratos.md; regras que não podem ser quebradas | o Codex lê `AGENTS.md`, não `CLAUDE.md`; sem ele, o agente do Miguel não conhece as regras |
+| `CLAUDE.md` | data da banca, leitura do PLANO, regras de Git e de testes | o Claude Code lê em toda sessão |
+| `AGENTS.md` | aponta para CLAUDE.md, REGRAS-IA.md e contratos.md | o Codex lê `AGENTS.md`, não `CLAUDE.md` |
 | `REGRAS-IA.md` | §5 Git: branch curta por tarefa, `merge` em vez de `rebase`, PR pelo navegador | as branches pessoais longas criaram duas histórias separadas |
-| `contratos.md` | C2: CSV padrão e `cd_cvm` int; C3: fonte igual ao código; C4: casos com `cd_cvm` e `empresa` | contrato antes de código: o Marcos e a Náthally escrevem contra este texto |
-| `requirements.txt` | versões fixas (`==`) que passam nos testes, Python 3.14 | sem versão, o build do Docker na véspera pode trazer outro LangChain e quebrar a demo |
-| `pytest.ini` (novo) | `testpaths = tests`, `pythonpath = .` | todos e o CI rodam `python -m pytest -q` da raiz, do mesmo jeito |
-| `.gitignore` | mais `*.db`, `*.zip`, `*.parquet`, `myenv/` | um banco ou zip salvo fora de `data/` não entra por engano |
-| `.github/workflows/testes.yml` (novo) | roda os testes em todo PR e em todo push na `main` | é o que garante que nada entra com teste falhando, sem depender de memória |
-| `.github/pull_request_template.md` (novo) | checklist do REGRAS-IA e "Feito com IA / Eu conferi" | a regra vira automática; essas linhas viram a seção "Como usamos IA" do README |
+| `contratos.md` | C2: CSV padrão e `cd_cvm` int; C3: fonte igual ao código; C4: casos com `cd_cvm` e `empresa` | contrato antes de código |
+| `requirements.txt` | versões fixas (`==`), Python 3.14 | um build novo do Docker não pode trazer outro LangChain |
+| `pytest.ini` | `testpaths = tests`, `pythonpath = .` | todos e o CI rodam os testes do mesmo jeito |
+| `.gitignore` | `*.db`, `*.zip`, `*.parquet`, `myenv/` | banco ou zip fora de `data/` não entra por engano |
+| `.github/workflows/testes.yml` | testes em todo PR e em todo push na `main` | nada entra com teste falhando |
+| `.github/pull_request_template.md` | checklist do REGRAS-IA e "Feito com IA / Eu conferi" | a regra vira automática |
 | `Dockerfile`, `.dockerignore`, `infra/` | Miguel, sessões MG2 e MG3 | dono da infra |
 
 ---
@@ -40,138 +73,132 @@ Entram no PR de padronização do Eduardo (sessão ED0), exceto os da última li
 
 | tema | combinado | por que, e não a alternativa óbvia |
 |---|---|---|
-| Modelo | `main` + **uma branch curta por sessão**, com nome `pessoa-tarefa` (ex.: `marcos-porta-dados`) | branch pessoal longa acumula diferença e vira PR gigante; uma por tarefa vira PR pequeno, que um iniciante consegue revisar. Hífen, não barra: o Git não deixa criar `eduardo/...` enquanto existir a branch `eduardo` |
-| Criar a branch | `git switch main` → `git pull` → `git switch -c pessoa-tarefa` | sempre a partir da `main` atual: nunca mais história separada |
-| Quando abrir PR | quando o "pronto quando" da sessão passa e `python -m pytest -q` está verde. Uma sessão, um PR. PR em rascunho pode abrir antes | PR pequeno é revisado no mesmo dia |
-| Quem revisa | quem **recebe** o contrato. Marcos → Eduardo (C2), e também o Miguel se mexer no C1. Eduardo → Marcos, ou o Miguel se mexer no C3. Miguel → Eduardo. Náthally → Eduardo | quem recebe é quem percebe quando quebra |
+| Modelo | `main` + **uma branch curta por sessão**, com nome `pessoa-tarefa` (ex.: `marcos-csv-padrao`) | branch pessoal longa acumula diferença e vira PR gigante. Hífen, não barra: o Git não deixa criar `eduardo/...` enquanto existir a branch `eduardo` |
+| Criar a branch | `git switch main` → `git pull` → `git switch -c pessoa-tarefa` | sempre a partir da `main` atual |
+| Quando abrir PR | quando o "pronto quando" da sessão passa e `python -m pytest -q` está verde | PR pequeno é revisado no mesmo dia |
+| Quem revisa | quem **recebe** o contrato. Marcos → Eduardo (e Miguel, se mexer no C1). Eduardo → Marcos (e Miguel, se mexer no C3). Miguel → Eduardo. Náthally → Eduardo | quem recebe percebe quando quebra |
 | Quem faz o merge | o autor, depois de 1 aprovação e com o CI verde | tira o Miguel do gargalo |
-| Tipo de merge | **merge commit** (o que já usamos). O Miguel desliga squash e rebase e liga "apagar branch após o merge" | guarda cada commit pequeno para a banca ver o processo, e não quebra quem continua na mesma branch depois do merge |
-| Proteção da `main` | o Miguel olha em Settings → Branches. **Se der:** PR obrigatório, 1 aprovação, check `testes` obrigatório, sem force push. **Se não der** (repositório privado em conta gratuita): pacote de estudante do GitHub, ou a regra do time mais o CI no PR | a API respondeu 404 em 27/10; não deu para saber se é falta de permissão ou do plano |
-| Trazer a `main` para a sua branch | `git switch main` → `git pull` → `git switch pessoa-tarefa` → `git merge main` → `python -m pytest -q` → `git push`. Se der conflito: `git merge --abort` e fale com o dono do arquivo | o `rebase` reescreve a história e exige `push --force`, o jeito mais comum de apagar trabalho do colega |
-| Quando trazer | antes de abrir o PR, e sempre que entrar na `main` um PR que mexe em contrato ou em arquivo comum | — |
-| Tags | `v0.1-demo` na sex 06/11 (demo rodou) e `v1.0` na ter 10/11 (congelado). Depois, só `v1.0.1`, `v1.0.2`… com consertos. Quem cria é o Eduardo: `git tag -a v1.0 -m "versão da banca"` e `git push origin v1.0` | avaliação final, vídeo e teste do zero rodam na mesma versão |
-| Arquivo comum (`README`, `contratos`, `requirements`, `tests/`, `docs/`) | um PR por vez; avise no grupo antes | evita conflito |
-| Limpeza | apagar `eduardo` e `fundacao` (já estão na `main`); `tratamento_dados` e `feat/metricas` só depois de portadas | ninguém perde nada |
+| Tipo de merge | **merge commit**. O Miguel desliga squash e rebase e liga "apagar branch após o merge" | guarda os commits pequenos (prova do processo para a banca) e não quebra quem continua na branch |
+| Proteção da `main` | o PR #3 aparece como "review required": a `main` já parece exigir revisão. Na MG1, o Miguel confirma e acrescenta o check `testes` como obrigatório, se der | — |
+| Trazer a `main` | `git switch main` → `git pull` → `git switch pessoa-tarefa` → `git merge main` → `python -m pytest -q` → `git push`. Conflito: `git merge --abort` e fale com o dono do arquivo | o `rebase` exige `push --force`, o jeito mais comum de apagar trabalho do colega |
+| Tags | `v0.1-demo` na **ter 03/11** e `v1.0` na **sex 06/11**. Depois, só `v1.0.1`… com consertos. Quem cria é o Eduardo: `git tag -a v1.0 -m "versão da banca"` e `git push origin v1.0` | avaliação final, vídeo e teste do zero rodam na mesma versão |
+| Arquivo comum (`README`, `contratos`, `requirements`, `tests/`, `docs/`) | um PR por vez; avise no grupo | evita conflito |
 
 ---
 
 ## 3. Sessões, em ordem, por pessoa
 
 **Regras de sessão** (Claude Code; quem usa Codex segue o mesmo pelo `AGENTS.md`):
-- **Uma sessão = uma linha das tabelas abaixo = uma branch = um PR.**
-- **Modo Plan** quando a sessão mexe em mais de um arquivo, em contrato ou em arquivo comum.
-- **Manual** (você aprova cada edição) quando mexe em um arquivo só, ou quando você mesmo escreve o código.
+- **Uma sessão = uma linha abaixo = uma branch = um PR.**
+- **Modo Plan** para mais de um arquivo, para contrato ou para arquivo comum. **Manual** para um arquivo só, ou quando você mesmo escreve o código.
 - No Codex, comece com: "proponha um plano, não altere arquivos".
 - **Sessão nova** para cada tarefa.
 - **`/clear`**:
-  - depois do commit ou do PR da tarefa, antes de começar outra no mesmo terminal;
-  - quando a conversa mudou de assunto;
+  - depois do commit e do PR;
+  - quando a conversa muda de assunto;
   - quando o Claude começa a esquecer as instruções do início.
   - Nunca use `/clear` com mudança sem commit: anote antes onde parou.
-- **Fim de toda sessão:** `python -m pytest -q` → `git status` (leia a lista) → commit → push → PR.
+- **Fim de toda sessão:** `python -m pytest -q` → `git status` (leia a lista) → commit → push → PR → atualizar a seção 0.
 
 ### Calendário
 
 | data | Eduardo | Marcos | Miguel | Náthally |
 |---|---|---|---|---|
-| ter 27/10 | ED0 padronização (PR) | MA1 portar dados | — | — |
-| qua 28/10 | ED1 3 raio-x reais | MA1 | MG1 entrar + revisar o PR ED0 | NA1 portar + regras v2 |
-| qui 29/10 | ED2 testes independentes | MA2 cumprir C1/C2 | MG2 Docker | NA1 |
-| sex 30/10 | revisões | MA2 | MG2 | NA2 casos C4 |
-| sáb 31/10 | ED3 regras v2 no prompt | MA3 dados reais | MG3 Terraform | NA2 |
-| dom 01/11 | ED4 segmentos reais + PCA | MA3 (Drive) | MG3 | NA2 (entrega) |
-| seg 02/11 | feriado | feriado | feriado | feriado |
-| ter 03/11 | ED5 `avaliar.py` | MA4 EDA | MG4 tela com dados reais | NA3 tempo manual e testes |
-| qua 04/11 | ED6 teste ponta a ponta | MA4 | MG4 | NA3 |
-| qui 05/11 | ED7 rodada com IA | MA5 BPMN | MG5 arquitetura + README | NA3 |
-| sex 06/11 | **demo ponta a ponta · tag `v0.1-demo`** | | MG6 demo + vídeo v0 | NA3 (3 testes feitos) |
-| 07–08/11 | ED8 justificativa + "Como usamos IA" | MA5 | — | NA4 revisão + métricas |
-| 09–10/11 | ED9 congelar · **tag `v1.0`** | só bugs | só bugs | NA5 ética + deck |
-| qua 11/11 | ED10 teste do zero | | | (empresta a máquina) |
-| qui 12/11 | ED11 avaliação final + ensaio de defesa | MA6 PDF | | recebe o conteúdo dos slides |
-| sex 13/11 | | MA6 | MG7 vídeo final | NA6 deck |
-| 14–15/11 | **2 ensaios de 20 min (todos)** | | | |
+| ter 27/10 | ✅ ED0, ED2, ED5, ED4 (código), ED6; portes MA1 e NA1 | — | — | — |
+| qua 28/10 | ED1 3 raio-x reais | revisar o #4; MA2 | MG1 revisar e mesclar o #3 | revisar o #5; NA1 regras v2 |
+| qui 29/10 | revisões | MA2 cumprir C1/C2 | MG2 Docker | NA1 |
+| sex 30/10 | ED3 regras v2 no prompt | MA3 dados reais + Drive | MG2/MG3 | NA2 `cd_cvm` dos casos |
+| sáb 31/10 | ED4 segmentos reais | MA3 | MG3 Terraform | NA3 tempo manual; marcar testes |
+| dom 01/11 | ED7 rodada com IA | MA4 EDA | **MG3: se o Terraform não subiu, fica só o Docker**; MG4 | NA3 |
+| seg 02/11 | feriado (reserva) | | | |
+| ter 03/11 | **demo ponta a ponta · tag `v0.1-demo`** | MA4 | MG4 tela com dados reais | NA3 testes com usuários |
+| qua 04/11 | ED8 justificativa + "Como usamos IA" | MA5 BPMN | MG5 arquitetura + README | NA4 revisão + métricas |
+| qui 05/11 | só bugs | MA5 | MG6 vídeo v0 | NA3 (3 testes feitos) |
+| sex 06/11 | **ED9: código congelado · tag `v1.0`**; ED11 avaliação final | | | |
+| sáb 07/11 | ED10 teste do zero | MA6 PDF (rascunho) | MG7 vídeo final na `v1.0` | NA5 ética |
+| dom 08/11 | **todos mandam o conteúdo dos slides à Náthally** | | | NA5 deck |
+| seg 09/11 | | MA6 PDF final | | NA6 deck final |
+| ter 10/11 | **ensaio 1 (20 min, todos)** | | | |
+| qua 11/11 | **ensaio 2; tudo pronto para entregar** | | | |
+| 12–15/11 | reserva (e prontos, se a banca vier antes) | | | |
 | seg 16/11 | **entrega** (48 h antes de qua 18/11) | | | |
 
 ### Eduardo (Claude Code)
 
-| # | data | objetivo | lê | altera | modo | testes | pronto quando | git |
-|---|---|---|---|---|---|---|---|---|
-| ED0 | ter 27/10 | arquivos comuns + PLANO + REQUISITOS | guia, repositório | lista da seção 1 | Plan | `pytest -q`; CI no PR | PR aberto com CI verde; Marcos aprova o `contratos.md`; Miguel aprova o CI | `eduardo-padronizacao` → PR |
-| ED1 | qua 28/10 | 3 raio-x reais para a Náthally | `scripts/carregar_dfp.py`, `scripts/indicadores.py`, `raiox/ia.py` | nada no Git (converte o CSV só na sua `data/`) | Manual | `python -m raiox.ia … --sem-ia` e 3 chamadas com IA (≈ US$ 0,003) | 3 empresas de setores diferentes, `removidos` conferido, enviado | nenhum |
-| ED2 | qui 29/10 | testes que não dependem de `data/`; "balanço consolidado" | `tests/test_raio_x.py`, `raiox/ia.py`, `raiox/segmentos.py` | os mesmos | Manual (você escreve o teste) | `pytest -q` com e sem `data/indicadores.csv` | verde nas duas situações | `eduardo-testes-isolados` → PR (Marcos) |
-| ED3 | sáb 31/10 | regras v2 da Náthally no `REGRAS` | `avaliacao/regras_prompt.md`, `raiox/ia.py` | `raiox/ia.py` | Manual | `pytest` + 3 chamadas reais | 3 raio-x sem item removido por dígito e com a posição certa | PR (a Náthally lê o texto no GitHub) |
-| ED4 | dom 01/11 | segmentos com dados reais + gráfico 2D (PCA) | `raiox/segmentos.py`, `data/indicadores.csv` | `raiox/segmentos.py`, `docs/graficos/*.png` | Manual (PCA à mão) | `pytest`; olhar 2 grupos | `segmentos.csv` real; k e silhueta no REQUISITOS; 2 PNG; 2 linhas sobre cada grupo | PR (Marcos) |
-| ED5 | ter 03/11 | `avaliacao/avaliar.py` (C4) | C4, `casos_avaliacao.csv`, `raiox/ia.py` | `avaliacao/avaliar.py`, `tests/test_avaliar.py` | Plan | 2 casos falsos sem IA → colunas do C4 | `python -m avaliacao.avaliar --sem-ia` grava o `resultados.csv` do C4 | PR (Marcos) |
-| ED6 | qua 04/11 | teste ponta a ponta com dados reais | `scripts/`, `raiox/` | `tests/test_ponta_a_ponta.py` (pulado se não houver `data/`) | Plan | carregar → indicadores → segmentos → raio-x sem IA de 3 empresas | verde local, pulado no CI | PR (Miguel) |
-| ED7 | qui 05/11 | rodada de avaliação com IA (avisar o grupo: mais de 10 chamadas) | `avaliacao/avaliar.py` | `avaliacao/resultados.csv` | Manual | — | N casos e custo total anotados (esperado < US$ 0,05) | PR |
-| ED8 | 07–08/11 | justificativa técnica para o PDF + README "Como usamos IA" | `raiox/ia.py`, `raiox/segmentos.py`, PRs | `docs/justificativa.md`, `README.md` (uma seção) | Manual (você escreve; a IA confere cada frase com arquivo e linha) | — | o Marcos lê e entende; toda afirmação tem prova | PR |
-| ED9 | 09–10/11 | congelar | tudo | só bugs | Plan | CI + ponta a ponta | tudo mesclado e verde | **tag `v1.0`** |
-| ED10 | qua 11/11 | teste do zero em outra máquina, só com o README | `README.md` | consertos numa sessão Manual curta | — | seguir o README | rodou sem ajuda, ou cada falha virou PR | `v1.0.1` se precisou de conserto |
-| ED11 | qui 12/11 | avaliação final na `v1.0` + ensaio de defesa (o Claude faz perguntas da banca, sem editar nada) | — | `resultados.csv` final | Plan | — | 10 perguntas respondidas em voz alta, sem consulta | PR (só o CSV) |
+| # | data | status | objetivo | altera | modo | pronto quando | git |
+|---|---|---|---|---|---|---|---|
+| ED0 | 27/10 | ✅ PR #3 | arquivos comuns, PLANO, REQUISITOS | seção 1 | Plan | PR aberto | `eduardo-padronizacao` |
+| ED1 | qua 28/10 | — | 3 raio-x reais para a Náthally: roda os scripts do Marcos (branch do #4) e converte o CSV só na sua `data/` | nada no Git | Manual | 3 empresas de setores diferentes, `removidos` conferido, enviado | nenhum |
+| ED2 | 27/10 | ✅ PR #6 | testes sem depender de `data/` (`RAIOX_DADOS`); "balanço consolidado" | `raiox/`, `tests/` | — | 17 passam | `eduardo-ia-testes` |
+| ED3 | sex 30/10 | — | regras v2 da Náthally no `REGRAS` | `raiox/ia.py` | Manual | 3 chamadas reais sem item removido por dígito | PR (Náthally lê) |
+| ED4 | sáb 31/10 | 🟡 código no #6 | rodar `python -m raiox.segmentos` com os dados reais; olhar 2 grupos; explicar `matriz()` e o PCA | `docs/graficos/*.png`, REQUISITOS (k, silhueta) | Manual | 2 PNG reais; 2 linhas sobre cada grupo | PR |
+| ED5 | 27/10 | ✅ PR #6 | `avaliacao/avaliar.py` (C4) | `avaliacao/`, `tests/` | — | `python -m avaliacao.avaliar` grava o C4 | `eduardo-ia-testes` |
+| ED6 | 27/10 | ✅ PR #6 | teste ponta a ponta (pula sem `data/`) | `tests/test_ponta_a_ponta.py` | — | pula no CI; roda local com dados reais | `eduardo-ia-testes` |
+| ED7 | dom 01/11 | — | `python -m avaliacao.avaliar --com-ia` nos 10 casos (avisar o grupo) | `avaliacao/resultados.csv` | Manual | 10 linhas; custo anotado (< US$ 0,05) | PR |
+| ED8 | qua 04/11 | — | justificativa técnica para o PDF + README "Como usamos IA" | `docs/justificativa.md`, `README.md` | Manual (você escreve; a IA confere com arquivo e linha) | o Marcos lê e entende | PR |
+| ED9 | sex 06/11 | — | congelar | só bugs | Plan | CI verde + ponta a ponta verde | **tag `v1.0`** |
+| ED10 | sáb 07/11 | — | teste do zero em outra máquina, só com o README | consertos | Manual | rodou sem ajuda, ou cada falha virou PR | `v1.0.1` se precisar |
+| ED11 | sex 06/11 | — | avaliação final na `v1.0` (só se a IA mudou depois do ED7) + ensaio de defesa | `resultados.csv` | Plan | 10 perguntas da banca respondidas sem consulta | PR |
 
 ### Marcos (Claude Code)
 
-| # | data | objetivo | lê | altera | modo | testes | pronto quando | git |
-|---|---|---|---|---|---|---|---|---|
-| MA1 | 27–28/10 | trazer a branch `tratamento_dados` para a estrutura da `main` | `origin/tratamento_dados`: `src/limpeza.py`, `src/dados.py`, `scripts/`, `tests/` | `raiox/limpeza.py` (novo), `scripts/carregar_dfp.py`, `scripts/indicadores.py`, `raiox/dados.py` (manter a normalização de `cd_cvm`), `tests/test_limpeza.py`, `tests/test_carregar_dfp.py`, `tests/test_dados.py` (trocar `src.` por `raiox.`). **Não trazer:** `graficos.py`, `contracts.md`, `verificar_automatico.py` (usa yfinance), `conferencia.csv` da raiz. **Não mexer** no `requirements.txt` | Plan | `pytest -q` (os 8 + os seus) | tudo verde; `git status` sem dados | `marcos-porta-dados` → PR (Eduardo) |
-| MA2 | 29–30/10 | cumprir C1 e C2: CSV padrão, `cd_cvm` int, tabela `indicadores` no banco, busca só com empresas ativas e com indicadores | `contratos.md`, `raiox/dados.py`, `scripts/indicadores.py` | os mesmos + `tests/test_contratos.py` (C1 e C2, com `falsos/contas_falsas.csv`) | Plan | teste de contrato | `pd.read_csv('data/indicadores.csv')` tem 13 colunas e `cd_cvm` int | PR (Eduardo + Miguel) |
-| MA3 | 31/10–01/11 | dados reais + checagem + conferência | `raiox/checagem.py` | `avaliacao/conferencia.csv`; consertos que a checagem pedir | Manual | `python -m raiox.checagem …` (`--com-ia` uma vez, avisando o grupo) | 5 empresas com diferença < 1% do site de RI (confirma o separador decimal); nenhum "erro" sobrando; `data/` v1 no Drive com o link no grupo | PR |
-| MA4 | 03–04/11 | EDA | `data/` | `notebooks/eda.ipynb`, `docs/graficos/*.png` | Manual (você escreve; a IA explica) | "Restart & Run All" | sem erro; 4 a 6 gráficos (nulos, distribuições, extremos, cobertura, setores, o que o checador apontou) | PR |
-| MA5 | 05–08/11 | BPMN 2.0, hoje e com o Raio-X (bpmn.io) | `docs/entenda-o-projeto.md` | `docs/bpmn/*.bpmn` e `.png` | Plan (o Claude só revisa a notação) | abrir no bpmn.io | raias Vendedor, Sistema e LLM; decisões "tem dados?" e "passou no validador?" | PR |
-| MA6 | 12–13/11 | montar o `documentacao.pdf` | BPMN, justificativa, ética, arquitetura | `docs/documentacao.pdf` | fora do Claude | — | PDF com as 3 partes que o guia pede | PR |
+| # | data | status | objetivo | altera | modo | pronto quando | git |
+|---|---|---|---|---|---|---|---|
+| MA1 | 27/10 | ✅ porte no PR #4 (feito pelo Eduardo) | revisar o #4: o código é seu, só os imports mudaram; decidir sobre o `scripts/dados.py` | — | — | #4 aprovado | `marcos-porta-dados` |
+| MA2 | qua 28–qui 29/10 | — | cumprir C1/C2: CSV padrão (sem `sep=";"` e sem `decimal=","` na **escrita**), `cd_cvm` int, tabela `indicadores` no banco, busca só com empresas ativas e com indicadores | `scripts/`, `raiox/dados.py`, `tests/test_contratos.py` | Plan | `python -m pytest -q tests/test_ponta_a_ponta.py` passa com os seus dados reais | `marcos-csv-padrao` → PR (Eduardo + Miguel) |
+| MA3 | sex 30–sáb 31/10 | — | dados reais + checagem + 5 empresas conferidas no RI; zip da `data/` no Drive | `avaliacao/conferencia.csv`; consertos | Manual | diferença < 1%; nenhum "erro"; link no grupo | PR |
+| MA4 | dom 01–ter 03/11 | — | EDA com 4 gráficos (nulos, distribuições, extremos, cobertura) | `notebooks/eda.ipynb`, `docs/graficos/` | Manual | "Restart & Run All" sem erro | PR |
+| MA5 | qua 04–qui 05/11 | — | BPMN 2.0 com o Raio-X (obrigatório) e o de hoje (se der tempo), no bpmn.io | `docs/bpmn/` | Plan (o Claude só revisa) | abre no bpmn.io; decisões "tem dados?" e "passou no validador?" | PR |
+| MA6 | sáb 07–seg 09/11 | — | montar o `documentacao.pdf` | `docs/documentacao.pdf` | fora do Claude | BPMN + justificativa + ética + arquitetura | PR |
 
-### Miguel (Codex hoje; Claude Code se migrar, com as mesmas sessões)
+### Miguel (Codex hoje; Claude Code se migrar)
 
-| # | data | objetivo | lê | altera | modo | testes | pronto quando | git |
-|---|---|---|---|---|---|---|---|---|
-| MG1 | qua 28/10 | entrar no projeto, revisar o PR ED0, configurar o GitHub | `README.md`, `AGENTS.md`, `CLAUDE.md`, `app/` | configurações do GitHub | só leitura ("explique, não altere") | `pytest -q`; `cd app && streamlit run streamlit_app.py` | print da tela no grupo; PR ED0 aprovado; só merge commit; apagar branch após o merge; proteção ligada ou "não disponível" anotado aqui | aprova o PR |
-| MG2 | 29–30/10 | `Dockerfile` + `.dockerignore`: tela com falsos, `data/` como volume, chave por variável | `app/`, `requirements.txt` | `Dockerfile`, `.dockerignore` | Plan | `docker build`; `docker run -p 8501:8501 …`; `curl localhost:8501/_stcore/health` → `ok` | os comandos funcionam e estão no README | `miguel-docker` → PR (Eduardo) |
-| MG3 | 31/10–01/11 | Terraform (provider docker): imagem, contêiner, porta 8501, volume, `GOOGLE_API_KEY` como `sensitive` | `Dockerfile` | `infra/main.tf`, `infra/variables.tf` | Plan | `terraform apply`; `destroy` e `apply` de novo | a tela sobe; `data/` sobrevive; `git status` sem `tfstate` | PR. **Se não estiver pronto até ter 03/11, fica só o Docker** |
-| MG4 | 03–04/11 | tela com dados reais: variável `RAIOX_DADOS` no lugar da constante; volta sozinha para o modo sem IA, com aviso; `registrar_consulta` dentro do `try` | `app/streamlit_app.py`, C1, C3 | `app/streamlit_app.py`, `.env.example`, `tests/test_tela.py` (AppTest com falsos) | Plan | `test_tela` no CI | 3 empresas de setores diferentes geram raio-x dentro do contêiner | PR (Eduardo) |
-| MG5 | qui 05/11 | diagrama de arquitetura + README (arquitetura, pré-requisitos com Python 3.14, rodar local, Docker e Terraform) | tudo | `docs/arquitetura.png`, `README.md` | Manual | — | um colega lê o README e entende o fluxo | PR |
-| MG6 | sex 06/11 | demo ponta a ponta via `terraform apply`; roteiro de 6 min; vídeo v0 | — | — | — | roteiro com 3 empresas escolhidas e testadas | vídeo salvo em 2 lugares | (o Eduardo cria a tag `v0.1-demo`) |
-| MG7 | sex 13/11 | vídeo final na `v1.0` | — | — | — | — | vídeo salvo em 2 lugares | — |
+| # | data | status | objetivo | altera | modo | pronto quando | git |
+|---|---|---|---|---|---|---|---|
+| MG1 | qua 28/10 | — | revisar e mesclar o #3; configurar o GitHub (só merge commit, apagar branch, check `testes`); rodar a tela local | configurações | só leitura | #3 na `main`; print da tela no grupo | merge do #3 |
+| MG2 | qui 29–sex 30/10 | — | `Dockerfile` + `.dockerignore` (tela, `data/` como volume, chave por variável) | `Dockerfile`, `.dockerignore` | Plan | `docker build`, `docker run -p 8501:8501 …`, `curl localhost:8501/_stcore/health` → `ok` | `miguel-docker` → PR (Eduardo) |
+| MG3 | sáb 31/10–dom 01/11 | — | Terraform (provider docker), **só se o Docker estiver pronto**. Prazo: dom 01/11; senão, corta | `infra/` | Plan | `terraform apply` sobe; `destroy` + `apply` mantém `data/` | PR |
+| MG4 | dom 01–ter 03/11 | — | tela com dados reais: `RAIOX_DADOS` (`falsos`/`real`) no lugar do `USAR_DADOS_FALSOS`; volta sozinha para o modo sem IA, com aviso; `registrar_consulta` dentro do `try`; `tests/test_tela.py` | `app/`, `.env.example`, `tests/` | Plan | 3 empresas reais geram raio-x no contêiner | PR (Eduardo) |
+| MG5 | qua 04/11 | — | diagrama de arquitetura + README (pré-requisitos com Python 3.14; rodar local, Docker e Terraform) | `docs/arquitetura.png`, `README.md` | Manual | um colega entende o fluxo lendo o README | PR |
+| MG6 | qui 05/11 | — | roteiro de 6 min da demo + vídeo v0 | — | — | vídeo salvo em 2 lugares | — |
+| MG7 | sáb 07/11 | — | vídeo final na `v1.0` | — | — | vídeo salvo em 2 lugares | — |
 
 ### Náthally (sem IA de código: GitHub pelo navegador)
 
-Como subir um arquivo:
+Para subir um arquivo:
 1. No GitHub, "Add file → Upload files".
-2. Escolha "Create a new branch" e dê o nome `nathally-tarefa`.
+2. Escolha "Create a new branch" (`nathally-tarefa`).
 3. Abra o PR. O Eduardo revisa.
 
-| # | data | objetivo | altera | pronto quando | git |
+| # | data | status | objetivo | altera | pronto quando |
 |---|---|---|---|---|---|
-| NA1 | 28–29/10 | trazer a `feat/metricas` (20 min com o Eduardo) e escrever as regras v2 alinhadas ao código (ver `seguindo-o-projeto.md`, item 7) | `docs/produto/` (persona, roteiro, glossário, comparação de LLMs, pitch); `avaliacao/regras_prompt.md` | PR aberto | `nathally-produto` → PR (Eduardo) |
-| NA2 | 30/10–01/11 | `casos_avaliacao.csv` no formato C4: os 10 casos que já existem, com o `cd_cvm` achado pela busca da tela ou no `indicadores.csv` do Drive | `avaliacao/casos_avaliacao.csv` | todo `cd_cvm` existe no `indicadores.csv` (o Eduardo confere com um comando) | PR |
-| NA3 | 03–06/11 | `tempo_manual.csv` (3 empresas), 3 testes com usuários (sem nome), conta do ROI | `avaliacao/tempo_manual.csv`, `avaliacao/testes_usuarios.csv` | 3 testes feitos; ROI com números medidos | PR |
-| NA4 | 07–08/11 | `revisao.csv` a partir do `resultados.csv`; métricas; comparação com ChatGPT e Gemini (o caso Camil já existe) | `avaliacao/revisao.csv`, `docs/produto/metricas.md` | % de comparações certas, % de perguntas ligadas ao produto, utilidade, custo, tempo de resposta | PR |
-| NA5 | 09–12/11 | texto de governança e ética; deck com o tempo de cada parte | `docs/etica.md`, deck | o Marcos recebe o texto de ética para o PDF; os slides de todos chegaram | PR (o texto) |
-| NA6 | 13–15/11 | deck final; 2 ensaios cronometrados | deck | ensaio abaixo de 20 min | — |
+| NA1 | qua 28–qui 29/10 | 🟡 porte no PR #5 | revisar o #5; regras v2 alinhadas ao código (`seguindo-o-projeto.md`, item 7) | `avaliacao/regras_prompt.md` | PR aberto |
+| NA2 | sex 30/10 | — | preencher o `cd_cvm` dos 10 casos (busca da tela ou `indicadores.csv` do Drive; WEG = 5410) | `avaliacao/casos_avaliacao.csv` | `tests/test_ponta_a_ponta.py` passa (o Eduardo roda) |
+| NA3 | sáb 31/10–qui 05/11 | — | `tempo_manual.csv` (3 empresas), 3 testes com usuários (sem nome), conta do ROI | `avaliacao/` | 3 testes feitos; ROI com números medidos |
+| NA4 | qua 04/11 | — | `revisao.csv` sobre o `resultados.csv`; métricas | `avaliacao/revisao.csv`, `docs/produto/metricas.md` | % de comparações certas, % de perguntas ligadas ao produto, utilidade, custo, tempo |
+| NA5 | sáb 07–dom 08/11 | — | texto de governança e ética; deck com o tempo de cada parte | `docs/etica.md`, deck | o Marcos recebe a ética; todos os slides chegaram |
+| NA6 | seg 09–qua 11/11 | — | deck final; 2 ensaios cronometrados | deck | ensaio abaixo de 20 min |
 
 ---
 
 ## 4. Testes
 
-| módulo | unitário | contrato | ponta a ponta | quem escreve | sessão |
-|---|---|---|---|---|---|
-| limpeza, `carregar_dfp`, `indicadores` | `test_limpeza`, `test_carregar_dfp` (já existem na branch do Marcos) | C2: lido com o pandas padrão → 13 colunas, `cd_cvm` int | ✔ | Marcos | MA1, MA2 |
-| `raiox/dados.py` | `test_dados` (já existe) | C1: `cd_cvm` int, só empresas com indicadores | ✔ | Marcos (Miguel revisa) | MA1, MA2 |
-| `raiox/segmentos.py` | `test_segmentar_aguenta_receita_zero` | — | ✔ | Eduardo | ED2 |
-| `raiox/ia.py` | 5 testes do validador | C3 com os falsos, sem depender de `data/` | ✔ | Eduardo | ED2 |
-| `avaliacao/avaliar.py` | `test_avaliar` | C4: colunas do `resultados.csv`; todo `cd_cvm` dos casos existe (pulado sem dados reais) | — | Eduardo | ED5 |
-| tela | `test_tela` (AppTest com falsos) | usa só C1 e C3 | ✔ | Miguel | MG4 |
-| Docker e Terraform | — | — | `curl …/_stcore/health` + roteiro da demo | Miguel | MG2, MG3 |
-| sistema inteiro | — | — | `test_ponta_a_ponta.py` com dados reais (só local) | Eduardo | ED6 |
+**Regra:**
+- Toda mudança de comportamento vem com um teste novo ou atualizado, no mesmo PR.
+- Rode `python -m pytest -q` antes de cada commit e antes de cada PR.
+- O CI roda em todo PR, e ninguém aprova PR com CI vermelho.
+- Nenhum teste chama a API do Gemini.
 
-- **Quando rodam:**
-  - na sua máquina, antes de todo commit;
-  - no CI, em todo PR e em todo push na `main`;
-  - o teste ponta a ponta, antes das tags `v0.1-demo` e `v1.0` e no teste do zero.
-- **Nenhum teste chama a API do Gemini.** Antes de cada demo, uma chamada real feita à mão.
-- **Nada entra com teste falhando:**
-  - o CI roda no PR, e quem revisa não aprova com CI vermelho (está no modelo de PR);
-  - se o GitHub permitir proteção da `main`, o check `testes` vira obrigatório.
+| arquivo | o que testa | dono | roda no CI? |
+|---|---|---|---|
+| `tests/conftest.py` | todo teste usa a tabela falsa (`RAIOX_DADOS=falsos`) e nada grava em `data/` | Eduardo | sim |
+| `tests/test_raio_x.py` | validador (regra de ouro), contrato C3, fonte, modo sem IA nas 30 empresas falsas, `RAIOX_DADOS`, segmentação (k = 3, 29 de 30), gráficos, checador | Eduardo | sim |
+| `tests/test_avaliar.py` | `avaliar.py`: colunas do C4, casos válidos, caso com erro, formato do `casos_avaliacao.csv` | Eduardo | sim |
+| `tests/test_limpeza.py`, `test_carregar_dfp.py`, `test_dados.py` (PR #4) | regras de limpeza, carga da DFP (rede simulada), catálogo SQLite e C1 | Marcos | sim |
+| `tests/test_contratos.py` (MA2) | C1 e C2 com os falsos: CSV padrão, `cd_cvm` int | Marcos | sim |
+| `tests/test_tela.py` (MG4) | a tela com os falsos: busca, gerar, 6 métricas, sem erro | Miguel | sim |
+| `tests/test_ponta_a_ponta.py` | C2 real, raio-x sem IA de 3 setores, `cd_cvm` dos casos | Eduardo | **não**: pula sem `data/`. Rodar local antes de `v0.1-demo`, `v1.0` e no teste do zero |
+| Docker | `curl localhost:8501/_stcore/health` → `ok` | Miguel | não (checklist da demo) |
 
 ---
 
@@ -179,23 +206,22 @@ Como subir um arquivo:
 
 | data | quem | o que sincroniza | o que congela |
 |---|---|---|---|
-| ter 27/10 | Eduardo ↔ Marcos | formato do C2 (PR ED0) | formato e tipos do C2 |
+| qua 28/10 | Miguel → todos | #3 na `main`; os outros PRs fazem `git merge main` | arquivos de padronização |
 | qua 28/10 | Eduardo → Náthally | 3 raio-x reais | — |
-| qui 29/10 | Miguel → todos | PR ED0 na `main`; todos criam as próximas branches a partir dela | arquivos de padronização |
-| sex 30/10 | Náthally → Eduardo | regras v2 | texto das regras (até ED3) |
-| dom 01/11 | Marcos → todos | `data/` v1 no Drive; `indicadores.csv` real | colunas do C2 |
-| dom 01/11 | Náthally → Eduardo | casos no formato C4 | formato do C4 |
-| ter 03/11 | os 4 | C1, C3 e variáveis de ambiente da tela e do Docker | **interfaces**: só mudam com os 4 de acordo |
-| sex 06/11 | os 4 | demo ponta a ponta; tag `v0.1-demo` | escopo: nada novo depois daqui |
-| ter 10/11 | os 4 | tag `v1.0` | código |
-| qua 11/11 | Eduardo + Náthally | teste do zero | README |
-| qui 12/11 | todos → Náthally | conteúdo dos slides | roteiro |
+| qui 29/10 | Marcos → Eduardo | C2 cumprido (MA2) | formato e colunas do C2 |
+| sex 30/10 | Marcos → todos | `data/` v1 no Drive | — |
+| sex 30/10 | Náthally → Eduardo | regras v2; casos com `cd_cvm` | texto das regras e formato do C4 |
+| dom 01/11 | Miguel | decisão: Terraform ou só Docker | infra |
+| ter 03/11 | os 4 | demo ponta a ponta; tag `v0.1-demo` | **interfaces** (C1, C3, `RAIOX_DADOS`) e escopo: nada novo |
+| sex 06/11 | os 4 | tag `v1.0` | código |
+| dom 08/11 | todos → Náthally | conteúdo dos slides | roteiro |
+| qua 11/11 | os 4 | tudo pronto para entregar | entregáveis |
 
 **Como os dados chegam a cada um:**
-- O Marcos publica um zip da pasta `data/` no Drive em dom 01/11 e ter 10/11. Esse é o caminho oficial.
-- Os scripts continuam reproduzíveis, para o teste do zero e para a banca.
-- **Por que não "cada um roda os scripts":** baixar 3 anos da CVM em cada máquina multiplica os pontos de falha e pode deixar cada pessoa com dados diferentes.
-- **Por que não pôr no Git:** quebraria a regra 5 do CLAUDE.md e o REGRAS-IA §2.
+- O Marcos publica um zip da pasta `data/` no Drive na sex 30/10 e na sex 06/11.
+- Os scripts continuam reproduzíveis, para o teste do zero.
+- **Por que não cada um rodar os scripts:** multiplica os pontos de falha.
+- **Por que não pôr no Git:** quebra a regra 5 do CLAUDE.md.
 
 ---
 
@@ -222,73 +248,63 @@ Como subir um arquivo:
 | D2 PDF | MA6 (com MA5, ED8, NA5, MG5) |
 | D3 Deck | NA5, NA6 |
 | D4 Vídeo | MG6, MG7 |
-| D5 20 minutos | NA6 + ensaios de 14–15/11 |
+| D5 20 minutos | NA6 + ensaios de 10–11/11 |
 
 ---
 
-## 7. Riscos e plano B
+## 7. Riscos, plano B e o que cortar
 
 | marco | risco | plano B |
 |---|---|---|
-| qua 28/10 | o `carregar_dfp.py` não roda na máquina do Eduardo, ou a CVM está lenta | 3 raio-x com a tabela falsa + 1 empresa real calculada à mão; as regras v2 dependem do formato, não dos números |
-| dom 01/11 | o `indicadores.csv` real não sai | o Eduardo assume os indicadores; o Marcos vai para SQL, EDA e BPMN |
-| dom 01/11 | o Terraform não sobe | prazo final ter 03/11; depois disso, fica só o Docker (o guia aceita "Terraform ou conteinerização") |
-| ter 03/11 | algum módulo não passa no "pronto quando" | voltar ao mínimo; a tela usa os falsos; nada de extra |
-| sex 06/11 | a demo não roda inteira | seg e ter 09–10/11 só para isso; o vídeo vira obrigatório; demo por `docker run` ou `streamlit run` local |
-| dia da banca | a API falha ou o crédito acaba (erro 402) | a tela volta sozinha para o modo sem IA, com aviso (MG4); vídeo; saldo conferido em 12/11 |
-| qualquer dia | a banca é **antes** (semana de 09–15/11) | `v1.0` = `v0.1-demo` com consertos; cortar Terraform, PCA, BPMN "hoje" e casos de 20 para 10; PDF e deck até 48 h antes |
-| qualquer dia | a banca é **depois** | nada novo; o tempo vai para ensaio e teste do zero |
-| qualquer dia | alguém fica indisponível | duplas de reserva: Marcos ↔ Eduardo (dados), Miguel ↔ Eduardo (infra), Náthally ↔ Marcos (deck e PDF); os falsos deixam seguir sem a peça |
-| qualquer dia | conflito em arquivo comum | um PR por vez em arquivo comum, avisando no grupo |
+| qua 28/10 | o `carregar_dfp.py` não roda na máquina do Eduardo | o Marcos manda a `data/` dele; em último caso, 3 raio-x com a tabela falsa |
+| qui 29/10 | a MA2 atrasa | o Eduardo converte o CSV localmente e segue; a MA2 entra até ter 03/11 |
+| dom 01/11 | o Terraform não sobe | fica só o Docker (o guia aceita "Terraform ou conteinerização") |
+| ter 03/11 | a demo não roda inteira | qua e qui 04–05/11 só para isso; o vídeo vira obrigatório; demo por `docker run` ou `streamlit run` local |
+| dia da banca | a API falha ou o crédito acaba (erro 402) | a tela volta sozinha para o modo sem IA, com aviso (MG4); vídeo; saldo conferido em 08/11 |
+| qualquer dia | a banca é **antes** | o código já congela em 06/11 e os entregáveis ficam prontos em 11/11 |
+| qualquer dia | alguém fica indisponível | duplas de reserva: Marcos ↔ Eduardo (dados), Miguel ↔ Eduardo (infra), Náthally ↔ Marcos (deck e PDF) |
+| qui 29/10 | o Miguel não abriu o PR do Docker | o Eduardo faz o Dockerfile e o Miguel revisa (dupla de reserva) |
 
-**O que cortar.** Com 6 a 12 h por semana por pessoa, sobram de 12 a 24 h até 10/11.
-
-**Fora já:**
-- `verificar_automatico.py` (yfinance) e `graficos.py` da branch do Marcos;
-- gráfico de receita em 3 anos;
-- filtro "parecidas do mesmo setor";
+**Já fora:**
+- `verificar_automatico.py` (yfinance) e `graficos.py`;
+- receita em 3 anos;
+- filtro de setor;
 - RAG, nome dos grupos pelo LLM, exportar o raio-x, número de empregados;
-- refatorar as duplicações (são risco baixo).
+- refatorar as duplicações;
+- 20 casos (ficam 10);
+- conferência da Náthally no RI (fica a do Marcos, com 5 empresas).
 
 **Se faltar tempo, cortar nesta ordem:**
-1. Terraform (fica só o Docker)
-2. casos de 20 para 10
-3. BPMN "hoje" (fica só o "com o Raio-X")
-4. gráfico PCA
-5. testes com usuários de 5 para 3
+1. Terraform
+2. BPMN "hoje"
+3. testes com usuários de 3 para 2
+4. ED11 (fica o resultado do ED7)
 
 ---
 
-## 8. Sessões do Eduardo: o que ele escreve à mão e o que a IA só explica
+## 8. Sessões do Eduardo: o que ele precisa saber explicar
 
-| escreve à mão (a IA revisa) | a IA escreve; ele lê e explica de volta | a IA só explica (sem código) |
-|---|---|---|
-| a correção do teste do C3 (ED2) | YAML do CI, `pytest.ini`, modelo de PR (ED0) | K-means, silhueta, `StandardScaler`, `NearestNeighbors` (ED4) |
-| o gráfico PCA, cerca de 10 linhas (ED4) | versões do `requirements.txt` (ED0) | `with_structured_output`, Pydantic, `include_raw` (ED3) |
-| o laço do `avaliar.py`: ler CSV, chamar `preparar_raio_x`, gravar (ED5) | esqueleto do teste ponta a ponta (ED6) | por que o validador garante a regra de ouro (`validar_e_preencher()`) |
-| justificativa técnica e "Como usamos IA" (ED8) | consertos do congelamento (ED9) | perguntas da banca (ED11) |
-| mudanças de texto no `contratos.md` | — | — |
+O código do ED2, do ED5 e do ED4 foi escrito pela IA em 27/10, para adiantar o projeto.
+Antes da banca, o Eduardo explica em voz alta, sem olhar, cada um destes pontos. Se não conseguir, pede "explique para iniciante" e tenta de novo.
 
-**Método:** ler o trecho → prever o resultado → rodar → só então pedir "explique". Se ele não consegue explicar uma linha, ela não entra.
+| arquivo e função | o que explicar |
+|---|---|
+| `raiox/segmentos.py`, `matriz()` | por que a receita entra em log, por que cortar extremos, por que a mediana nos nulos, o que o `StandardScaler` faz |
+| `raiox/segmentos.py`, `segmentar()` | K-means, silhueta, por que k vai de 3 a 8, `NearestNeighbors` com 6 vizinhos |
+| `raiox/segmentos.py`, `grafico_grupos()` | o que o PCA faz e o que significa "61% da variação" |
+| `raiox/ia.py`, `montar()` | o que vai para o LLM e o que nunca vai (`valores`) |
+| `raiox/ia.py`, `validar_e_preencher()` | por que a IA não consegue escrever número na tela |
+| `avaliacao/avaliar.py`, `avaliar()` | o laço, por que um erro não para a rodada, as colunas do C4 |
+| `tests/conftest.py` | por que todo teste usa a tabela falsa |
+
+**Método:** ler o trecho → prever o resultado → rodar → só então pedir "explique".
 
 ---
 
 ## Se começássemos do zero (para aprender, não para refazer)
 
-1. **Dia 1: matriz do guia, com dono e evidência para cada requisito.** Nada de código antes disso.
-2. **Contratos com o formato do arquivo** (separador, decimal, tipos) e **falsos** no mesmo formato. Os dois maiores bugs de hoje (CSV com `;` e `cd_cvm` como texto) são de contrato, não de código.
-3. **Um repositório-esqueleto, feito por uma pessoa, de onde todos clonam.** Ele já traz:
-   - pastas e README;
-   - CLAUDE.md, AGENTS.md e REGRAS-IA.md;
-   - versões fixas e config do pytest;
-   - CI e modelo de PR;
-   - proteção da `main`.
-
-   Assim não existiriam duas branches sem história em comum.
-4. **Docker "olá mundo" na primeira semana.** Infra é o que quebra no fim; começar cedo mostra os problemas de versão do Python e de caminhos.
-5. **Cada um trabalha contra os falsos:**
-   - Marcos: limpeza com testes → C2 → SQL e C1;
-   - Eduardo: ML e IA → avaliação;
-   - Miguel: tela no contêiner → Terraform;
-   - Náthally: persona e tempo manual → regras → casos → testes com usuários.
-6. **Integração toda semana, com tag**; depois congelar e documentar.
+1. **Matriz do guia com dono** no dia 1, antes de qualquer código.
+2. **Contratos com o formato do arquivo** e falsos no mesmo formato. Os bugs do CSV com `;` e do `cd_cvm` como texto são de contrato.
+3. **Repositório-esqueleto** feito por uma pessoa, de onde todos clonam, com CI e versões fixas desde o início.
+4. **Docker "olá mundo"** na primeira semana.
+5. **Cada um trabalhando contra os falsos**, com integração semanal e tag.
