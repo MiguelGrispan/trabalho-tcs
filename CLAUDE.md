@@ -1,11 +1,12 @@
 # Raio-X Comercial · contexto para o Claude Code
 
 Projeto final da trilha IA Aplicada (SENAI/TCS). Equipe: Marcos (dados), Eduardo (IA e gestão),
-Náthally (produto e métricas, deck), Miguel (tela e infraestrutura). Banca na semana de 09–15/11/2026
-(professores + especialistas da TCS). Os entregáveis vão **48 h antes** da apresentação.
+Náthally (produto e métricas, deck), Miguel (tela e infraestrutura). Banca prevista para qua 18/11/2026
+(**data e horário a confirmar**; professores + especialistas da TCS). Os entregáveis vão **48 h antes**: seg 16/11.
 
-Antes de qualquer tarefa grande, leia `docs/seguindo-o-projeto.md` (o que falta e de quem é).
-Explicação para iniciantes: `docs/entenda-o-projeto.md`.
+Antes de qualquer tarefa, leia `docs/PLANO.md` (sessões, datas e donos; a pessoa diz qual sessão está fazendo, ex.: "MA2")
+e `docs/REQUISITOS.md` (o que o guia exige e o status). O que está quebrado, com prova: `docs/seguindo-o-projeto.md`.
+Explicação para iniciantes: `docs/entenda-o-projeto.md`. Quem usa Codex: o `AGENTS.md` aponta para este arquivo.
 
 ## O produto
 O vendedor escolhe uma companhia aberta da CVM, informa o produto e o objetivo da reunião e recebe:
@@ -63,7 +64,9 @@ Caminhos: todo código que usa `data/` ou `docs/` aponta para a **raiz** do repo
 4. **O LLM nunca escreve números** (regra de ouro). Acima/abaixo/em linha é calculado por código.
 5. **Nada de dados nem `.env` no Git.** Antes de todo commit, rode `git status` e leia a lista.
 6. **A demo não pode quebrar.** O modo sem IA (sem `RAIOX_IA_REAL`) é o plano B: precisa continuar funcionando.
-7. **`main` só por pull request**, com testes passando e 1 pessoa revisando. No PR, 2 linhas: o que foi feito com IA e o que você conferiu.
+7. **`main` só por pull request**, com o CI verde e 1 pessoa revisando. No PR, 2 linhas: o que foi feito com IA e o que você conferiu.
+8. **Git:** uma branch curta por sessão, a partir da `main` atualizada, com nome `pessoa-tarefa` (ex.: `marcos-porta-dados`).
+   Para trazer a `main`, use `git merge main`. Nunca `rebase`, `push --force` nem commit direto na `main`.
 
 ## Como responder ao time (iniciantes)
 - Português simples. Explique o porquê de cada mudança, não só o quê.
