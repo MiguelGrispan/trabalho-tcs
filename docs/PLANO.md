@@ -36,11 +36,22 @@ comandos de prova, estão em [seguindo-o-projeto.md](seguindo-o-projeto.md).
 - Na `main` hoje: 8.
 - Com os PRs #4 e #6 juntos: 45 passam, mais 4 pulados que esperam os dados reais.
 
+**Dados reais (ED1, 27/10):**
+- **Carga:** os scripts da branch do #4 rodaram em 22 s e geraram 595 empresas, todas com DFP 2025.
+- **Conferência:** a receita da WEG bate com a conferência do Marcos.
+- **Formato:** o `indicadores.csv` saiu com `;` e vírgula decimal. O Eduardo converteu só na `data/` dele, e com isso `tests/test_ponta_a_ponta.py` passa.
+- **Raio-x:** 3 gerados com IA (Camil, Magazine Luiza, WEG), sem nenhum item removido pelo validador, por US$ 0,0026 no total. Estão em `data/ed1/` (fora do Git) e já foram enviados à Náthally.
+- **Problema achado (ED4):**
+  - com os dados reais, o K-means escolhe k = 4 com silhueta 0,77, mas um grupo tem 567 das 595 empresas e os outros têm 9, 9 e 10;
+  - a silhueta alta só mede a separação das empresas extremas (margens de −10.000%);
+  - com isso, o "grupo" vira quase todas as empresas, e as "parecidas" não fazem sentido.
+- **Conserto testado:** tirar as empresas com receita abaixo de R$ 10 mi e cortar os extremos em 5/95 dá k = 4 com grupos de 330, 99, 74 e 59 empresas (silhueta 0,30). Detalhes na linha do ED4.
+
 **Próximo passo de cada um:**
 - **Miguel:** MG1 (revisar e mesclar o #3; configurar o GitHub).
-- **Marcos:** revisar o #4 e começar a MA2.
-- **Náthally:** revisar o #5 e escrever as regras v2.
-- **Eduardo:** ED1 (3 raio-x reais).
+- **Marcos:** revisar o #4 e começar a MA2. Na MA3, decidir o corte de receita mínima junto com o Eduardo.
+- **Náthally:** revisar o #5 e escrever as regras v2, usando as notas no fim de `data/ed1/raiox_para_nathally.md`.
+- **Eduardo:** ED4 (consertar a segmentação), adiantado para qua 28/10.
 
 **Decisões em aberto:**
 - data e horário da banca;
@@ -104,11 +115,11 @@ Todos entram no PR #3, menos os da última linha.
 
 | data | Eduardo | Marcos | Miguel | Náthally |
 |---|---|---|---|---|
-| ter 27/10 | ✅ ED0, ED2, ED5, ED4 (código), ED6; portes MA1 e NA1 | — | — | — |
-| qua 28/10 | ED1 3 raio-x reais | revisar o #4; MA2 | MG1 revisar e mesclar o #3 | revisar o #5; NA1 regras v2 |
+| ter 27/10 | ✅ ED0, ED1, ED2, ED5, ED4 (código), ED6; portes MA1 e NA1 | — | — | — |
+| qua 28/10 | ED4 consertar a segmentação | revisar o #4; MA2 | MG1 revisar e mesclar o #3 | revisar o #5; NA1 regras v2 |
 | qui 29/10 | revisões | MA2 cumprir C1/C2 | MG2 Docker | NA1 |
 | sex 30/10 | ED3 regras v2 no prompt | MA3 dados reais + Drive | MG2/MG3 | NA2 `cd_cvm` dos casos |
-| sáb 31/10 | ED4 segmentos reais | MA3 | MG3 Terraform | NA3 tempo manual; marcar testes |
+| sáb 31/10 | revisões; ED8 começa | MA3 | MG3 Terraform | NA3 tempo manual; marcar testes |
 | dom 01/11 | ED7 rodada com IA | MA4 EDA | **MG3: se o Terraform não subiu, fica só o Docker**; MG4 | NA3 |
 | seg 02/11 | feriado (reserva) | | | |
 | ter 03/11 | **demo ponta a ponta · tag `v0.1-demo`** | MA4 | MG4 tela com dados reais | NA3 testes com usuários |
@@ -128,10 +139,10 @@ Todos entram no PR #3, menos os da última linha.
 | # | data | status | objetivo | altera | modo | pronto quando | git |
 |---|---|---|---|---|---|---|---|
 | ED0 | 27/10 | ✅ PR #3 | arquivos comuns, PLANO, REQUISITOS | seção 1 | Plan | PR aberto | `eduardo-padronizacao` |
-| ED1 | qua 28/10 | — | 3 raio-x reais para a Náthally: roda os scripts do Marcos (branch do #4) e converte o CSV só na sua `data/` | nada no Git | Manual | 3 empresas de setores diferentes, `removidos` conferido, enviado | nenhum |
+| ED1 | 27/10 | ✅ `data/ed1/` | 3 raio-x reais para a Náthally: roda os scripts do Marcos (branch do #4) e converte o CSV só na sua `data/` | nada no Git | Manual | 3 empresas de setores diferentes, `removidos` conferido, enviado | nenhum |
 | ED2 | 27/10 | ✅ PR #6 | testes sem depender de `data/` (`RAIOX_DADOS`); "balanço consolidado" | `raiox/`, `tests/` | — | 17 passam | `eduardo-ia-testes` |
 | ED3 | sex 30/10 | — | regras v2 da Náthally no `REGRAS` | `raiox/ia.py` | Manual | 3 chamadas reais sem item removido por dígito | PR (Náthally lê) |
-| ED4 | sáb 31/10 | 🟡 código no #6 | rodar `python -m raiox.segmentos` com os dados reais; olhar 2 grupos; explicar `matriz()` e o PCA | `docs/graficos/*.png`, REQUISITOS (k, silhueta) | Manual | 2 PNG reais; 2 linhas sobre cada grupo | PR |
+| ED4 | qua 28/10 | 🟡 código no #6; problema achado no ED1 | consertar a segmentação real: receita mínima de R$ 10 mi (combinar com o Marcos) e corte dos extremos em 5/95 em `matriz()`; só aceitar o k cujo menor grupo tenha pelo menos 5% das empresas; teste novo para isso; olhar 2 grupos; explicar `matriz()` e o PCA. Os gráficos de antes estão em `data/ed1/*_antes_ed4.png` e servem para a banca ("a silhueta alta enganava") | `raiox/segmentos.py`, `tests/`, `docs/graficos/*.png`, REQUISITOS (k, silhueta) | Plan | nenhum grupo com menos de 5% das empresas; "parecidas" de 3 empresas conhecidas fazem sentido; 2 PNG reais | PR |
 | ED5 | 27/10 | ✅ PR #6 | `avaliacao/avaliar.py` (C4) | `avaliacao/`, `tests/` | — | `python -m avaliacao.avaliar` grava o C4 | `eduardo-ia-testes` |
 | ED6 | 27/10 | ✅ PR #6 | teste ponta a ponta (pula sem `data/`) | `tests/test_ponta_a_ponta.py` | — | pula no CI; roda local com dados reais | `eduardo-ia-testes` |
 | ED7 | dom 01/11 | — | `python -m avaliacao.avaliar --com-ia` nos 10 casos (avisar o grupo) | `avaliacao/resultados.csv` | Manual | 10 linhas; custo anotado (< US$ 0,05) | PR |
