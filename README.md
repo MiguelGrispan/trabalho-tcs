@@ -13,8 +13,8 @@ como `{margem_ebit}`, um validador remove qualquer dígito fora de marcador e o 
 
 Projeto final da trilha IA Aplicada (SENAI/TCS) · Marcos, Eduardo, Náthally e Miguel.
 
-**Começando agora?** Leia [docs/entenda-o-projeto.md](docs/entenda-o-projeto.md) (o projeto explicado para iniciantes)
-e [docs/seguindo-o-projeto.md](docs/seguindo-o-projeto.md) (o que falta e quem faz).
+**Começando agora?** Abra a pasta [aprender/](aprender/README.md): comandos (o que rodar, em qual pasta), o projeto
+explicado para iniciantes e um notebook que segue uma empresa do começo ao fim. O plano e o que falta: [docs/PLANO.md](docs/PLANO.md).
 
 ## Fluxo
 
@@ -48,9 +48,9 @@ scripts/        preparação dos dados da CVM: verificar_dfp, carregar_dfp, indi
 avaliacao/      avaliação do raio-x (contrato C4) · Náthally e Eduardo
 tests/          testes automáticos (não chamam a API)
 falsos/         dados e módulos falsos no formato dos contratos, para ninguém esperar ninguém
-docs/           explicação para iniciantes, o que falta fazer e gráficos (docs/graficos/)
+docs/           plano, requisitos do guia, gráficos (docs/graficos/) e documentos da entrega
 infra/          implantação · Miguel
-atalhos/        .command de dois cliques (Mac)
+aprender/       só para quem está aprendendo: comandos, guias, notebook passo a passo, atalhos do Mac
 data/           dados da CVM e arquivos gerados: fica só no seu computador, não vai para o Git
 ```
 
@@ -68,7 +68,7 @@ pip install -r requirements.txt
 ```
 
 Chave do Gemini (só para os modos com IA): copie `.env.example` para `.env` e cole a chave,
-ou dê dois cliques em `atalhos/configurar_chave.command`. O `.env` nunca vai para o Git.
+ou dê dois cliques em `aprender/atalhos/configurar_chave.command`. O `.env` nunca vai para o Git.
 
 **Testes** (não gastam crédito):
 
@@ -103,7 +103,7 @@ python -m raiox.checagem --teste   # checador com dados que têm erros de propó
 
 | atalho | o que faz | gasta crédito? |
 |---|---|---|
-| `atalhos/rodar_tela.command` | abre a tela com texto montado sem IA | não |
-| `atalhos/rodar_tela_com_ia.command` | abre a tela com o Gemini escrevendo o raio-x | sim (≈ US$ 0,0008 por raio-x) |
-| `atalhos/rodar_testes.command` | roda os testes automáticos | não |
-| `atalhos/configurar_chave.command` | guarda a chave do Gemini no `.env` | não |
+| `aprender/atalhos/rodar_tela.command` | abre a tela com texto montado sem IA | não |
+| `aprender/atalhos/rodar_tela_com_ia.command` | abre a tela com o Gemini escrevendo o raio-x | sim (≈ US$ 0,0008 por raio-x) |
+| `aprender/atalhos/rodar_testes.command` | roda os testes automáticos | não |
+| `aprender/atalhos/configurar_chave.command` | guarda a chave do Gemini no `.env` | não |

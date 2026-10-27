@@ -21,6 +21,13 @@ registrar_consulta(registro: dict) -> None   # grava uma linha na tabela consult
 Gerado pelo `scripts/indicadores.py` a partir do `data/contas.csv` (`scripts/carregar_dfp.py`).
 Uma linha por empresa. Valores em reais (já convertidos da escala MIL). Margens e crescimento como fração (0.062 = 6,2%).
 
+**Formato do arquivo:** CSV padrão, com separador vírgula, ponto decimal, UTF-8 e cabeçalho. É o que `pd.read_csv(caminho)` lê
+sem nenhum parâmetro. Vale também para o `data/contas.csv`, que o `raiox/checagem.py` lê.
+Se alguém precisar abrir no Excel brasileiro (`;` e vírgula decimal), gere um arquivo à parte; o `indicadores.csv` não muda.
+
+> Pendente (sessão MA2 do `docs/PLANO.md`): hoje o `scripts/indicadores.py` e o `scripts/carregar_dfp.py` gravam com `;`
+> e vírgula decimal, e o `cd_cvm` sai como texto.
+
 | coluna | tipo | exemplo |
 |---|---|---|
 | cd_cvm | int | 99991 |
@@ -50,7 +57,7 @@ preparar_raio_x(cd_cvm: int, produto: str, objetivo: str) -> dict
 {
   "empresa": "TRANSVALE LOGISTICA S.A.", "setor": "Transporte e logística", "ano": 2025,
   "indicadores": [{"id": "margem_ebit", "nome": "Margem EBIT", "valor": "6,2%", "grupo": "11,8%",
-                   "posicao": "abaixo", "fonte": "DFP 2025 · DRE consolidada · 3.05/3.01",
+                   "posicao": "abaixo", "fonte": "DFP 2025 · DRE consolidada · contas 3.05 ÷ 3.01",
                    "valor_num": 6.2, "grupo_num": 11.8, "unidade": "%"}],
   "grupo": {"numero": 3, "tamanho": 41},
   "parecidas": [{"cd_cvm": 0, "nome": "...", "setor": "..."}],
@@ -71,7 +78,7 @@ preparar_raio_x(cd_cvm: int, produto: str, objetivo: str) -> dict
 | arquivo | quem escreve | colunas |
 |---|---|---|
 | regras_prompt.md | Náthally | texto das regras da instrução |
-| casos_avaliacao.csv | Náthally | caso_id, cd_cvm, produto, objetivo |
+| casos_avaliacao.csv | Náthally | caso_id, cd_cvm, empresa, produto, objetivo (`empresa` é só para leitura; o código usa o `cd_cvm`) |
 | tempo_manual.csv | Náthally | empresa, minutos, fontes |
 | resultados.csv | Eduardo | caso_id, raio_x_json, n_removidos, tokens_entrada, tokens_saida, custo_usd, tempo_s |
 | revisao.csv | Náthally | caso_id, item, comparacao_certa, ligada_ao_produto, clara, utilidade |
@@ -80,8 +87,5 @@ preparar_raio_x(cd_cvm: int, produto: str, objetivo: str) -> dict
 
 ## Datas de entrega entre pessoas
 
-- qui 22/10: Marcos manda no grupo quantas empresas têm receita na DFP 2025
-- qua 28/10: Eduardo manda 3 raio-x reais para a Náthally ajustar as regras
-- dom 01/11: Marcos entrega `data/indicadores.csv` ao Eduardo e `raiox/dados.py` ao Miguel
-- ter 03/11: raiox/dados.py, raiox/ia.py, app/ + infra/ congelados na interface
-- qui 12/11: todos mandam à Náthally o conteúdo dos seus slides
+Ficam no `docs/PLANO.md`, seção 5 (pontos de integração). Na ter 03/11 as interfaces (C1, C3 e as variáveis de
+ambiente da tela) congelam: depois disso, mudar um contrato exige os quatro de acordo.

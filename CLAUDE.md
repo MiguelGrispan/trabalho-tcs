@@ -1,11 +1,14 @@
 # Raio-X Comercial · contexto para o Claude Code
 
 Projeto final da trilha IA Aplicada (SENAI/TCS). Equipe: Marcos (dados), Eduardo (IA e gestão),
-Náthally (produto e métricas, deck), Miguel (tela e infraestrutura). Banca na semana de 09–15/11/2026
-(professores + especialistas da TCS). Os entregáveis vão **48 h antes** da apresentação.
+Náthally (produto e métricas, deck), Miguel (tela e infraestrutura). Banca prevista para qua 18/11/2026
+(**data e horário a confirmar**; professores + especialistas da TCS). Os entregáveis vão **48 h antes**: seg 16/11.
 
-Antes de qualquer tarefa grande, leia `docs/seguindo-o-projeto.md` (o que falta e de quem é).
-Explicação para iniciantes: `docs/entenda-o-projeto.md`.
+Antes de qualquer tarefa, leia `docs/PLANO.md` (sessões, datas e donos; a pessoa diz qual sessão está fazendo, ex.: "MA2")
+e `docs/REQUISITOS.md` (o que o guia exige e o status). O que está quebrado, com prova: `aprender/seguindo-o-projeto.md`.
+Material para quem está aprendendo (comandos, guias, notebook passo a passo, atalhos): `aprender/`. Quem usa Codex: o `AGENTS.md` aponta para este arquivo.
+**Sessão nova?** Comece pela seção 0 do `docs/PLANO.md` (situação atual). Depois confira o estado real com
+`gh pr list --state all` e `git log --oneline -15`, porque a nota pode estar velha.
 
 ## O produto
 O vendedor escolhe uma companhia aberta da CVM, informa o produto e o objetivo da reunião e recebe:
@@ -52,7 +55,7 @@ protótipo funcional 20% · governança e ética 15% · comunicação e equipe 1
 | `avaliacao/*.csv`, `avaliacao/regras_prompt.md`, `docs/produto/` | Náthally |
 
 Pastas comuns (avise o grupo antes de mexer): `tests/`, `falsos/` (dados falsos no formato dos contratos;
-os falsos chamam o código real sem IA), `docs/`, `atalhos/` (`.command` do Mac), `contratos.md`, `README.md`.
+os falsos chamam o código real sem IA), `docs/`, `aprender/` (guias e atalhos `.command` do Mac; nada ali é usado pelo código), `contratos.md`, `README.md`.
 `data/`: dados da CVM e arquivos gerados; só o `.gitkeep` vai para o Git.
 Caminhos: todo código que usa `data/` ou `docs/` aponta para a **raiz** do repositório (`Path(__file__).resolve().parent.parent`).
 
@@ -60,10 +63,14 @@ Caminhos: todo código que usa `data/` ou `docs/` aponta para a **raiz** do repo
 1. **Não mexa em pasta de outro dono.** Precisa de mudança lá? Peça ao dono ou combine antes no grupo.
 2. **Contrato antes de código.** Mudou um formato entre partes? Primeiro o `contratos.md`, avisando quem recebe; depois o código.
 3. **Testes antes de dizer "pronto".** Rode `python -m pytest -q` e mostre o resultado. Mudou a tela? Abra a tela também.
+   Toda mudança de comportamento vem com teste novo ou atualizado no mesmo PR (lista dos testes: `docs/PLANO.md`, seção 4).
+   Ao terminar uma sessão, atualize a seção 0 do `docs/PLANO.md` (situação atual): é por ela que a próxima sessão começa.
 4. **O LLM nunca escreve números** (regra de ouro). Acima/abaixo/em linha é calculado por código.
 5. **Nada de dados nem `.env` no Git.** Antes de todo commit, rode `git status` e leia a lista.
 6. **A demo não pode quebrar.** O modo sem IA (sem `RAIOX_IA_REAL`) é o plano B: precisa continuar funcionando.
-7. **`main` só por pull request**, com testes passando e 1 pessoa revisando. No PR, 2 linhas: o que foi feito com IA e o que você conferiu.
+7. **`main` só por pull request**, com o CI verde e 1 pessoa revisando. No PR, 2 linhas: o que foi feito com IA e o que você conferiu.
+8. **Git:** uma branch curta por sessão, a partir da `main` atualizada, com nome `pessoa-tarefa` (ex.: `marcos-porta-dados`).
+   Para trazer a `main`, use `git merge main`. Nunca `rebase`, `push --force` nem commit direto na `main`.
 
 ## Como responder ao time (iniciantes)
 - Português simples. Explique o porquê de cada mudança, não só o quê.
@@ -72,6 +79,7 @@ Caminhos: todo código que usa `data/` ou `docs/` aponta para a **raiz** do repo
 - Passos pequenos, um commit por passo.
 
 ## Como rodar (sempre a partir da raiz do repositório)
+Lista completa, com o que deve aparecer: `aprender/COMANDOS.md`.
 - Ambiente: `python -m venv .venv` e `pip install -r requirements.txt`. No Mac do Eduardo, os atalhos usam `~/bootcamp` se a `.venv` não existir.
 - Testes: `python -m pytest -q` (não chamam a API).
 - Módulos: `python -m raiox.ia ... --sem-ia`, `python -m raiox.segmentos`, `python -m raiox.checagem --teste`.

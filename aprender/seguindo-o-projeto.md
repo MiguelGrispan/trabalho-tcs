@@ -1,6 +1,7 @@
 # Seguindo o projeto: o que falta, de quem é e como provar
 
-Estado em **26/10/2026**. Escrito pelo Claude Code a pedido do Eduardo, comparando o repositório com o
+Estado em **26/10/2026**. O status de cada requisito agora fica no [REQUISITOS.md](../docs/REQUISITOS.md) e as datas no
+[PLANO.md](../docs/PLANO.md); onde este arquivo divergir deles, valem eles. Escrito pelo Claude Code a pedido do Eduardo, comparando o repositório com o
 guia oficial do projeto final. Para entender os conceitos antes, leia [entenda-o-projeto.md](entenda-o-projeto.md).
 
 Legenda: ✅ feito · 🟡 em parte · ⬜ falta. Cada afirmação tem uma **prova**: um comando que você roda na pasta
@@ -29,26 +30,7 @@ do repositório e vê o mesmo resultado. Se não bater, este texto está errado 
 
 ## 1. Resumo: o guia × o projeto
 
-| Requisito do guia | Status | Prova (comando ou arquivo) | Dono |
-|---|---|---|---|
-| BPMN 2.0 | ⬜ | nenhum `.bpmn` em nenhuma branch: comando A na seção 6 | Marcos |
-| Pandas: limpeza, nulos, estruturação | 🟡 código existe, mas ainda não conversa com o resto (seção 2, item 1) | `scripts/carregar_dfp.py`, `scripts/indicadores.py` | Marcos |
-| SQL | 🟡 o código que cria o banco e a busca existem; a busca devolve o tipo errado (item 2) | `raiox/dados.py`, `buscar_empresas` | Marcos |
-| Visualização explicativa | 🟡 gráfico da tela e silhueta; falta a análise exploratória (EDA) | nenhum `.ipynb` (comando A) | Marcos, Eduardo |
-| Modelo de ML | ✅ com dados falsos · ⬜ com dados reais | `python -m pytest -q -k segmentar` | Eduardo |
-| GenAI (prompt, LangChain, API) | ✅ | `raiox/ia.py`: `REGRAS`, `_chain()`, `validar_e_preencher()` | Eduardo |
-| Interface funcional | 🟡 funciona com dados falsos | `cd app && streamlit run streamlit_app.py` | Miguel |
-| Boas práticas e agentic coding | 🟡 testes, contratos, regras de IA; falta a seção "Como usamos IA" no README | `tests/`, `REGRAS-IA.md`, `CLAUDE.md` | todos |
-| Terraform ou contêiner | ⬜ | nenhum `Dockerfile` nem `.tf` (comando A) | Miguel |
-| Governança e ética | 🟡 o desenho existe (validador, auditoria só aponta); falta o texto | `REGRAS-IA.md` seção 6 | Náthally, todos |
-| ROI e avaliação (C4) | ⬜ `avaliar.py` e CSVs não existem | `ls avaliacao/` mostra só o README | Náthally, Eduardo |
-| Entregável: README | 🟡 tem arquitetura e como rodar; faltam Docker/Terraform e "Como usamos IA" | `README.md` | todos |
-| Entregável: PDF (BPMN, justificativa, ética) | ⬜ | — | Marcos monta |
-| Entregável: deck | ⬜ | — | Náthally |
-| Vídeo de backup da demo | ⬜ | — | Miguel |
-
-**Em uma frase:** o "cérebro" (IA + ML) e a tela funcionam com dados falsos; o que falta é **ligar os dados reais**,
-**empacotar** (Docker/Terraform) e **produzir os entregáveis** (BPMN, EDA, avaliação, PDF, deck, vídeo).
+Mudou para [REQUISITOS.md](../docs/REQUISITOS.md), que é atualizado a cada PR. Quem faz o quê e quando está no [PLANO.md](../docs/PLANO.md).
 
 ---
 
@@ -177,7 +159,7 @@ de que a IA não escreve números; `segmentar()` (log da receita, cortar extremo
 ### Miguel (tela e infraestrutura)
 **Fazer, em ordem:**
 1. Revisar e juntar o PR `fundacao` na `main` (você é o dono do repositório).
-2. `Dockerfile` + `.dockerignore` (fora da imagem: `.env`, `data/`, `.git`, `tests/`, `docs/`, `atalhos/`).
+2. `Dockerfile` + `.dockerignore` (fora da imagem: `.env`, `data/`, `.git`, `tests/`, `docs/`, `aprender/`).
 3. `infra/` com Terraform (provider Docker): imagem, contêiner, porta 8501, `data/` montada, chave como variável `sensitive`.
    O `.gitignore` já tira do Git o estado do Terraform (`*.tfstate`), que pode guardar a chave.
 4. **ter 03/11:** ligar os dados reais na tela (item 5). Sugestão: trocar a constante por uma variável de ambiente, para o Terraform escolher.
@@ -244,13 +226,4 @@ Se algum resultado for diferente, o projeto mudou depois de 26/10 (ótimo, atual
 
 ## 7. Datas
 
-| Data | Marco |
-|---|---|
-| qua 28/10 | Eduardo manda 3 raio-x reais para a Náthally |
-| dom 01/11 | Marcos entrega `indicadores.csv` e `raiox/dados.py` |
-| ter 03/11 | `raiox/dados.py`, `raiox/ia.py`, tela e infra congelados na interface |
-| sex 06/11 | demo de ponta a ponta *(plano do Eduardo)* |
-| ter 10/11 | código congelado *(plano do Eduardo)* |
-| qui 12/11 | todos mandam à Náthally o conteúdo dos seus slides |
-| sex 13/11 | avaliação final, deck, PDF e vídeo *(plano do Eduardo)* |
-| banca − 48 h | entrega do repositório, PDF e deck (guia) |
+Mudaram para o [PLANO.md](../docs/PLANO.md) (calendário na seção 3 e pontos de integração na seção 5).

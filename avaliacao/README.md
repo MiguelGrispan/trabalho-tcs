@@ -13,7 +13,7 @@ Fluxo: Náthally ⇄ Eduardo → Marcos. O formato oficial está em `contratos.m
 | arquivo | quem escreve | colunas |
 |---|---|---|
 | regras_prompt.md | Náthally | texto das regras da instrução |
-| casos_avaliacao.csv | Náthally | caso_id, cd_cvm, produto, objetivo |
+| casos_avaliacao.csv | Náthally | caso_id, cd_cvm, empresa, produto, objetivo |
 | tempo_manual.csv | Náthally | empresa, minutos, fontes |
 | resultados.csv | Eduardo (`avaliar.py`) | caso_id, raio_x_json, n_removidos, tokens_entrada, tokens_saida, custo_usd, tempo_s |
 | revisao.csv | Náthally | caso_id, item, comparacao_certa, ligada_ao_produto, clara, utilidade |

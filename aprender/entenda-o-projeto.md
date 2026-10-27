@@ -122,7 +122,7 @@ tests/          os testes automáticos
 falsos/         tabela de 30 empresas inventadas + versões falsas de C1 e C3
 docs/           estes textos e os gráficos (docs/graficos/)
 infra/          Terraform (vazio por enquanto)  .............................. Miguel
-atalhos/        dois cliques no Mac: configurar a chave, rodar testes, abrir a tela
+aprender/       guias, comandos, notebook e atalhos de dois cliques no Mac: configurar a chave, rodar testes, abrir a tela
 data/           gerado por cada um; fora do Git
 ```
 

@@ -9,7 +9,7 @@ Hoje a tela usa arquivos FALSOS (pasta falsos/) com o mesmo formato dos contrato
   C1 · buscar_empresas, registrar_consulta  → raiox/dados.py do Marcos
   C3 · preparar_raio_x                       → raiox/ia.py do Eduardo
 Quando o raiox/dados.py do Marcos estiver pronto, troque USAR_DADOS_FALSOS para False.
-Para usar a IA de verdade (raiox/ia.py do Eduardo), rode com RAIOX_IA_REAL=1 (o atalhos/rodar_tela_com_ia.command faz isso).
+Para usar a IA de verdade (raiox/ia.py do Eduardo), rode com RAIOX_IA_REAL=1 (o aprender/atalhos/rodar_tela_com_ia.command faz isso).
 """
 import os
 import sys

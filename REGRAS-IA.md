@@ -1,6 +1,7 @@
 # Regras de uso de IA no projeto
 
-Valem para os quatro (Marcos, Eduardo, Náthally, Miguel) e para qualquer ferramenta: ChatGPT, Gemini, Claude, Claude Code, Copilot.
+Valem para os quatro (Marcos, Eduardo, Náthally, Miguel) e para qualquer ferramenta: ChatGPT, Gemini, Claude, Claude Code, Codex, Copilot.
+O Claude Code lê o `CLAUDE.md` e o Codex lê o `AGENTS.md`; os dois apontam para este arquivo.
 A banca avalia como usamos IA para programar e a governança (segurança de dados, alucinação, uso responsável). Estas regras são a nossa resposta.
 
 ## 1. O que nunca vai para uma IA
@@ -37,10 +38,18 @@ Antes de todo commit, rode `git status` e leia a lista. Se aparecer algo que nã
 
 ## 5. Git do time
 
-- Cada um trabalha na sua branch (`eduardo`, `tratamento_dados`, ...).
+- Uma branch curta por tarefa (uma sessão do `docs/PLANO.md`), sempre a partir da `main` atualizada:
+  `git switch main`, `git pull`, `git switch -c pessoa-tarefa` (ex.: `marcos-porta-dados`).
+  Use hífen, não barra: o Git não deixa criar `eduardo/...` enquanto existir a branch `eduardo`.
 - Faça commit antes de pedir uma mudança grande à IA: se der errado, dá para voltar.
 - Commits pequenos, com mensagem dizendo o que mudou.
-- Na `main` só entra por pull request, com os testes passando e 1 pessoa do grupo revisando.
+- Para trazer a `main` para a sua branch: `git switch main`, `git pull`, `git switch pessoa-tarefa`, `git merge main` e rode os testes.
+  Deu conflito? `git merge --abort` e fale com o dono do arquivo.
+- Nunca `rebase` nem `push --force`: reescrevem a história e podem apagar o trabalho de um colega.
+- Na `main` só entra por pull request, com os testes passando (o CI roda sozinho no PR) e 1 pessoa do grupo revisando.
+  Depois da aprovação, quem abriu o PR faz o merge (tipo "merge commit").
+- Quem não programa com IA pode subir arquivos pelo navegador: no GitHub, "Add file → Upload files",
+  escolha "Create a new branch" e abra o PR.
 
 ## 6. Regras do produto (não negociáveis)
 
@@ -52,7 +61,7 @@ Antes de todo commit, rode `git status` e leia a lista. Se aparecer algo que nã
 
 ## 7. Registro para a banca
 
-No pull request, escreva em 2 linhas o que foi gerado com IA e o que você revisou e testou. Isso vira a seção "Como usamos IA para programar" do README.
+No pull request, escreva em 2 linhas o que foi gerado com IA e o que você revisou e testou (o modelo de PR já traz os campos). Isso vira a seção "Como usamos IA para programar" do README.
 
 ## Checklist do pull request
 
