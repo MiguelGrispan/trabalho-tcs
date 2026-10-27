@@ -61,6 +61,8 @@ Caminhos: todo código que usa `data/` ou `docs/` aponta para a **raiz** do repo
 1. **Não mexa em pasta de outro dono.** Precisa de mudança lá? Peça ao dono ou combine antes no grupo.
 2. **Contrato antes de código.** Mudou um formato entre partes? Primeiro o `contratos.md`, avisando quem recebe; depois o código.
 3. **Testes antes de dizer "pronto".** Rode `python -m pytest -q` e mostre o resultado. Mudou a tela? Abra a tela também.
+   Toda mudança de comportamento vem com teste novo ou atualizado no mesmo PR (lista dos testes: `docs/PLANO.md`, seção 4).
+   Ao terminar uma sessão, atualize a seção 0 do `docs/PLANO.md` (situação atual): é por ela que a próxima sessão começa.
 4. **O LLM nunca escreve números** (regra de ouro). Acima/abaixo/em linha é calculado por código.
 5. **Nada de dados nem `.env` no Git.** Antes de todo commit, rode `git status` e leia a lista.
 6. **A demo não pode quebrar.** O modo sem IA (sem `RAIOX_IA_REAL`) é o plano B: precisa continuar funcionando.
