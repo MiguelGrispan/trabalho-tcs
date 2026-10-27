@@ -1,0 +1,6 @@
+cd_cvm,indicador,valor_sistema,valor_ri,diferenca_pct,fonte,observacoes
+5410,receita,40804110000,40804110000,0.00,DFP 2025 WEG - DRE consolidada p.15 - ri.weg.net,conta 3.01 = Receita líquida
+5410,ebit,7998741000,7998741000,0.00,DFP 2025 WEG - DRE consolidada p.15 - ri.weg.net,conta 3.05 = Lucro antes do resultado financeiro e impostos
+5410,lucro_liquido,6775958000,6775958000,0.00,DFP 2025 WEG - DRE consolidada p.15 - ri.weg.net,conta 3.11 = Lucro líquido do exercício total (inclui R$ 399.739 mil de não controladores)
+5410,ativo_total,42645030000,42645030000,0.00,DFP 2025 WEG - Balanço consolidado p.13 - ri.weg.net,conta 1 = Total do ativo
+5410,patrimonio_liquido,18553364000,18553364000,0.00,DFP 2025 WEG - Balanço consolidado p.14 - ri.weg.net,conta 2.03 = Total do patrimônio líquido (inclui não controladores)
