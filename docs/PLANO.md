@@ -23,7 +23,29 @@ comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguin
 
 ## 0. Situação atual (atualize a cada sessão)
 
-**Em 27/10, noite:**
+**Em 27/10, noite** (fim da sessão do Eduardo com o Claude Code).
+
+**Retomando numa sessão nova do Claude Code?**
+1. Cole: "Leia o CLAUDE.md e a seção 0 do docs/PLANO.md. Confira o estado real com `gh pr list --state all` e
+   `git log --oneline -15`. Depois faça a sessão ED4."
+2. Antes de mexer em qualquer coisa, a sessão deve dizer o que mudou desde esta nota.
+
+**Progresso estimado** (Eduardo, 27/10):
+
+| parte | feito | falta |
+|---|---|---|
+| núcleo do produto: dados, ML, IA, validador, avaliação | ~70% | MA2, ED4, ED3, ED7 |
+| tela e infraestrutura | ~25% | MG2 a MG4 (o Docker ainda não começou) |
+| entregáveis: BPMN, EDA, PDF, deck, vídeo, ensaios | ~10% | quase tudo, mas não depende de código novo |
+| **total** | **~40%** | com 7 de 26 dias usados (~27%): estamos à frente no código e atrás na infra |
+
+**Folga:** o plano termina na qua 11/11. Sobram 4 dias de reserva (12 a 15/11) antes da entrega de seg 16/11, e mais 2 até a banca.
+Regra: atraso come a folga; **nunca** se acrescenta escopo. Se a folga acabar, use a lista de cortes da seção 7.
+
+**CI:** verde em todas as rodadas do #3 (o teste do notebook roda no CI desde 27/10).
+
+**Na máquina do Eduardo:** a `data/` tem os dados reais já convertidos. Por isso, na branch `main` (e no #3),
+o teste `test_preparar_raio_x_segue_o_contrato_c3` falha **só lá**. É o erro que o #6 conserta: na branch dele, dá 19 passed.
 
 | PR | o que traz | quem revisa | ordem de merge |
 |---|---|---|---|
@@ -43,7 +65,7 @@ os guias e o notebook `passo_a_passo.ipynb`, que segue uma empresa do começo ao
 - **Carga:** os scripts da branch do #4 rodaram em 22 s e geraram 595 empresas, todas com DFP 2025.
 - **Conferência:** a receita da WEG bate com a conferência do Marcos.
 - **Formato:** o `indicadores.csv` saiu com `;` e vírgula decimal. O Eduardo converteu só na `data/` dele, e com isso `tests/test_ponta_a_ponta.py` passa.
-- **Raio-x:** 3 gerados com IA (Camil, Magazine Luiza, WEG), sem nenhum item removido pelo validador, por US$ 0,0026 no total. Estão em `data/ed1/` (fora do Git) e já foram enviados à Náthally.
+- **Raio-x:** 3 gerados com IA (Camil, Magazine Luiza, WEG), sem nenhum item removido pelo validador, por US$ 0,0026 no total. Estão em `data/ed1/` (fora do Git, só na máquina do Eduardo). **O Eduardo ainda precisa mandar** o `data/ed1/raiox_para_nathally.md` à Náthally.
 - **Problema achado (ED4):**
   - com os dados reais, o K-means escolhe k = 4 com silhueta 0,77, mas um grupo tem 567 das 595 empresas e os outros têm 9, 9 e 10;
   - a silhueta alta só mede a separação das empresas extremas (margens de −10.000%);
@@ -54,7 +76,9 @@ os guias e o notebook `passo_a_passo.ipynb`, que segue uma empresa do começo ao
 - **Miguel:** MG1 (revisar e mesclar o #3; configurar o GitHub).
 - **Marcos:** revisar o #4 e começar a MA2. Na MA3, decidir o corte de receita mínima junto com o Eduardo.
 - **Náthally:** revisar o #5 e escrever as regras v2, usando as notas no fim de `data/ed1/raiox_para_nathally.md`.
-- **Eduardo:** ED4 (consertar a segmentação), adiantado para qua 28/10.
+- **Eduardo:**
+  1. mandar a mensagem ao grupo e o arquivo dos raio-x à Náthally;
+  2. ED4 (consertar a segmentação), adiantado para qua 28/10, **na própria branch do #6** (`git switch eduardo-ia-testes`), porque ele mexe no mesmo `raiox/segmentos.py`. Se o #6 já tiver entrado, faça uma branch nova a partir da `main`.
 
 **Decisões em aberto:**
 - data e horário da banca;
@@ -146,7 +170,7 @@ Todos entram no PR #3, menos os da última linha.
 | ED1 | 27/10 | ✅ `data/ed1/` | 3 raio-x reais para a Náthally: roda os scripts do Marcos (branch do #4) e converte o CSV só na sua `data/` | nada no Git | Manual | 3 empresas de setores diferentes, `removidos` conferido, enviado | nenhum |
 | ED2 | 27/10 | ✅ PR #6 | testes sem depender de `data/` (`RAIOX_DADOS`); "balanço consolidado" | `raiox/`, `tests/` | — | 17 passam | `eduardo-ia-testes` |
 | ED3 | sex 30/10 | — | regras v2 da Náthally no `REGRAS` | `raiox/ia.py` | Manual | 3 chamadas reais sem item removido por dígito | PR (Náthally lê) |
-| ED4 | qua 28/10 | 🟡 código no #6; problema achado no ED1 | consertar a segmentação real: receita mínima de R$ 10 mi (combinar com o Marcos) e corte dos extremos em 5/95 em `matriz()`; só aceitar o k cujo menor grupo tenha pelo menos 5% das empresas; teste novo para isso; olhar 2 grupos; explicar `matriz()` e o PCA. Os gráficos de antes estão em `data/ed1/*_antes_ed4.png` e servem para a banca ("a silhueta alta enganava") | `raiox/segmentos.py`, `tests/`, `docs/graficos/*.png`, REQUISITOS (k, silhueta) | Plan | nenhum grupo com menos de 5% das empresas; "parecidas" de 3 empresas conhecidas fazem sentido; 2 PNG reais | PR |
+| ED4 | qua 28/10 | 🟡 código no #6; problema achado no ED1 | na branch do #6 (`eduardo-ia-testes`), se ele ainda não entrou: consertar a segmentação real: receita mínima de R$ 10 mi (combinar com o Marcos) e corte dos extremos em 5/95 em `matriz()`; só aceitar o k cujo menor grupo tenha pelo menos 5% das empresas; teste novo para isso; olhar 2 grupos; explicar `matriz()` e o PCA. Os gráficos de antes estão em `data/ed1/*_antes_ed4.png` e servem para a banca ("a silhueta alta enganava") | `raiox/segmentos.py`, `tests/`, `docs/graficos/*.png`, REQUISITOS (k, silhueta) | Plan | nenhum grupo com menos de 5% das empresas; "parecidas" de 3 empresas conhecidas fazem sentido; 2 PNG reais | PR |
 | ED5 | 27/10 | ✅ PR #6 | `avaliacao/avaliar.py` (C4) | `avaliacao/`, `tests/` | — | `python -m avaliacao.avaliar` grava o C4 | `eduardo-ia-testes` |
 | ED6 | 27/10 | ✅ PR #6 | teste ponta a ponta (pula sem `data/`) | `tests/test_ponta_a_ponta.py` | — | pula no CI; roda local com dados reais | `eduardo-ia-testes` |
 | ED7 | dom 01/11 | — | `python -m avaliacao.avaliar --com-ia` nos 10 casos (avisar o grupo) | `avaliacao/resultados.csv` | Manual | 10 linhas; custo anotado (< US$ 0,05) | PR |

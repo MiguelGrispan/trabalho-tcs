@@ -7,6 +7,8 @@ Náthally (produto e métricas, deck), Miguel (tela e infraestrutura). Banca pre
 Antes de qualquer tarefa, leia `docs/PLANO.md` (sessões, datas e donos; a pessoa diz qual sessão está fazendo, ex.: "MA2")
 e `docs/REQUISITOS.md` (o que o guia exige e o status). O que está quebrado, com prova: `aprender/seguindo-o-projeto.md`.
 Material para quem está aprendendo (comandos, guias, notebook passo a passo, atalhos): `aprender/`. Quem usa Codex: o `AGENTS.md` aponta para este arquivo.
+**Sessão nova?** Comece pela seção 0 do `docs/PLANO.md` (situação atual). Depois confira o estado real com
+`gh pr list --state all` e `git log --oneline -15`, porque a nota pode estar velha.
 
 ## O produto
 O vendedor escolhe uma companhia aberta da CVM, informa o produto e o objetivo da reunião e recebe:
@@ -77,6 +79,7 @@ Caminhos: todo código que usa `data/` ou `docs/` aponta para a **raiz** do repo
 - Passos pequenos, um commit por passo.
 
 ## Como rodar (sempre a partir da raiz do repositório)
+Lista completa, com o que deve aparecer: `aprender/COMANDOS.md`.
 - Ambiente: `python -m venv .venv` e `pip install -r requirements.txt`. No Mac do Eduardo, os atalhos usam `~/bootcamp` se a `.venv` não existir.
 - Testes: `python -m pytest -q` (não chamam a API).
 - Módulos: `python -m raiox.ia ... --sem-ia`, `python -m raiox.segmentos`, `python -m raiox.checagem --teste`.
