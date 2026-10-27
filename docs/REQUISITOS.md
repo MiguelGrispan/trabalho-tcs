@@ -55,7 +55,7 @@ Prova: `git rev-list --left-right --count origin/main...origin/<branch>` e `git 
 | Formato do CSV (C2) | `indicadores.csv` e `contas.csv` são gravados com `;` e lidos com `,` → 1 coluna só | `grep -n to_csv scripts/*.py` e `grep -n read_csv raiox/segmentos.py raiox/checagem.py` |
 | `cd_cvm` como texto (C1/C2) | o contrato pede int | `grep -n "str(codigo)" raiox/dados.py` |
 | Casos de avaliação (C4) | sem `cd_cvm`, o `montar()` não acha a empresa | `raiox/ia.py`, função `montar()` |
-| Regras v1 × prompt v3 | 7 diferenças (marcadores com chave simples, "em linha", 2–4 × 2–3 frases, entre outras) | `docs/seguindo-o-projeto.md`, item 7 |
+| Regras v1 × prompt v3 | 7 diferenças (marcadores com chave simples, "em linha", 2–4 × 2–3 frases, entre outras) | `aprender/seguindo-o-projeto.md`, item 7 |
 | Teste do C3 | usa a empresa falsa 90001 e quebra com dados reais | `grep -n 90001 tests/test_raio_x.py` |
 | Dependências sem versão | um `pip install` novo pode trazer outra versão do LangChain | `requirements.txt` antes do PR de padronização |
 | Tela sem plano B | se a API falha, mostra erro e para | `app/streamlit_app.py`, bloco `except` do botão "Gerar" |

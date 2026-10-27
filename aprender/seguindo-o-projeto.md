@@ -1,7 +1,7 @@
 # Seguindo o projeto: o que falta, de quem é e como provar
 
-Estado em **26/10/2026**. O status de cada requisito agora fica no [REQUISITOS.md](REQUISITOS.md) e as datas no
-[PLANO.md](PLANO.md); onde este arquivo divergir deles, valem eles. Escrito pelo Claude Code a pedido do Eduardo, comparando o repositório com o
+Estado em **26/10/2026**. O status de cada requisito agora fica no [REQUISITOS.md](../docs/REQUISITOS.md) e as datas no
+[PLANO.md](../docs/PLANO.md); onde este arquivo divergir deles, valem eles. Escrito pelo Claude Code a pedido do Eduardo, comparando o repositório com o
 guia oficial do projeto final. Para entender os conceitos antes, leia [entenda-o-projeto.md](entenda-o-projeto.md).
 
 Legenda: ✅ feito · 🟡 em parte · ⬜ falta. Cada afirmação tem uma **prova**: um comando que você roda na pasta
@@ -30,7 +30,7 @@ do repositório e vê o mesmo resultado. Se não bater, este texto está errado 
 
 ## 1. Resumo: o guia × o projeto
 
-Mudou para [REQUISITOS.md](REQUISITOS.md), que é atualizado a cada PR. Quem faz o quê e quando está no [PLANO.md](PLANO.md).
+Mudou para [REQUISITOS.md](../docs/REQUISITOS.md), que é atualizado a cada PR. Quem faz o quê e quando está no [PLANO.md](../docs/PLANO.md).
 
 ---
 
@@ -159,7 +159,7 @@ de que a IA não escreve números; `segmentar()` (log da receita, cortar extremo
 ### Miguel (tela e infraestrutura)
 **Fazer, em ordem:**
 1. Revisar e juntar o PR `fundacao` na `main` (você é o dono do repositório).
-2. `Dockerfile` + `.dockerignore` (fora da imagem: `.env`, `data/`, `.git`, `tests/`, `docs/`, `atalhos/`).
+2. `Dockerfile` + `.dockerignore` (fora da imagem: `.env`, `data/`, `.git`, `tests/`, `docs/`, `aprender/`).
 3. `infra/` com Terraform (provider Docker): imagem, contêiner, porta 8501, `data/` montada, chave como variável `sensitive`.
    O `.gitignore` já tira do Git o estado do Terraform (`*.tfstate`), que pode guardar a chave.
 4. **ter 03/11:** ligar os dados reais na tela (item 5). Sugestão: trocar a constante por uma variável de ambiente, para o Terraform escolher.
@@ -226,4 +226,4 @@ Se algum resultado for diferente, o projeto mudou depois de 26/10 (ótimo, atual
 
 ## 7. Datas
 
-Mudaram para o [PLANO.md](PLANO.md) (calendário na seção 3 e pontos de integração na seção 5).
+Mudaram para o [PLANO.md](../docs/PLANO.md) (calendário na seção 3 e pontos de integração na seção 5).

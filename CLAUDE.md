@@ -5,8 +5,8 @@ Náthally (produto e métricas, deck), Miguel (tela e infraestrutura). Banca pre
 (**data e horário a confirmar**; professores + especialistas da TCS). Os entregáveis vão **48 h antes**: seg 16/11.
 
 Antes de qualquer tarefa, leia `docs/PLANO.md` (sessões, datas e donos; a pessoa diz qual sessão está fazendo, ex.: "MA2")
-e `docs/REQUISITOS.md` (o que o guia exige e o status). O que está quebrado, com prova: `docs/seguindo-o-projeto.md`.
-Explicação para iniciantes: `docs/entenda-o-projeto.md`. Quem usa Codex: o `AGENTS.md` aponta para este arquivo.
+e `docs/REQUISITOS.md` (o que o guia exige e o status). O que está quebrado, com prova: `aprender/seguindo-o-projeto.md`.
+Material para quem está aprendendo (comandos, guias, notebook passo a passo, atalhos): `aprender/`. Quem usa Codex: o `AGENTS.md` aponta para este arquivo.
 
 ## O produto
 O vendedor escolhe uma companhia aberta da CVM, informa o produto e o objetivo da reunião e recebe:
@@ -53,7 +53,7 @@ protótipo funcional 20% · governança e ética 15% · comunicação e equipe 1
 | `avaliacao/*.csv`, `avaliacao/regras_prompt.md`, `docs/produto/` | Náthally |
 
 Pastas comuns (avise o grupo antes de mexer): `tests/`, `falsos/` (dados falsos no formato dos contratos;
-os falsos chamam o código real sem IA), `docs/`, `atalhos/` (`.command` do Mac), `contratos.md`, `README.md`.
+os falsos chamam o código real sem IA), `docs/`, `aprender/` (guias e atalhos `.command` do Mac; nada ali é usado pelo código), `contratos.md`, `README.md`.
 `data/`: dados da CVM e arquivos gerados; só o `.gitkeep` vai para o Git.
 Caminhos: todo código que usa `data/` ou `docs/` aponta para a **raiz** do repositório (`Path(__file__).resolve().parent.parent`).
 

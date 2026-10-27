@@ -4,7 +4,7 @@ Versão de **ter 27/10/2026, noite**. Meta: **feito, não perfeito**. O código 
 para entregar na **qua 11/11**, com folga até a entrega de seg 16/11. Se a banca cair na semana de 09–15/11, já estamos prontos.
 
 A matriz do que o guia exige está em [REQUISITOS.md](REQUISITOS.md). Os detalhes técnicos do que estava quebrado, com
-comandos de prova, estão em [seguindo-o-projeto.md](seguindo-o-projeto.md).
+comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguindo-o-projeto.md).
 
 **Como usar este plano:**
 - Cada linha das tabelas da seção 3 é uma sessão de trabalho, com um código (por exemplo, MA2).
@@ -183,7 +183,7 @@ Para subir um arquivo:
 
 | # | data | status | objetivo | altera | pronto quando |
 |---|---|---|---|---|---|
-| NA1 | qua 28–qui 29/10 | 🟡 porte no PR #5 | revisar o #5; regras v2 alinhadas ao código (`seguindo-o-projeto.md`, item 7) | `avaliacao/regras_prompt.md` | PR aberto |
+| NA1 | qua 28–qui 29/10 | 🟡 porte no PR #5 | revisar o #5; regras v2 alinhadas ao código (`aprender/seguindo-o-projeto.md`, item 7) | `avaliacao/regras_prompt.md` | PR aberto |
 | NA2 | sex 30/10 | — | preencher o `cd_cvm` dos 10 casos (busca da tela ou `indicadores.csv` do Drive; WEG = 5410) | `avaliacao/casos_avaliacao.csv` | `tests/test_ponta_a_ponta.py` passa (o Eduardo roda) |
 | NA3 | sáb 31/10–qui 05/11 | — | `tempo_manual.csv` (3 empresas), 3 testes com usuários (sem nome), conta do ROI | `avaliacao/` | 3 testes feitos; ROI com números medidos |
 | NA4 | qua 04/11 | — | `revisao.csv` sobre o `resultados.csv`; métricas | `avaliacao/revisao.csv`, `docs/produto/metricas.md` | % de comparações certas, % de perguntas ligadas ao produto, utilidade, custo, tempo |
