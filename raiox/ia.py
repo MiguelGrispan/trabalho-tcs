@@ -4,7 +4,8 @@ ia.py · Eduardo · contrato C3 (passo 6 do fluxo)
     preparar_raio_x(cd_cvm, produto, objetivo) -> dict no formato do contrato C3
 
 O LLM escreve o texto usando marcadores como {margem_ebit}; nunca escreve números.
-O validador remove qualquer trecho com dígito, e o código troca os marcadores pelos valores da tabela.
+O validador remove qualquer trecho com número fora de marcador (dígito, ½, ² ou por extenso, como "dez por cento"),
+e o código troca os marcadores pelos valores da tabela.
 
 Rodar um exemplo (na raiz do repositório):
     python -m raiox.ia --cvm 90001 --produto "software de gestão de frota" --objetivo "primeira conversa com operações"
@@ -14,6 +15,7 @@ import argparse
 import json
 import re
 import time
+import unicodedata
 from functools import lru_cache
 
 import pandas as pd
@@ -31,10 +33,12 @@ INDICADORES = {
                        "DRE {d} · conta 3.01 ({ano} e {ano2})"),
     "margem_ebit":    ("Margem EBIT", "margem EBIT", "pct", "DRE {d} · contas 3.05 ÷ 3.01"),
     "margem_liquida": ("Margem líquida", "margem líquida", "pct", "DRE {d} · contas 3.11 ÷ 3.01"),
-    "endividamento":  ("Endividamento", "endividamento", "pct", "balanço {d} · contas 2.03 e 1"),
-    "ativo_total":    ("Ativo total", "ativo total", "dinheiro", "balanço {d} · conta 1"),
+    "endividamento":  ("Endividamento", "endividamento", "pct", "balanço {b} · contas 2.03 e 1"),
+    "ativo_total":    ("Ativo total", "ativo total", "dinheiro", "balanço {b} · conta 1"),
 }
+# {d} concorda com "DRE" (consolidada) e {b} com "balanço" (consolidado).
 # Os nomes não têm dígitos de propósito: o LLM copia o nome, e o validador derrubaria a frase.
+# O "dois" de "crescimento em dois anos" é a exceção: o validador ignora os nomes dos indicadores.
 
 
 # ------------------------------------------------------------------ dados
@@ -67,7 +71,8 @@ def montar(seg: pd.DataFrame, cd_cvm: int, produto: str, objetivo: str):
         raise ValueError(f"Empresa {cd_cvm} não está na tabela de indicadores.")
     emp = linhas.iloc[0]
     do_grupo = seg[seg["grupo"] == emp["grupo"]]
-    demonstracao = "individual" if str(emp.get("origem", "con")) == "ind" else "consolidada"
+    individual = str(emp.get("origem", "con")) == "ind"
+    dre, balanco = ("individual", "individual") if individual else ("consolidada", "consolidado")
     ano = int(emp["ano"])
 
     indicadores_c3, para_llm = [], {}
@@ -82,7 +87,7 @@ def montar(seg: pd.DataFrame, cd_cvm: int, produto: str, objetivo: str):
             posicao = "acima" if v > med else "abaixo"
         indicadores_c3.append({
             "id": i, "nome": nome, "valor": fmt(v, tipo), "grupo": fmt(med, tipo), "posicao": posicao,
-            "fonte": f"DFP {ano} · " + fonte.format(d=demonstracao, ano=ano, ano2=ano - 2),
+            "fonte": f"DFP {ano} · " + fonte.format(d=dre, b=balanco, ano=ano, ano2=ano - 2),
             "valor_num": num(v, tipo), "grupo_num": num(med, tipo),
             "unidade": "R$ milhões" if tipo == "dinheiro" else "%"})
         para_llm[i] = {"nome": nome_no_texto, "valor": fmt(v, tipo), "grupo": fmt(med, tipo), "posicao": posicao}
@@ -178,15 +183,33 @@ def texto_sem_ia(entrada: dict) -> RaioX:
 
 # ------------------------------------------------------------------ validar e preencher
 MARCADOR = re.compile(r"\{([a-z0-9_]+)\}")
+# Números por extenso e palavras de quantidade ("o dobro", "metade"), como na regra 1 da Náthally (v1).
+# Ficam de fora "um/uma" e os ordinais ("primeira reunião", "segundo o grupo"): aparecem em texto sem número.
+POR_EXTENSO = re.compile(
+    r"\b(zero|dois|duas|tr[êe]s|quatro|cinco|seis|sete|oito|nove|dez|onze|doze|treze|catorze|quatorze|quinze"
+    r"|dez[ea]sseis|dez[ea]ssete|dezoito|dez[ea]nove|vinte|trinta|quarenta|cinquenta|sessenta|setenta|oitenta|noventa"
+    r"|cem|cento|(?:duz|trez|quatroc|quinh|seisc|setec|oitoc|novec)ent[oa]s|mil|milhão|milhões|bilhão|bilhões"
+    r"|trilhão|trilhões|dezenas?|centenas?|milhar|milhares|dúzias?|dobro|triplo|metade|terços?|por cento)\b",
+    re.IGNORECASE)
+NOMES_DOS_INDICADORES = re.compile("|".join(re.escape(v[1]) for v in INDICADORES.values()), re.IGNORECASE)
 
 
 def checar(texto: str, permitidos: set[str]):
     desconhecidos = [m for m in MARCADOR.findall(texto) if m not in permitidos]
     if desconhecidos:
         return f"marcador desconhecido: {desconhecidos}"
-    if re.search(r"\d", MARCADOR.sub("", texto)):
+    sem_marcadores = MARCADOR.sub("", texto)
+    # Categoria N do Unicode: algarismos (também os de outras escritas, como ２) e símbolos como ½, ² e Ⅲ.
+    if any(unicodedata.category(c).startswith("N") for c in sem_marcadores):
         return "dígito fora de marcador"
+    if (achado := POR_EXTENSO.search(NOMES_DOS_INDICADORES.sub("", sem_marcadores))):
+        return f"número por extenso: {achado.group(0)}"
     return None
+
+
+def tem_letra(nome: str) -> bool:
+    """True se o nome tem letra fora de número por extenso: "ERP 360" sim; "10%" e "dez" não."""
+    return any(c.isalpha() for c in POR_EXTENSO.sub("", nome))
 
 
 def validar_e_preencher(rx: RaioX, valores: dict) -> dict:
@@ -198,8 +221,9 @@ def validar_e_preencher(rx: RaioX, valores: dict) -> dict:
     def normalizar(t: str) -> str:
         # Se o LLM escreveu o nome da empresa, o produto ou o setor por extenso, volta para o marcador.
         # Assim um nome com dígito (ex.: "3R PETROLEUM") não derruba a frase no validador.
+        # Só vale para nome com letra: um produto "10%" faria "margem de 10%" passar escondido como {produto}.
         for chave in ("empresa", "produto", "setor"):
-            if valores.get(chave):
+            if valores.get(chave) and tem_letra(valores[chave]):
                 t = t.replace(valores[chave], "{" + chave + "}")
         return t
 

@@ -5,10 +5,13 @@ Lê a tabela de indicadores (contrato C2), separa as empresas em grupos de perfi
 e acha as 5 empresas mais parecidas com cada uma (vizinhos mais próximos).
 
 Rodar (na raiz do repositório):
-    python -m raiox.segmentos      → gera data/segmentos.csv e docs/graficos/silhueta.png
+    python -m raiox.segmentos      → gera data/segmentos.csv, docs/graficos/silhueta.png e docs/graficos/grupos.png
 
 Entrada: data/indicadores.csv (vem do Marcos). Enquanto ele não existir, usa falsos/tabela_falsa.csv.
+RAIOX_DADOS=falsos força a tabela falsa mesmo com os dados reais presentes (testes e demo de reserva);
+nesse caso o agrupamento é feito na memória e nada é gravado em data/.
 """
+import os
 from pathlib import Path
 
 import numpy as np
@@ -23,6 +26,7 @@ ARQ_INDICADORES = PASTA / "data" / "indicadores.csv"
 ARQ_FALSO = PASTA / "falsos" / "tabela_falsa.csv"
 ARQ_SEGMENTOS = PASTA / "data" / "segmentos.csv"
 ARQ_SILHUETA = PASTA / "docs" / "graficos" / "silhueta.png"
+ARQ_GRUPOS = PASTA / "docs" / "graficos" / "grupos.png"
 
 SEMENTE = 42
 K_TESTADOS = range(3, 9)
@@ -31,21 +35,31 @@ VARIAVEIS = ["log_receita", "cresc_2a", "margem_ebit", "margem_liquida", "endivi
 INDICADORES_NUM = ["receita", "cresc_2a", "margem_ebit", "margem_liquida", "endividamento", "ativo_total"]
 
 
+def usando_falsos() -> bool:
+    """True quando RAIOX_DADOS=falsos ou quando data/indicadores.csv ainda não existe."""
+    return os.getenv("RAIOX_DADOS", "").strip().lower() == "falsos" or not ARQ_INDICADORES.exists()
+
+
 def carregar_indicadores() -> tuple[pd.DataFrame, bool]:
     """Devolve (tabela, usando_dados_falsos)."""
-    if ARQ_INDICADORES.exists():
-        return pd.read_csv(ARQ_INDICADORES), False
-    return pd.read_csv(ARQ_FALSO), True
+    if usando_falsos():
+        return pd.read_csv(ARQ_FALSO), True
+    return pd.read_csv(ARQ_INDICADORES), False
 
 
-def segmentar(df: pd.DataFrame):
-    """Devolve (tabela com grupo, percentis e parecidas; silhueta por k; k escolhido)."""
+def matriz(df: pd.DataFrame) -> np.ndarray:
+    """As 5 variáveis prontas para o modelo: log da receita, extremos cortados, nulos preenchidos, padronizadas."""
     # receita zero ou negativa não tem log: vira vazio e recebe a mediana logo abaixo
     X = df.assign(log_receita=np.log10(df["receita"].where(df["receita"] > 0)))[VARIAVEIS].copy()
     for c in VARIAVEIS:                                   # cortar extremos (percentis 1 e 99)
         X[c] = X[c].clip(X[c].quantile(0.01), X[c].quantile(0.99))
     X = X.fillna(X.median())                              # nulos: mediana, só para o modelo
-    Xs = StandardScaler().fit_transform(X)                # padronizar: todas as colunas na mesma régua
+    return StandardScaler().fit_transform(X)              # padronizar: todas as colunas na mesma régua
+
+
+def segmentar(df: pd.DataFrame):
+    """Devolve (tabela com grupo, percentis e parecidas; silhueta por k; k escolhido)."""
+    Xs = matriz(df)
 
     silhuetas = {}
     for k in K_TESTADOS:
@@ -73,9 +87,11 @@ def salvar(seg: pd.DataFrame) -> None:
 
 
 def carregar_segmentos(df: pd.DataFrame) -> pd.DataFrame:
-    """Junta indicadores + segmentos.csv. Refaz o agrupamento se o arquivo não existir ou estiver velho."""
-    origem = ARQ_INDICADORES if ARQ_INDICADORES.exists() else ARQ_FALSO
-    velho = (not ARQ_SEGMENTOS.exists()) or ARQ_SEGMENTOS.stat().st_mtime < origem.stat().st_mtime
+    """Junta indicadores + segmentos.csv. Refaz o agrupamento se o arquivo não existir ou estiver velho.
+    Com a tabela falsa, agrupa na memória: o data/segmentos.csv é só dos dados reais."""
+    if usando_falsos():
+        return segmentar(df)[0]
+    velho = (not ARQ_SEGMENTOS.exists()) or ARQ_SEGMENTOS.stat().st_mtime < ARQ_INDICADORES.stat().st_mtime
     if velho:
         seg, _, _ = segmentar(df)
         salvar(seg)
@@ -85,15 +101,38 @@ def carregar_segmentos(df: pd.DataFrame) -> pd.DataFrame:
     return df.merge(s, on="cd_cvm", how="inner")
 
 
-def grafico_silhueta(silhuetas: dict, k: int) -> None:
-    try:
-        import matplotlib
-        matplotlib.use("Agg")
-        import matplotlib.pyplot as plt
-    except ImportError:
-        print("matplotlib não instalado: gráfico da silhueta não gerado.")
-        return
-    ARQ_SILHUETA.parent.mkdir(parents=True, exist_ok=True)
+def _plt():
+    import matplotlib
+    matplotlib.use("Agg")                                 # grava em arquivo, sem abrir janela
+    import matplotlib.pyplot as plt
+    return plt
+
+
+def grafico_grupos(seg: pd.DataFrame, caminho: Path = ARQ_GRUPOS) -> None:
+    """Os grupos num gráfico 2D: as 5 variáveis resumidas em 2 eixos (PCA). Cada ponto é uma empresa."""
+    from sklearn.decomposition import PCA
+    pca = PCA(n_components=2, random_state=SEMENTE)
+    pontos = pca.fit_transform(matriz(seg))
+    plt = _plt()
+    caminho.parent.mkdir(parents=True, exist_ok=True)
+    fig, ax = plt.subplots(figsize=(6, 4.5))
+    for g in sorted(seg["grupo"].unique()):
+        dentro = (seg["grupo"] == g).to_numpy()
+        ax.scatter(pontos[dentro, 0], pontos[dentro, 1], s=18, alpha=0.75, label=f"grupo {g} ({dentro.sum()})")
+    v1, v2 = pca.explained_variance_ratio_ * 100
+    ax.set_xlabel(f"Eixo 1 ({v1:.0f}% da variação)")
+    ax.set_ylabel(f"Eixo 2 ({v2:.0f}% da variação)")
+    ax.set_title("Empresas parecidas ficam perto: grupos do K-means")
+    ax.legend(frameon=False, fontsize=8)
+    ax.spines[["top", "right"]].set_visible(False)
+    fig.tight_layout()
+    fig.savefig(caminho, dpi=150)
+    plt.close(fig)
+
+
+def grafico_silhueta(silhuetas: dict, k: int, caminho: Path = ARQ_SILHUETA) -> None:
+    plt = _plt()
+    caminho.parent.mkdir(parents=True, exist_ok=True)
     fig, ax = plt.subplots(figsize=(6, 3.5))
     cores = ["#2563a8" if kk == k else "#b8c4d6" for kk in silhuetas]
     ax.bar([str(kk) for kk in silhuetas], list(silhuetas.values()), color=cores)
@@ -102,7 +141,7 @@ def grafico_silhueta(silhuetas: dict, k: int) -> None:
     ax.set_title(f"Escolha do número de grupos: k = {k}")
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
-    fig.savefig(ARQ_SILHUETA, dpi=150)
+    fig.savefig(caminho, dpi=150)
     plt.close(fig)
 
 
@@ -111,8 +150,10 @@ if __name__ == "__main__":
     if falso:
         print("Aviso: data/indicadores.csv ainda não existe. Usando falsos/tabela_falsa.csv.")
     seg, silhuetas, k = segmentar(df)
-    salvar(seg)
+    if not falso:
+        salvar(seg)                                       # data/segmentos.csv é só dos dados reais
     grafico_silhueta(silhuetas, k)
+    grafico_grupos(seg)
     print("Silhueta por k:", {kk: round(v, 2) for kk, v in silhuetas.items()}, "→ k escolhido:", k)
     print("\nTamanho e perfil típico (mediana) de cada grupo:")
     resumo = seg.groupby("grupo").agg(empresas=("cd_cvm", "size"), receita_mi=("receita", "median"),
@@ -120,4 +161,5 @@ if __name__ == "__main__":
                                       endividamento=("endividamento", "median"))
     resumo["receita_mi"] = (resumo["receita_mi"] / 1e6).round(0)
     print(resumo.round(3).to_string())
-    print(f"\nSalvo em {ARQ_SEGMENTOS.relative_to(PASTA)} e {ARQ_SILHUETA.relative_to(PASTA)}")
+    salvos = [ARQ_SILHUETA, ARQ_GRUPOS] + ([] if falso else [ARQ_SEGMENTOS])
+    print("\nSalvo em " + ", ".join(str(a.relative_to(PASTA)) for a in salvos))
