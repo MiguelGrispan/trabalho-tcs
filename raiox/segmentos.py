@@ -8,7 +8,10 @@ Rodar (na raiz do repositório):
     python -m raiox.segmentos      → gera data/segmentos.csv e docs/graficos/silhueta.png
 
 Entrada: data/indicadores.csv (vem do Marcos). Enquanto ele não existir, usa falsos/tabela_falsa.csv.
+RAIOX_DADOS=falsos força a tabela falsa mesmo com os dados reais presentes (testes e demo de reserva);
+nesse caso o agrupamento é feito na memória e nada é gravado em data/.
 """
+import os
 from pathlib import Path
 
 import numpy as np
@@ -31,11 +34,16 @@ VARIAVEIS = ["log_receita", "cresc_2a", "margem_ebit", "margem_liquida", "endivi
 INDICADORES_NUM = ["receita", "cresc_2a", "margem_ebit", "margem_liquida", "endividamento", "ativo_total"]
 
 
+def usando_falsos() -> bool:
+    """True quando RAIOX_DADOS=falsos ou quando data/indicadores.csv ainda não existe."""
+    return os.getenv("RAIOX_DADOS", "").strip().lower() == "falsos" or not ARQ_INDICADORES.exists()
+
+
 def carregar_indicadores() -> tuple[pd.DataFrame, bool]:
     """Devolve (tabela, usando_dados_falsos)."""
-    if ARQ_INDICADORES.exists():
-        return pd.read_csv(ARQ_INDICADORES), False
-    return pd.read_csv(ARQ_FALSO), True
+    if usando_falsos():
+        return pd.read_csv(ARQ_FALSO), True
+    return pd.read_csv(ARQ_INDICADORES), False
 
 
 def segmentar(df: pd.DataFrame):
@@ -73,9 +81,11 @@ def salvar(seg: pd.DataFrame) -> None:
 
 
 def carregar_segmentos(df: pd.DataFrame) -> pd.DataFrame:
-    """Junta indicadores + segmentos.csv. Refaz o agrupamento se o arquivo não existir ou estiver velho."""
-    origem = ARQ_INDICADORES if ARQ_INDICADORES.exists() else ARQ_FALSO
-    velho = (not ARQ_SEGMENTOS.exists()) or ARQ_SEGMENTOS.stat().st_mtime < origem.stat().st_mtime
+    """Junta indicadores + segmentos.csv. Refaz o agrupamento se o arquivo não existir ou estiver velho.
+    Com a tabela falsa, agrupa na memória: o data/segmentos.csv é só dos dados reais."""
+    if usando_falsos():
+        return segmentar(df)[0]
+    velho = (not ARQ_SEGMENTOS.exists()) or ARQ_SEGMENTOS.stat().st_mtime < ARQ_INDICADORES.stat().st_mtime
     if velho:
         seg, _, _ = segmentar(df)
         salvar(seg)

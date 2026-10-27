@@ -65,6 +65,46 @@ def test_preparar_raio_x_segue_o_contrato_c3():
         assert i["posicao"] in {"acima", "abaixo", "em linha", "sem dado"}
     assert len(r["parecidas"]) == 5
     assert r["removidos"] == []
+    assert set(r["grupo"]) == {"numero", "tamanho"}
+    assert all(set(p) == {"cd_cvm", "nome", "setor"} for p in r["parecidas"])
+    assert set(r["uso"]) == {"tokens_entrada", "tokens_saida", "custo_usd", "tempo_s"}
+
+
+def test_fonte_concorda_com_dre_e_balanco():
+    r = ia.preparar_raio_x(90001, "software de gestão de frota", "conhecer a operação", usar_ia=False)
+    fontes = {i["id"]: i["fonte"] for i in r["indicadores"]}
+    assert "DRE consolidada" in fontes["margem_ebit"]
+    assert "balanço consolidado" in fontes["ativo_total"]
+    assert "balanço consolidado" in fontes["endividamento"]
+
+
+def test_modo_sem_ia_funciona_para_todas_as_empresas_falsas():
+    # plano B da demo: sem a API, todo raio-x sai inteiro e sem nada barrado pelo validador
+    df, falso = segmentos.carregar_indicadores()
+    assert falso
+    for cd in df["cd_cvm"]:
+        r = ia.preparar_raio_x(int(cd), "software de gestão", "primeira reunião", usar_ia=False)
+        assert r["removidos"] == [], cd
+        assert r["resumo"] and len(r["perguntas"]) >= 3 and len(r["lacunas"]) >= 2, cd
+
+
+# ---------------------------------------------------------------- dados reais × falsos
+def test_raiox_dados_falsos_ignora_tabela_real(tmp_path, monkeypatch):
+    real = tmp_path / "indicadores.csv"
+    pd.read_csv(PASTA / "falsos" / "tabela_falsa.csv").head(3).to_csv(real, index=False)
+    monkeypatch.setattr(segmentos, "ARQ_INDICADORES", real)
+    df, falso = segmentos.carregar_indicadores()          # RAIOX_DADOS=falsos (conftest.py)
+    assert falso and len(df) == 30
+    monkeypatch.setenv("RAIOX_DADOS", "real")
+    df, falso = segmentos.carregar_indicadores()
+    assert not falso and len(df) == 3
+
+
+def test_com_dados_falsos_nada_e_gravado_em_data(tmp_path, monkeypatch):
+    arq = tmp_path / "segmentos.csv"
+    monkeypatch.setattr(segmentos, "ARQ_SEGMENTOS", arq)
+    ia.preparar_raio_x(90001, "software", "reunião", usar_ia=False)
+    assert not arq.exists()
 
 
 # ---------------------------------------------------------------- segmentos

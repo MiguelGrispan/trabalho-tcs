@@ -31,9 +31,10 @@ INDICADORES = {
                        "DRE {d} · conta 3.01 ({ano} e {ano2})"),
     "margem_ebit":    ("Margem EBIT", "margem EBIT", "pct", "DRE {d} · contas 3.05 ÷ 3.01"),
     "margem_liquida": ("Margem líquida", "margem líquida", "pct", "DRE {d} · contas 3.11 ÷ 3.01"),
-    "endividamento":  ("Endividamento", "endividamento", "pct", "balanço {d} · contas 2.03 e 1"),
-    "ativo_total":    ("Ativo total", "ativo total", "dinheiro", "balanço {d} · conta 1"),
+    "endividamento":  ("Endividamento", "endividamento", "pct", "balanço {b} · contas 2.03 e 1"),
+    "ativo_total":    ("Ativo total", "ativo total", "dinheiro", "balanço {b} · conta 1"),
 }
+# {d} concorda com "DRE" (consolidada) e {b} com "balanço" (consolidado).
 # Os nomes não têm dígitos de propósito: o LLM copia o nome, e o validador derrubaria a frase.
 
 
@@ -67,7 +68,8 @@ def montar(seg: pd.DataFrame, cd_cvm: int, produto: str, objetivo: str):
         raise ValueError(f"Empresa {cd_cvm} não está na tabela de indicadores.")
     emp = linhas.iloc[0]
     do_grupo = seg[seg["grupo"] == emp["grupo"]]
-    demonstracao = "individual" if str(emp.get("origem", "con")) == "ind" else "consolidada"
+    individual = str(emp.get("origem", "con")) == "ind"
+    dre, balanco = ("individual", "individual") if individual else ("consolidada", "consolidado")
     ano = int(emp["ano"])
 
     indicadores_c3, para_llm = [], {}
@@ -82,7 +84,7 @@ def montar(seg: pd.DataFrame, cd_cvm: int, produto: str, objetivo: str):
             posicao = "acima" if v > med else "abaixo"
         indicadores_c3.append({
             "id": i, "nome": nome, "valor": fmt(v, tipo), "grupo": fmt(med, tipo), "posicao": posicao,
-            "fonte": f"DFP {ano} · " + fonte.format(d=demonstracao, ano=ano, ano2=ano - 2),
+            "fonte": f"DFP {ano} · " + fonte.format(d=dre, b=balanco, ano=ano, ano2=ano - 2),
             "valor_num": num(v, tipo), "grupo_num": num(med, tipo),
             "unidade": "R$ milhões" if tipo == "dinheiro" else "%"})
         para_llm[i] = {"nome": nome_no_texto, "valor": fmt(v, tipo), "grupo": fmt(med, tipo), "posicao": posicao}
