@@ -10,11 +10,16 @@ data/*
 anomalias.csv
 auditoria_ia.csv
 resultado_checagem.txt
+# Banco, zips da CVM e parquet salvos fora de data/ também não entram
+*.db
+*.zip
+*.parquet
 
 # Ambientes Python e caches (recriados sozinhos)
 .venv/
 venv/
 env/
+myenv/
 __pycache__/
 *.py[cod]
 .pytest_cache/
