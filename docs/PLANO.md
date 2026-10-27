@@ -45,7 +45,7 @@ Regra: atraso come a folga; **nunca** se acrescenta escopo. Se a folga acabar, u
 **CI:** verde em todas as rodadas do #3 (o teste do notebook roda no CI desde 27/10).
 
 **Na máquina do Eduardo:** a `data/` tem os dados reais já convertidos. Por isso, na branch `main` (e no #3),
-o teste `test_preparar_raio_x_segue_o_contrato_c3` falha **só lá**. É o erro que o #6 conserta: na branch dele, dá 19 passed.
+o teste `test_preparar_raio_x_segue_o_contrato_c3` falha **só lá**. É o erro que o #6 conserta: na branch dele, dá 32 passed e 2 skipped.
 
 | PR | o que traz | quem revisa | ordem de merge |
 |---|---|---|---|
@@ -57,6 +57,7 @@ o teste `test_preparar_raio_x_segue_o_contrato_c3` falha **só lá**. É o erro 
 **Testes:**
 - Na `main` hoje: 8.
 - Com os PRs #3, #4 e #6 juntos (simulado numa cópia em 27/10): 47 passam, mais 4 pulados que esperam os dados reais.
+- Com os PRs #3 a #6 juntos e a regra de ouro (commit `2103519`), sem `data/`: 61 passam e 3 são pulados.
 
 **Para quem está aprendendo:** a pasta [aprender/](../aprender/README.md) reúne os comandos (o que rodar, em qual pasta),
 os guias e o notebook `passo_a_passo.ipynb`, que segue uma empresa do começo ao fim. Nada nela é usado pelo código.
@@ -71,6 +72,18 @@ os guias e o notebook `passo_a_passo.ipynb`, que segue uma empresa do começo ao
   - a silhueta alta só mede a separação das empresas extremas (margens de −10.000%);
   - com isso, o "grupo" vira quase todas as empresas, e as "parecidas" não fazem sentido.
 - **Conserto testado:** tirar as empresas com receita abaixo de R$ 10 mi e cortar os extremos em 5/95 dá k = 4 com grupos de 330, 99, 74 e 59 empresas (silhueta 0,30). Detalhes na linha do ED4.
+  Mesmo assim, as parecidas da WEG viram Cemig, Copel, Axia, Votorantim Cimentos e Telefônica: o perfil financeiro é parecido, o setor não. No ED4, decidir entre filtrar por setor ou explicar isso na banca.
+
+**Revisão dos PRs e regra de ouro (27/10, fim da noite):**
+- **Regra de ouro:** o validador deixava passar número por extenso ("dez por cento", "o dobro"), ½, ² e um produto numérico (produto "10%" escondia "margem de 10%").
+  Consertado no commit `2103519` da `eduardo-ia-testes` (#6), com 13 casos de teste novos (`test_regra_de_ouro_*`).
+  O modo sem IA não remove nada nas 595 empresas reais.
+  **Falta:** o prompt (`REGRAS` em `raiox/ia.py`) ainda não proíbe número por extenso; a regra 1 da v1 da Náthally já proíbe (`avaliacao/regras_prompt.md:49`). Fazer na ED3.
+- **Testes que não pegaram o código estragado de propósito** (consertar quem é dono):
+  - #3, Eduardo: a célula 9 do `aprender/passo_a_passo.ipynb` copia o `matriz()` em vez de chamar a função, então o ED4 deixa o notebook velho sem o CI avisar; o `tests/test_aprender.py` exige exatamente "5 passed".
+  - #4, Marcos: `test_resolver_conflitos_trata_valor_vazio_como_divergente` passa só pela ordem das linhas; `test_obter_indicadores_deixa_ausente_…` não olha o `ativo_total`; `test_calcular_exporta_…` não tem receita de 2 anos antes igual a zero.
+  - #6, Eduardo: `test_casos_avaliacao_do_repositorio_segue_o_c4` não confere a coluna `empresa`; `test_casos_de_avaliacao_existem_na_tabela_real` passa sem testar nada enquanto os `cd_cvm` estiverem vazios.
+- **Outros achados:** o `README.md:62` pede Python 3.10, mas o CI usa 3.14; com dados reais, a tela mostra "empresas e números inventados" (MG4); o C4 diz que o `conferencia.csv` é da Náthally, mas quem escreve é o Marcos.
 
 **Próximo passo de cada um:**
 - **Miguel:** MG1 (revisar e mesclar o #3; configurar o GitHub).
@@ -78,7 +91,8 @@ os guias e o notebook `passo_a_passo.ipynb`, que segue uma empresa do começo ao
 - **Náthally:** revisar o #5 e escrever as regras v2, usando as notas no fim de `data/ed1/raiox_para_nathally.md`.
 - **Eduardo:**
   1. mandar a mensagem ao grupo e o arquivo dos raio-x à Náthally;
-  2. ED4 (consertar a segmentação), adiantado para qua 28/10, **na própria branch do #6** (`git switch eduardo-ia-testes`), porque ele mexe no mesmo `raiox/segmentos.py`. Se o #6 já tiver entrado, faça uma branch nova a partir da `main`.
+  2. enviar (`git push`) o commit `2103519` da `eduardo-ia-testes` e atualizar a descrição do #6 (testes: 30 passed e 4 skipped sem `data/`);
+  3. ED4 (consertar a segmentação), adiantado para qua 28/10, **na própria branch do #6** (`git switch eduardo-ia-testes`), porque ele mexe no mesmo `raiox/segmentos.py`. Se o #6 já tiver entrado, faça uma branch nova a partir da `main`.
 
 **Decisões em aberto:**
 - data e horário da banca;
