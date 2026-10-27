@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 PASTA = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PASTA))
@@ -51,6 +52,51 @@ def test_validador_remove_pergunta_com_base_invalida():
     p = ia.Pergunta(texto="Como está a operação?", base="indicador_que_nao_existe")
     r = ia.validar_e_preencher(rx(perguntas=[p]), VALORES)
     assert r["perguntas"] == []
+
+
+# ---------------------------------------------------------------- regra de ouro: número que não é dígito
+# Os nomes começam com "regra_de_ouro", e não com "validador": o notebook do aprender/ espera exatamente
+# "5 passed" ao rodar "pytest -k validador".
+@pytest.mark.parametrize("frase", [
+    "A receita cresceu cerca de dez por cento.",
+    "O lucro foi de vinte milhões de reais.",
+    "A margem EBIT é quase o dobro do grupo.",
+    "O endividamento caiu pela metade.",
+    "A empresa tem três fábricas e mil funcionários.",
+])
+def test_regra_de_ouro_remove_numero_por_extenso(frase):
+    r = ia.validar_e_preencher(rx(resumo=frase), VALORES)
+    assert r["resumo"] == "", frase
+    assert r["removidos"][0]["motivo"].startswith("número por extenso"), frase
+
+
+@pytest.mark.parametrize("frase", ["Crescimento de ½ do grupo.", "A margem subiu ² pontos.",
+                                   "Receita de R$ ２０ bi.", "Fase Ⅲ da expansão."])
+def test_regra_de_ouro_remove_simbolo_numerico(frase):
+    r = ia.validar_e_preencher(rx(resumo=frase), VALORES)
+    assert r["resumo"] == "", frase
+    assert r["removidos"][0]["motivo"] == "dígito fora de marcador", frase
+
+
+def test_regra_de_ouro_vale_para_perguntas_e_lacunas():
+    p = ia.Pergunta(texto="Os dez maiores clientes concentram a receita?", base="receita")
+    r = ia.validar_e_preencher(rx(perguntas=[p], lacunas=["Orçamento de cem mil reais"]), VALORES)
+    assert r["perguntas"] == [] and r["lacunas"] == [] and len(r["removidos"]) == 2
+
+
+def test_regra_de_ouro_aceita_texto_sem_numero():
+    # nome do indicador com "dois", ordinais, "um/uma" e palavras que contêm um número ("dezembro")
+    frase = ("O crescimento em dois anos ficou acima do grupo; em dezembro, a primeira reunião "
+             "pode mostrar um caminho para o segundo semestre.")
+    r = ia.validar_e_preencher(rx(resumo=frase), VALORES)
+    assert r["resumo"] == frase and r["removidos"] == []
+
+
+@pytest.mark.parametrize("produto", ["10%", "dez por cento"])
+def test_regra_de_ouro_produto_numerico_nao_esconde_numero(produto):
+    # sem a trava do normalizar(), o número do LLM virava {produto} e voltava igual depois do validador
+    r = ia.validar_e_preencher(rx(resumo=f"A margem EBIT é de {produto}."), {**VALORES, "produto": produto})
+    assert r["resumo"] == ""
 
 
 # ---------------------------------------------------------------- contrato C3
