@@ -34,7 +34,10 @@ comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguin
 
 **Testes:**
 - Na `main` hoje: 8.
-- Com os PRs #4 e #6 juntos: 45 passam, mais 4 pulados que esperam os dados reais.
+- Com os PRs #3, #4 e #6 juntos (simulado numa cópia em 27/10): 47 passam, mais 4 pulados que esperam os dados reais.
+
+**Para quem está aprendendo:** a pasta [aprender/](../aprender/README.md) reúne os comandos (o que rodar, em qual pasta),
+os guias e o notebook `passo_a_passo.ipynb`, que segue uma empresa do começo ao fim. Nada nela é usado pelo código.
 
 **Dados reais (ED1, 27/10):**
 - **Carga:** os scripts da branch do #4 rodaram em 22 s e geraram 595 empresas, todas com DFP 2025.
@@ -67,6 +70,7 @@ Todos entram no PR #3, menos os da última linha.
 | arquivo | conteúdo mínimo | por quê |
 |---|---|---|
 | `docs/REQUISITOS.md`, `docs/PLANO.md` | a matriz do guia e este plano | um só lugar para "o que falta" e "quem faz quando" |
+| `aprender/` | `COMANDOS.md`, guias, notebook passo a passo, atalhos do Mac | o que só serve para aprender fica numa pasta só, que o Docker pode ignorar inteira |
 | `CLAUDE.md` | data da banca, leitura do PLANO, regras de Git e de testes | o Claude Code lê em toda sessão |
 | `AGENTS.md` | aponta para CLAUDE.md, REGRAS-IA.md e contratos.md | o Codex lê `AGENTS.md`, não `CLAUDE.md` |
 | `REGRAS-IA.md` | §5 Git: branch curta por tarefa, `merge` em vez de `rebase`, PR pelo navegador | as branches pessoais longas criaram duas histórias separadas |
@@ -209,6 +213,7 @@ Para subir um arquivo:
 | `tests/test_contratos.py` (MA2) | C1 e C2 com os falsos: CSV padrão, `cd_cvm` int | Marcos | sim |
 | `tests/test_tela.py` (MG4) | a tela com os falsos: busca, gerar, 6 métricas, sem erro | Miguel | sim |
 | `tests/test_ponta_a_ponta.py` | C2 real, raio-x sem IA de 3 setores, `cd_cvm` dos casos | Eduardo | **não**: pula sem `data/`. Rodar local antes de `v0.1-demo`, `v1.0` e no teste do zero |
+| `tests/test_aprender.py` | o notebook `aprender/passo_a_passo.ipynb` roda inteiro e vai para o Git sem saídas | Eduardo | sim |
 | Docker | `curl localhost:8501/_stcore/health` → `ok` | Miguel | não (checklist da demo) |
 
 ---
