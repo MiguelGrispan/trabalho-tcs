@@ -116,6 +116,26 @@ def test_segmentar_aguenta_receita_zero():
     assert all(len(p) == 5 for p in seg["parecidas"])
 
 
+def test_segmentar_acha_os_tres_perfis_da_tabela_falsa():
+    # a tabela falsa foi gerada com 3 perfis; o K-means deve achar k = 3 e acertar quase todas as empresas
+    # (hoje 29 de 30: uma "pequena_endividada" cai no grupo de "cresce_margem_baixa")
+    df, _ = segmentos.carregar_indicadores()
+    seg, silhuetas, k = segmentos.segmentar(df)
+    assert k == 3 and silhuetas[3] == max(silhuetas.values())
+    tabela = pd.crosstab(seg["perfil_real"], seg["grupo"])
+    assert tabela.max(axis=1).sum() / len(seg) >= 0.9            # cada perfil fica quase todo num grupo só
+    assert tabela.idxmax(axis=1).is_unique                       # e cada perfil tem um grupo diferente
+
+
+def test_graficos_sao_gravados(tmp_path):
+    df, _ = segmentos.carregar_indicadores()
+    seg, silhuetas, k = segmentos.segmentar(df)
+    segmentos.grafico_silhueta(silhuetas, k, tmp_path / "silhueta.png")
+    segmentos.grafico_grupos(seg, tmp_path / "grupos.png")
+    assert (tmp_path / "silhueta.png").stat().st_size > 0
+    assert (tmp_path / "grupos.png").stat().st_size > 0
+
+
 # ---------------------------------------------------------------- checador de dados
 def test_checador_pega_os_erros_plantados():
     ind = pd.read_csv(PASTA / "falsos" / "indicadores_com_erros.csv")
