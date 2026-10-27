@@ -21,28 +21,24 @@ def buscar_empresas(texto: str) -> list[dict[str, Any]]:
     if not DB_PATH.exists():
         return []
 
+    # O catálogo já vem limpo de carregar_dfp.py (regras em raiox/limpeza.py):
+    # só tem empresas com receita de venda positiva e uma linha por conta,
+    # então a 3.01 do último ano dá uma linha por empresa.
     termo = texto.strip().replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
     consulta = """
-        SELECT c.cd_cvm, c.nome, c.setor
-        FROM contas AS c
-        WHERE c.ano = (SELECT MAX(ano) FROM contas)
-          AND c.cd_conta = '3.01'
-          AND c.valor > 0
-          AND c.ds_conta LIKE '%receita de venda%' COLLATE NOCASE
-          AND c.nome LIKE ? ESCAPE '\\'
-        GROUP BY c.cd_cvm, c.nome, c.setor
-        ORDER BY c.nome COLLATE NOCASE
+        SELECT cd_cvm, nome, setor
+        FROM contas
+        WHERE ano = (SELECT MAX(ano) FROM contas)
+          AND cd_conta = '3.01'
+          AND nome LIKE ? ESCAPE '\\'
+        ORDER BY nome COLLATE NOCASE
         LIMIT 20
     """
     with closing(conectar()) as conn:
         rows = conn.execute(consulta, (f"%{termo}%",)).fetchall()
 
     return [
-        {
-            "cd_cvm": str(codigo).strip().lstrip("0") or "0",
-            "nome": str(nome),
-            "setor": str(setor) if setor is not None else "Não Informado",
-        }
+        {"cd_cvm": codigo, "nome": nome, "setor": setor}
         for codigo, nome, setor in rows
     ]
 

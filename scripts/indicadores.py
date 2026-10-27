@@ -3,8 +3,6 @@ Script de Cálculo de Indicadores
 Objetivo: Gerar o arquivo indicadores.csv (Contrato C2) para o Eduardo.
 """
 from pathlib import Path
-import warnings
-import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -16,6 +14,7 @@ COLUNAS_SAIDA = [
     "cresc_2a", "margem_ebit", "margem_liquida", "ativo_total",
     "endividamento", "origem", "versao",
 ]
+CONTAS = {"3.01": "receita", "3.05": "ebit", "3.11": "lucro", "1": "ativo", "2.03": "pl"}
 
 
 def calcular():
@@ -28,94 +27,56 @@ def calcular():
         dtype={"cd_cvm": str, "cd_conta": str},
     )
     obrigatorias = {
-        "ano", "cd_cvm", "nome", "cd_conta", "ds_conta", "valor",
-        "demonstracao", "origem",
+        "ano", "cd_cvm", "nome", "setor", "cd_conta", "valor",
+        "demonstracao", "origem", "versao",
     }
     ausentes = obrigatorias.difference(df.columns)
     if ausentes:
         raise ValueError(
             f"{caminho_contas} não contém as colunas obrigatórias: "
-            f"{', '.join(sorted(ausentes))}"
+            f"{', '.join(sorted(ausentes))}. Rode scripts/carregar_dfp.py."
         )
-    if "setor" not in df.columns:
-        df["setor"] = "Não Informado"
-    if "versao" not in df.columns:
-        df["versao"] = pd.NA
 
     df["cd_conta"] = df["cd_conta"].astype("string").str.strip()
     df["ano"] = pd.to_numeric(df["ano"], errors="raise").astype(int)
     df["valor"] = pd.to_numeric(df["valor"], errors="raise")
-    df = df.loc[
-        df["cd_conta"].isin(["3.01", "3.05", "3.11", "1", "2.03"])
-    ].copy()
+    # contas.csv já vem limpo de carregar_dfp.py (regras em raiox/limpeza.py):
+    # uma linha por conta e só empresas com receita de venda positiva.
+    df = df.loc[df["cd_conta"].isin(list(CONTAS))].copy()
 
-    # Considera apenas empresas cuja conta 3.01 representa receita de vendas.
-    chaves_conta = ["ano", "cd_cvm", "demonstracao", "cd_conta"]
-    valores_por_chave = df.groupby(chaves_conta, dropna=False)["valor"]
-    conflitos_mask = valores_por_chave.transform("nunique").gt(1)
-    conflitos = df.loc[conflitos_mask, chaves_conta].drop_duplicates()
-    # Só avisa sobre contas que entram no cálculo: todas as do último ano
-    # e a receita de dois anos antes (usada no cresc_2a).
-    ultimo_ano = df["ano"].max()
-    relevantes = conflitos["ano"].eq(ultimo_ano) | (
-        conflitos["ano"].eq(ultimo_ano - 2) & conflitos["cd_conta"].eq("3.01")
+    resultado = _montar_indicadores(df) if not df.empty else pd.DataFrame(columns=COLUNAS_SAIDA)
+    resultado.to_csv(
+        DATA_DIR / "indicadores.csv",
+        sep=";",
+        index=False,
+        encoding="utf-8-sig",
+        decimal=",",
     )
-    conflitos = conflitos.loc[relevantes]
-    if not conflitos.empty:
-        exemplos = conflitos.head(5).to_dict("records")
-        warnings.warn(
-            f"{len(conflitos)} combinações de conta têm valores divergentes; "
-            f"esses indicadores serão deixados ausentes. Exemplos: {exemplos}",
-            RuntimeWarning,
-            stacklevel=2,
-        )
-    df.loc[conflitos_mask, "valor"] = np.nan
+    return resultado
 
-    empresas_validas = df.loc[
-        df["cd_conta"].eq("3.01")
-        & df["valor"].gt(0)
-        & df["ds_conta"].astype("string").str.contains(
-            "Receita de Venda", case=False, na=False
-        ),
-        "cd_cvm",
-    ].unique()
-    df = df[df["cd_cvm"].isin(empresas_validas)]
 
-    if df.empty:
-        resultado = pd.DataFrame(columns=COLUNAS_SAIDA)
-        resultado.to_csv(
-            DATA_DIR / "indicadores.csv",
-            sep=";",
-            index=False,
-            encoding="utf-8-sig",
-            decimal=",",
-        )
-        return resultado
-
-    pivot = df.pivot_table(
-        index=["ano", "cd_cvm", "nome"],
-        columns="cd_conta",
-        values="valor",
-        aggfunc="first",
-    ).reset_index()
-    pivot = pivot.rename(columns={"3.01": "receita", "3.05": "ebit", "3.11": "lucro", "1": "ativo", "2.03": "pl"})
+def _montar_indicadores(df):
+    """Uma linha por empresa no ano mais recente, com os indicadores do C2."""
+    # pivot (e não pivot_table) falha se houver conta repetida, em vez de escolher uma.
+    pivot = (
+        df.pivot(index=["ano", "cd_cvm", "nome"], columns="cd_conta", values="valor")
+        .reindex(columns=list(CONTAS))
+        .rename(columns=CONTAS)
+        .reset_index()
+    )
 
     ano_atual = int(df["ano"].max())
-    ano_referencia = ano_atual - 2
     base = pivot[pivot["ano"] == ano_atual].copy()
-    if "receita" not in pivot.columns:
-        base["receita"] = np.nan
-        ref = pd.DataFrame(columns=["cd_cvm", "receita_2a_antes"])
-    else:
-        ref = pivot.loc[pivot["ano"] == ano_referencia, ["cd_cvm", "receita"]]
-        ref = ref.rename(columns={"receita": "receita_2a_antes"})
-    base = base.merge(ref, on="cd_cvm", how="left")
+    ref = pivot.loc[pivot["ano"] == ano_atual - 2, ["cd_cvm", "receita"]]
+    base = base.merge(
+        ref.rename(columns={"receita": "receita_2a_antes"}), on="cd_cvm", how="left"
+    )
 
-    receita = base.get("receita", pd.Series(np.nan, index=base.index))
-    ebit = base.get("ebit", pd.Series(np.nan, index=base.index))
-    lucro = base.get("lucro", pd.Series(np.nan, index=base.index))
-    ativo = base.get("ativo", pd.Series(np.nan, index=base.index))
-    patrimonio_liquido = base.get("pl", pd.Series(np.nan, index=base.index))
+    receita = base["receita"]
+    ebit = base["ebit"]
+    lucro = base["lucro"]
+    ativo = base["ativo"]
+    patrimonio_liquido = base["pl"]
     receita_anterior = base["receita_2a_antes"]
 
     base["cresc_2a"] = (
@@ -136,15 +97,8 @@ def calcular():
     ].drop_duplicates("cd_cvm", keep="first")
     base = base.merge(dre, on="cd_cvm", how="left")
     base["setor"] = base["setor"].fillna("Não Informado")
-    resultado = base.reindex(columns=COLUNAS_SAIDA).sort_values("nome")
-    resultado.to_csv(
-        DATA_DIR / "indicadores.csv",
-        sep=";",
-        index=False,
-        encoding="utf-8-sig",
-        decimal=",",
-    )
-    return resultado
+    return base.reindex(columns=COLUNAS_SAIDA).sort_values("nome")
+
 
 if __name__ == "__main__":
     calcular()
