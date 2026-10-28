@@ -1,6 +1,6 @@
 # Plano até a banca (versão acelerada)
 
-Versão de **ter 27/10/2026, noite**. Meta: **feito, não perfeito**. O código congela na **sex 06/11** e tudo fica pronto
+Versão de **ter 27/10/2026, noite** (seção 0 atualizada em qua 28/10). Meta: **feito, não perfeito**. O código congela na **sex 06/11** e tudo fica pronto
 para entregar na **qua 11/11**, com folga até a entrega de seg 16/11. Se a banca cair na semana de 09–15/11, já estamos prontos.
 
 A matriz do que o guia exige está em [REQUISITOS.md](REQUISITOS.md). Os detalhes técnicos do que estava quebrado, com
@@ -8,7 +8,7 @@ comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguin
 
 **Como usar este plano:**
 - Cada linha das tabelas da seção 3 é uma sessão de trabalho, com um código (por exemplo, MA2).
-- Para começar, abra o Claude Code (ou o Codex) e diga:
+- Para começar, abra o Claude Code e diga:
   > Leia o CLAUDE.md e faça a sessão MA2 do docs/PLANO.md.
 - **Ao terminar uma sessão:**
   1. atualize a seção 0 (situação atual) e a coluna "status" da sessão, no mesmo PR;
@@ -16,57 +16,58 @@ comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguin
 
 **Hipóteses deste plano:**
 - Cada pessoa tem de 6 a 12 h por semana, fora a aula.
-- Eduardo e Marcos usam Claude Code. O Miguel usa Codex ou Claude Code. A Náthally não usa IA para programar: ela sobe arquivos pelo navegador.
+- Eduardo, Marcos e Miguel usam Claude Code (o Miguel desde 28/10). A Náthally não usa IA para programar: ela sobe arquivos pelo navegador.
 - Banca prevista para **qua 18/11 (a confirmar)**.
 
 ---
 
 ## 0. Situação atual (atualize a cada sessão)
 
-**Em 27/10, noite** (fim da sessão do Eduardo com o Claude Code).
+**Em qua 28/10, manhã** (sessão do Eduardo com o Claude Code).
 
 **Retomando numa sessão nova do Claude Code?**
 1. Cole: "Leia o CLAUDE.md e a seção 0 do docs/PLANO.md. Confira o estado real com `gh pr list --state all` e
    `git log --oneline -15`. Depois faça a sessão ED4."
 2. Antes de mexer em qualquer coisa, a sessão deve dizer o que mudou desde esta nota.
 
-**Progresso estimado** (Eduardo, 27/10):
+**O que mudou desde 27/10, noite:**
+- **Os PRs #3 a #6 entraram na `main`** em 27/10 (o Miguel fez o merge). O CI ficou verde nos 4 merges.
+- **Testes:**
+  - no CI, sem `data/`: 61 passed e 3 skipped (rodada 40544159668);
+  - na máquina do Eduardo, com a `data/` real: 64 passed. O erro do teste do C3 sumiu.
+- **Branches apagadas em 28/10**, porque já estavam inteiras na `main` (`git branch -r --merged origin/main`): `eduardo`, `fundacao`,
+  `eduardo-padronizacao`, `eduardo-ia-testes`, `marcos-porta-dados` e `nathally-produto`. Se precisar de uma, o botão
+  "Restore branch" fica na página do PR.
+- **Ficaram 3 branches:**
+  - `tratamento_dados` (Marcos) e `feat/metricas` (Náthally): o conteúdo foi portado pelos #4 e #5, mas o Git não as vê
+    como mescladas, porque não têm história em comum com a `main`. Só apagar com o OK do dono.
+  - `docs-docker-e-terraform` (Miguel, 27/10): `Dockerfile`, `.dockerignore`, `terraform/` e uma mudança no `.gitignore`.
+    **Ainda sem PR.** O conteúdo não foi revisado. Na revisão, conferir: a pasta é `terraform/`, mas CLAUDE.md, README e
+    este plano dizem `infra/` (escolher um nome e acertar os documentos no mesmo PR); o `.gitignore` é arquivo comum.
+- **Configuração do GitHub (MG1) ainda pendente:** "apagar branch após o merge" está desligado e squash e rebase continuam permitidos
+  (`gh api repos/MiguelGrispan/trabalho-tcs`). A proteção da `main` só o Miguel consegue ver (precisa ser admin).
+- **README:** pedia Python 3.10; agora pede 3.14, igual ao CI e ao `requirements.txt` (este PR).
+
+**Progresso estimado** (Eduardo, 27/10; não mudou, porque nenhum código novo entrou desde então):
 
 | parte | feito | falta |
 |---|---|---|
 | núcleo do produto: dados, ML, IA, validador, avaliação | ~70% | MA2, ED4, ED3, ED7 |
-| tela e infraestrutura | ~25% | MG2 a MG4 (o Docker ainda não começou) |
+| tela e infraestrutura | ~25% | MG2 a MG4 (Docker e Terraform começaram na branch do Miguel, sem PR) |
 | entregáveis: BPMN, EDA, PDF, deck, vídeo, ensaios | ~10% | quase tudo, mas não depende de código novo |
-| **total** | **~40%** | com 7 de 26 dias usados (~27%): estamos à frente no código e atrás na infra |
+| **total** | **~40%** | com 8 de 26 dias usados (~31%): ainda à frente no código e atrás na infra |
 
 **Folga:** o plano termina na qua 11/11. Sobram 4 dias de reserva (12 a 15/11) antes da entrega de seg 16/11, e mais 2 até a banca.
 Regra: atraso come a folga; **nunca** se acrescenta escopo. Se a folga acabar, use a lista de cortes da seção 7.
-
-**CI:** verde em todas as rodadas do #3 (o teste do notebook roda no CI desde 27/10).
-
-**Na máquina do Eduardo:** a `data/` tem os dados reais já convertidos. Por isso, na branch `main` (e no #3),
-o teste `test_preparar_raio_x_segue_o_contrato_c3` falha **só lá**. É o erro que o #6 conserta: na branch dele, dá 32 passed e 2 skipped.
-
-| PR | o que traz | quem revisa | ordem de merge |
-|---|---|---|---|
-| [#3](https://github.com/MiguelGrispan/trabalho-tcs/pull/3) `eduardo-padronizacao` | este plano, REQUISITOS, CLAUDE/AGENTS/REGRAS-IA, contratos (CSV padrão, `cd_cvm` int), versões fixas, `pytest.ini`, CI, modelo de PR | Miguel (CI), Marcos (contratos) | **1º**: o CI só existe a partir dele |
-| [#4](https://github.com/MiguelGrispan/trabalho-tcs/pull/4) `marcos-porta-dados` | MA1: o código de dados do Marcos (27/10) na estrutura da `main`, 28 testes dele | Marcos | depois do #3 (`git merge main` antes) |
-| [#5](https://github.com/MiguelGrispan/trabalho-tcs/pull/5) `nathally-produto` | NA1 (parte 1): `docs/produto/`, regras v1, 10 casos no formato C4 (`cd_cvm` vazio) | Náthally | depois do #3 |
-| [#6](https://github.com/MiguelGrispan/trabalho-tcs/pull/6) `eduardo-ia-testes` | ED2, ED5, código do ED4, ED6: testes sem `data/`, `avaliar.py`, gráfico dos grupos, teste ponta a ponta | Marcos, Miguel | depois do #3 |
-
-**Testes:**
-- Na `main` hoje: 8.
-- Com os PRs #3, #4 e #6 juntos (simulado numa cópia em 27/10): 47 passam, mais 4 pulados que esperam os dados reais.
-- Com os PRs #3 a #6 juntos e a regra de ouro (commit `2103519`), sem `data/`: 61 passam e 3 são pulados.
 
 **Para quem está aprendendo:** a pasta [aprender/](../aprender/README.md) reúne os comandos (o que rodar, em qual pasta),
 os guias e o notebook `passo_a_passo.ipynb`, que segue uma empresa do começo ao fim. Nada nela é usado pelo código.
 
 **Dados reais (ED1, 27/10):**
-- **Carga:** os scripts da branch do #4 rodaram em 22 s e geraram 595 empresas, todas com DFP 2025.
+- **Carga:** os scripts do Marcos rodaram em 22 s e geraram 595 empresas, todas com DFP 2025.
 - **Conferência:** a receita da WEG bate com a conferência do Marcos.
-- **Formato:** o `indicadores.csv` saiu com `;` e vírgula decimal. O Eduardo converteu só na `data/` dele, e com isso `tests/test_ponta_a_ponta.py` passa.
-- **Raio-x:** 3 gerados com IA (Camil, Magazine Luiza, WEG), sem nenhum item removido pelo validador, por US$ 0,0026 no total. Estão em `data/ed1/` (fora do Git, só na máquina do Eduardo). **O Eduardo ainda precisa mandar** o `data/ed1/raiox_para_nathally.md` à Náthally.
+- **Formato:** o `indicadores.csv` ainda sai com `;` e vírgula decimal (`scripts/indicadores.py:24`). O Eduardo converteu só na `data/` dele, até a MA2.
+- **Raio-x:** 3 gerados com IA (Camil, Magazine Luiza, WEG), sem nenhum item removido pelo validador, por US$ 0,0026 no total. Estão em `data/ed1/` (fora do Git, só na máquina do Eduardo).
 - **Problema achado (ED4):**
   - com os dados reais, o K-means escolhe k = 4 com silhueta 0,77, mas um grupo tem 567 das 595 empresas e os outros têm 9, 9 e 10;
   - a silhueta alta só mede a separação das empresas extremas (margens de −10.000%);
@@ -74,30 +75,30 @@ os guias e o notebook `passo_a_passo.ipynb`, que segue uma empresa do começo ao
 - **Conserto testado:** tirar as empresas com receita abaixo de R$ 10 mi e cortar os extremos em 5/95 dá k = 4 com grupos de 330, 99, 74 e 59 empresas (silhueta 0,30). Detalhes na linha do ED4.
   Mesmo assim, as parecidas da WEG viram Cemig, Copel, Axia, Votorantim Cimentos e Telefônica: o perfil financeiro é parecido, o setor não. No ED4, decidir entre filtrar por setor ou explicar isso na banca.
 
-**Revisão dos PRs e regra de ouro (27/10, fim da noite):**
-- **Regra de ouro:** o validador deixava passar número por extenso ("dez por cento", "o dobro"), ½, ² e um produto numérico (produto "10%" escondia "margem de 10%").
-  Consertado no commit `2103519` da `eduardo-ia-testes` (#6), com 13 casos de teste novos (`test_regra_de_ouro_*`).
-  O modo sem IA não remove nada nas 595 empresas reais.
+**Pendências da revisão de 27/10:**
+- **Regra de ouro:** o validador já barra número por extenso, ½, ² e produto numérico (`test_regra_de_ouro_*`, na `main` desde o #6).
   **Falta:** o prompt (`REGRAS` em `raiox/ia.py`) ainda não proíbe número por extenso; a regra 1 da v1 da Náthally já proíbe (`avaliacao/regras_prompt.md:49`). Fazer na ED3.
 - **Testes que não pegaram o código estragado de propósito** (consertar quem é dono):
-  - #3, Eduardo: a célula 9 do `aprender/passo_a_passo.ipynb` copia o `matriz()` em vez de chamar a função, então o ED4 deixa o notebook velho sem o CI avisar; o `tests/test_aprender.py` exige exatamente "5 passed".
-  - #4, Marcos: `test_resolver_conflitos_trata_valor_vazio_como_divergente` passa só pela ordem das linhas; `test_obter_indicadores_deixa_ausente_…` não olha o `ativo_total`; `test_calcular_exporta_…` não tem receita de 2 anos antes igual a zero.
-  - #6, Eduardo: `test_casos_avaliacao_do_repositorio_segue_o_c4` não confere a coluna `empresa`; `test_casos_de_avaliacao_existem_na_tabela_real` passa sem testar nada enquanto os `cd_cvm` estiverem vazios.
-- **Outros achados:** o `README.md:62` pede Python 3.10, mas o CI usa 3.14; com dados reais, a tela mostra "empresas e números inventados" (MG4); o C4 diz que o `conferencia.csv` é da Náthally, mas quem escreve é o Marcos.
+  - Eduardo: a célula 9 do `aprender/passo_a_passo.ipynb` copia o `matriz()` em vez de chamar a função, então o ED4 deixa o notebook velho sem o CI avisar; o `tests/test_aprender.py` exige exatamente "5 passed".
+  - Marcos: `test_resolver_conflitos_trata_valor_vazio_como_divergente` passa só pela ordem das linhas; `test_obter_indicadores_deixa_ausente_…` não olha o `ativo_total`; `test_calcular_exporta_…` não tem receita de 2 anos antes igual a zero.
+  - Eduardo: `test_casos_avaliacao_do_repositorio_segue_o_c4` não confere a coluna `empresa`; `test_casos_de_avaliacao_existem_na_tabela_real` passa sem testar nada enquanto os `cd_cvm` estiverem vazios.
+- **Outros achados:** com dados reais, a tela mostra "empresas e números inventados" (MG4); o C4 diz que o `conferencia.csv` é da Náthally, mas quem escreve é o Marcos.
 
 **Próximo passo de cada um:**
-- **Miguel:** MG1 (revisar e mesclar o #3; configurar o GitHub).
-- **Marcos:** revisar o #4 e começar a MA2. Na MA3, decidir o corte de receita mínima junto com o Eduardo.
-- **Náthally:** revisar o #5 e escrever as regras v2, usando as notas no fim de `data/ed1/raiox_para_nathally.md`.
+- **Miguel:** abrir o PR da `docs-docker-e-terraform` (MG2; o Eduardo revisa) e terminar a MG1 (só merge commit, apagar branch após o merge, check `testes` obrigatório).
+- **Marcos:** MA2 (CSV padrão e `cd_cvm` int). Dizer se a `tratamento_dados` pode ser apagada. Na MA3, decidir o corte de receita mínima junto com o Eduardo.
+- **Náthally:** escrever as regras v2 (NA1), usando as notas no fim de `data/ed1/raiox_para_nathally.md`. Dizer se a `feat/metricas` pode ser apagada.
 - **Eduardo:**
-  1. mandar a mensagem ao grupo e o arquivo dos raio-x à Náthally;
-  2. enviar (`git push`) o commit `2103519` da `eduardo-ia-testes` e atualizar a descrição do #6 (testes: 30 passed e 4 skipped sem `data/`);
-  3. ED4 (consertar a segmentação), adiantado para qua 28/10, **na própria branch do #6** (`git switch eduardo-ia-testes`), porque ele mexe no mesmo `raiox/segmentos.py`. Se o #6 já tiver entrado, faça uma branch nova a partir da `main`.
+  1. confirmar se a mensagem ao grupo e o `data/ed1/raiox_para_nathally.md` já foram mandados (esta nota não sabe);
+  2. pedir revisão do PR desta atualização;
+  3. ED4 (consertar a segmentação) numa branch nova a partir da `main`: `eduardo-segmentacao`;
+  4. revisar o PR do Docker quando o Miguel abrir.
 
 **Decisões em aberto:**
 - data e horário da banca;
-- `scripts/dados.py` duplicado (Marcos decide, no #4);
-- apagar as branches `eduardo` e `fundacao`, que já estão na `main`.
+- `scripts/dados.py` e `raiox/dados.py`: ficar com um só (Marcos decide);
+- nome da pasta da infraestrutura: `infra/` ou `terraform/` (Miguel, no PR do Docker);
+- apagar `tratamento_dados` e `feat/metricas` (Marcos e Náthally).
 
 ---
 
@@ -184,7 +185,7 @@ Todos entram no PR #3, menos os da última linha.
 | ED1 | 27/10 | ✅ `data/ed1/` | 3 raio-x reais para a Náthally: roda os scripts do Marcos (branch do #4) e converte o CSV só na sua `data/` | nada no Git | Manual | 3 empresas de setores diferentes, `removidos` conferido, enviado | nenhum |
 | ED2 | 27/10 | ✅ PR #6 | testes sem depender de `data/` (`RAIOX_DADOS`); "balanço consolidado" | `raiox/`, `tests/` | — | 17 passam | `eduardo-ia-testes` |
 | ED3 | sex 30/10 | — | regras v2 da Náthally no `REGRAS` | `raiox/ia.py` | Manual | 3 chamadas reais sem item removido por dígito | PR (Náthally lê) |
-| ED4 | qua 28/10 | 🟡 código no #6; problema achado no ED1 | na branch do #6 (`eduardo-ia-testes`), se ele ainda não entrou: consertar a segmentação real: receita mínima de R$ 10 mi (combinar com o Marcos) e corte dos extremos em 5/95 em `matriz()`; só aceitar o k cujo menor grupo tenha pelo menos 5% das empresas; teste novo para isso; olhar 2 grupos; explicar `matriz()` e o PCA. Os gráficos de antes estão em `data/ed1/*_antes_ed4.png` e servem para a banca ("a silhueta alta enganava") | `raiox/segmentos.py`, `tests/`, `docs/graficos/*.png`, REQUISITOS (k, silhueta) | Plan | nenhum grupo com menos de 5% das empresas; "parecidas" de 3 empresas conhecidas fazem sentido; 2 PNG reais | PR |
+| ED4 | qua 28/10 | 🟡 código do #6 na `main`; problema achado no ED1 | numa branch nova a partir da `main`: consertar a segmentação real: receita mínima de R$ 10 mi (combinar com o Marcos) e corte dos extremos em 5/95 em `matriz()`; só aceitar o k cujo menor grupo tenha pelo menos 5% das empresas; teste novo para isso; olhar 2 grupos; explicar `matriz()` e o PCA. Os gráficos de antes estão em `data/ed1/*_antes_ed4.png` e servem para a banca ("a silhueta alta enganava") | `raiox/segmentos.py`, `tests/`, `docs/graficos/*.png`, REQUISITOS (k, silhueta) | Plan | nenhum grupo com menos de 5% das empresas; "parecidas" de 3 empresas conhecidas fazem sentido; 2 PNG reais | `eduardo-segmentacao` → PR |
 | ED5 | 27/10 | ✅ PR #6 | `avaliacao/avaliar.py` (C4) | `avaliacao/`, `tests/` | — | `python -m avaliacao.avaliar` grava o C4 | `eduardo-ia-testes` |
 | ED6 | 27/10 | ✅ PR #6 | teste ponta a ponta (pula sem `data/`) | `tests/test_ponta_a_ponta.py` | — | pula no CI; roda local com dados reais | `eduardo-ia-testes` |
 | ED7 | dom 01/11 | — | `python -m avaliacao.avaliar --com-ia` nos 10 casos (avisar o grupo) | `avaliacao/resultados.csv` | Manual | 10 linhas; custo anotado (< US$ 0,05) | PR |
@@ -197,20 +198,20 @@ Todos entram no PR #3, menos os da última linha.
 
 | # | data | status | objetivo | altera | modo | pronto quando | git |
 |---|---|---|---|---|---|---|---|
-| MA1 | 27/10 | ✅ porte no PR #4 (feito pelo Eduardo) | revisar o #4: o código é seu, só os imports mudaram; decidir sobre o `scripts/dados.py` | — | — | #4 aprovado | `marcos-porta-dados` |
+| MA1 | 27/10 | ✅ PR #4 na `main` (27/10) | revisar o #4: o código é seu, só os imports mudaram; decidir sobre o `scripts/dados.py` | — | — | #4 aprovado | `marcos-porta-dados` |
 | MA2 | qua 28–qui 29/10 | — | cumprir C1/C2: CSV padrão (sem `sep=";"` e sem `decimal=","` na **escrita**), `cd_cvm` int, tabela `indicadores` no banco, busca só com empresas ativas e com indicadores | `scripts/`, `raiox/dados.py`, `tests/test_contratos.py` | Plan | `python -m pytest -q tests/test_ponta_a_ponta.py` passa com os seus dados reais | `marcos-csv-padrao` → PR (Eduardo + Miguel) |
 | MA3 | sex 30–sáb 31/10 | — | dados reais + checagem + 5 empresas conferidas no RI; zip da `data/` no Drive | `avaliacao/conferencia.csv`; consertos | Manual | diferença < 1%; nenhum "erro"; link no grupo | PR |
 | MA4 | dom 01–ter 03/11 | — | EDA com 4 gráficos (nulos, distribuições, extremos, cobertura) | `notebooks/eda.ipynb`, `docs/graficos/` | Manual | "Restart & Run All" sem erro | PR |
 | MA5 | qua 04–qui 05/11 | — | BPMN 2.0 com o Raio-X (obrigatório) e o de hoje (se der tempo), no bpmn.io | `docs/bpmn/` | Plan (o Claude só revisa) | abre no bpmn.io; decisões "tem dados?" e "passou no validador?" | PR |
 | MA6 | sáb 07–seg 09/11 | — | montar o `documentacao.pdf` | `docs/documentacao.pdf` | fora do Claude | BPMN + justificativa + ética + arquitetura | PR |
 
-### Miguel (Codex hoje; Claude Code se migrar)
+### Miguel (Claude Code desde 28/10)
 
 | # | data | status | objetivo | altera | modo | pronto quando | git |
 |---|---|---|---|---|---|---|---|
-| MG1 | qua 28/10 | — | revisar e mesclar o #3; configurar o GitHub (só merge commit, apagar branch, check `testes`); rodar a tela local | configurações | só leitura | #3 na `main`; print da tela no grupo | merge do #3 |
-| MG2 | qui 29–sex 30/10 | — | `Dockerfile` + `.dockerignore` (tela, `data/` como volume, chave por variável) | `Dockerfile`, `.dockerignore` | Plan | `docker build`, `docker run -p 8501:8501 …`, `curl localhost:8501/_stcore/health` → `ok` | `miguel-docker` → PR (Eduardo) |
-| MG3 | sáb 31/10–dom 01/11 | — | Terraform (provider docker), **só se o Docker estiver pronto**. Prazo: dom 01/11; senão, corta | `infra/` | Plan | `terraform apply` sobe; `destroy` + `apply` mantém `data/` | PR |
+| MG1 | qua 28/10 | 🟡 #3 na `main` (27/10); falta configurar o GitHub | revisar e mesclar o #3; configurar o GitHub (só merge commit, apagar branch, check `testes`); rodar a tela local | configurações | só leitura | #3 na `main`; print da tela no grupo | merge do #3 |
+| MG2 | qui 29–sex 30/10 | 🟡 branch `docs-docker-e-terraform`, sem PR | `Dockerfile` + `.dockerignore` (tela, `data/` como volume, chave por variável) | `Dockerfile`, `.dockerignore` | Plan | `docker build`, `docker run -p 8501:8501 …`, `curl localhost:8501/_stcore/health` → `ok` | `miguel-docker` → PR (Eduardo) |
+| MG3 | sáb 31/10–dom 01/11 | 🟡 `terraform/` na mesma branch, sem PR | Terraform (provider docker), **só se o Docker estiver pronto**. Prazo: dom 01/11; senão, corta | `infra/` | Plan | `terraform apply` sobe; `destroy` + `apply` mantém `data/` | PR |
 | MG4 | dom 01–ter 03/11 | — | tela com dados reais: `RAIOX_DADOS` (`falsos`/`real`) no lugar do `USAR_DADOS_FALSOS`; volta sozinha para o modo sem IA, com aviso; `registrar_consulta` dentro do `try`; `tests/test_tela.py` | `app/`, `.env.example`, `tests/` | Plan | 3 empresas reais geram raio-x no contêiner | PR (Eduardo) |
 | MG5 | qua 04/11 | — | diagrama de arquitetura + README (pré-requisitos com Python 3.14; rodar local, Docker e Terraform) | `docs/arquitetura.png`, `README.md` | Manual | um colega entende o fluxo lendo o README | PR |
 | MG6 | qui 05/11 | — | roteiro de 6 min da demo + vídeo v0 | — | — | vídeo salvo em 2 lugares | — |
@@ -225,7 +226,7 @@ Para subir um arquivo:
 
 | # | data | status | objetivo | altera | pronto quando |
 |---|---|---|---|---|---|
-| NA1 | qua 28–qui 29/10 | 🟡 porte no PR #5 | revisar o #5; regras v2 alinhadas ao código (`aprender/seguindo-o-projeto.md`, item 7) | `avaliacao/regras_prompt.md` | PR aberto |
+| NA1 | qua 28–qui 29/10 | 🟡 PR #5 na `main` (27/10); faltam as regras v2 | revisar o #5; regras v2 alinhadas ao código (`aprender/seguindo-o-projeto.md`, item 7) | `avaliacao/regras_prompt.md` | PR aberto |
 | NA2 | sex 30/10 | — | preencher o `cd_cvm` dos 10 casos (busca da tela ou `indicadores.csv` do Drive; WEG = 5410) | `avaliacao/casos_avaliacao.csv` | `tests/test_ponta_a_ponta.py` passa (o Eduardo roda) |
 | NA3 | sáb 31/10–qui 05/11 | — | `tempo_manual.csv` (3 empresas), 3 testes com usuários (sem nome), conta do ROI | `avaliacao/` | 3 testes feitos; ROI com números medidos |
 | NA4 | qua 04/11 | — | `revisao.csv` sobre o `resultados.csv`; métricas | `avaliacao/revisao.csv`, `docs/produto/metricas.md` | % de comparações certas, % de perguntas ligadas ao produto, utilidade, custo, tempo |
