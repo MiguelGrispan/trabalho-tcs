@@ -6,7 +6,7 @@ Náthally (produto e métricas, deck), Miguel (tela e infraestrutura). Banca pre
 
 Antes de qualquer tarefa, leia `docs/PLANO.md` (sessões, datas e donos; a pessoa diz qual sessão está fazendo, ex.: "MA2")
 e `docs/REQUISITOS.md` (o que o guia exige e o status). O que está quebrado, com prova: `aprender/seguindo-o-projeto.md`.
-Material para quem está aprendendo (comandos, guias, notebook passo a passo, atalhos): `aprender/`. Quem usa Codex: o `AGENTS.md` aponta para este arquivo.
+Material para quem está aprendendo (comandos, guias, notebook passo a passo, atalhos): `aprender/`; como usar o Claude Code no time: `aprender/claude-code.md`. Quem usa Codex: o `AGENTS.md` aponta para este arquivo.
 **Sessão nova?** Comece pela seção 0 do `docs/PLANO.md` (situação atual). Depois confira o estado real com
 `gh pr list --state all` e `git log --oneline -15`, porque a nota pode estar velha.
 
@@ -65,6 +65,7 @@ Caminhos: todo código que usa `data/` ou `docs/` aponta para a **raiz** do repo
 3. **Testes antes de dizer "pronto".** Rode `python -m pytest -q` e mostre o resultado. Mudou a tela? Abra a tela também.
    Toda mudança de comportamento vem com teste novo ou atualizado no mesmo PR (lista dos testes: `docs/PLANO.md`, seção 4).
    Ao terminar uma sessão, atualize a seção 0 do `docs/PLANO.md` (situação atual): é por ela que a próxima sessão começa.
+   Atalho: `/fim-de-sessao`. Para aprender a explicar um trecho do código: `/explicar`.
 4. **O LLM nunca escreve números** (regra de ouro). Acima/abaixo/em linha é calculado por código.
 5. **Nada de dados nem `.env` no Git.** Antes de todo commit, rode `git status` e leia a lista.
 6. **A demo não pode quebrar.** O modo sem IA (sem `RAIOX_IA_REAL`) é o plano B: precisa continuar funcionando.

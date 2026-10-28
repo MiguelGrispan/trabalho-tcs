@@ -7,6 +7,7 @@ Leia nesta ordem:
 
 | arquivo | para quê | tempo |
 |---|---|---|
+| [claude-code.md](claude-code.md) | como começar e terminar uma sessão do Claude Code, a frase de abertura, os modos e os limites | 10 min |
 | [COMANDOS.md](COMANDOS.md) | o que rodar, em qual pasta, e o que deve aparecer na tela | consulta |
 | [entenda-o-projeto.md](entenda-o-projeto.md) | o projeto explicado para iniciantes: os conceitos e o caminho dos dados | 20 min |
 | [passo_a_passo.ipynb](passo_a_passo.ipynb) | segue **uma empresa** do começo ao fim e confere cada passo. Antes de cada célula, você prevê o resultado | 40 min |
