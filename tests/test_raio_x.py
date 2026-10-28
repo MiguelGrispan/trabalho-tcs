@@ -2,6 +2,7 @@
 Testes automáticos do Raio-X. Rodar na raiz do repositório:  python -m pytest -q
 Nenhum teste chama a API do Gemini (não gasta crédito).
 """
+import os
 import sys
 from pathlib import Path
 
@@ -180,6 +181,47 @@ def test_graficos_sao_gravados(tmp_path):
     segmentos.grafico_grupos(seg, tmp_path / "grupos.png")
     assert (tmp_path / "silhueta.png").stat().st_size > 0
     assert (tmp_path / "grupos.png").stat().st_size > 0
+
+
+def test_escolher_k_ignora_k_com_grupo_pequeno():
+    # com os dados reais (ED1), k = 4 tinha a maior silhueta (0,77) só porque separava 9 empresas extremas
+    assert segmentos.escolher_k({3: 0.30, 4: 0.77}, {3: 0.15, 4: 0.015}) == 3
+    assert segmentos.escolher_k({3: 0.30, 4: 0.77}, {3: 0.01, 4: 0.015}) == 4   # nenhum vale: fica a maior silhueta
+
+
+def test_segmentar_nao_deixa_grupo_com_menos_de_5_por_cento():
+    # uma empresa extrema (margem de -10.000%, como as do ED1) não pode virar um grupo só dela
+    df, _ = segmentos.carregar_indicadores()
+    extrema = df.iloc[[0]].assign(cd_cvm=99999, margem_ebit=-100.0, margem_liquida=-100.0, endividamento=50.0)
+    df = pd.concat([df, extrema], ignore_index=True)
+    seg, _, _ = segmentos.segmentar(df)
+    assert seg["grupo"].value_counts().min() / len(segmentos.treino(df)) >= segmentos.MENOR_GRUPO
+
+
+def test_empresa_pequena_fica_fora_do_treino_mas_ganha_grupo_e_parecidas():
+    df, _ = segmentos.carregar_indicadores()
+    pequenas = df["cd_cvm"].iloc[:2].tolist()
+    df.loc[:1, "receita"] = segmentos.RECEITA_MINIMA / 2
+    seg, _, _ = segmentos.segmentar(df)
+    assert len(segmentos.treino(df)) == len(df) - 2
+    assert seg["grupo"].notna().all() and all(len(p) == 5 for p in seg["parecidas"])
+    assert not any(c in p for p in seg["parecidas"] for c in pequenas)    # parecidas vêm só do treino
+
+
+def test_segmentos_csv_e_refeito_quando_o_codigo_muda(tmp_path, monkeypatch):
+    # o data/segmentos.csv gravado por uma versão velha do modelo não pode ser reaproveitado
+    monkeypatch.setenv("RAIOX_DADOS", "real")
+    ind, arq = tmp_path / "indicadores.csv", tmp_path / "segmentos.csv"
+    df = pd.read_csv(segmentos.ARQ_FALSO)
+    df.to_csv(ind, index=False)
+    arq.write_text("cd_cvm,grupo,parecidas\n")                           # segmentos.csv velho e vazio
+    antes = Path(segmentos.__file__).stat().st_mtime - 60
+    os.utime(ind, (antes - 60, antes - 60))
+    os.utime(arq, (antes, antes))                                         # mais novo que os dados, mais velho que o código
+    monkeypatch.setattr(segmentos, "ARQ_INDICADORES", ind)
+    monkeypatch.setattr(segmentos, "ARQ_SEGMENTOS", arq)
+    seg = segmentos.carregar_segmentos(df)
+    assert len(seg) == 30 and seg["grupo"].notna().all()
 
 
 # ---------------------------------------------------------------- checador de dados
