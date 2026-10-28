@@ -152,6 +152,7 @@ Todos entram no PR #3, menos os da última linha.
   - quando o Claude começa a esquecer as instruções do início.
   - Nunca use `/clear` com mudança sem commit: anote antes onde parou.
 - **Fim de toda sessão:** `python -m pytest -q` → `git status` (leia a lista) → commit → push → PR → atualizar a seção 0.
+  No Claude Code, `/fim-de-sessao` faz isso passo a passo (`.claude/skills/fim-de-sessao/SKILL.md`).
 
 ### Calendário
 
@@ -352,6 +353,7 @@ Antes da banca, o Eduardo explica em voz alta, sem olhar, cada um destes pontos.
 | `tests/conftest.py` | por que todo teste usa a tabela falsa |
 
 **Método:** ler o trecho → prever o resultado → rodar → só então pedir "explique".
+No Claude Code, `/explicar raiox/segmentos.py matriz` (por exemplo) segue esse método e termina com 3 perguntas como as da banca (`.claude/skills/explicar/SKILL.md`).
 
 ---
 
