@@ -6,7 +6,7 @@ Náthally (produto e métricas, deck), Miguel (tela e infraestrutura). Banca pre
 
 Antes de qualquer tarefa, leia `docs/PLANO.md` (sessões, datas e donos; a pessoa diz qual sessão está fazendo, ex.: "MA2")
 e `docs/REQUISITOS.md` (o que o guia exige e o status). O que está quebrado, com prova: `aprender/seguindo-o-projeto.md`.
-Material para quem está aprendendo (comandos, guias, notebook passo a passo, atalhos): `aprender/`. Quem usa Codex: o `AGENTS.md` aponta para este arquivo.
+Material para quem está aprendendo (comandos, guias, notebook passo a passo, atalhos): `aprender/`; como usar o Claude Code no time: `aprender/claude-code.md`. Quem usa Codex: o `AGENTS.md` aponta para este arquivo.
 **Sessão nova?** Comece pela seção 0 do `docs/PLANO.md` (situação atual). Depois confira o estado real com
 `gh pr list --state all` e `git log --oneline -15`, porque a nota pode estar velha.
 

@@ -13,6 +13,8 @@ como `{margem_ebit}`, um validador remove qualquer dígito fora de marcador e o 
 
 Projeto final da trilha IA Aplicada (SENAI/TCS) · Marcos, Eduardo, Náthally e Miguel.
 
+**Vai programar com o Claude Code?** Comece pelo [aprender/claude-code.md](aprender/claude-code.md): a frase de abertura, os modos e os limites.
+
 **Começando agora?** Abra a pasta [aprender/](aprender/README.md): comandos (o que rodar, em qual pasta), o projeto
 explicado para iniciantes e um notebook que segue uma empresa do começo ao fim. O plano e o que falta: [docs/PLANO.md](docs/PLANO.md).
 
