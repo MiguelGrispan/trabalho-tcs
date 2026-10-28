@@ -59,7 +59,7 @@ Na raiz: `contratos.md`, `REGRAS-IA.md` (regras do time para uso de IA), `CLAUDE
 
 ## Como rodar
 
-Pré-requisitos: Python 3.10 ou mais novo e Git. Todos os comandos rodam na **raiz do repositório**.
+Pré-requisitos: Python 3.14 (a versão do CI e do `requirements.txt`) e Git. Todos os comandos rodam na **raiz do repositório**.
 
 ```bash
 python -m venv .venv
