@@ -99,11 +99,11 @@ rodando os scripts, porque a CVM é pública. Cada pessoa gera o seu `data/` no 
 | **Streamlit** | Biblioteca que transforma um script Python numa página web | `app/streamlit_app.py` |
 | **Contrato** | Combinado do formato que uma parte entrega para outra (nomes de colunas, funções) | `contratos.md` |
 | **Falso** | Arquivo "de mentira" no formato do contrato, para ninguém ficar parado esperando o colega | `falsos/` |
-| **Teste (pytest)** | Código que confere outro código sozinho. `8 passed` = as 8 conferências deram certo | `tests/` |
+| **Teste (pytest)** | Código que confere outro código sozinho. `N passed` = as N conferências deram certo | `tests/` |
 | **`.env`** | Arquivo com a chave secreta do Gemini. Fica só no seu computador, nunca no Git, nunca colado em chat | raiz |
 | **Branch / PR** | Branch é sua cópia de trabalho; pull request (PR) é o pedido para juntar na `main`, revisado por alguém | GitHub |
-| **Docker** | "Caixa" que leva o programa com tudo que ele precisa, para rodar igual em qualquer computador | `Dockerfile` (falta) |
-| **Terraform** | Arquivo que descreve a infraestrutura (a "caixa" e a porta) e cria tudo com um comando | `infra/` (falta) |
+| **Docker** | "Caixa" que leva o programa com tudo que ele precisa, para rodar igual em qualquer computador | `Dockerfile` (em andamento, MG2) |
+| **Terraform** | Arquivo que descreve a infraestrutura (a "caixa" e a porta) e cria tudo com um comando | `infra/` (em andamento, MG3) |
 
 ---
 
@@ -157,13 +157,13 @@ python -m raiox.ia --cvm 90001 --produto "software de gestão de frota" --objeti
 
 ## 7. Como rodar no seu computador
 
-Pré-requisito: Python 3.10 ou mais novo e Git. Todos os comandos rodam na **pasta do repositório** (`trabalho-tcs`).
+Pré-requisito: Python 3.14 e Git. Todos os comandos rodam na **pasta do repositório** (`trabalho-tcs`).
 
 ```bash
 python -m venv .venv                 # cria um ambiente só do projeto (1 vez)
 source .venv/bin/activate            # Mac/Linux   |   Windows: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt      # instala as bibliotecas (1 vez)
-python -m pytest -q                  # deve terminar com "8 passed"
+python -m pytest -q                  # deve terminar com "passed" e nenhum "failed"
 cd app && streamlit run streamlit_app.py     # abre a tela em http://localhost:8501
 ```
 
@@ -211,7 +211,7 @@ Valem para o que o ChatGPT, o Gemini, o Claude **ou um colega** disser sobre o p
    Ferramenta: `grep -n "texto" arquivo.py` mostra a linha.
 3. **Leia o que mudou** antes de aceitar: `git diff` (ou o painel de Controle de Código do VS Code).
 4. **Confira números na fonte.** Pegue 2 ou 3 valores e compare com o site de RI da empresa
-   (o Marcos já fez isso com a WEG: diferença 0,00%, arquivo `conferencia.csv` na branch `tratamento_dados`).
+   (o Marcos já fez isso com a WEG: diferença 0,00%, arquivo `avaliacao/conferencia.csv`).
 5. **Desconfie de:** número sem fonte, "deve funcionar", função que você nunca viu, resposta que muda quando você pergunta de novo.
 6. **Separe "verifiquei" de "acho".** Nos nossos textos, quem afirma algo diz como conferiu.
 

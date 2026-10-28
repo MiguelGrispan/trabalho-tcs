@@ -1,6 +1,6 @@
 # Seguindo o projeto: o que falta, de quem é e como provar
 
-Estado em **26/10/2026**. O status de cada requisito agora fica no [REQUISITOS.md](../docs/REQUISITOS.md) e as datas no
+Estado em **26/10/2026**; os status das seções 2, 3 e 6 foram conferidos de novo em **28/10**. O status de cada requisito agora fica no [REQUISITOS.md](../docs/REQUISITOS.md) e as datas no
 [PLANO.md](../docs/PLANO.md); onde este arquivo divergir deles, valem eles. Escrito pelo Claude Code a pedido do Eduardo, comparando o repositório com o
 guia oficial do projeto final. Para entender os conceitos antes, leia [entenda-o-projeto.md](entenda-o-projeto.md).
 
@@ -57,9 +57,9 @@ as duas linhas `to_csv(... sep=";", decimal=",")` do Marcos (e a `read_csv` corr
 Arquivo para abrir no Excel, se precisar, é um export separado.
 
 ### 2) `cd_cvm` como texto ⬜ (Marcos)
-O contrato diz que `cd_cvm` é número inteiro. O `carregar_dfp.py` e o `indicadores.py` leem como texto, e o
-`raiox/dados.py` devolve texto (`"cd_cvm": str(codigo)...`). Já está anotado no `contratos.md` (C1 e C2).
-**Prova:** `grep -n "str(codigo)" raiox/dados.py` e `grep -n '"cd_cvm": str' scripts/indicadores.py`.
+O contrato diz que `cd_cvm` é número inteiro. O `carregar_dfp.py` e o `indicadores.py` leem como texto.
+O `raiox/dados.py` não converte mais com `str()` (desde o #4), mas devolve o que vem do banco. Já está anotado no `contratos.md` (C1 e C2).
+**Prova:** `grep -n '"cd_cvm": str' scripts/indicadores.py`.
 
 ### 3) A busca de empresas pode oferecer empresa sem raio-x ⬜ (Marcos)
 `buscar_empresas` procura na tabela `contas` do banco. Se a empresa não estiver no `indicadores.csv`, o vendedor
@@ -70,7 +70,7 @@ O C2 também fala numa tabela `indicadores` dentro do `catalogo.db`, mas o `indi
 `grep -n "to_sql" scripts/indicadores.py` não acha nada.
 **Conserto sugerido:** o `indicadores.py` grava também a tabela `indicadores` no banco, e a busca faz `JOIN` com ela.
 
-### 4) O trabalho do Marcos e da Náthally não consegue entrar na `main` ⬜ (Marcos, Náthally)
+### 4) O trabalho do Marcos e da Náthally não consegue entrar na `main` ✅ portado pelos PRs #4 e #5 (27/10)
 As branches `tratamento_dados` e `feat/metricas` foram criadas do zero, sem partir da `main`. O GitHub não junta
 branches sem história em comum. **Prova:** `git merge-base origin/main origin/tratamento_dados` não imprime nada.
 **Conserto:** depois que o PR `fundacao` entrar na `main`, cada um cria uma branch nova a partir dela e copia os
@@ -80,28 +80,29 @@ seus arquivos para a pasta certa (passo a passo na seção 4). Ninguém precisa 
 `app/streamlit_app.py` tem `USAR_DADOS_FALSOS = True`. Trocar para `False` quando os itens 1 a 3 estiverem prontos.
 **Prova:** `grep -n "USAR_DADOS_FALSOS =" app/streamlit_app.py`.
 
-### 6) Um teste vai quebrar no dia em que os dados reais chegarem 🟡 (Eduardo)
-O teste do contrato C3 pede a empresa 90001, que só existe na tabela falsa. Com o `indicadores.csv` real, ela some.
-**Prova:** `grep -n "90001" tests/test_raio_x.py`.
+### 6) Um teste vai quebrar no dia em que os dados reais chegarem ✅ (Eduardo, PR #6)
+O teste do contrato C3 pede a empresa 90001, que só existe na tabela falsa. Desde o #6, o `tests/conftest.py` força a
+tabela falsa em todo teste (`RAIOX_DADOS=falsos`), mesmo com os dados reais na `data/`.
+**Prova:** `grep -n "RAIOX_DADOS" tests/conftest.py`; com a `data/` real, `python -m pytest -q` não tem `failed`.
 
-### 7) As regras do texto estão em duas versões diferentes ⬜ (Náthally + Eduardo)
-A `regras_v1.md` da Náthally (branch `feat/metricas`) e as regras v3 no `raiox/ia.py` não batem:
+### 7) As regras do texto estão em duas versões diferentes 🟡 (Náthally + Eduardo)
+A v1 da Náthally (hoje em `avaliacao/regras_prompt.md`, desde o #5) e as regras v3 no `raiox/ia.py` não batem:
 a v1 não conhece a posição "em linha", pede resumo de 2 a 4 frases (o código pede 2 ou 3) e diz que o LLM recebe
 o nome da empresa (ele não recebe, de propósito: veja `entrada = {...}` em `montar()`).
-**Prova:** `git show origin/feat/metricas:Semana_01/Sexta_23-10/regras_v1.md | grep -n "posicao\|frases"` e `grep -n "entrada = " raiox/ia.py`.
+**Prova:** `grep -n "frases" avaliacao/regras_prompt.md raiox/ia.py` e `grep -n "entrada = " raiox/ia.py`. A v2 é a sessão NA1 do PLANO.
 
-### 8) Não existe empacotamento ⬜ (Miguel)
-Sem `Dockerfile` nem Terraform (comando A). Pontos que precisam estar no desenho: a pasta `data/` entra no
+### 8) Não existe empacotamento 🟡 (Miguel)
+Na `main`, ainda sem `Dockerfile` nem Terraform. O Miguel começou na branch `docs-docker-e-terraform` (27/10), ainda sem PR. Pontos que precisam estar no desenho: a pasta `data/` entra no
 contêiner montada de fora (ela não está no Git); a chave entra como variável sensível, nunca no código nem na imagem;
 o contêiner roda a tela de dentro de `app/` (é onde o Streamlit acha o tema).
 
-### 9) Como os dados chegam a quem não é o Marcos 🟡 (todos)
+### 9) Como os dados chegam a quem não é o Marcos 🟡 combinado: zip da `data/` no Drive (PLANO, seção 5)
 `data/` não vai para o Git. Cada pessoa roda `python scripts/carregar_dfp.py` e `python scripts/indicadores.py`
 (a CVM é pública), ou o Marcos compartilha a pasta `data/` por Drive. Combinem qual dos dois.
 
 ### Pequenos
-- A fonte sai "balanço consolidada" (deveria ser "consolidado"): `raiox/ia.py`, linhas com `"balanço {d}"`. (Eduardo)
-- `scripts/verificar_automatico.py` (branch do Marcos) usa `yfinance`, que não está no `requirements.txt`. (Marcos)
+- ✅ A fonte saía "balanço consolidada" (deveria ser "consolidado"). Consertado no #6: `raiox/ia.py:75`. (Eduardo)
+- ✅ `scripts/verificar_automatico.py` (branch do Marcos) usava `yfinance`. Foi cortado (PLANO, seção 7). (Marcos)
 
 ---
 
@@ -115,13 +116,16 @@ o contêiner roda a tela de dentro de `app/` (é onde o Streamlit acha o tema).
 | `scripts/carregar_dfp.py` | `raiox/dados.py` | `data/catalogo.db` | 🟡 falta filtro e tipo (itens 2 e 3) |
 | `raiox/dados.py` | tela | `buscar_empresas`, `registrar_consulta` (C1) | ⬜ chave na tela (item 5) |
 | `raiox/ia.py` | tela | `preparar_raio_x` (C3) | ✅ testado |
-| `raiox/ia.py` | `avaliacao/avaliar.py` | `preparar_raio_x` (C4) | ⬜ o `avaliar.py` não existe |
-| regras da Náthally | `REGRAS` no `raiox/ia.py` | texto do prompt | ⬜ versões diferentes (item 7) |
-| tela + `data/` | Docker/Terraform | contêiner | ⬜ (item 8) |
+| `raiox/ia.py` | `avaliacao/avaliar.py` | `preparar_raio_x` (C4) | ✅ `avaliar.py` na `main` desde o #6 |
+| regras da Náthally | `REGRAS` no `raiox/ia.py` | texto do prompt | 🟡 versões diferentes (item 7) |
+| tela + `data/` | Docker/Terraform | contêiner | 🟡 branch do Miguel, sem PR (item 8) |
 
 ---
 
 ## 4. Cada um: o que fazer e o que entender
+
+As listas "Fazer" abaixo são de 26/10. As tarefas e as datas de hoje estão no [PLANO.md](../docs/PLANO.md), seção 3.
+As partes "Entender do código" continuam valendo.
 
 ### Eduardo (IA, ML e gestão)
 **Fazer, em ordem:**
@@ -210,14 +214,14 @@ Rode na pasta do repositório, com o ambiente ativado e depois de `git fetch ori
 
 | # | Comando | Deve mostrar |
 |---|---|---|
-| A | `for r in origin/main origin/tratamento_dados origin/feat/metricas; do git ls-tree -r --name-only $r \| grep -ciE '\.bpmn$\|\.ipynb$\|dockerfile\|\.tf$'; done` | `0` três vezes (não há BPMN, notebook, Dockerfile nem Terraform) |
-| B | `python -m pytest -q` | `8 passed` |
+| A | `for r in origin/main origin/tratamento_dados origin/feat/metricas; do git ls-tree -r --name-only $r \| grep -ciE '\.bpmn$\|\.ipynb$\|dockerfile\|\.tf$'; done` | em 28/10: `1` na `main` (o notebook do `aprender/`), `0` na `tratamento_dados` e `1` na `feat/metricas`. Dockerfile e Terraform só na `origin/docs-docker-e-terraform` |
+| B | `python -m pytest -q` | nenhum `failed`. Em 28/10: 61 passed e 3 skipped sem `data/`; 64 passed com a `data/` real |
 | C | `git merge-base origin/main origin/tratamento_dados; echo $?` | só `1` (sem história em comum) |
 | D | o comando do item 1 da seção 2 | `colunas lidas: 1` |
-| E | `grep -n "90001" tests/test_raio_x.py` | a linha do teste do C3 |
+| E | `grep -n "RAIOX_DADOS" tests/conftest.py` | a linha que força a tabela falsa nos testes (item 6) |
 | F | `grep -n "USAR_DADOS_FALSOS =" app/streamlit_app.py` | `USAR_DADOS_FALSOS = True` |
-| G | `git branch -r` | nenhuma branch do Miguel |
-| H | `ls avaliacao/` | só `README.md` |
+| G | `git branch -r` | em 28/10: `origin/docs-docker-e-terraform` (Miguel) |
+| H | `ls avaliacao/` | `README.md`, `avaliar.py`, `casos_avaliacao.csv`, `conferencia.csv`, `regras_prompt.md` |
 
 Se algum resultado for diferente, o projeto mudou depois de 26/10 (ótimo, atualizem este arquivo) ou eu errei
 (avisem e corrijam). Este arquivo é para ser atualizado: quando um item ficar pronto, troquem ⬜ por ✅ e escrevam a prova.
