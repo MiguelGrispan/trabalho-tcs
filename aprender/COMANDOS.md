@@ -30,7 +30,7 @@ No Mac do Eduardo, o ambiente é `~/bootcamp`: `source ~/bootcamp/bin/activate`.
 | ver por que um teste foi pulado | raiz | `python -m pytest -q -rs` | o motivo de cada `skipped` (ex.: "sem data/indicadores.csv") |
 | rodar só um arquivo | raiz | `python -m pytest -q tests/test_raio_x.py` | só os testes daquele arquivo |
 | rodar só os testes com uma palavra no nome | raiz | `python -m pytest -q -k validador` | só os testes do validador |
-| teste de ponta a ponta com os dados reais ⏳ (PR #6) | raiz | `python -m pytest -q tests/test_ponta_a_ponta.py` | passa se você tiver a `data/` real; é pulado se não tiver |
+| teste de ponta a ponta com os dados reais | raiz | `python -m pytest -q tests/test_ponta_a_ponta.py` | passa se você tiver a `data/` real; é pulado se não tiver |
 | dois cliques (Mac) | — | `aprender/atalhos/rodar_testes.command` | a mesma lista de testes, numa janela |
 
 **Deu `failed`?** Leia a última linha do erro. Ela diz o arquivo, a linha e o que era esperado. Não apague o teste: ou o código quebrou, ou o contrato mudou.
@@ -61,10 +61,10 @@ python -c "import pandas as pd; d=pd.read_csv('data/indicadores.csv',sep=';',dec
 | o que | onde | comando | o que deve aparecer |
 |---|---|---|---|
 | agrupar as empresas (K-means) ✅ | raiz | `python -m raiox.segmentos` | a silhueta por k, o k escolhido e o tamanho de cada grupo; cria `data/segmentos.csv` e o gráfico em `docs/graficos/` |
-| forçar a tabela falsa mesmo com os dados reais ⏳ (PR #6) | raiz | `RAIOX_DADOS=falsos python -m raiox.segmentos` | usa as 30 empresas inventadas e não grava nada em `data/` |
+| forçar a tabela falsa mesmo com os dados reais | raiz | `RAIOX_DADOS=falsos python -m raiox.segmentos` | usa as 30 empresas inventadas e não grava nada em `data/` |
 | raio-x **sem IA** (não gasta crédito) ✅ | raiz | `python -m raiox.ia --cvm 90001 --produto "software de frota" --objetivo "conhecer a operação" --sem-ia` | um JSON com empresa, 6 indicadores, grupo, parecidas, resumo, perguntas e lacunas |
 | raio-x **com IA** (≈ US$ 0,0009 por chamada) | raiz | o mesmo comando, sem o `--sem-ia` | o mesmo JSON, com o texto escrito pelo Gemini; em `removidos`, o que o validador barrou |
-| rodar a avaliação dos casos ⏳ (PR #6) | raiz | `python -m avaliacao.avaliar` (sem IA) ou `python -m avaliacao.avaliar --com-ia` | "N casos → avaliacao/resultados.csv · itens removidos: … · custo total: …" |
+| rodar a avaliação dos casos | raiz | `python -m avaliacao.avaliar` (sem IA) ou `python -m avaliacao.avaliar --com-ia` | "N casos → avaliacao/resultados.csv · itens removidos: … · custo total: …" |
 
 Com os dados reais, a WEG é `--cvm 5410`, a Magazine Luiza é `22470` e a Camil é `24228`.
 Com os dados falsos, as empresas vão de `90001` a `90030`.
@@ -132,7 +132,6 @@ Os comandos previstos estão abaixo. Confira com o Miguel quando o PR dele entra
 | `ModuleNotFoundError: No module named 'raiox'` | você não está na raiz | `cd` até a pasta `trabalho-tcs/` e rode de novo |
 | `command not found: streamlit` (ou `pytest`) | o ambiente não está ativado | `source .venv/bin/activate` |
 | `Empresa X não está na tabela de indicadores` | o `cd_cvm` não existe nos dados que você tem (real × falso) | confira com `python -m raiox.segmentos` quais dados estão sendo usados |
-| o teste `test_preparar_raio_x_segue_o_contrato_c3` falha só na sua máquina | você tem os dados reais na `data/` e a `main` ainda não tem o conserto do ED2 | some depois que o PR #6 entrar |
 | a tabela tem 1 coluna só | o CSV está com `;` | use a conversão da seção 3 (até a MA2) |
 | `402` ou "quota" ao chamar a IA | o crédito do Gemini acabou | avise o Eduardo; use o modo sem IA |
 | a tela abre sem as cores do projeto | você rodou da raiz, não de `app/` | `cd app` antes do `streamlit run` |
