@@ -8,7 +8,7 @@ comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguin
 
 **Como usar este plano:**
 - Cada linha das tabelas da seção 3 é uma sessão de trabalho, com um código (por exemplo, MA2).
-- Para começar, abra o Claude Code (ou o Codex) e diga:
+- Para começar, abra o Claude Code e diga:
   > Leia o CLAUDE.md e faça a sessão MA2 do docs/PLANO.md.
 - **Ao terminar uma sessão:**
   1. atualize a seção 0 (situação atual) e a coluna "status" da sessão, no mesmo PR;
@@ -16,7 +16,7 @@ comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguin
 
 **Hipóteses deste plano:**
 - Cada pessoa tem de 6 a 12 h por semana, fora a aula.
-- Eduardo e Marcos usam Claude Code. O Miguel usa Codex ou Claude Code. A Náthally não usa IA para programar: ela sobe arquivos pelo navegador.
+- Eduardo, Marcos e Miguel usam Claude Code (o Miguel desde 28/10). A Náthally não usa IA para programar: ela sobe arquivos pelo navegador.
 - Banca prevista para **qua 18/11 (a confirmar)**.
 
 ---
@@ -205,7 +205,7 @@ Todos entram no PR #3, menos os da última linha.
 | MA5 | qua 04–qui 05/11 | — | BPMN 2.0 com o Raio-X (obrigatório) e o de hoje (se der tempo), no bpmn.io | `docs/bpmn/` | Plan (o Claude só revisa) | abre no bpmn.io; decisões "tem dados?" e "passou no validador?" | PR |
 | MA6 | sáb 07–seg 09/11 | — | montar o `documentacao.pdf` | `docs/documentacao.pdf` | fora do Claude | BPMN + justificativa + ética + arquitetura | PR |
 
-### Miguel (Codex hoje; Claude Code se migrar)
+### Miguel (Claude Code desde 28/10)
 
 | # | data | status | objetivo | altera | modo | pronto quando | git |
 |---|---|---|---|---|---|---|---|
