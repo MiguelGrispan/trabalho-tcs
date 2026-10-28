@@ -31,6 +31,9 @@ ARQ_GRUPOS = PASTA / "docs" / "graficos" / "grupos.png"
 SEMENTE = 42
 K_TESTADOS = range(3, 9)
 N_PARECIDAS = 5
+RECEITA_MINIMA = 10e6     # R$ 10 mi: abaixo disso ficam holdings e empresas sem operação, que distorcem os grupos (ED4)
+CORTE = (0.05, 0.95)      # percentis dos extremos cortados
+MENOR_GRUPO = 0.05        # um k só vale se o menor grupo tiver pelo menos 5% das empresas
 VARIAVEIS = ["log_receita", "cresc_2a", "margem_ebit", "margem_liquida", "endividamento"]
 INDICADORES_NUM = ["receita", "cresc_2a", "margem_ebit", "margem_liquida", "endividamento", "ativo_total"]
 
@@ -47,32 +50,56 @@ def carregar_indicadores() -> tuple[pd.DataFrame, bool]:
     return pd.read_csv(ARQ_INDICADORES), False
 
 
-def matriz(df: pd.DataFrame) -> np.ndarray:
-    """As 5 variáveis prontas para o modelo: log da receita, extremos cortados, nulos preenchidos, padronizadas."""
-    # receita zero ou negativa não tem log: vira vazio e recebe a mediana logo abaixo
-    X = df.assign(log_receita=np.log10(df["receita"].where(df["receita"] > 0)))[VARIAVEIS].copy()
-    for c in VARIAVEIS:                                   # cortar extremos (percentis 1 e 99)
-        X[c] = X[c].clip(X[c].quantile(0.01), X[c].quantile(0.99))
-    X = X.fillna(X.median())                              # nulos: mediana, só para o modelo
-    return StandardScaler().fit_transform(X)              # padronizar: todas as colunas na mesma régua
+def treino(df: pd.DataFrame) -> pd.DataFrame:
+    """As empresas com que o modelo aprende: receita a partir de RECEITA_MINIMA."""
+    return df[df["receita"] >= RECEITA_MINIMA]
+
+
+def variaveis_cruas(df: pd.DataFrame) -> pd.DataFrame:
+    """As 5 variáveis do modelo antes de cortar e padronizar."""
+    # receita zero ou negativa não tem log: vira vazio e recebe a mediana em matriz()
+    return df.assign(log_receita=np.log10(df["receita"].where(df["receita"] > 0)))[VARIAVEIS]
+
+
+def matriz(df: pd.DataFrame, base: pd.DataFrame | None = None) -> np.ndarray:
+    """As 5 variáveis prontas para o modelo: log da receita, extremos cortados, nulos preenchidos, padronizadas.
+    Os limites dos extremos, as medianas e a régua saem de `base` (se não vier, da própria df) e valem para toda a df."""
+    B = variaveis_cruas(df if base is None else base)
+    baixo, alto = B.quantile(CORTE[0]), B.quantile(CORTE[1])
+    B = B.clip(baixo, alto, axis=1)                       # cortar extremos (percentis 5 e 95)
+    mediana = B.median()                                  # nulos: mediana, só para o modelo
+    regua = StandardScaler().fit(B.fillna(mediana))       # padronizar: todas as colunas na mesma régua
+    return regua.transform(variaveis_cruas(df).clip(baixo, alto, axis=1).fillna(mediana))
+
+
+def escolher_k(silhuetas: dict, menores: dict) -> int:
+    """O k de maior silhueta entre os que têm o menor grupo com pelo menos MENOR_GRUPO das empresas.
+    Sem isso, a silhueta premia separar 9 empresas extremas e deixar todas as outras num grupo só."""
+    validos = [k for k in silhuetas if menores[k] >= MENOR_GRUPO] or list(silhuetas)
+    return max(validos, key=silhuetas.get)
 
 
 def segmentar(df: pd.DataFrame):
-    """Devolve (tabela com grupo, percentis e parecidas; silhueta por k; k escolhido)."""
-    Xs = matriz(df)
+    """Devolve (tabela com grupo, percentis e parecidas; silhueta por k; k escolhido).
+    O modelo aprende só com treino(df). As empresas menores entram no grupo mais perto e recebem parecidas do treino."""
+    base = treino(df)
+    Xb, Xs = matriz(base), matriz(df, base)
 
-    silhuetas = {}
+    silhuetas, menores = {}, {}
     for k in K_TESTADOS:
-        km = KMeans(n_clusters=k, n_init=10, random_state=SEMENTE).fit(Xs)
-        silhuetas[k] = float(silhouette_score(Xs, km.labels_))
-    k = max(silhuetas, key=silhuetas.get)                # o número de grupos com a maior silhueta
-    grupos = KMeans(n_clusters=k, n_init=10, random_state=SEMENTE).fit_predict(Xs)
+        km = KMeans(n_clusters=k, n_init=10, random_state=SEMENTE).fit(Xb)
+        silhuetas[k] = float(silhouette_score(Xb, km.labels_))
+        menores[k] = np.bincount(km.labels_).min() / len(base)
+    k = escolher_k(silhuetas, menores)
+    grupos = KMeans(n_clusters=k, n_init=10, random_state=SEMENTE).fit(Xb).predict(Xs)
 
-    vizinhos = NearestNeighbors(n_neighbors=N_PARECIDAS + 1).fit(Xs)
-    _, idx = vizinhos.kneighbors(Xs)                      # a 1ª vizinha é a própria empresa
+    vizinhos = NearestNeighbors(n_neighbors=N_PARECIDAS + 1).fit(Xb)
+    _, idx = vizinhos.kneighbors(Xs)
+    cd_base = base["cd_cvm"].to_numpy()
     out = df.copy()
     out["grupo"] = grupos
-    out["parecidas"] = [list(df["cd_cvm"].iloc[linha[1:]]) for linha in idx]
+    out["parecidas"] = [[c for c in cd_base[linha] if c != cd][:N_PARECIDAS]   # tira a própria empresa
+                        for cd, linha in zip(df["cd_cvm"], idx)]
     for i in INDICADORES_NUM:                             # posição da empresa dentro do grupo (0 a 100)
         out[f"pct_{i}"] = (out.groupby("grupo")[i].rank(pct=True) * 100).round(0)
     return out, silhuetas, k
@@ -91,7 +118,9 @@ def carregar_segmentos(df: pd.DataFrame) -> pd.DataFrame:
     Com a tabela falsa, agrupa na memória: o data/segmentos.csv é só dos dados reais."""
     if usando_falsos():
         return segmentar(df)[0]
-    velho = (not ARQ_SEGMENTOS.exists()) or ARQ_SEGMENTOS.stat().st_mtime < ARQ_INDICADORES.stat().st_mtime
+    # velho: mais antigo que os dados ou que este código (mudou o modelo, refaz os grupos)
+    velho = (not ARQ_SEGMENTOS.exists()) or ARQ_SEGMENTOS.stat().st_mtime < max(
+        ARQ_INDICADORES.stat().st_mtime, Path(__file__).stat().st_mtime)
     if velho:
         seg, _, _ = segmentar(df)
         salvar(seg)
@@ -112,7 +141,7 @@ def grafico_grupos(seg: pd.DataFrame, caminho: Path = ARQ_GRUPOS) -> None:
     """Os grupos num gráfico 2D: as 5 variáveis resumidas em 2 eixos (PCA). Cada ponto é uma empresa."""
     from sklearn.decomposition import PCA
     pca = PCA(n_components=2, random_state=SEMENTE)
-    pontos = pca.fit_transform(matriz(seg))
+    pontos = pca.fit_transform(matriz(seg, treino(seg)))
     plt = _plt()
     caminho.parent.mkdir(parents=True, exist_ok=True)
     fig, ax = plt.subplots(figsize=(6, 4.5))
@@ -154,6 +183,7 @@ if __name__ == "__main__":
         salvar(seg)                                       # data/segmentos.csv é só dos dados reais
     grafico_silhueta(silhuetas, k)
     grafico_grupos(seg)
+    print(f"Empresas no treino (receita a partir de R$ {RECEITA_MINIMA / 1e6:.0f} mi): {len(treino(df))} de {len(df)}")
     print("Silhueta por k:", {kk: round(v, 2) for kk, v in silhuetas.items()}, "→ k escolhido:", k)
     print("\nTamanho e perfil típico (mediana) de cada grupo:")
     resumo = seg.groupby("grupo").agg(empresas=("cd_cvm", "size"), receita_mi=("receita", "median"),

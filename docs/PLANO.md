@@ -23,18 +23,37 @@ comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguin
 
 ## 0. Situação atual (atualize a cada sessão)
 
-**Em qua 28/10, manhã** (sessão do Eduardo com o Claude Code).
+**Em qua 28/10, 11h30** (sessão do Eduardo com o Claude Code: documentos, guia e skills do Claude Code, ED4, plano da Náthally).
 
 **Retomando numa sessão nova do Claude Code?**
 1. Cole: "Leia o CLAUDE.md e a seção 0 do docs/PLANO.md. Confira o estado real com `gh pr list --state all` e
-   `git log --oneline -15`. Depois faça a sessão ED4."
+   `git log --oneline -15`. Depois faça a sessão ED3" (só se as regras v2 da Náthally já chegaram; se não, adiante a ED8,
+   que não depende de ninguém). Guia de como usar o Claude Code: `aprender/claude-code.md`.
 2. Antes de mexer em qualquer coisa, a sessão deve dizer o que mudou desde esta nota.
 
 **O que mudou desde 27/10, noite:**
+- **ED4 feito (PR #9, `eduardo-segmentacao`; depende do #7).** Os grupos com os dados reais agora fazem sentido:
+  - o modelo aprende só com as empresas com receita a partir de R$ 10 mi (562 de 595), corta os extremos em 5/95 e só aceita
+    um k cujo menor grupo tenha pelo menos 5% das empresas (`raiox/segmentos.py`: `treino()`, `matriz()`, `escolher_k()`);
+  - resultado: k = 4, silhueta 0,30, grupos de 330, 99, 74 e 59 empresas no treino (`python -m raiox.segmentos`);
+  - as 33 empresas menores continuam com raio-x: entram no grupo mais perto e recebem parecidas do treino;
+  - os 4 grupos: **grandes e estáveis** (333 empresas, receita mediana R$ 3,3 bi, margem EBIT 14%), **crescimento acelerado**
+    (65; +126% em 2 anos: Minerva, Aegea, Eneva), **no prejuízo** (90; margem EBIT −8%: Braskem, Oncoclínicas) e **margem muito
+    alta** (107; margem EBIT 55%: energia elétrica, concessões, B3, Itaúsa);
+  - **decisão sobre o setor:** as parecidas têm o mesmo perfil financeiro, não o mesmo setor (WEG → Cemig, Copel; Magazine Luiza →
+    Ultrapar, Vibra, BRF). O filtro de setor já estava cortado (seção 7); isso se explica na banca;
+  - gráficos de antes e depois em `docs/graficos/` (a silhueta 0,77 de antes "enganava");
+  - o `data/segmentos.csv` agora é refeito quando o código do modelo muda;
+  - o notebook `aprender/passo_a_passo.ipynb` chama as funções em vez de copiar o código;
+  - **falta:** o Marcos confirmar o corte de R$ 10 mi (constante `RECEITA_MINIMA`), na MA3.
+- **Claude Code para o time (PR #8):** o guia `aprender/claude-code.md` (frase de abertura, modos, limites, fim de sessão) e as
+  skills `/explicar` (treino para a banca) e `/fim-de-sessao` (regra 3 do CLAUDE.md), em `.claude/skills/`.
+- **O Miguel passou a usar o Claude Code** (28/10): os 3 que programam usam a mesma ferramenta.
+- **Merge simulado em 28/10, na ordem #7 → #8 → #9:** sem conflito. Revisão: #7 e #8, Miguel ou Marcos; #9, Marcos (corte de R$ 10 mi).
 - **Os PRs #3 a #6 entraram na `main`** em 27/10 (o Miguel fez o merge). O CI ficou verde nos 4 merges.
 - **Testes:**
   - no CI, sem `data/`: 61 passed e 3 skipped (rodada 40544159668);
-  - na máquina do Eduardo, com a `data/` real: 64 passed. O erro do teste do C3 sumiu.
+  - na máquina do Eduardo, com a `data/` real: 64 passed na `main` e 68 passed com o #9 (4 testes novos da segmentação). O erro do teste do C3 sumiu.
 - **Branches apagadas em 28/10**, porque já estavam inteiras na `main` (`git branch -r --merged origin/main`): `eduardo`, `fundacao`,
   `eduardo-padronizacao`, `eduardo-ia-testes`, `marcos-porta-dados` e `nathally-produto`. Se precisar de uma, o botão
   "Restore branch" fica na página do PR.
@@ -52,7 +71,7 @@ comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguin
 
 | parte | feito | falta |
 |---|---|---|
-| núcleo do produto: dados, ML, IA, validador, avaliação | ~70% | MA2, ED4, ED3, ED7 |
+| núcleo do produto: dados, ML, IA, validador, avaliação | ~75% | MA2, ED3, ED7 (ED4 feito em 28/10) |
 | tela e infraestrutura | ~25% | MG2 a MG4 (Docker e Terraform começaram na branch do Miguel, sem PR) |
 | entregáveis: BPMN, EDA, PDF, deck, vídeo, ensaios | ~10% | quase tudo, mas não depende de código novo |
 | **total** | **~40%** | com 8 de 26 dias usados (~31%): ainda à frente no código e atrás na infra |
@@ -68,18 +87,17 @@ os guias e o notebook `passo_a_passo.ipynb`, que segue uma empresa do começo ao
 - **Conferência:** a receita da WEG bate com a conferência do Marcos.
 - **Formato:** o `indicadores.csv` ainda sai com `;` e vírgula decimal (`scripts/indicadores.py:24`). O Eduardo converteu só na `data/` dele, até a MA2.
 - **Raio-x:** 3 gerados com IA (Camil, Magazine Luiza, WEG), sem nenhum item removido pelo validador, por US$ 0,0026 no total. Estão em `data/ed1/` (fora do Git, só na máquina do Eduardo).
-- **Problema achado (ED4):**
+- **Problema achado (resolvido no ED4, 28/10):**
   - com os dados reais, o K-means escolhe k = 4 com silhueta 0,77, mas um grupo tem 567 das 595 empresas e os outros têm 9, 9 e 10;
   - a silhueta alta só mede a separação das empresas extremas (margens de −10.000%);
   - com isso, o "grupo" vira quase todas as empresas, e as "parecidas" não fazem sentido.
-- **Conserto testado:** tirar as empresas com receita abaixo de R$ 10 mi e cortar os extremos em 5/95 dá k = 4 com grupos de 330, 99, 74 e 59 empresas (silhueta 0,30). Detalhes na linha do ED4.
-  Mesmo assim, as parecidas da WEG viram Cemig, Copel, Axia, Votorantim Cimentos e Telefônica: o perfil financeiro é parecido, o setor não. No ED4, decidir entre filtrar por setor ou explicar isso na banca.
+- **Conserto:** veja o ED4 em "O que mudou", acima.
 
 **Pendências da revisão de 27/10:**
 - **Regra de ouro:** o validador já barra número por extenso, ½, ² e produto numérico (`test_regra_de_ouro_*`, na `main` desde o #6).
   **Falta:** o prompt (`REGRAS` em `raiox/ia.py`) ainda não proíbe número por extenso; a regra 1 da v1 da Náthally já proíbe (`avaliacao/regras_prompt.md:49`). Fazer na ED3.
 - **Testes que não pegaram o código estragado de propósito** (consertar quem é dono):
-  - Eduardo: a célula 9 do `aprender/passo_a_passo.ipynb` copia o `matriz()` em vez de chamar a função, então o ED4 deixa o notebook velho sem o CI avisar; o `tests/test_aprender.py` exige exatamente "5 passed".
+  - Eduardo: o `tests/test_aprender.py` exige exatamente "5 passed" no notebook (a célula 9 já chama as funções, desde o ED4).
   - Marcos: `test_resolver_conflitos_trata_valor_vazio_como_divergente` passa só pela ordem das linhas; `test_obter_indicadores_deixa_ausente_…` não olha o `ativo_total`; `test_calcular_exporta_…` não tem receita de 2 anos antes igual a zero.
   - Eduardo: `test_casos_avaliacao_do_repositorio_segue_o_c4` não confere a coluna `empresa`; `test_casos_de_avaliacao_existem_na_tabela_real` passa sem testar nada enquanto os `cd_cvm` estiverem vazios.
 - **Outros achados:** com dados reais, a tela mostra "empresas e números inventados" (MG4); o C4 diz que o `conferencia.csv` é da Náthally, mas quem escreve é o Marcos.
@@ -87,18 +105,34 @@ os guias e o notebook `passo_a_passo.ipynb`, que segue uma empresa do começo ao
 **Próximo passo de cada um:**
 - **Miguel:** abrir o PR da `docs-docker-e-terraform` (MG2; o Eduardo revisa) e terminar a MG1 (só merge commit, apagar branch após o merge, check `testes` obrigatório).
 - **Marcos:** MA2 (CSV padrão e `cd_cvm` int). Dizer se a `tratamento_dados` pode ser apagada. Na MA3, decidir o corte de receita mínima junto com o Eduardo.
-- **Náthally:** escrever as regras v2 (NA1), usando as notas no fim de `data/ed1/raiox_para_nathally.md`. Dizer se a `feat/metricas` pode ser apagada.
+- **Náthally:** só 2 coisas travam o código, as duas até sex 30/10:
+  1. **regras v2** (NA1, `avaliacao/regras_prompt.md`), com base no `data/ed1/raiox_para_nathally.md` (fora do Git: o Eduardo manda).
+     O que mudar, conferido no código:
+     - a IA não recebe o nome da empresa nem o ano (`raiox/ia.py:96`);
+     - a posição tem 4 valores: acima, abaixo, em linha e sem dado (`raiox/ia.py:85-87`);
+     - o resumo tem 2 ou 3 frases no código e de 2 a 4 na v1;
+     - o valor do grupo vira "do grupo ({x_grupo})";
+     - as lacunas num formato só;
+     - decidir se limita adjetivos;
+  2. **OK nos `cd_cvm` dos 10 casos** (NA2). O Eduardo levantou os códigos na `data/` real e preenche com o OK dela:
+     Camil 24228, CSN 4030, Magazine Luiza 22470, Petrobras 9512, Embraer 20087, Suzano S.A. 13986 (ou a holding 9067),
+     RD Saúde 5258, Localiza Rent a Car 19739 (ou a Fleet 24813), WEG 5410, Telefônica 17671.
+  - O resto é entrega dela e não trava o código: tempo manual e ROI, testes com usuários, revisão dos 10 raio-x (depois da ED7),
+    texto de ética (o Marcos precisa até 07/11) e o deck. Dizer se a `feat/metricas` pode ser apagada.
 - **Eduardo:**
-  1. confirmar se a mensagem ao grupo e o `data/ed1/raiox_para_nathally.md` já foram mandados (esta nota não sabe);
-  2. pedir revisão do PR desta atualização;
-  3. ED4 (consertar a segmentação) numa branch nova a partir da `main`: `eduardo-segmentacao`;
-  4. revisar o PR do Docker quando o Miguel abrir.
+  1. ✅ 28/10: mensagem enviada à Náthally e revisão dos PRs pedida ao grupo. Confirmar se o `data/ed1/raiox_para_nathally.md` foi junto;
+  2. preencher o "Eu conferi" dos PRs #7, #8 e #9 e pedir as revisões; depois do merge, `git switch main` e `git pull`;
+  3. pedir ao Marcos o OK do corte de R$ 10 mi;
+  4. adiantar a ED8 (justificativa técnica), que não depende de ninguém, enquanto as regras v2 não chegam;
+  5. estudar o ED4 com `/explicar raiox/segmentos.py segmentar` (seção 8), depois do merge do #9;
+  6. revisar o PR do Docker quando o Miguel abrir; ED3 quando chegarem as regras v2; ED7 quando os `cd_cvm` estiverem preenchidos.
 
 **Decisões em aberto:**
 - data e horário da banca;
 - `scripts/dados.py` e `raiox/dados.py`: ficar com um só (Marcos decide);
 - nome da pasta da infraestrutura: `infra/` ou `terraform/` (Miguel, no PR do Docker);
-- apagar `tratamento_dados` e `feat/metricas` (Marcos e Náthally).
+- apagar `tratamento_dados` e `feat/metricas` (Marcos e Náthally);
+- Suzano e Localiza nos casos de avaliação: qual das duas empresas de cada uma (Náthally).
 
 ---
 
@@ -186,7 +220,7 @@ Todos entram no PR #3, menos os da última linha.
 | ED1 | 27/10 | ✅ `data/ed1/` | 3 raio-x reais para a Náthally: roda os scripts do Marcos (branch do #4) e converte o CSV só na sua `data/` | nada no Git | Manual | 3 empresas de setores diferentes, `removidos` conferido, enviado | nenhum |
 | ED2 | 27/10 | ✅ PR #6 | testes sem depender de `data/` (`RAIOX_DADOS`); "balanço consolidado" | `raiox/`, `tests/` | — | 17 passam | `eduardo-ia-testes` |
 | ED3 | sex 30/10 | — | regras v2 da Náthally no `REGRAS` | `raiox/ia.py` | Manual | 3 chamadas reais sem item removido por dígito | PR (Náthally lê) |
-| ED4 | qua 28/10 | 🟡 código do #6 na `main`; problema achado no ED1 | numa branch nova a partir da `main`: consertar a segmentação real: receita mínima de R$ 10 mi (combinar com o Marcos) e corte dos extremos em 5/95 em `matriz()`; só aceitar o k cujo menor grupo tenha pelo menos 5% das empresas; teste novo para isso; olhar 2 grupos; explicar `matriz()` e o PCA. Os gráficos de antes estão em `data/ed1/*_antes_ed4.png` e servem para a banca ("a silhueta alta enganava") | `raiox/segmentos.py`, `tests/`, `docs/graficos/*.png`, REQUISITOS (k, silhueta) | Plan | nenhum grupo com menos de 5% das empresas; "parecidas" de 3 empresas conhecidas fazem sentido; 2 PNG reais | `eduardo-segmentacao` → PR |
+| ED4 | qua 28/10 | ✅ PR #9 | numa branch nova a partir da `main`: consertar a segmentação real: receita mínima de R$ 10 mi (combinar com o Marcos) e corte dos extremos em 5/95 em `matriz()`; só aceitar o k cujo menor grupo tenha pelo menos 5% das empresas; teste novo para isso; olhar 2 grupos; explicar `matriz()` e o PCA. Os gráficos de antes estão em `data/ed1/*_antes_ed4.png` e servem para a banca ("a silhueta alta enganava") | `raiox/segmentos.py`, `tests/`, `docs/graficos/*.png`, REQUISITOS (k, silhueta) | Plan | nenhum grupo com menos de 5% das empresas; "parecidas" de 3 empresas conhecidas fazem sentido; 2 PNG reais | `eduardo-segmentacao` → PR |
 | ED5 | 27/10 | ✅ PR #6 | `avaliacao/avaliar.py` (C4) | `avaliacao/`, `tests/` | — | `python -m avaliacao.avaliar` grava o C4 | `eduardo-ia-testes` |
 | ED6 | 27/10 | ✅ PR #6 | teste ponta a ponta (pula sem `data/`) | `tests/test_ponta_a_ponta.py` | — | pula no CI; roda local com dados reais | `eduardo-ia-testes` |
 | ED7 | dom 01/11 | — | `python -m avaliacao.avaliar --com-ia` nos 10 casos (avisar o grupo) | `avaliacao/resultados.csv` | Manual | 10 linhas; custo anotado (< US$ 0,05) | PR |
@@ -247,7 +281,7 @@ Para subir um arquivo:
 | arquivo | o que testa | dono | roda no CI? |
 |---|---|---|---|
 | `tests/conftest.py` | todo teste usa a tabela falsa (`RAIOX_DADOS=falsos`) e nada grava em `data/` | Eduardo | sim |
-| `tests/test_raio_x.py` | validador (regra de ouro), contrato C3, fonte, modo sem IA nas 30 empresas falsas, `RAIOX_DADOS`, segmentação (k = 3, 29 de 30), gráficos, checador | Eduardo | sim |
+| `tests/test_raio_x.py` | validador (regra de ouro), contrato C3, fonte, modo sem IA nas 30 empresas falsas, `RAIOX_DADOS`, segmentação (k = 3, 29 de 30; menor grupo ≥ 5%; empresas pequenas fora do treino; `segmentos.csv` refeito quando o código muda), gráficos, checador | Eduardo | sim |
 | `tests/test_avaliar.py` | `avaliar.py`: colunas do C4, casos válidos, caso com erro, formato do `casos_avaliacao.csv` | Eduardo | sim |
 | `tests/test_limpeza.py`, `test_carregar_dfp.py`, `test_dados.py` (PR #4) | regras de limpeza, carga da DFP (rede simulada), catálogo SQLite e C1 | Marcos | sim |
 | `tests/test_contratos.py` (MA2) | C1 e C2 com os falsos: CSV padrão, `cd_cvm` int | Marcos | sim |
@@ -345,9 +379,9 @@ Antes da banca, o Eduardo explica em voz alta, sem olhar, cada um destes pontos.
 
 | arquivo e função | o que explicar |
 |---|---|
-| `raiox/segmentos.py`, `matriz()` | por que a receita entra em log, por que cortar extremos, por que a mediana nos nulos, o que o `StandardScaler` faz |
-| `raiox/segmentos.py`, `segmentar()` | K-means, silhueta, por que k vai de 3 a 8, `NearestNeighbors` com 6 vizinhos |
-| `raiox/segmentos.py`, `grafico_grupos()` | o que o PCA faz e o que significa "61% da variação" |
+| `raiox/segmentos.py`, `treino()` e `matriz()` | por que só receita a partir de R$ 10 mi, por que a receita entra em log, por que cortar extremos em 5/95, por que a mediana nos nulos, o que o `StandardScaler` faz |
+| `raiox/segmentos.py`, `segmentar()` e `escolher_k()` | K-means, silhueta, por que k vai de 3 a 8, por que a silhueta 0,77 enganava e a regra dos 5%, `NearestNeighbors` com 6 vizinhos |
+| `raiox/segmentos.py`, `grafico_grupos()` | o que o PCA faz e o que significa "39% + 20% da variação" nos eixos |
 | `raiox/ia.py`, `montar()` | o que vai para o LLM e o que nunca vai (`valores`) |
 | `raiox/ia.py`, `validar_e_preencher()` | por que a IA não consegue escrever número na tela |
 | `avaliacao/avaliar.py`, `avaliar()` | o laço, por que um erro não para a rodada, as colunas do C4 |
