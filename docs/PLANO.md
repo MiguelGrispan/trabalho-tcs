@@ -23,11 +23,12 @@ comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguin
 
 ## 0. Situação atual (atualize a cada sessão)
 
-**Em qua 28/10, fim da manhã** (sessão do Eduardo com o Claude Code: documentos, skills e ED4).
+**Em qua 28/10, 11h30** (sessão do Eduardo com o Claude Code: documentos, guia e skills do Claude Code, ED4, plano da Náthally).
 
 **Retomando numa sessão nova do Claude Code?**
 1. Cole: "Leia o CLAUDE.md e a seção 0 do docs/PLANO.md. Confira o estado real com `gh pr list --state all` e
-   `git log --oneline -15`. Depois faça a sessão ED3" (precisa das regras v2 da Náthally; até lá, revisões).
+   `git log --oneline -15`. Depois faça a sessão ED3" (só se as regras v2 da Náthally já chegaram; se não, adiante a ED8,
+   que não depende de ninguém). Guia de como usar o Claude Code: `aprender/claude-code.md`.
 2. Antes de mexer em qualquer coisa, a sessão deve dizer o que mudou desde esta nota.
 
 **O que mudou desde 27/10, noite:**
@@ -45,7 +46,10 @@ comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguin
   - o `data/segmentos.csv` agora é refeito quando o código do modelo muda;
   - o notebook `aprender/passo_a_passo.ipynb` chama as funções em vez de copiar o código;
   - **falta:** o Marcos confirmar o corte de R$ 10 mi (constante `RECEITA_MINIMA`), na MA3.
-- **Skills do time (PR #8):** `/explicar` (treino para a banca) e `/fim-de-sessao` (regra 3 do CLAUDE.md), em `.claude/skills/`.
+- **Claude Code para o time (PR #8):** o guia `aprender/claude-code.md` (frase de abertura, modos, limites, fim de sessão) e as
+  skills `/explicar` (treino para a banca) e `/fim-de-sessao` (regra 3 do CLAUDE.md), em `.claude/skills/`.
+- **O Miguel passou a usar o Claude Code** (28/10): os 3 que programam usam a mesma ferramenta.
+- **Merge simulado em 28/10, na ordem #7 → #8 → #9:** sem conflito. Revisão: #7 e #8, Miguel ou Marcos; #9, Marcos (corte de R$ 10 mi).
 - **Os PRs #3 a #6 entraram na `main`** em 27/10 (o Miguel fez o merge). O CI ficou verde nos 4 merges.
 - **Testes:**
   - no CI, sem `data/`: 61 passed e 3 skipped (rodada 40544159668);
@@ -101,19 +105,35 @@ os guias e o notebook `passo_a_passo.ipynb`, que segue uma empresa do começo ao
 **Próximo passo de cada um:**
 - **Miguel:** abrir o PR da `docs-docker-e-terraform` (MG2; o Eduardo revisa) e terminar a MG1 (só merge commit, apagar branch após o merge, check `testes` obrigatório).
 - **Marcos:** MA2 (CSV padrão e `cd_cvm` int). Dizer se a `tratamento_dados` pode ser apagada. Na MA3, decidir o corte de receita mínima junto com o Eduardo.
-- **Náthally:** escrever as regras v2 (NA1), usando as notas no fim de `data/ed1/raiox_para_nathally.md`. Dizer se a `feat/metricas` pode ser apagada.
+- **Náthally:** só 2 coisas travam o código, as duas até sex 30/10:
+  1. **regras v2** (NA1, `avaliacao/regras_prompt.md`), com base no `data/ed1/raiox_para_nathally.md` (fora do Git: o Eduardo manda).
+     O que mudar, conferido no código:
+     - a IA não recebe o nome da empresa nem o ano (`raiox/ia.py:96`);
+     - a posição tem 4 valores: acima, abaixo, em linha e sem dado (`raiox/ia.py:85-87`);
+     - o resumo tem 2 ou 3 frases no código e de 2 a 4 na v1;
+     - o valor do grupo vira "do grupo ({x_grupo})";
+     - as lacunas num formato só;
+     - decidir se limita adjetivos;
+  2. **OK nos `cd_cvm` dos 10 casos** (NA2). O Eduardo levantou os códigos na `data/` real e preenche com o OK dela:
+     Camil 24228, CSN 4030, Magazine Luiza 22470, Petrobras 9512, Embraer 20087, Suzano S.A. 13986 (ou a holding 9067),
+     RD Saúde 5258, Localiza Rent a Car 19739 (ou a Fleet 24813), WEG 5410, Telefônica 17671.
+  - O resto é entrega dela e não trava o código: tempo manual e ROI, testes com usuários, revisão dos 10 raio-x (depois da ED7),
+    texto de ética (o Marcos precisa até 07/11) e o deck. Dizer se a `feat/metricas` pode ser apagada.
 - **Eduardo:**
-  1. confirmar se a mensagem ao grupo e o `data/ed1/raiox_para_nathally.md` já foram mandados (esta nota não sabe);
-  2. pedir revisão dos PRs #7 (documentos), #8 (skills) e #9 (ED4), nesta ordem de merge;
+  1. mandar ao grupo a mensagem dos PRs e do guia, e à Náthally a mensagem e o `data/ed1/raiox_para_nathally.md`
+     (redigidas na sessão de 28/10; esta nota não sabe se já foram);
+  2. preencher o "Eu conferi" dos PRs #7, #8 e #9 e pedir as revisões; depois do merge, `git switch main` e `git pull`;
   3. pedir ao Marcos o OK do corte de R$ 10 mi;
-  4. estudar o ED4 com `/explicar raiox/segmentos.py segmentar` (seção 8);
-  5. revisar o PR do Docker quando o Miguel abrir; ED3 quando chegarem as regras v2.
+  4. adiantar a ED8 (justificativa técnica), que não depende de ninguém, enquanto as regras v2 não chegam;
+  5. estudar o ED4 com `/explicar raiox/segmentos.py segmentar` (seção 8), depois do merge do #9;
+  6. revisar o PR do Docker quando o Miguel abrir; ED3 quando chegarem as regras v2; ED7 quando os `cd_cvm` estiverem preenchidos.
 
 **Decisões em aberto:**
 - data e horário da banca;
 - `scripts/dados.py` e `raiox/dados.py`: ficar com um só (Marcos decide);
 - nome da pasta da infraestrutura: `infra/` ou `terraform/` (Miguel, no PR do Docker);
-- apagar `tratamento_dados` e `feat/metricas` (Marcos e Náthally).
+- apagar `tratamento_dados` e `feat/metricas` (Marcos e Náthally);
+- Suzano e Localiza nos casos de avaliação: qual das duas empresas de cada uma (Náthally).
 
 ---
 
