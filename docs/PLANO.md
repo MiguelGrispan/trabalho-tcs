@@ -120,8 +120,7 @@ os guias e o notebook `passo_a_passo.ipynb`, que segue uma empresa do começo ao
   - O resto é entrega dela e não trava o código: tempo manual e ROI, testes com usuários, revisão dos 10 raio-x (depois da ED7),
     texto de ética (o Marcos precisa até 07/11) e o deck. Dizer se a `feat/metricas` pode ser apagada.
 - **Eduardo:**
-  1. mandar ao grupo a mensagem dos PRs e do guia, e à Náthally a mensagem e o `data/ed1/raiox_para_nathally.md`
-     (redigidas na sessão de 28/10; esta nota não sabe se já foram);
+  1. ✅ 28/10: mensagem enviada à Náthally e revisão dos PRs pedida ao grupo. Confirmar se o `data/ed1/raiox_para_nathally.md` foi junto;
   2. preencher o "Eu conferi" dos PRs #7, #8 e #9 e pedir as revisões; depois do merge, `git switch main` e `git pull`;
   3. pedir ao Marcos o OK do corte de R$ 10 mi;
   4. adiantar a ED8 (justificativa técnica), que não depende de ninguém, enquanto as regras v2 não chegam;
