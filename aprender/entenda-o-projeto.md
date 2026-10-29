@@ -56,7 +56,7 @@ O código está em `raiox/ia.py`, funções `checar()` e `validar_e_preencher()`
 
 ```
 PREPARAÇÃO  (roda 1 vez, demora minutos; refaz quando sai balanço novo)
-  Site da CVM ──► scripts/carregar_dfp.py ──► data/contas.csv + data/catalogo.db   (Marcos)
+  Site da CVM ──► scripts/carregar_dfp.py ──► data/contas.csv + PostgreSQL   (Marcos)
                   scripts/indicadores.py  ──► data/indicadores.csv  (6 números por empresa)
                   raiox/checagem.py       ──► aponta empresas com números suspeitos
                   raiox/segmentos.py      ──► data/segmentos.csv  (grupo + 5 parecidas)   (Eduardo)
@@ -84,7 +84,7 @@ rodando os scripts, porque a CVM é pública. Cada pessoa gera o seu `data/` no 
 | **CVM / DFP** | A CVM é quem fiscaliza a bolsa; DFP é o balanço anual que toda companhia aberta entrega a ela, publicado em CSV | `scripts/carregar_dfp.py` |
 | **CSV** | Planilha em texto: uma linha por registro, colunas separadas por vírgula (ou ponto e vírgula) | `data/*.csv`, `falsos/*.csv` |
 | **Pandas** | Biblioteca Python para ler e limpar tabelas (o "Excel do Python") | todo o código |
-| **SQL / SQLite** | Linguagem para consultar tabelas; SQLite é um banco de dados que é um arquivo só (`catalogo.db`) | `raiox/dados.py` |
+| **SQL / PostgreSQL** | SQL é a linguagem para consultar tabelas; PostgreSQL é o banco de dados que guarda o catálogo (endereço em `DATABASE_URL`, no `.env`) | `raiox/dados.py` |
 | **Nulo** | Valor que falta. Aqui ele **continua faltando** (a tela mostra "sem dado"); nunca é inventado | `raiox/ia.py`, `fmt()` |
 | **K-means** | Algoritmo de ML que separa as empresas em grupos de perfil parecido, sem ninguém dizer a resposta certa (não supervisionado) | `raiox/segmentos.py` |
 | **Silhueta** | Nota de 0 a 1 que diz o quanto os grupos ficaram bem separados; testamos de 3 a 8 grupos e ficamos com a maior nota | `segmentar()` |
@@ -113,7 +113,7 @@ rodando os scripts, porque a CVM é pública. Cada pessoa gera o seu `data/` no 
 raiox/          o cérebro (Python puro, sem tela)
   ia.py           monta os números, chama o Gemini, valida, preenche  ........ Eduardo
   segmentos.py    K-means + 5 parecidas  ...................................... Eduardo
-  dados.py        busca empresas e registra consultas no SQLite (contrato C1) .. Marcos
+  dados.py        busca empresas e registra consultas no PostgreSQL (contrato C1) .. Marcos
   checagem.py     regras que apontam números suspeitos; IA opcional só explica . Marcos
 app/            a tela (Streamlit) e o tema  ................................. Miguel
 scripts/        preparação dos dados da CVM (rodam 1 vez)  ................... Marcos
@@ -173,7 +173,7 @@ copie `.env.example` para `.env`, cole a chave e rode `cd app && RAIOX_IA_REAL=1
 Para gerar os dados reais (precisa de internet, alguns minutos):
 
 ```bash
-python scripts/carregar_dfp.py       # baixa a CVM → data/contas.csv e data/catalogo.db
+python scripts/carregar_dfp.py       # baixa a CVM → data/contas.csv e o PostgreSQL
 python scripts/indicadores.py        # → data/indicadores.csv
 ```
 
