@@ -1,8 +1,9 @@
 # Seguindo o projeto: o que falta, de quem é e como provar
 
-Estado em **26/10/2026**; os status das seções 2, 3 e 6 foram conferidos de novo em **28/10**. O status de cada requisito agora fica no [REQUISITOS.md](../docs/REQUISITOS.md) e as datas no
-[PLANO.md](../docs/PLANO.md); onde este arquivo divergir deles, valem eles. Escrito pelo Claude Code a pedido do Eduardo, comparando o repositório com o
-guia oficial do projeto final. Para entender os conceitos antes, leia [entenda-o-projeto.md](entenda-o-projeto.md).
+**Foto de 26/10/2026** (seções 2, 3 e 6 conferidas de novo em 28/10). Serve para aprender a diagnosticar um projeto e a
+provar cada afirmação com um comando, **não** para saber o que fazer hoje: o status de cada requisito está no
+[REQUISITOS.md](../docs/REQUISITOS.md) e as tarefas no [PLANO.md](../docs/PLANO.md). Onde este arquivo divergir deles, valem eles.
+Escrito pelo Claude Code a pedido do Eduardo, comparando o repositório com o guia oficial do projeto final. Para entender os conceitos antes, leia [entenda-o-projeto.md](entenda-o-projeto.md).
 
 Legenda: ✅ feito · 🟡 em parte · ⬜ falta. Cada afirmação tem uma **prova**: um comando que você roda na pasta
 do repositório e vê o mesmo resultado. Se não bater, este texto está errado e deve ser corrigido.
@@ -74,7 +75,7 @@ O C2 também fala numa tabela `indicadores` dentro do `catalogo.db`, mas o `indi
 As branches `tratamento_dados` e `feat/metricas` foram criadas do zero, sem partir da `main`. O GitHub não junta
 branches sem história em comum. **Prova:** `git merge-base origin/main origin/tratamento_dados` não imprime nada.
 **Conserto:** depois que o PR `fundacao` entrar na `main`, cada um cria uma branch nova a partir dela e copia os
-seus arquivos para a pasta certa (passo a passo na seção 4). Ninguém precisa apagar nada.
+seus arquivos para a pasta certa. Ninguém precisa apagar nada.
 
 ### 5) A tela ainda usa os falsos ⬜ (Miguel)
 `app/streamlit_app.py` tem `USAR_DADOS_FALSOS = True`. Trocar para `False` quando os itens 1 a 3 estiverem prontos.
@@ -123,72 +124,29 @@ o contêiner roda a tela de dentro de `app/` (é onde o Streamlit acha o tema).
 
 ---
 
-## 4. Cada um: o que fazer e o que entender
+## 4. Cada um: o que entender do código
 
-As listas "Fazer" abaixo são de 26/10. As tarefas e as datas de hoje estão no [PLANO.md](../docs/PLANO.md), seção 3.
-As partes "Entender do código" continuam valendo.
+As tarefas de cada um ficam no [PLANO.md](../docs/PLANO.md), seção 3. O que segue continua valendo.
 
 ### Eduardo (IA, ML e gestão)
-**Fazer, em ordem:**
-1. Pedir a revisão do PR `fundacao` (Miguel é o dono do repositório) e avisar o grupo da estrutura nova.
-2. Combinar com o Marcos o formato do CSV (item 1) e escrever no C2.
-3. **qua 28/10:** 3 raio-x reais para a Náthally ajustar as regras. Precisa do `indicadores.csv` real: se não chegar,
-   rode você mesmo os dois scripts do Marcos e converta o formato localmente.
-4. Rodar `segmentos` e `ia` com dados reais; gerar a silhueta e um gráfico dos grupos em 2D (vale como visualização).
-5. Criar `avaliacao/avaliar.py` (lê `casos_avaliacao.csv`, grava `resultados.csv`, formato no C4).
-6. Consertar o teste da empresa 90001 (item 6) e o "balanço consolidada".
-7. Escrever a justificativa técnica (por que dados estruturados + validador, e não RAG nem fine-tuning) e a seção
-   "Como usamos IA para programar" do README.
-8. Gestão: confirmar data e horário da banca; lembrar a regra "ninguém usa `push --force` na branch do outro".
-
 **Entender do código:** `montar()` separa o que vai para o LLM do que nunca vai; `validar_e_preencher()` é a prova
 de que a IA não escreve números; `segmentar()` (log da receita, cortar extremos, padronizar, silhueta).
 
 ### Marcos (dados)
-**Fazer, em ordem:**
-1. Formato do CSV e `cd_cvm` inteiro (itens 1 e 2): duas linhas de `to_csv`, uma de `read_csv`, uma conversão.
-2. Gravar a tabela `indicadores` no `catalogo.db` e fazer a busca só mostrar empresas ativas com indicadores (item 3).
-3. **dom 01/11:** `indicadores.csv` real para o Eduardo e `raiox/dados.py` pronto para o Miguel (combinar como os
-   dados chegam a eles, item 9).
-4. Trazer o resto do seu trabalho para a estrutura nova: `git switch main && git pull && git switch -c dados-s2`, depois
-   copiar da sua branch `conferir_s1.py` e `verificar_automatico.py` para `scripts/`, os seus testes para `tests/`
-   (trocando `from src import dados` por `from raiox import dados`), e decidir entre `scripts/dados.py` e
-   `raiox/dados.py` (ficar com um só). Comando para copiar um arquivo:
-   `git show origin/tratamento_dados:scripts/conferir_s1.py > scripts/conferir_s1.py`.
-5. Rodar `python -m raiox.checagem data/indicadores.csv data/contas.csv` com os dados reais e decidir o que excluir.
-6. BPMN 2.0 (`docs/bpmn/`: processo de hoje e com o Raio-X), EDA (`notebooks/eda.ipynb`) e montar o PDF.
-
 **Entender do código:** `raiox/segmentos.py` lê o seu `indicadores.csv` (é ele que quebra com `;`);
 `raiox/ia.py` usa as colunas do C2 pelo nome, então nome de coluna não pode mudar sem avisar.
 
 ### Miguel (tela e infraestrutura)
-**Fazer, em ordem:**
-1. Revisar e juntar o PR `fundacao` na `main` (você é o dono do repositório).
-2. `Dockerfile` + `.dockerignore` (fora da imagem: `.env`, `data/`, `.git`, `tests/`, `docs/`, `aprender/`).
-3. `infra/` com Terraform (provider Docker): imagem, contêiner, porta 8501, `data/` montada, chave como variável `sensitive`.
-   O `.gitignore` já tira do Git o estado do Terraform (`*.tfstate`), que pode guardar a chave.
-4. **ter 03/11:** ligar os dados reais na tela (item 5). Sugestão: trocar a constante por uma variável de ambiente, para o Terraform escolher.
-5. Diagrama da arquitetura (pode partir da seção 3 do `entenda-o-projeto.md`) e o **vídeo de backup** da demo.
-
 **Entender do código:** a tela só chama duas coisas, `buscar_empresas` (C1) e `preparar_raio_x` (C3); a primeira linha
 depois dos imports põe a raiz no `sys.path`; o Streamlit lê o tema da pasta de onde é chamado; `/_stcore/health` responde `ok` (serve de healthcheck).
 
 ### Náthally (produto, métricas e deck)
-**Fazer, em ordem:**
-1. Trazer o seu trabalho para a estrutura nova: branch a partir da `main`, `Semana_01/` vai para `docs/produto/` e a
-   `regras_v1.md` vira `avaliacao/regras_prompt.md`.
-2. Alinhar as regras com o que o código manda de verdade (item 7). O Eduardo copia a versão final para o `ia.py`.
-3. `avaliacao/casos_avaliacao.csv` (20 casos: empresa × produto × objetivo), `tempo_manual.csv`, `revisao.csv`,
-   `testes_usuarios.csv` (sem nome, e-mail ou telefone: use `pessoa_id`). Colunas no C4.
-4. Conta do ROI com os tempos medidos; texto de governança e ética para o PDF.
-5. Deck e roteiro de 20 minutos com o tempo de cada parte; ensaio cronometrado.
-
 **Entender do código:** o LLM recebe só setor, produto, objetivo e os indicadores já com a posição (veja `entrada` em
 `montar()`); "Detalhes técnicos" na tela mostra o que o validador removeu, e isso é uma métrica de alucinação barrada.
 
 ### Todos
 - Antes de pedir algo a uma IA, mandem junto o `contratos.md` e digam quais arquivos ela pode mexer.
-- Branch nova sempre a partir da `main`. `main` só por pull request com 1 revisão.
+- Branch nova sempre a partir da `main`. `main` só por pull request, com o CI verde (PLANO, seção 2).
 - **Cada um apresenta a sua parte**: a divisão entre os membros vale nota (15% em comunicação e equipe).
 
 ---

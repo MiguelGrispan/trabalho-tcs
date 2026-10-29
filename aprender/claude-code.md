@@ -7,20 +7,17 @@ As regras de uso de IA do time estão no [REGRAS-IA.md](../REGRAS-IA.md); este g
 
 1. Abra o Terminal na **raiz do projeto** (a pasta `trabalho-tcs/`) e digite `claude`.
 2. Digite `/inicio-de-sessao XX`, trocando `XX` pelo código da sua sessão (não sabe? digite só `/inicio-de-sessao`).
-   Ele atualiza a `main`, cria a sua branch e diz o que mudou e por onde começar. (A frase de abertura abaixo faz o mesmo.)
+   Ele atualiza a `main`, cria a sua branch e diz o que mudou e por onde começar.
 3. Trabalhe numa tarefa só. O Claude pede licença antes de mudar arquivos.
 4. No fim, digite `/fim-de-sessao`. Ele roda os testes, atualiza o PLANO e o HISTORICO, abre o PR, espera o CI, lê o diff e,
    depois do seu "pode", faz o merge na `main`. Você não precisa mexer no GitHub.
 5. Antes da próxima tarefa, digite `/clear`.
 
-## A frase de abertura
+## Qual é a minha sessão?
 
-> Leia o CLAUDE.md e a seção 0 do docs/PLANO.md. Confira o estado real com `gh pr list --state all` e `git log --oneline -15`. Depois faça a sessão XX.
-
-- **O código da sua sessão** está no `docs/PLANO.md`, seção 3: MA2, MA3… (Marcos), MG1, MG2… (Miguel), ED3, ED7… (Eduardo).
-- **Por que a frase, se o Claude já lê o `CLAUDE.md` sozinho?** Ele lê, e o `CLAUDE.md` manda ler o PLANO. A frase garante três coisas:
-  ele confere o GitHub (a nota do PLANO pode estar velha), ele sabe **qual** tarefa fazer, e ele diz o que mudou antes de mexer em algo.
-- Não sabe qual sessão fazer? Troque o fim por: "Depois me diga qual é a minha próxima sessão e por quê".
+- **O código da sua sessão** está no `docs/PLANO.md`, seção 3: MA2, MA3… (Marcos), MG1, MG2… (Miguel), ED7, ED8… (Eduardo).
+- Não sabe? Digite só `/inicio-de-sessao`: ele mostra as suas sessões que ainda faltam e sugere a próxima.
+- O `/inicio-de-sessao` não aparece? Veja "Problemas comuns", no fim.
 
 ## O que o Claude Code é (e o que ele já sabe)
 
@@ -90,7 +87,8 @@ Digite `/fim-de-sessao`. Ele faz, nesta ordem:
 6. espera o CI e lê o diff;
 7. pede o seu "pode" e faz o merge.
 
-Ele pergunta o que você entendeu ou conferiu e escreve isso no PR (vale "ainda não li"; não vale inventar). Sem a skill, o mesmo passo a passo está no `CLAUDE.md`, regra 3.
+Ele pergunta o que você entendeu ou conferiu e escreve isso no PR (vale "ainda não li"; não vale inventar).
+Sem a skill, peça ao Claude: "siga o arquivo `.claude/skills/fim-de-sessao/SKILL.md`".
 
 Depois: `/clear` para a próxima tarefa, ou `/exit` para sair.
 Para voltar a uma conversa antiga: `claude --continue` (a última) ou `/resume` (escolher numa lista). Para tarefa nova, prefira uma sessão nova.
@@ -106,9 +104,9 @@ Para voltar a uma conversa antiga: `claude --continue` (a última) ou `/resume` 
 
 | aparece | o que fazer |
 |---|---|
-| ele esqueceu uma regra ou está confuso | commit do que estiver pronto, `/clear` e a frase de abertura de novo |
+| ele esqueceu uma regra ou está confuso | commit do que estiver pronto, `/clear` e `/inicio-de-sessao` de novo |
 | ele mexeu num arquivo que não devia | **Esc**, depois "desfaça a mudança em `arquivo`", e confira com `! git diff` |
 | não sei o que mudou | `! git status` e `! git diff` |
-| `/explicar` ou `/fim-de-sessao` não aparece | a sua branch não tem a pasta `.claude/skills/`: `git switch main` e `git pull`, depois abra o `claude` de novo |
+| `/inicio-de-sessao`, `/fim-de-sessao` ou `/explicar` não aparece | a sua branch não tem a pasta `.claude/skills/`: `git switch main` e `git pull`, depois abra o `claude` de novo |
 | atingiu o limite de uso | commit, anote onde parou na seção 0 do PLANO e continue quando o limite voltar |
 | "command not found: claude" | o Claude Code não está instalado nesse terminal; veja a página de instalação do Claude Code ou peça ajuda ao Eduardo |

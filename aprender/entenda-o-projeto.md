@@ -2,7 +2,7 @@
 
 Este arquivo explica o Raio-X Comercial do zero: o que ele faz, por que foi feito assim, como o código funciona
 e como trabalhar nele sem quebrar nada. Não precisa saber programar bem para ler.
-O que falta fazer, e quem faz, está no outro arquivo: [seguindo-o-projeto.md](seguindo-o-projeto.md).
+O que falta fazer, e quem faz, está no [PLANO](../docs/PLANO.md) (seção 3) e no [REQUISITOS](../docs/REQUISITOS.md).
 
 ---
 
