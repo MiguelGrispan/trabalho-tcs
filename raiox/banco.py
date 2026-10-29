@@ -1,11 +1,14 @@
 """Conexão com o banco PostgreSQL do catálogo (usada por todos os scripts)."""
 import os
 
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.pool import NullPool
 
 # Endereço do banco: postgresql://usuario:senha@servidor:porta/nome_do_banco
-# Cada um coloca a própria senha na variável de ambiente DATABASE_URL
+# Cada um coloca a própria senha no .env (DATABASE_URL), como a chave do Gemini.
+# load_dotenv não troca uma variável que já existe no terminal.
+load_dotenv()
 DATABASE_URL = os.environ.get(
     "DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/raiox"
 )
