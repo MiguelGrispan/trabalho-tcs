@@ -31,6 +31,8 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   **O professor diz que SQLite não vale: o banco é PostgreSQL** (PR #13).
   O grupo simplifica o GitHub: o CI e o Claude Code revisam; uma pessoa só é chamada para contrato ou pasta de outro dono (PR #14).
   O Miguel tira a aprovação obrigatória da `main`, e os PRs #11 a #14 entram às 11h17 (73 testes passando).
+  O PR #15 (só documentação) foi mesclado antes do CI começar; o CI passou depois, e o `/fim-de-sessao` agora espera
+  o `pass` (PR #16). É por isso que o check `testes` deve ficar obrigatório no GitHub (MG1).
 
 ## Decisões (e por quê)
 
