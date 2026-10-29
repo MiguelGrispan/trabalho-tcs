@@ -4,12 +4,11 @@ Projeto final da trilha IA Aplicada (SENAI/TCS). Equipe: Marcos (dados), Eduardo
 Náthally (produto e métricas, deck), Miguel (tela e infraestrutura). Banca prevista para qua 18/11/2026
 (**data e horário a confirmar**; professores + especialistas da TCS). Os entregáveis vão **48 h antes**: seg 16/11.
 
-Antes de qualquer tarefa, leia `docs/PLANO.md` (sessões, datas e donos; a pessoa diz qual sessão está fazendo, ex.: "MA2")
-e `docs/REQUISITOS.md` (o que o guia exige e o status). O que está quebrado, com prova: `aprender/seguindo-o-projeto.md`.
-Material para quem está aprendendo (comandos, guias, notebook passo a passo, atalhos): `aprender/`; como usar o Claude Code no time: `aprender/claude-code.md`. Quem usa Codex: o `AGENTS.md` aponta para este arquivo.
-**Sessão nova?** `/inicio-de-sessao` (ex.: `/inicio-de-sessao MA2`): atualiza a `main`, cria a branch, lê a seção 0 do
-`docs/PLANO.md` e confere o estado real (`gh pr list --state all`, `git log --oneline -15`), porque a nota pode estar velha.
-Tudo o que já aconteceu, em versão resumida: `docs/HISTORICO.md`.
+**Antes de qualquer tarefa,** leia o `docs/PLANO.md` (a seção 0 diz o que está acontecendo agora; a seção 3 tem a sessão
+que a pessoa está fazendo, ex.: "MA2"; a seção 7, o que já foi cortado) e o `docs/REQUISITOS.md` (o que o guia exige e o status).
+O passado, resumido: `docs/HISTORICO.md`. Guias para iniciantes: `aprender/` (comece por `aprender/claude-code.md`).
+**Sessão nova:** `/inicio-de-sessao` (ex.: `/inicio-de-sessao MA2`) atualiza a `main`, cria a branch e confere o estado real
+no GitHub, porque a nota da seção 0 pode estar velha. **Fim:** `/fim-de-sessao`.
 
 ## O produto
 O vendedor escolhe uma companhia aberta da CVM, informa o produto e o objetivo da reunião e recebe:
@@ -28,7 +27,7 @@ Todo trabalho precisa servir a um destes itens. Se uma tarefa não serve a nenhu
 |---|---|---|
 | BPMN 2.0 do processo | `docs/bpmn/` (`.bpmn` + `.png`) | Marcos |
 | Python/Pandas: limpeza, nulos, estruturação | `scripts/carregar_dfp.py`, `scripts/indicadores.py` | Marcos |
-| SQL (consultas ou persistência), **em PostgreSQL** (regra do professor) | banco PostgreSQL (endereço em `DATABASE_URL`, no `.env`) via `scripts/carregar_dfp.py` e `raiox/dados.py`. A `main` ainda usa SQLite até a MA2 | Marcos |
+| SQL (consultas ou persistência), **em PostgreSQL** (regra do professor) | `raiox/dados.py` e `scripts/carregar_dfp.py`; endereço do banco em `DATABASE_URL`, no `.env` | Marcos |
 | Visualização explicativa (Matplotlib/Seaborn ou dashboard) | `notebooks/`, `docs/graficos/`, gráfico da tela | Marcos, Eduardo |
 | Modelo de ML | `raiox/segmentos.py` (K-means + vizinhos) | Eduardo |
 | GenAI: prompt engineering, LangChain, API | `raiox/ia.py` (+ auditoria em `raiox/checagem.py`) | Eduardo |
@@ -38,7 +37,7 @@ Todo trabalho precisa servir a um destes itens. Se uma tarefa não serve a nenhu
 | Governança e ética (viabilidade, limites, viés, confiabilidade, uso responsável) | validador, texto de ética no PDF | Náthally, todos |
 
 **Regras do professor (além do guia):** valem como o guia e ficam em `docs/REQUISITOS.md` (seção "Regras do professor").
-- **O banco é PostgreSQL. SQLite não vale** (29/10). Nada novo com `sqlite3`; o que existe muda na MA2.
+- **O banco é PostgreSQL. SQLite não vale** (29/10). Nada novo com `sqlite3`; a `main` ainda usa SQLite até a MA2 entrar.
   O endereço do banco (`DATABASE_URL`) tem senha: fica no `.env`, como a chave do Gemini.
 
 **Entregáveis (48 h antes):** (1) repositório organizado, com README de arquitetura, pré-requisitos e como rodar,
@@ -54,13 +53,13 @@ protótipo funcional 20% · governança e ética 15% · comunicação e equipe 1
 
 | caminho | dono |
 |---|---|
-| `raiox/ia.py`, `raiox/segmentos.py`, `avaliacao/avaliar.py` | Eduardo |
+| `raiox/ia.py`, `raiox/segmentos.py`, `avaliacao/avaliar.py`, `avaliacao/resultados.csv` | Eduardo |
 | `scripts/`, `raiox/dados.py`, `raiox/checagem.py`, `docs/bpmn/`, `notebooks/` | Marcos |
 | `app/`, `Dockerfile`, `infra/` | Miguel |
-| `avaliacao/*.csv`, `avaliacao/regras_prompt.md`, `docs/produto/` | Náthally |
+| o resto de `avaliacao/` (regras do prompt, casos e planilhas do C4), `docs/produto/` | Náthally |
 
 Pastas comuns (avise o grupo antes de mexer): `tests/`, `falsos/` (dados falsos no formato dos contratos;
-os falsos chamam o código real sem IA), `docs/`, `aprender/` (guias e atalhos `.command` do Mac; nada ali é usado pelo código), `contratos.md`, `README.md`.
+os falsos chamam o código real sem IA), `docs/`, `aprender/` (guias e atalhos do Mac; nada ali é usado pelo código), `contratos.md`, `README.md`.
 `data/`: dados da CVM e arquivos gerados; só o `.gitkeep` vai para o Git.
 Caminhos: todo código que usa `data/` ou `docs/` aponta para a **raiz** do repositório (`Path(__file__).resolve().parent.parent`).
 
@@ -69,17 +68,17 @@ Caminhos: todo código que usa `data/` ou `docs/` aponta para a **raiz** do repo
 2. **Contrato antes de código.** Mudou um formato entre partes? Primeiro o `contratos.md`, avisando quem recebe; depois o código.
 3. **Testes antes de dizer "pronto".** Rode `python -m pytest -q` e mostre o resultado. Mudou a tela? Abra a tela também.
    Toda mudança de comportamento vem com teste novo ou atualizado no mesmo PR (lista dos testes: `docs/PLANO.md`, seção 4).
-   Ao terminar uma sessão, atualize a seção 0 do `docs/PLANO.md` (é por ela que a próxima sessão começa) e escreva de 1 a 3
-   linhas no `docs/HISTORICO.md`. Atalho: `/fim-de-sessao`. Para aprender a explicar um trecho do código: `/explicar`.
 4. **O LLM nunca escreve números** (regra de ouro). Acima/abaixo/em linha é calculado por código.
 5. **Nada de dados nem `.env` no Git.** Antes de todo commit, rode `git status` e leia a lista.
 6. **A demo não pode quebrar.** O modo sem IA (sem `RAIOX_IA_REAL`) é o plano B: precisa continuar funcionando.
-7. **`main` só por pull request, com o CI verde.** Quem revisa é o CI (os testes) e o Claude Code, que lê o diff no `/fim-de-sessao`;
-   o merge é feito pelo próprio autor, depois de um "pode". Uma pessoa só precisa dar o ok (no grupo, não no GitHub) quando o PR
-   mexe no `contratos.md` ou na pasta dela. No PR, 2 linhas: o que foi feito com IA e o que o autor entendeu ou conferiu
+7. **`main` só por pull request, com o CI verde.** Revisam o CI (os testes) e o Claude Code, que lê o diff no `/fim-de-sessao`;
+   o autor faz o merge depois de um "pode". Uma pessoa só dá o ok (no grupo, não no GitHub) quando o PR mexe no
+   `contratos.md` ou na pasta dela. No PR, 2 linhas: o que foi feito com IA e o que o autor entendeu ou conferiu
    (vale "ainda não li": o que não vale é inventar).
-8. **Git: o Claude Code faz.** Comece com `/inicio-de-sessao` e termine com `/fim-de-sessao`: ele cria a branch `pessoa-tarefa`
-   a partir da `main` e faz o merge no fim. Para trazer a `main`, `git merge main`. Nunca `rebase`, `push --force` nem commit na `main`.
+8. **Git: o Claude Code faz.** O `/inicio-de-sessao` cria a branch `pessoa-tarefa` a partir da `main`. O `/fim-de-sessao` roda os
+   testes, atualiza a seção 0 do `docs/PLANO.md` (é por ela que a próxima sessão começa), o `docs/REQUISITOS.md` e o
+   `docs/HISTORICO.md`, abre o PR, espera o CI e faz o merge. Para trazer a `main`, `git merge main`.
+   Nunca `rebase`, `push --force` nem commit na `main`.
 
 ## Como responder ao time (iniciantes)
 - Português simples. Explique o porquê de cada mudança, não só o quê.
@@ -89,7 +88,7 @@ Caminhos: todo código que usa `data/` ou `docs/` aponta para a **raiz** do repo
 
 ## Como rodar (sempre a partir da raiz do repositório)
 Lista completa, com o que deve aparecer: `aprender/COMANDOS.md`.
-- Ambiente: `python -m venv .venv` e `pip install -r requirements.txt`. No Mac do Eduardo, os atalhos usam `~/bootcamp` se a `.venv` não existir.
+- Ambiente: `python -m venv .venv` e `pip install -r requirements.txt`. No Mac do Eduardo, sem `.venv`, use `~/bootcamp/bin/python`.
 - Testes: `python -m pytest -q` (não chamam a API).
 - Módulos: `python -m raiox.ia ... --sem-ia`, `python -m raiox.segmentos`, `python -m raiox.checagem --teste`.
 - Tela: `cd app && streamlit run streamlit_app.py`. `RAIOX_IA_REAL=1` liga o Gemini. Até o `raiox/dados.py` ficar pronto, a tela usa `falsos/`.
