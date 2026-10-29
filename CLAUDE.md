@@ -38,6 +38,7 @@ Todo trabalho precisa servir a um destes itens. Se uma tarefa não serve a nenhu
 
 **Regras do professor (além do guia):** valem como o guia e ficam em `docs/REQUISITOS.md` (seção "Regras do professor").
 - **O banco é PostgreSQL. SQLite não vale** (29/10). Nada novo com `sqlite3`; o que existe muda na MA2.
+  O endereço do banco (`DATABASE_URL`) tem senha: fica no `.env`, como a chave do Gemini.
 
 **Entregáveis (48 h antes):** (1) repositório organizado, com README de arquitetura, pré-requisitos e como rodar,
 e os scripts de infraestrutura e notebooks; (2) PDF com BPMN 2.0, justificativa técnica (inclui por que não
@@ -91,5 +92,5 @@ Lista completa, com o que deve aparecer: `aprender/COMANDOS.md`.
 
 ## Cuidados
 - Siga o `REGRAS-IA.md` (regras do time para uso de IA).
-- Não leia, mostre nem envie o conteúdo de `.env` (chave do Gemini, plano pré-pago; senha do PostgreSQL em `DATABASE_URL`).
+- Não leia, mostre nem envie o conteúdo de `.env` (chave do Gemini, plano pré-pago).
 - Toda chamada ao Gemini gasta crédito (≈ US$ 0,0008 por raio-x). Mais de 10 chamadas: avise o grupo antes.
