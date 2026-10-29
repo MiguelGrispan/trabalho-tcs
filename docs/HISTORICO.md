@@ -30,6 +30,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   Teste do Docker e do Terraform do Miguel: funcionam, faltam ajustes; o teste achou um bug, consertado no PR #12.
   **O professor diz que SQLite não vale: o banco é PostgreSQL** (PR #13).
   O grupo simplifica o GitHub: o CI e o Claude Code revisam; uma pessoa só é chamada para contrato ou pasta de outro dono (PR #14).
+  O Miguel tira a aprovação obrigatória da `main`, e os PRs #11 a #14 entram às 11h17 (73 testes passando).
 
 ## Decisões (e por quê)
 
