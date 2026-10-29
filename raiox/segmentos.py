@@ -12,6 +12,7 @@ RAIOX_DADOS=falsos força a tabela falsa mesmo com os dados reais presentes (tes
 nesse caso o agrupamento é feito na memória e nada é gravado em data/.
 """
 import os
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -123,7 +124,11 @@ def carregar_segmentos(df: pd.DataFrame) -> pd.DataFrame:
         ARQ_INDICADORES.stat().st_mtime, Path(__file__).stat().st_mtime)
     if velho:
         seg, _, _ = segmentar(df)
-        salvar(seg)
+        try:
+            salvar(seg)
+        except OSError as erro:   # data/ só de leitura (ex.: volume do Docker com :ro): os grupos ficam na memória
+            print(f"Aviso: não deu para gravar {ARQ_SEGMENTOS.name} ({erro.strerror}); os grupos ficam só na memória.",
+                  file=sys.stderr)
         return seg
     s = pd.read_csv(ARQ_SEGMENTOS)
     s["parecidas"] = s["parecidas"].fillna("").apply(lambda t: [int(x) for x in str(t).split(";") if x])
