@@ -27,17 +27,19 @@ comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguin
 
 **Retomando numa sessão nova do Claude Code?**
 1. Cole: "Leia o CLAUDE.md e a seção 0 do docs/PLANO.md. Confira o estado real com `gh pr list --state all` e
-   `git log --oneline -15`. Depois faça a sessão ED7" (só se os PRs #10 e #11 já entraram na `main`; se não, revise PRs
+   `git log --oneline -15`. Depois faça a sessão ED7" (só se o PR #11 já entrou na `main`; se não, revise PRs
    ou escreva a ED8, que é você quem escreve). Guia de como usar o Claude Code: `aprender/claude-code.md`.
 2. Antes de mexer em qualquer coisa, a sessão deve dizer o que mudou desde esta nota.
 
 **O que mudou desde 28/10, 11h30:**
-- **Os PRs #7, #8 e #9 entraram na `main`** em 28/10. A `main` está em `1c7b4d1`; com a `data/` real, 68 passed.
+- **Os PRs #7, #8 e #9 entraram na `main`** em 28/10, e o **#10** em 29/10, 9h24. A `main` está em `8e95fe2`; com a `data/` real, 68 passed.
 - **A Náthally entregou as regras v2 e os `cd_cvm` dos 10 casos** (29/10, 9h), mas na `feat/metricas`, que não tem
   história em comum com a `main`. O Eduardo portou os dois, sem mudar as decisões dela:
   - **PR #10 (NA2):** `cd_cvm` dos 10 casos, como número inteiro e com a coluna `empresa` (C4). Ela escolheu
     Suzano S.A. (13986) e Localiza Rent a Car (19739). Os 10 existem na `data/` real. Dois testes que passavam sem testar
-    nada agora testam (pendência de 27/10). **Falta o OK dela no PR.**
+    nada agora testam (pendência de 27/10). **Já na `main`:** o Miguel aprovou e fez o merge 3 minutos depois de aberto,
+    sem comentário e antes da Náthally conferir (o PR pedia o OK dela; a seção 2 diz que quem faz o merge é o autor).
+    Os valores são dela, então o risco é baixo, mas ela ainda precisa conferir os 10 códigos na `main`.
   - **PR #11 (NA1 + ED3):** regras v2 em `avaliacao/regras_prompt.md`, sem mudar o texto. **ED3 feita:**
     - o `raiox/ia.py` não tem mais cópia das regras: `regras()` lê o arquivo dela e acrescenta 3 notas do código
       (`NOTAS_DO_CODIGO`: o grupo não é o setor; nome do indicador antes do marcador; onde vem a lista de marcadores);
@@ -112,7 +114,8 @@ Regra: atraso come a folga; **nunca** se acrescenta escopo. Se a folga acabar, u
   Náthally, mas quem escreve é o Marcos.
 
 **Próximo passo de cada um:**
-- **Náthally:** aprovar os PRs #10 (os códigos) e #11 (as regras v2 no prompt; leia os 3 raio-x de exemplo na descrição).
+- **Náthally:** conferir os 10 códigos na `main` (`avaliacao/casos_avaliacao.csv`, já entrou pelo #10) e aprovar o #11
+  (as regras v2 no prompt; leia o raio-x de exemplo na descrição).
   Dizer se a `feat/metricas` pode ser apagada: a `Semana_01/` foi portada no #5, e as regras v2 e os casos estão nos
   PRs #10 e #11; só o `avaliacao.ipynb` (monta o CSV dos casos) ficou de fora: ela diz se quer guardar. Depois: tempo manual e ROI (NA3), testes com usuários, e revisão dos 10 raio-x quando a ED7 rodar.
 - **Marcos:** MA2 na `main` (branch `marcos-csv-padrao`, a partir da `main`). Trazer o `avaliar_corte_receita.py` para a MA3,
@@ -120,9 +123,10 @@ Regra: atraso come a folga; **nunca** se acrescenta escopo. Se a folga acabar, u
 - **Miguel:** `git merge main` na `docs-docker-e-terraform`, acertar os 3 pontos acima e abrir o PR (MG2; o Eduardo revisa).
   Terminar a MG1 (só merge commit, apagar branch após o merge, check `testes` obrigatório).
 - **Eduardo:**
-  1. ler os diffs dos PRs #10 e #11, preencher o "Eu conferi" e pedir as revisões (Náthally nos dois; #11 também Marcos ou Miguel);
+  1. ler o diff do #11, preencher o "Eu conferi" (no #10 também, mesmo já mesclado) e pedir as revisões do #11 (Náthally; Marcos ou Miguel);
+     combinar no grupo: quem aprova deixa uma linha dizendo o que conferiu, e o merge é do autor (seção 2);
   2. avisar o grupo do custo novo (US$ 0,0012 por raio-x) e da ED7 (10 chamadas, ~US$ 0,012);
-  3. **ED7** assim que o #10 e o #11 entrarem (pode ser sex 30/10, antes do prazo de dom 01/11: a Náthally ganha tempo para a NA4);
+  3. **ED7** assim que o #11 entrar (pode ser sex 30/10, antes do prazo de dom 01/11: a Náthally ganha tempo para a NA4);
   4. ED8 (você escreve; o Claude confere com arquivo e linha);
   5. estudar a ED3 com `/explicar raiox/ia.py regras` e a ED4 com `/explicar raiox/segmentos.py segmentar` (seção 8);
   6. revisar o PR do Docker quando o Miguel abrir; se não abrir até sex 30/10, plano B da seção 7.
@@ -201,8 +205,8 @@ Todos entram no PR #3, menos os da última linha.
 |---|---|---|---|---|
 | ter 27/10 | ✅ ED0, ED1, ED2, ED5, ED4 (código), ED6; portes MA1 e NA1 | — | — | — |
 | qua 28/10 | ED4 consertar a segmentação | revisar o #4; MA2 | MG1 revisar e mesclar o #3 | revisar o #5; NA1 regras v2 |
-| qui 29/10 | ✅ ED3 (adiantada); portes NA1 e NA2 (PRs #10 e #11) | MA2 cumprir C1/C2 | MG2 Docker | ✅ NA1 e NA2 entregues; revisar #10 e #11 |
-| sex 30/10 | ED7 (se #10 e #11 entraram); revisões; ED8 começa | MA3 dados reais + Drive | MG2/MG3 | NA3 tempo manual |
+| qui 29/10 | ✅ ED3 (adiantada); portes NA1 e NA2 (PRs #10 e #11) | MA2 cumprir C1/C2 | MG2 Docker | ✅ NA1 e NA2 entregues; revisar o #11 |
+| sex 30/10 | ED7 (se o #11 entrou); revisões; ED8 começa | MA3 dados reais + Drive | MG2/MG3 | NA3 tempo manual |
 | sáb 31/10 | revisões; ED8 começa | MA3 | MG3 Terraform | NA3 tempo manual; marcar testes |
 | dom 01/11 | ED7 (prazo final) | MA4 EDA | **MG3: se o Terraform não subiu, fica só o Docker**; MG4 | NA3 |
 | seg 02/11 | feriado (reserva) | | | |
@@ -229,7 +233,7 @@ Todos entram no PR #3, menos os da última linha.
 | ED4 | qua 28/10 | ✅ PR #9 | numa branch nova a partir da `main`: consertar a segmentação real: receita mínima de R$ 10 mi (combinar com o Marcos) e corte dos extremos em 5/95 em `matriz()`; só aceitar o k cujo menor grupo tenha pelo menos 5% das empresas; teste novo para isso; olhar 2 grupos; explicar `matriz()` e o PCA. Os gráficos de antes estão em `data/ed1/*_antes_ed4.png` e servem para a banca ("a silhueta alta enganava") | `raiox/segmentos.py`, `tests/`, `docs/graficos/*.png`, REQUISITOS (k, silhueta) | Plan | nenhum grupo com menos de 5% das empresas; "parecidas" de 3 empresas conhecidas fazem sentido; 2 PNG reais | `eduardo-segmentacao` → PR |
 | ED5 | 27/10 | ✅ PR #6 | `avaliacao/avaliar.py` (C4) | `avaliacao/`, `tests/` | — | `python -m avaliacao.avaliar` grava o C4 | `eduardo-ia-testes` |
 | ED6 | 27/10 | ✅ PR #6 | teste ponta a ponta (pula sem `data/`) | `tests/test_ponta_a_ponta.py` | — | pula no CI; roda local com dados reais | `eduardo-ia-testes` |
-| ED7 | sex 30/10–dom 01/11 | — | `python -m avaliacao.avaliar --com-ia` nos 10 casos (avisar o grupo), depois do #10 e do #11 | `avaliacao/resultados.csv` | Manual | 10 linhas; custo anotado (~US$ 0,012; limite US$ 0,05) | PR |
+| ED7 | sex 30/10–dom 01/11 | — | `python -m avaliacao.avaliar --com-ia` nos 10 casos (avisar o grupo), depois do #11 | `avaliacao/resultados.csv` | Manual | 10 linhas; custo anotado (~US$ 0,012; limite US$ 0,05) | PR |
 | ED8 | qua 04/11 | — | justificativa técnica para o PDF + README "Como usamos IA" | `docs/justificativa.md`, `README.md` | Manual (você escreve; a IA confere com arquivo e linha) | o Marcos lê e entende | PR |
 | ED9 | sex 06/11 | — | congelar | só bugs | Plan | CI verde + ponta a ponta verde | **tag `v1.0`** |
 | ED10 | sáb 07/11 | — | teste do zero em outra máquina, só com o README | consertos | Manual | rodou sem ajuda, ou cada falha virou PR | `v1.0.1` se precisar |
@@ -268,7 +272,7 @@ Para subir um arquivo:
 | # | data | status | objetivo | altera | pronto quando |
 |---|---|---|---|---|---|
 | NA1 | qua 28–qui 29/10 | ✅ regras v2 em 29/10 (na `feat/metricas`; portadas no PR #11, falta o OK dela) | revisar o #5; regras v2 alinhadas ao código (`aprender/seguindo-o-projeto.md`, item 7) | `avaliacao/regras_prompt.md` | PR aberto |
-| NA2 | sex 30/10 | ✅ códigos em 29/10 (portados no PR #10, falta o OK dela) | preencher o `cd_cvm` dos 10 casos (busca da tela ou `indicadores.csv` do Drive; WEG = 5410) | `avaliacao/casos_avaliacao.csv` | `tests/test_ponta_a_ponta.py` passa (o Eduardo roda) |
+| NA2 | sex 30/10 | ✅ códigos em 29/10 (na `main` pelo PR #10; ela ainda confere) | preencher o `cd_cvm` dos 10 casos (busca da tela ou `indicadores.csv` do Drive; WEG = 5410) | `avaliacao/casos_avaliacao.csv` | `tests/test_ponta_a_ponta.py` passa (o Eduardo roda) |
 | NA3 | sáb 31/10–qui 05/11 | — | `tempo_manual.csv` (3 empresas), 3 testes com usuários (sem nome), conta do ROI | `avaliacao/` | 3 testes feitos; ROI com números medidos |
 | NA4 | qua 04/11 | — | `revisao.csv` sobre o `resultados.csv`; métricas | `avaliacao/revisao.csv`, `docs/produto/metricas.md` | % de comparações certas, % de perguntas ligadas ao produto, utilidade, custo, tempo |
 | NA5 | sáb 07–dom 08/11 | — | texto de governança e ética; deck com o tempo de cada parte | `docs/etica.md`, deck | o Marcos recebe a ética; todos os slides chegaram |
