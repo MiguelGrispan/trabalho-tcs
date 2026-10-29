@@ -35,6 +35,9 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   o `pass` (PR #16). É por isso que o check `testes` deve ficar obrigatório no GitHub (MG1).
   O Marcos abre o PR #18 (MA2, PostgreSQL) e a Náthally abre a issue #17 (ano fiscal da Camil, de março a fevereiro).
   Documentos de orientação enxugados (PR #19): cada informação num lugar só, sem as instruções velhas que contradiziam as novas.
+  O Marcos fecha o PR #18 sem merge e sem comentário (11h51). **ED7** (PR #20): 10 raio-x com IA, 0 itens removidos,
+  US$ 0,0118; comparados com a conferência manual da Náthally no RI, batem 7 de 10 (Camil é a issue #17; Magalu e RD Saúde vão à MA3).
+  Quem reformatava as tabelas do PLANO era a extensão Office Viewer do VS Code (abre todo `.md`), não o "Format On Save".
 
 ## Decisões (e por quê)
 

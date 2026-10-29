@@ -17,21 +17,29 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em qui 29/10, à tarde.** Na `main`: PRs #1 a #16 e o #19 (documentos enxutos). Com a `data/` real, 73 passed; o CI da `main` está verde.
+**Em qui 29/10, fim da tarde.** Na `main`: PRs #1 a #16, o #19 (documentos enxutos) e o #20 (ED7). Com a `data/` real, 73 passed;
+o CI da `main` está verde.
 
 **Decisão de 29/10: o banco é PostgreSQL** (o professor disse que SQLite não vale; PR #13). Por isso a MA2 ficou maior e o
 Docker passa a subir dois contêineres (tela + PostgreSQL). Até a MA2 entrar, a `main` ainda usa SQLite.
 
 **Onde está cada frente:**
-- **Dados (Marcos, MA2):** PR #18 aberto em 29/10, 11h42 (branch `marcos-postgres`, 26 arquivos, CI verde), ainda sem revisão.
-  Ele traz o PostgreSQL para a estrutura da `main`, mas traz também `scripts/verificar_automatico.py` (yfinance) e
-  `scripts/graficos.py`, que a seção 7 já cortou, e um `docs/Raio-X Comercial.pdf`: decidir na revisão (`gh pr diff 18`).
+- **Dados (Marcos, MA2): sem PR aberto.** O Marcos abriu o PR #18 às 11h42 de 29/10 e o fechou sem merge às 11h51, sem
+  comentário (`gh pr view 18`). A branch `marcos-postgres` continua no GitHub. Ainda não sabemos por quê: perguntar a ele.
+  O #18 trazia o PostgreSQL, mas também `scripts/verificar_automatico.py` e `scripts/graficos.py`, que a seção 7 já cortou.
   Na `main`, o `indicadores.csv` ainda sai com `sep=";"` (`scripts/indicadores.py:24`), então o C2 continua pendente.
 - **Issue #17 (Náthally, 29/10):** a Camil tem ano fiscal de março a fevereiro, e, segundo ela, o raio-x trata a DFP encerrada
-  em 28/02/2025 como se fosse a de 2025, o que desalinha os números em um ano. Ainda não conferido. É dos dados (Marcos):
-  conferir na revisão do #18 ou na MA3 (que compara 5 empresas com o RI).
-- **IA (Eduardo):** ED3 feita (PR #11): o prompt lê as regras v2 da Náthally (`avaliacao/regras_prompt.md`); 3 raio-x reais
-  sem nada removido pelo validador; US$ 0,0012 por raio-x. A comparação antes × depois das regras está no PR #11. Próxima: ED7.
+  em 28/02/2025 como se fosse a de 2025. A ED7 reforça: 4 dos 6 indicadores da Camil diferem da conferência manual dela
+  (receita R$ 12,3 bi × 11,1 bi; crescimento +20% × −1,2%). Não conferi o código. É dos dados (Marcos, MA3).
+- **IA (Eduardo):** ED7 feita (PR #20): `avaliacao/resultados.csv` com os 10 casos, 0 erros, 0 itens removidos pelo validador,
+  US$ 0,0118 no total (US$ 0,0012 por raio-x), 2,2 s por caso. Contagem automática por palavra-chave (não substitui a NA4):
+  todos têm 4 perguntas, mas só 21 de 40 citam o produto ou o objetivo (Camil: nenhuma), e 27 de 30 lacunas são genéricas
+  ("Necessidade de compreender…"). Próxima: ED8 (qua 04/11).
+- **Conferência manual da Náthally (29/10, 16h38):** o `Semana_02/revisao_manual.md`, na `feat/metricas`, tem os 6 indicadores
+  das 10 empresas tirados do RI, com links. Comparado com a ED7 (diferença acima de 1% na receita e no ativo, ou de 0,5 ponto
+  nos %), batem 7 de 10. Diferem: Camil (issue #17), Magalu (margem EBIT 5,0% × 5,81%) e RD Saúde (margem EBIT 6,2% × 5,27%,
+  endividamento 70,9% × 62,4%, ativo R$ 25,2 bi × 20,6 bi; suponho, sem conferir, que a fonte dela tire o arrendamento).
+  Serve à MA3 do Marcos. O arquivo não está na `main`: ela precisa subi-lo numa branch nova (seção 3, "Para subir um arquivo").
 - **Docker e Terraform (Miguel, MG2 e MG3):** na branch `docs-docker-e-terraform`, sem PR. O Eduardo testou em 29/10, numa cópia
   local (nada foi enviado ao GitHub): build, 69 passed e 3 skipped dentro do contêiner, health `ok`, tela com IA e com a `data/`
   real, `terraform apply` / `destroy` / `apply`, e a chave não entra na imagem. **Tudo funciona.** Faltam 7 ajustes antes do PR:
@@ -60,23 +68,24 @@ Docker passa a subir dois contêineres (tela + PostgreSQL). Até a MA2 entrar, a
 Se um dos dois primeiros atrasar, vale o plano B da seção 7.
 
 **Próximo passo de cada um:**
-- **Marcos:** no PR #18 (MA2), confirmar o CSV padrão (C2) e o serviço postgres no CI (o "pronto quando" pede os testes do
-  banco rodando, não pulados), dizer se o `verificar_automatico.py` e o `graficos.py` ficam e olhar a issue #17. Depois, MA3: trazer o `avaliar_corte_receita.py` (hoje na `tratamento_dados`)
-  já lendo o CSV padrão e dar o OK, ou não, no corte de R$ 10 mi. Dizer se a `tratamento_dados` pode ser apagada.
+- **Marcos:** dizer por que fechou o PR #18 e abrir de novo a MA2 (`/inicio-de-sessao MA2`), com o CSV padrão (C2) e o serviço
+  postgres no CI (o "pronto quando" pede os testes do banco rodando, não pulados), sem o `verificar_automatico.py` e o
+  `graficos.py` (cortados). Depois, MA3: a issue #17 e as diferenças de Magalu e RD Saúde (acima), o `avaliar_corte_receita.py`
+  (hoje na `tratamento_dados`) lendo o CSV padrão e o OK, ou não, no corte de R$ 10 mi. Dizer se a `tratamento_dados` pode ser apagada.
 - **Miguel:** os 7 ajustes acima e o PR até sex 30/10 (o Eduardo revisa); terminar a MG1.
-- **Náthally:** conferir os 10 códigos em `avaliacao/casos_avaliacao.csv`; dizer se a `feat/metricas` pode ser apagada
-  (só o `avaliacao.ipynb` dela não foi portado). Depois, NA3 (tempo manual e ROI). Para a v3 das regras (não trava nada):
-  nas 3 chamadas da ED3, as lacunas saíram genéricas ("Necessidade de entender…") e perderam os itens concretos da v1
-  (quem decide, orçamento, fornecedor atual); vale dar exemplos de lacuna boa.
+- **Náthally:** subir o `revisao_manual.md` numa branch nova a partir da `main`, na pasta `avaliacao/`; conferir os 10 códigos
+  em `avaliacao/casos_avaliacao.csv`; dizer se a `feat/metricas` pode ser apagada (o `avaliacao.ipynb` e o `revisao_manual.md`
+  ainda não estão na `main`). Depois, NA3 (tempo manual e ROI). A NA4 já pode começar: o `resultados.csv` está na `main`.
+  Para a v3 das regras (não trava nada): a ED7 confirma que as lacunas saem genéricas (27 de 30) e que metade das perguntas
+  não cita o produto; vale dar exemplos de lacuna boa (quem decide, orçamento, fornecedor atual) e pedir o produto nas perguntas.
 - **Eduardo, em ordem** (o Claude Code faz o Git):
-  1. mandar ao grupo a mensagem com o fluxo novo (`/inicio-de-sessao` e `/fim-de-sessao`), a regra do PostgreSQL, os ajustes do Docker e o custo da ED7 (~US$ 0,012);
-  2. desligar "Format On Save" para Markdown no VS Code (em 29/10 ele reformatou as tabelas deste arquivo);
-  3. `/inicio-de-sessao ED7`: a avaliação com IA nos 10 casos, resumida para a Náthally;
-  4. perguntar ao professor a data da banca e se há outras regras além do guia (anotar no REQUISITOS);
-  5. revisar e testar o PR #18 (MA2) agora, e o do Docker quando chegar (sex 30/10);
-  6. sáb 31/10: se faltar algum dos dois PRs, plano B (seção 7); começar a ED8;
-  7. ter 03/11: demo ponta a ponta com `docker compose` (tela + PostgreSQL + `data/` real) e tag `v0.1-demo`;
-  8. no meio disso: `/explicar` nos pontos da seção 8.
+  1. mandar ao grupo a mensagem com o fluxo novo (`/inicio-de-sessao` e `/fim-de-sessao`), a regra do PostgreSQL, os ajustes do
+     Docker, a pergunta ao Marcos sobre o PR #18 e o resultado da ED7 (para a Náthally e para o Marcos). **Ainda não mandada**;
+  2. perguntar ao professor a data da banca e se há outras regras além do guia (anotar no REQUISITOS);
+  3. revisar o PR do Docker quando chegar (sex 30/10) e o da MA2 quando o Marcos abrir de novo;
+  4. sáb 31/10: se faltar algum dos dois PRs, plano B (seção 7); começar a ED8;
+  5. ter 03/11: demo ponta a ponta com `docker compose` (tela + PostgreSQL + `data/` real) e tag `v0.1-demo`;
+  6. no meio disso: `/explicar` nos pontos da seção 8.
 
 **Pendências pequenas:**
 - Eduardo: o `tests/test_aprender.py:19` exige exatamente "5 passed" no notebook.
@@ -87,7 +96,7 @@ Se um dos dois primeiros atrasar, vale o plano B da seção 7.
 **Decisões em aberto:**
 - data e horário da banca (Eduardo pergunta ao professor);
 - `scripts/dados.py` ou `raiox/dados.py`: ficar com um só (Marcos);
-- `verificar_automatico.py` e `graficos.py`, que voltaram no PR #18 depois de cortados (Marcos e Eduardo, na revisão);
+- `verificar_automatico.py` e `graficos.py`, que voltaram no PR #18 (fechado) depois de cortados (Marcos e Eduardo, na revisão da MA2);
 - pasta da infraestrutura: `infra/` ou `terraform/` (Miguel, no PR do Docker);
 - apagar `tratamento_dados` e `feat/metricas` (Marcos e Náthally);
 - corte de receita mínima de R$ 10 mi (Marcos, MA3);
@@ -97,10 +106,10 @@ Se um dos dois primeiros atrasar, vale o plano B da seção 7.
 
 | parte | feito | falta |
 |---|---|---|
-| núcleo do produto: dados, ML, IA, validador, avaliação | ~75% | MA2 (PostgreSQL na `main`), ED7 |
+| núcleo do produto: dados, ML, IA, validador, avaliação | ~80% | MA2 (PostgreSQL na `main`, sem PR aberto), MA3 (Camil, Magalu, RD Saúde) |
 | tela e infraestrutura | ~35% | PR do Docker e do Terraform (funcionam, sem PR); MG4 (aviso, modo sem IA automático) |
 | entregáveis: BPMN, EDA, PDF, deck, vídeo, ensaios | ~10% | quase tudo, mas não depende de código novo |
-| **total** | **~43%** | com 9 de 26 dias usados (~35%): o núcleo está adiantado; a MA2 e o PR do Docker são o caminho crítico |
+| **total** | **~45%** | com 9 de 26 dias usados (~35%): o núcleo está adiantado; a MA2 e o PR do Docker são o caminho crítico |
 
 **Folga:** sobram 4 dias de reserva (12 a 15/11) antes da entrega de seg 16/11, e mais 2 até a banca.
 Regra: atraso come a folga; **nunca** se acrescenta escopo. Se a folga acabar, use a lista de cortes da seção 7.
@@ -148,10 +157,10 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 |---|---|---|---|---|
 | ter 27/10 | ✅ ED0, ED1, ED2, ED5, ED4 (código), ED6; portes MA1 e NA1 | ✅ #4 na `main` (MA1) | ✅ #3 na `main` | ✅ #5 na `main` |
 | qua 28/10 | ✅ ED4 (segmentação consertada, PR #9) | MA2 (passou para 29–31/10) | MG1; começa o Docker | NA1 regras v2 |
-| qui 29/10 | ✅ ED3 (adiantada); portes NA1 e NA2 (PRs #10 e #11); teste do Docker e do Terraform | 🟡 MA2: PR #18 aberto | MG2 Docker + PostgreSQL | ✅ NA1 e NA2 entregues |
-| sex 30/10 | ED7; revisões | MA2 | MG2 (`docker-compose.yml`) | NA3 tempo manual |
+| qui 29/10 | ✅ ED3 e ED7 (adiantadas); portes NA1 e NA2 (PRs #10 e #11); teste do Docker e do Terraform | 🟡 MA2: PR #18 aberto e fechado sem merge | MG2 Docker + PostgreSQL | ✅ NA1 e NA2 entregues |
+| sex 30/10 | revisões | MA2 | MG2 (`docker-compose.yml`) | NA3 tempo manual |
 | sáb 31/10 | revisões; ED8 começa; plano B da MA2 se precisar | **MA2 (prazo)**; MA3 | MG3 Terraform | NA3 tempo manual; marcar testes |
-| dom 01/11 | ED7 (prazo final) | MA4 EDA | **MG3: se o Terraform não subiu, fica só o Docker**; MG4 | NA3 |
+| dom 01/11 | revisões | MA4 EDA | **MG3: se o Terraform não subiu, fica só o Docker**; MG4 | NA3 |
 | seg 02/11 | feriado (reserva) | | | |
 | ter 03/11 | **demo ponta a ponta · tag `v0.1-demo`** | MA4 | MG4 tela com dados reais | NA3 testes com usuários |
 | qua 04/11 | ED8 justificativa + "Como usamos IA" | MA5 BPMN | MG5 arquitetura + README | NA4 revisão + métricas |
@@ -176,7 +185,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | ED4 | qua 28/10 | ✅ PR #9 | consertar a segmentação real: receita mínima de R$ 10 mi, extremos cortados em 5/95, menor grupo com pelo menos 5% das empresas. Os gráficos de antes (`data/ed1/*_antes_ed4.png`, só na máquina do Eduardo) servem para a banca: "a silhueta alta enganava" | `raiox/segmentos.py`, `tests/`, `docs/graficos/*.png` | Plan | nenhum grupo com menos de 5%; "parecidas" de 3 empresas conhecidas fazem sentido; 2 PNG reais | `eduardo-segmentacao` |
 | ED5 | 27/10 | ✅ PR #6 | `avaliacao/avaliar.py` (C4) | `avaliacao/`, `tests/` | — | `python -m avaliacao.avaliar` grava o C4 | `eduardo-ia-testes` |
 | ED6 | 27/10 | ✅ PR #6 | teste ponta a ponta (pula sem `data/`) | `tests/test_ponta_a_ponta.py` | — | pula no CI; roda local com dados reais | `eduardo-ia-testes` |
-| ED7 | sex 30/10–dom 01/11 | — | `python -m avaliacao.avaliar --com-ia` nos 10 casos (avisar o grupo) | `avaliacao/resultados.csv` | Manual | 10 linhas; custo anotado (~US$ 0,012; limite US$ 0,05) | PR |
+| ED7 | qui 29/10 | ✅ PR #20 | `python -m avaliacao.avaliar --com-ia` nos 10 casos (avisar o grupo) | `avaliacao/resultados.csv` | Manual | 10 linhas; custo anotado (feito: 10 linhas, 0 erros, 0 removidos, US$ 0,0118) | `eduardo-avaliacao-ia` |
 | ED8 | qua 04/11 | — | justificativa técnica para o PDF + README "Como usamos IA" | `docs/justificativa.md`, `README.md` | Manual (você escreve; a IA confere com arquivo e linha) | o Marcos lê e entende | PR |
 | ED9 | sex 06/11 | — | congelar | só bugs | Plan | CI verde + ponta a ponta verde | **tag `v1.0`** |
 | ED10 | sáb 07/11 | — | teste do zero em outra máquina, só com o README | consertos | Manual | rodou sem ajuda, ou cada falha virou PR | `v1.0.1` se precisar |
@@ -187,7 +196,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | # | data | status | objetivo | altera | modo | pronto quando | git |
 |---|---|---|---|---|---|---|---|
 | MA1 | 27/10 | ✅ PR #4 | revisar o #4: o código é seu, só os imports mudaram; decidir sobre o `scripts/dados.py` | — | — | #4 aprovado | `marcos-porta-dados` |
-| MA2 | qui 29–sáb 31/10 | 🟡 PR #18 aberto (29/10, CI verde), falta a revisão | **PostgreSQL na `main`** (regra do professor): trazer o `5508116` para a estrutura da `main` (sem `src/`), `DATABASE_URL` e `TEST_DATABASE_URL` no `.env.example`, serviço postgres no CI (`.github/workflows/testes.yml`) para os testes do banco não pularem; e o C1/C2: CSV padrão (sem `sep=";"` e sem `decimal=","` na **escrita**), `cd_cvm` int, tabela `indicadores` no banco, busca só com empresas ativas e com indicadores | `scripts/`, `raiox/dados.py`, `requirements.txt`, CI, `tests/` | Plan | CI verde **rodando** os testes do banco (não pulados); `python -m pytest -q tests/test_ponta_a_ponta.py` passa com os seus dados reais | `marcos-postgres` → PR (Eduardo + Miguel) |
+| MA2 | qui 29–sáb 31/10 | 🟡 PR #18 fechado sem merge pelo Marcos (29/10, 11h51); sem PR aberto | **PostgreSQL na `main`** (regra do professor): trazer o `5508116` para a estrutura da `main` (sem `src/`), `DATABASE_URL` e `TEST_DATABASE_URL` no `.env.example`, serviço postgres no CI (`.github/workflows/testes.yml`) para os testes do banco não pularem; e o C1/C2: CSV padrão (sem `sep=";"` e sem `decimal=","` na **escrita**), `cd_cvm` int, tabela `indicadores` no banco, busca só com empresas ativas e com indicadores | `scripts/`, `raiox/dados.py`, `requirements.txt`, CI, `tests/` | Plan | CI verde **rodando** os testes do banco (não pulados); `python -m pytest -q tests/test_ponta_a_ponta.py` passa com os seus dados reais | `marcos-postgres` → PR (Eduardo + Miguel) |
 | MA3 | sex 30–sáb 31/10 | — | dados reais + checagem + 5 empresas conferidas no RI; zip da `data/` no Drive | `avaliacao/conferencia.csv`; consertos | Manual | diferença < 1%; nenhum "erro"; link no grupo | PR |
 | MA4 | dom 01–ter 03/11 | — | EDA com 4 gráficos (nulos, distribuições, extremos, cobertura) | `notebooks/eda.ipynb`, `docs/graficos/` | Manual | "Restart & Run All" sem erro | PR |
 | MA5 | qua 04–qui 05/11 | — | BPMN 2.0 com o Raio-X (obrigatório) e o de hoje (se der tempo), no bpmn.io | `docs/bpmn/` | Plan (o Claude só revisa) | abre no bpmn.io; decisões "tem dados?" e "passou no validador?" | PR |
