@@ -54,9 +54,7 @@ Siga os passos **em ordem** e pare no primeiro que falhar.
   combinado. Diga em 3 linhas o que o PR muda e o risco que você vê.
 - Se mexeu em pasta de outro dono ou no `contratos.md`, confirme com a pessoa que o dono deu o ok no grupo.
 - Peça **um "pode"** à pessoa. Com o "pode": `gh pr merge <número> --merge --delete-branch`.
-- Se o GitHub recusar porque falta aprovação, a configuração da `main` ainda pede revisão: explique que outra pessoa do grupo
-  precisa abrir o PR no navegador, clicar em "Files changed" → "Review changes" → "Approve" → "Submit review", e escreva
-  a mensagem pronta para pedir isso. Depois do approve, faça o merge.
+- Se o GitHub recusar o merge, mostre a mensagem inteira e pare: não tente contornar.
 - Depois do merge: `git switch main` e `git pull`.
 
 ## 7. Fechar

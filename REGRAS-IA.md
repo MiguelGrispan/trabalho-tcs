@@ -38,20 +38,16 @@ Antes de todo commit, rode `git status` e leia a lista. Se aparecer algo que nã
 
 ## 5. Git do time
 
-- Uma branch curta por tarefa (uma sessão do `docs/PLANO.md`), sempre a partir da `main` atualizada:
-  `git switch main`, `git pull`, `git switch -c pessoa-tarefa` (ex.: `marcos-porta-dados`).
-  Use hífen, não barra: o Git não deixa criar `eduardo/...` enquanto existir a branch `eduardo`.
-- Faça commit antes de pedir uma mudança grande à IA: se der errado, dá para voltar.
-- Commits pequenos, com mensagem dizendo o que mudou.
-- Para trazer a `main` para a sua branch: `git switch main`, `git pull`, `git switch pessoa-tarefa`, `git merge main` e rode os testes.
-  Deu conflito? `git merge --abort` e fale com o dono do arquivo.
-- Nunca `rebase` nem `push --force`: reescrevem a história e podem apagar o trabalho de um colega.
-- **O jeito fácil (desde 29/10):** no Claude Code, `/inicio-de-sessao` no começo e `/fim-de-sessao` no fim. Ele faz os passos acima,
-  abre o PR, espera o CI, lê o diff e faz o merge depois do seu "pode".
+- **No Claude Code, o Git é com ele:** `/inicio-de-sessao` no começo e `/fim-de-sessao` no fim. Ele cria a branch, faz os commits,
+  abre o PR, espera o CI, lê o diff e faz o merge depois do seu "pode". Os combinados e o porquê: `docs/PLANO.md`, seção 2;
+  os comandos, um por um: `aprender/COMANDOS.md`, seção 7.
+- Uma branch curta por tarefa (uma sessão do `docs/PLANO.md`), sempre a partir da `main` atualizada, com nome `pessoa-tarefa`.
+- Faça commit antes de pedir uma mudança grande à IA: se der errado, dá para voltar. Commits pequenos, com mensagem dizendo o que mudou.
+- Nunca `rebase` nem `push --force`: reescrevem a história e podem apagar o trabalho de um colega. Para trazer a `main`, `git merge main`.
 - Na `main` só entra por pull request, com os testes passando (o CI roda sozinho no PR). Não precisa de aprovação no GitHub:
   o CI e a leitura do diff pelo Claude Code são a revisão. Quem abriu o PR faz o merge (tipo "merge commit").
   Mexeu no `contratos.md` ou na pasta de outro dono? Antes do merge, o dono dá o ok no grupo.
-- Quem não programa com IA pode subir arquivos pelo navegador: no GitHub, "Add file → Upload files",
+- Quem não programa com IA sobe arquivos pelo navegador: no GitHub, com a `main` selecionada, "Add file → Upload files",
   escolha "Create a new branch" e abra o PR.
 
 ## 6. Regras do produto (não negociáveis)
@@ -64,12 +60,6 @@ Antes de todo commit, rode `git status` e leia a lista. Se aparecer algo que nã
 
 ## 7. Registro para a banca
 
-No pull request, escreva em 2 linhas o que foi gerado com IA e o que você revisou e testou (o modelo de PR já traz os campos). Isso vira a seção "Como usamos IA para programar" do README.
-
-## Checklist do pull request
-
-- [ ] Rodei os testes e passaram (o CI do PR está verde).
-- [ ] Sei dizer o que o PR muda (ou pedi `/explicar`).
-- [ ] Não tem `.env`, chave nem dado bruto no commit.
-- [ ] Não mudei contrato nem pasta de outro dono sem o ok dele no grupo.
-- [ ] Escrevi o que foi feito com IA e o que eu entendi ou conferi.
+No pull request, escreva em 2 linhas o que foi gerado com IA e o que você entendeu ou conferiu (vale "ainda não li";
+não vale inventar). Isso vira a seção "Como usamos IA para programar" do README.
+Os campos e o checklist do PR estão no modelo (`.github/pull_request_template.md`), e o `/fim-de-sessao` confere cada item antes do merge.

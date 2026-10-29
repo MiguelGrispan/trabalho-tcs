@@ -63,7 +63,7 @@ python -c "import pandas as pd; d=pd.read_csv('data/indicadores.csv',sep=';',dec
 | agrupar as empresas (K-means) ✅ | raiz | `python -m raiox.segmentos` | a silhueta por k, o k escolhido e o tamanho de cada grupo; cria `data/segmentos.csv` e o gráfico em `docs/graficos/` |
 | forçar a tabela falsa mesmo com os dados reais | raiz | `RAIOX_DADOS=falsos python -m raiox.segmentos` | usa as 30 empresas inventadas e não grava nada em `data/` |
 | raio-x **sem IA** (não gasta crédito) ✅ | raiz | `python -m raiox.ia --cvm 90001 --produto "software de frota" --objetivo "conhecer a operação" --sem-ia` | um JSON com empresa, 6 indicadores, grupo, parecidas, resumo, perguntas e lacunas |
-| raio-x **com IA** (≈ US$ 0,0009 por chamada) | raiz | o mesmo comando, sem o `--sem-ia` | o mesmo JSON, com o texto escrito pelo Gemini; em `removidos`, o que o validador barrou |
+| raio-x **com IA** (≈ US$ 0,0012 por chamada) | raiz | o mesmo comando, sem o `--sem-ia` | o mesmo JSON, com o texto escrito pelo Gemini; em `removidos`, o que o validador barrou |
 | rodar a avaliação dos casos | raiz | `python -m avaliacao.avaliar` (sem IA) ou `python -m avaliacao.avaliar --com-ia` | "N casos → avaliacao/resultados.csv · itens removidos: … · custo total: …" |
 
 Com os dados reais, a WEG é `--cvm 5410`, a Magazine Luiza é `22470` e a Camil é `24228`.
@@ -101,6 +101,9 @@ Os comandos previstos estão abaixo. Confira com o Miguel quando o PR dele entra
 ---
 
 ## 7. Git do dia a dia (uma sessão = uma branch = um PR)
+
+No Claude Code, o `/inicio-de-sessao` e o `/fim-de-sessao` fazem estes passos por você. A tabela serve para entender o que
+eles fazem, ou para fazer à mão.
 
 | o que | onde | comando |
 |---|---|---|
