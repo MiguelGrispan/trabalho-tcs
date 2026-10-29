@@ -27,7 +27,7 @@ Todo trabalho precisa servir a um destes itens. Se uma tarefa não serve a nenhu
 |---|---|---|
 | BPMN 2.0 do processo | `docs/bpmn/` (`.bpmn` + `.png`) | Marcos |
 | Python/Pandas: limpeza, nulos, estruturação | `scripts/carregar_dfp.py`, `scripts/indicadores.py` | Marcos |
-| SQL (consultas ou persistência) | `data/catalogo.db` via `scripts/carregar_dfp.py` e `raiox/dados.py` | Marcos |
+| SQL (consultas ou persistência), **em PostgreSQL** (regra do professor) | banco PostgreSQL (endereço em `DATABASE_URL`, no `.env`) via `scripts/carregar_dfp.py` e `raiox/dados.py`. A `main` ainda usa SQLite até a MA2 | Marcos |
 | Visualização explicativa (Matplotlib/Seaborn ou dashboard) | `notebooks/`, `docs/graficos/`, gráfico da tela | Marcos, Eduardo |
 | Modelo de ML | `raiox/segmentos.py` (K-means + vizinhos) | Eduardo |
 | GenAI: prompt engineering, LangChain, API | `raiox/ia.py` (+ auditoria em `raiox/checagem.py`) | Eduardo |
@@ -35,6 +35,10 @@ Todo trabalho precisa servir a um destes itens. Se uma tarefa não serve a nenhu
 | Boas práticas e agentic coding | `tests/`, `contratos.md`, `REGRAS-IA.md`, este arquivo, pull requests | todos |
 | Arquitetura + Terraform ou contêiner | `Dockerfile`, `infra/` | Miguel |
 | Governança e ética (viabilidade, limites, viés, confiabilidade, uso responsável) | validador, texto de ética no PDF | Náthally, todos |
+
+**Regras do professor (além do guia):** valem como o guia e ficam em `docs/REQUISITOS.md` (seção "Regras do professor").
+- **O banco é PostgreSQL. SQLite não vale** (29/10). Nada novo com `sqlite3`; o que existe muda na MA2.
+  O endereço do banco (`DATABASE_URL`) tem senha: fica no `.env`, como a chave do Gemini.
 
 **Entregáveis (48 h antes):** (1) repositório organizado, com README de arquitetura, pré-requisitos e como rodar,
 e os scripts de infraestrutura e notebooks; (2) PDF com BPMN 2.0, justificativa técnica (inclui por que não

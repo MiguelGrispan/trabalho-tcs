@@ -4,6 +4,11 @@ Formato do que passa de uma pessoa para outra. Quem precisar mudar um formato av
 Enquanto o colega não entrega, use um arquivo falso no mesmo formato (pasta `falsos/`).
 Este é o único arquivo de contratos do repositório.
 
+**Banco: PostgreSQL** (regra do professor, 29/10: SQLite não vale; `docs/REQUISITOS.md`, "Regras do professor").
+O endereço fica em `DATABASE_URL`, no `.env` (tem senha: nunca vai para o Git).
+> Pendente (MA2): a `main` ainda grava e lê o `data/catalogo.db` (SQLite). O código com PostgreSQL existe na branch
+> `tratamento_dados` (Marcos, 28/10, commit `5508116`) e entra na `main` pela MA2.
+
 ## C1 · `raiox/dados.py` · Marcos → Miguel
 
 ```python
@@ -11,12 +16,12 @@ buscar_empresas(texto: str) -> list[dict]
 # só companhias ativas e com indicadores, ordenadas por nome
 # [{"cd_cvm": 99991, "nome": "TRANSVALE LOGISTICA S.A.", "setor": "Transporte e logística"}]
 
-registrar_consulta(registro: dict) -> None   # grava uma linha na tabela consultas
+registrar_consulta(registro: dict) -> None   # grava uma linha na tabela consultas (PostgreSQL)
 ```
 
 > Pendente: o `raiox/dados.py` de hoje devolve `cd_cvm` como texto (`"99991"`). O contrato pede int.
 
-## C2 · `data/indicadores.csv` (e tabela `indicadores` no `data/catalogo.db`) · Marcos → Eduardo
+## C2 · `data/indicadores.csv` (e tabela `indicadores` no PostgreSQL) · Marcos → Eduardo
 
 Gerado pelo `scripts/indicadores.py` a partir do `data/contas.csv` (`scripts/carregar_dfp.py`).
 Uma linha por empresa. Valores em reais (já convertidos da escala MIL). Margens e crescimento como fração (0.062 = 6,2%).
