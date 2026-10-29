@@ -1,10 +1,10 @@
 """Regras de limpeza dos dados da CVM.
 
-Todas as regras ficam aqui e são aplicadas uma única vez, em
-scripts/carregar_dfp.py. Quem lê contas.csv ou catalogo.db depois
-(indicadores, interface) recebe os dados já limpos: uma linha por
-empresa/ano/demonstração/conta e só empresas com receita de venda
-positiva no exercício mais recente.
+Segue as "Regras de limpeza, na ordem" do documento do projeto
+(docs/Raio-X Comercial.pdf). A regra 1 (ler com sep, encoding, decimal
+e CD_CONTA como texto) fica em scripts/carregar_dfp.py; as outras estão
+aqui. A regra 7 (nulos) vale para todas: valor que falta fica vazio,
+nunca é inventado.
 """
 import pandas as pd
 
@@ -15,155 +15,210 @@ COLUNAS_CONTA = [
 CHAVES_CONTA = ["ano", "cd_cvm", "demonstracao", "cd_conta"]
 
 
-def codigo_cvm(valor):
-    """Remove espaços e zeros à esquerda do código CVM."""
-    codigo = str(valor).strip()
-    return codigo.lstrip("0") or "0"
+# Função personalizada para limpar o código CVM
+def codigo_cvm(value):
+    # " 0004170 " vira "4170"
+    value = str(value).strip()
+    value = value.lstrip("0")
+    if value == "":
+        value = "0"
+
+    return value
+
+
+# Função personalizada para transformar a escala em número
+def transform_escala(value):
+    value = str(value).strip().upper()
+    if value.startswith("MIL"):
+        return 1000
+
+    elif value.startswith("UNIDADE") or value.startswith("REAL"):
+        return 1
+
+    # Escala desconhecida: melhor parar do que gravar valor errado
+    raise ValueError(f"Escala monetária não reconhecida: {value}")
 
 
 def limpar_demo(df, demo, origem, ano):
-    """Normaliza uma demonstração lida do arquivo anual da CVM."""
-    obrigatorias = {
-        "CD_CVM", "DENOM_CIA", "VERSAO", "ESCALA_MOEDA", "ORDEM_EXERC",
-        "DT_FIM_EXERC", "CD_CONTA", "DS_CONTA", "VL_CONTA",
-    }
-    ausentes = obrigatorias.difference(df.columns)
-    if ausentes:
-        raise ValueError(
-            f"dfp_cia_aberta_{demo}_{origem}_{ano}.csv não contém as colunas "
-            f"obrigatórias: {', '.join(sorted(ausentes))}"
-        )
+    """Limpa uma demonstração lida do arquivo anual da CVM (regras 2 a 4)."""
+    # Regra 2: fica só o exercício do ano. Sem isso cada conta aparece
+    # duas vezes (a CVM também manda o "PENÚLTIMO", do ano anterior)
+    df = df[df["ORDEM_EXERC"] == "ÚLTIMO"]
 
-    ordem_exercicio = (
-        df["ORDEM_EXERC"].astype("string").str.strip().str.upper()
-    )
-    df = df.loc[ordem_exercicio.eq("ÚLTIMO")].copy()
-    df["_versao"] = pd.to_numeric(df["VERSAO"], errors="coerce")
-    df = df.loc[df["_versao"].notna()]
-    if df.empty:
-        return pd.DataFrame(columns=COLUNAS_CONTA)
+    # Regra 3: fica só a maior VERSAO de cada empresa (reapresentações).
+    # O transform("max") coloca, em cada linha, a maior versão da empresa
+    maior_versao = df.groupby("CD_CVM")["VERSAO"].transform("max")
+    df = df[df["VERSAO"] == maior_versao]
 
-    maior_versao = df.groupby("CD_CVM")["_versao"].transform("max")
-    df = df.loc[df["_versao"].eq(maior_versao)].copy()
+    # Algumas empresas mandam dois períodos na mesma versão
+    # (ex.: 2023-03-31 e 2023-12-31); fica só o fim de exercício mais recente.
+    # As datas estão no formato ano-mês-dia, então o max funciona no texto.
+    maior_fim = df.groupby("CD_CVM")["DT_FIM_EXERC"].transform("max")
+    df = df[df["DT_FIM_EXERC"] == maior_fim]
 
-    # Algumas empresas enviam mais de um período na mesma versão
-    # (ex.: 2023-03-31 e 2023-12-31); fica só o encerramento mais recente.
-    df["_fim_exercicio"] = pd.to_datetime(df["DT_FIM_EXERC"], errors="coerce")
-    df = df.loc[df["_fim_exercicio"].notna()]
-    if df.empty:
-        return pd.DataFrame(columns=COLUNAS_CONTA)
-    maior_fim = df.groupby("CD_CVM")["_fim_exercicio"].transform("max")
-    df = df.loc[df["_fim_exercicio"].eq(maior_fim)].copy()
-
-    escalas = df["ESCALA_MOEDA"].fillna("").str.strip().str.upper()
-    fatores = pd.Series(index=df.index, dtype="float64")
-    fatores.loc[escalas.str.startswith("MIL")] = 1000
-    fatores.loc[
-        escalas.str.startswith(("UNIDADE", "REAL"))
-    ] = 1
-    escalas_invalidas = fatores.isna()
-    if escalas_invalidas.any():
-        valores = sorted(escalas.loc[escalas_invalidas].unique())
-        raise ValueError(f"Escala monetária não reconhecida: {valores}")
-
-    valores = pd.to_numeric(df["VL_CONTA"], errors="raise")
-    resultado = pd.DataFrame({
-        "cd_cvm": df["CD_CVM"].map(codigo_cvm),
-        "nome": df["DENOM_CIA"].astype("string").str.strip(),
-        "cd_conta": df["CD_CONTA"].astype("string").str.strip(),
-        "ds_conta": df["DS_CONTA"].astype("string").str.strip(),
-        "valor": valores * fatores,
-        "ano": ano,
-        "demonstracao": demo,
-        "origem": origem,
-        "versao": df["_versao"].astype("int64"),
+    # Renomeando as colunas usadas para nomes simples
+    df = df.rename(columns={
+        "CD_CVM": "cd_cvm",
+        "DENOM_CIA": "nome",
+        "CD_CONTA": "cd_conta",
+        "DS_CONTA": "ds_conta",
+        "VL_CONTA": "valor",
+        "VERSAO": "versao",
     })
-    # Linhas que só diferem em colunas descartadas (ex.: DT_INI_EXERC) viram iguais.
-    resultado = resultado[COLUNAS_CONTA].drop_duplicates()
-    return resultado.reset_index(drop=True)
+
+    # Regra 4: escala. MIL vira x1000, UNIDADE fica x1
+    df["valor"] = df["valor"].astype(float) * df["ESCALA_MOEDA"].apply(transform_escala)
+
+    df["cd_cvm"] = df["cd_cvm"].apply(codigo_cvm)
+    df["nome"] = df["nome"].str.strip()
+    df["cd_conta"] = df["cd_conta"].str.strip()
+    df["ds_conta"] = df["ds_conta"].str.strip()
+
+    # Regra 5 (parte 1): anota de onde veio cada linha
+    df["ano"] = ano
+    df["demonstracao"] = demo
+    df["origem"] = origem
+
+    # Fica só com as colunas usadas. Linhas que só diferiam em colunas
+    # descartadas (ex.: DT_INI_EXERC) viram iguais e são removidas
+    df = df[COLUNAS_CONTA]
+    df = df.drop_duplicates()
+    return df.reset_index(drop=True)
 
 
 def preferir_consolidado(contas):
-    """Mantém dados consolidados; usa individuais quando não há consolidados."""
-    chaves = ["ano", "cd_cvm", "demonstracao"]
-    if contas.empty or "origem" not in contas.columns:
-        return contas.copy()
-    tem_consolidado = contas["origem"].eq("con").groupby(
-        [contas[coluna] for coluna in chaves], dropna=False
-    ).transform("any")
-    return contas.loc[contas["origem"].eq("con") | ~tem_consolidado].copy()
+    """Regra 5: usa o consolidado; sem consolidado, usa o individual."""
+    # Guarda quais empresa/ano/demonstração têm dados consolidados
+    tem_consolidado = set()
+    for ano, cd_cvm, demo, origem in zip(
+        contas["ano"], contas["cd_cvm"], contas["demonstracao"], contas["origem"]
+    ):
+        if origem == "con":
+            tem_consolidado.add((ano, cd_cvm, demo))
+
+    # A linha fica se for consolidada ou se não existir consolidado para ela
+    manter = []
+    for ano, cd_cvm, demo, origem in zip(
+        contas["ano"], contas["cd_cvm"], contas["demonstracao"], contas["origem"]
+    ):
+        if origem == "con":
+            manter.append(True)
+
+        elif (ano, cd_cvm, demo) in tem_consolidado:
+            manter.append(False)
+
+        else:
+            manter.append(True)
+
+    return contas[manter].copy()
 
 
 def encontrar_conflitos(contas):
-    """Retorna todas as linhas com chave empresa/ano/demonstração/conta duplicada."""
-    if contas.empty or not set(CHAVES_CONTA).issubset(contas.columns):
-        return contas.iloc[0:0].copy()
-    duplicadas = contas.duplicated(subset=CHAVES_CONTA, keep=False)
-    return contas.loc[duplicadas].copy()
+    """Retorna todas as linhas com chave empresa/ano/demonstração/conta repetida."""
+    repetidas = contas.duplicated(subset=CHAVES_CONTA, keep=False)
+    return contas[repetidas].copy()
 
 
 def resolver_conflitos(contas):
     """Deixa uma linha por empresa/ano/demonstração/conta.
 
     Repetições com o mesmo valor viram uma linha só; com valores diferentes,
-    o valor fica ausente em vez de escolher um deles.
+    o valor fica vazio em vez de escolher um deles (regra 7: não inventar).
     """
-    if contas.empty or not set(CHAVES_CONTA).issubset(contas.columns):
-        return contas.copy()
-    divergentes = (
-        contas.groupby(CHAVES_CONTA, dropna=False)["valor"]
-        .transform("nunique", dropna=False)
-        .gt(1)
-    )
-    resultado = contas.assign(valor=contas["valor"].mask(divergentes))
-    return resultado.drop_duplicates(CHAVES_CONTA).reset_index(drop=True)
+    # Remove as repetições que têm o mesmo valor
+    contas = contas.drop_duplicates(subset=CHAVES_CONTA + ["valor"])
+
+    # Se a conta ainda aparece repetida, os valores são diferentes:
+    # não dá para saber qual é o certo, então o valor fica vazio
+    repetidas = contas.duplicated(subset=CHAVES_CONTA, keep=False)
+    contas.loc[repetidas, "valor"] = None
+
+    contas = contas.drop_duplicates(subset=CHAVES_CONTA)
+    return contas.reset_index(drop=True)
+
+
+FATOR_ESCALA = 1000
+# Quanto a receita corrigida pode se afastar da do ano anterior (para mais ou menos).
+TOLERANCIA_ESCALA = 3
+
+
+def encontrar_escala_errada(contas):
+    """Retorna os pares (cd_cvm, ano) com valores em milhares declarados como unidade.
+
+    Algumas empresas informam ESCALA_MOEDA = UNIDADE mas mandam os valores em
+    milhares. O sinal é a receita (DRE 3.01) cair cerca de 1000x em relação ao
+    ano anterior: se, multiplicada por 1000, ela fica parecida com a do ano
+    anterior, o ano está com a escala errada. O ano corrigido serve de base
+    para o seguinte (o erro pode se repetir).
+    """
+    receita = contas[(contas["demonstracao"] == "DRE") & (contas["cd_conta"] == "3.01")]
+    receita = receita.sort_values(["cd_cvm", "ano"])
+
+    errados = []
+    empresa_anterior = None
+    receita_anterior = None
+    for cd_cvm, ano, valor in zip(receita["cd_cvm"], receita["ano"], receita["valor"]):
+        # Primeiro ano da empresa: não há ano anterior para comparar.
+        # Comparações com valor vazio dão False, então ele nunca é corrigido.
+        if cd_cvm == empresa_anterior and receita_anterior > 0 and valor > 0:
+            razao = valor * FATOR_ESCALA / receita_anterior
+            if 1 / TOLERANCIA_ESCALA <= razao <= TOLERANCIA_ESCALA:
+                errados.append((cd_cvm, ano))
+                valor = valor * FATOR_ESCALA
+
+        empresa_anterior = cd_cvm
+        receita_anterior = valor
+
+    return errados
+
+
+def corrigir_escala(contas, errados):
+    """Multiplica por 1000 todas as contas dos pares (cd_cvm, ano) informados."""
+    contas = contas.copy()
+    for cd_cvm, ano in errados:
+        linhas = (contas["cd_cvm"] == cd_cvm) & (contas["ano"] == ano)
+        contas.loc[linhas, "valor"] = contas.loc[linhas, "valor"] * FATOR_ESCALA
+
+    return contas
 
 
 def filtrar_empresas_com_receita(contas):
-    """Mantém empresas com receita de venda positiva no ano mais recente."""
-    if contas.empty:
-        return contas.copy()
-    # Bancos e seguradoras usam a 3.01 para outras receitas; ficam de fora.
-    receita = contas.loc[
-        contas["cd_conta"].astype(str).str.strip().eq("3.01")
-        & pd.to_numeric(contas["valor"], errors="coerce").gt(0)
-        & contas["ds_conta"].astype("string").str.contains(
-            "receita de venda", case=False, na=False
-        )
-    ]
-    if receita.empty:
-        return contas.iloc[0:0].copy()
+    """Regra 6: fica só quem tem receita de venda positiva no ano mais recente."""
     ultimo_ano = contas["ano"].max()
-    validas = receita.loc[receita["ano"].eq(ultimo_ano), "cd_cvm"].unique()
-    return contas.loc[contas["cd_cvm"].isin(validas)].copy()
+
+    # Bancos e seguradoras usam a 3.01 para outras receitas
+    # (ex.: "Receitas da Intermediação Financeira"); ficam de fora
+    receita = contas[
+        (contas["ano"] == ultimo_ano)
+        & (contas["cd_conta"] == "3.01")
+        & (contas["valor"] > 0)
+        & (contas["ds_conta"].str.lower().str.contains("receita de venda"))
+    ]
+
+    # Fica com todas as linhas (de todos os anos) das empresas aprovadas
+    empresas_validas = receita["cd_cvm"].unique()
+    return contas[contas["cd_cvm"].isin(empresas_validas)].copy()
 
 
 def preparar_empresas(cadastro):
     """Monta a tabela empresas: uma linha por código CVM, a partir do cadastro."""
-    obrigatorias = {"CD_CVM", "DENOM_SOCIAL", "CNPJ_CIA", "SIT", "SETOR_ATIV"}
-    ausentes = obrigatorias.difference(cadastro.columns)
-    if ausentes:
-        raise ValueError(
-            "cad_cia_aberta.csv não contém as colunas obrigatórias: "
-            f"{', '.join(sorted(ausentes))}"
-        )
-
-    empresas = pd.DataFrame({
-        "cd_cvm": cadastro["CD_CVM"].map(codigo_cvm),
-        "nome": cadastro["DENOM_SOCIAL"].astype("string").str.strip(),
-        "cnpj": cadastro["CNPJ_CIA"].astype("string").str.strip(),
-        "situacao": cadastro["SIT"].astype("string").str.strip(),
-        "setor": cadastro["SETOR_ATIV"].astype("string").str.strip(),
+    # Fica só com as colunas usadas, com nomes simples
+    empresas = cadastro[["CD_CVM", "DENOM_SOCIAL", "CNPJ_CIA", "SIT", "SETOR_ATIV"]]
+    empresas = empresas.rename(columns={
+        "CD_CVM": "cd_cvm",
+        "DENOM_SOCIAL": "nome",
+        "CNPJ_CIA": "cnpj",
+        "SIT": "situacao",
+        "SETOR_ATIV": "setor",
     })
+
+    empresas["cd_cvm"] = empresas["cd_cvm"].apply(codigo_cvm)
     empresas["setor"] = empresas["setor"].fillna("Não Informado")
 
-    # A mesma empresa aparece uma vez por mercado (bolsa, balcão);
-    # fica uma linha por código, preferindo o registro ativo.
-    ativo = empresas["situacao"].str.upper().eq("ATIVO").fillna(False)
-    empresas = (
-        empresas.assign(_ativo=ativo)
-        .sort_values(["cd_cvm", "_ativo"], ascending=[True, False], kind="stable")
-        .drop_duplicates("cd_cvm")
-        .drop(columns="_ativo")
-    )
+    # A mesma empresa aparece uma vez por mercado (bolsa, balcão).
+    # Ordena deixando o registro ATIVO primeiro e fica com uma linha por código
+    empresas["ativo"] = empresas["situacao"] == "ATIVO"
+    empresas = empresas.sort_values(["cd_cvm", "ativo"], ascending=[True, False])
+    empresas = empresas.drop_duplicates(subset="cd_cvm")
+    empresas = empresas.drop(columns=["ativo"])
     return empresas.reset_index(drop=True)

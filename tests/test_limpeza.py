@@ -4,7 +4,9 @@ import pandas as pd
 
 from raiox.limpeza import (
     codigo_cvm,
+    corrigir_escala,
     encontrar_conflitos,
+    encontrar_escala_errada,
     filtrar_empresas_com_receita,
     limpar_demo,
     preferir_consolidado,
@@ -43,11 +45,6 @@ class LimpezaTests(unittest.TestCase):
         resultado = limpar_demo(dados, "DRE", "con", 2025)
 
         self.assertAlmostEqual(resultado.iloc[0]["valor"], 1234.5)
-
-    def test_limpar_demo_rejeita_arquivo_sem_colunas(self):
-        """CSV sem VL_CONTA é extrato sem saldo: não serve pra nada."""
-        with self.assertRaisesRegex(ValueError, "VL_CONTA"):
-            limpar_demo(pd.DataFrame(columns=["CD_CVM"]), "DRE", "con", 2025)
 
     def test_prefere_consolidado_e_faz_fallback_individual(self):
         """Consolidado é o prato principal; individual é o miojo de emergência. 🍜"""
@@ -160,6 +157,37 @@ class LimpezaTests(unittest.TestCase):
         self.assertEqual(len(resultado), 1)
         self.assertTrue(pd.isna(resultado.iloc[0]["valor"]))
 
+    def test_escala_errada_corrige_queda_de_mil_vezes_em_sequencia(self):
+        """Disse UNIDADE, mandou milhares, e repetiu no ano seguinte. 🔁"""
+        receita = {"cd_cvm": "1", "demonstracao": "DRE", "cd_conta": "3.01"}
+        contas = pd.DataFrame([
+            {**receita, "ano": 2023, "valor": 368_000_000.0},
+            {**receita, "ano": 2024, "valor": 298_000.0},  # deveria ser 298 milhões
+            {**receita, "ano": 2025, "valor": 291_000.0},  # idem
+            {**receita, "ano": 2025, "cd_conta": "3.11", "valor": 10_000.0},
+        ])
+
+        errados = encontrar_escala_errada(contas)
+        resultado = corrigir_escala(contas, errados)
+
+        self.assertEqual(errados, [("1", 2024), ("1", 2025)])
+        valores = dict(zip(zip(resultado["ano"], resultado["cd_conta"]), resultado["valor"]))
+        self.assertEqual(valores[(2023, "3.01")], 368_000_000.0)
+        self.assertEqual(valores[(2025, "3.01")], 291_000_000.0)
+        self.assertEqual(valores[(2025, "3.11")], 10_000_000.0)  # a empresa toda no ano
+
+    def test_escala_errada_ignora_queda_real_e_valor_ausente(self):
+        """Queda de 100× é crise, não erro de escala. 📉"""
+        receita = {"demonstracao": "DRE", "cd_conta": "3.01"}
+        contas = pd.DataFrame([
+            {**receita, "cd_cvm": "1", "ano": 2024, "valor": 114_000_000.0},
+            {**receita, "cd_cvm": "1", "ano": 2025, "valor": 659_000.0},
+            {**receita, "cd_cvm": "2", "ano": 2024, "valor": float("nan")},
+            {**receita, "cd_cvm": "2", "ano": 2025, "valor": 300.0},
+        ])
+
+        self.assertEqual(encontrar_escala_errada(contas), [])
+
     def test_preparar_empresas_uma_linha_por_codigo_preferindo_ativo(self):
         """Uma linha por empresa, e quem está ATIVO ganha a cadeira. 🪑"""
         cadastro = pd.DataFrame([
@@ -176,11 +204,6 @@ class LimpezaTests(unittest.TestCase):
         self.assertEqual(resultado["cd_cvm"].tolist(), ["10456", "99991"])  # zeros à esquerda: demitidos
         self.assertEqual(resultado.iloc[0]["situacao"], "ATIVO")
         self.assertEqual(resultado.iloc[1]["setor"], "Não Informado")  # ninguém sabe mesmo
-
-    def test_preparar_empresas_rejeita_cadastro_sem_colunas(self):
-        """Cadastro sem SIT? Volta pra casa e se arruma direito."""
-        with self.assertRaisesRegex(ValueError, "SIT"):
-            preparar_empresas(pd.DataFrame(columns=["CD_CVM", "DENOM_SOCIAL", "CNPJ_CIA", "SETOR_ATIV"]))
 
 
 if __name__ == "__main__":

@@ -1,51 +1,61 @@
-"""
-Tutorial: Inspeção Inicial dos Dados
+# %% [markdown]
+# ## Inspeção inicial dos dados da CVM
+#
+# Primeira tarefa do Marcos (S1): quantas empresas têm receita na DFP 2025,
+# com que nomes de conta e em que escala.
+#
+# Importando as bibliotecas:
 
-Antes de começarmos a processar os dados, precisamos entender como
-eles chegam da CVM. Este script baixa o arquivo do ano de 2025,
-aplica os filtros básicos e nos mostra um resumo: quantas empresas
-temos, quais os nomes das contas de receita e se os valores estão
-em reais ou em milhares.
-"""
+# %%
 import io
 import zipfile
+
 import pandas as pd
 import requests
 
+# %% [markdown]
+# Baixando o zip de 2025 e lendo a DRE consolidada (regra 1):
+
+# %%
 URL = "https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/DFP/DADOS/dfp_cia_aberta_2025.zip"
-NOME_DRE = "dfp_cia_aberta_DRE_con_2025.csv"
 
-def main():
-    print("Baixando os dados de 2025...")
-    resposta = requests.get(URL, timeout=180)
-    resposta.raise_for_status()
+resposta = requests.get(URL, timeout=180)
+z = zipfile.ZipFile(io.BytesIO(resposta.content))
 
-    # Abrimos o arquivo compactado direto na memória
-    with zipfile.ZipFile(io.BytesIO(resposta.content)) as arquivo_zip:
-        # Lemos a planilha com as configurações padrão para arquivos brasileiros
-        dre = pd.read_csv(
-            arquivo_zip.open(NOME_DRE),
-            sep=";", encoding="latin-1", decimal=",",
-            dtype={"CD_CONTA": str, "CD_CVM": str},
-        )
+# Nomes dos CSVs dentro do zip
+print(z.namelist())
 
-    # Filtramos para manter apenas o último exercício e a versão mais recente enviada
-    ordem_exercicio = (
-        dre["ORDEM_EXERC"].astype("string").str.strip().str.upper()
-    )
-    dre = dre.loc[ordem_exercicio.eq("ÚLTIMO")].copy()
-    dre["_versao_num"] = pd.to_numeric(dre["VERSAO"], errors="coerce")
-    dre = dre.loc[dre["_versao_num"].eq(dre.groupby("CD_CVM")["_versao_num"].transform("max"))]
+# Regra 1: sep=";", encoding="latin-1", decimal="," e CD_CONTA como texto
+dre = pd.read_csv(
+    z.open("dfp_cia_aberta_DRE_con_2025.csv"),
+    sep=";", encoding="latin-1", decimal=",",
+    dtype={"CD_CONTA": str, "CD_CVM": str},
+)
+print(dre.info())
 
-    # Isolamos a conta de Receita para analisar
-    receita = dre[dre["CD_CONTA"].str.strip() == "3.01"]
+# %% [markdown]
+# Filtrando o exercício e a versão (regras 2 e 3):
 
-    print("\n--- RESULTADO ---")
-    print(f"Empresas com dados de receita: {receita['CD_CVM'].nunique()}")
-    print("\nNomes das contas de receita encontradas:")
-    print(receita["DS_CONTA"].value_counts().head(10).to_string())
-    print("\nEscalas de valores utilizadas:")
-    print(receita["ESCALA_MOEDA"].value_counts().to_string())
+# %%
+# Regra 2: só o exercício do ano
+dre = dre[dre["ORDEM_EXERC"] == "ÚLTIMO"]
 
-if __name__ == "__main__":
-    main()
+# Regra 3: só a maior versão de cada empresa
+maior_versao = dre.groupby("CD_CVM")["VERSAO"].transform("max")
+dre = dre[dre["VERSAO"] == maior_versao]
+
+print(dre.info())
+
+# %% [markdown]
+# Analisando a conta de receita (3.01):
+
+# %%
+receita = dre[dre["CD_CONTA"] == "3.01"]
+
+print("Empresas com conta 3.01:", receita["CD_CVM"].nunique())
+
+# Bancos e seguradoras aparecem com outro nome
+print(receita["DS_CONTA"].value_counts().head(10))
+
+# Escalas usadas (MIL ou UNIDADE)
+print(receita["ESCALA_MOEDA"].value_counts())

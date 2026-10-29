@@ -1,50 +1,44 @@
 """
-Script de Cálculo de Indicadores
-Objetivo: Gerar o arquivo indicadores.csv (Contrato C2) para o Eduardo.
+Passo 2 do projeto: calcular os 6 indicadores.
+
+Lê data/contas.csv (já limpo por carregar_dfp.py) e gera
+data/indicadores.csv no formato do contrato C2: uma linha por empresa,
+com os indicadores do último ano.
 """
 from pathlib import Path
+
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
-
 
 COLUNAS_SAIDA = [
     "cd_cvm", "nome", "setor", "ano", "receita", "receita_2a_antes",
     "cresc_2a", "margem_ebit", "margem_liquida", "ativo_total",
     "endividamento", "origem", "versao",
 ]
+# Contas usadas nos indicadores: código da conta -> nome da coluna
 CONTAS = {"3.01": "receita", "3.05": "ebit", "3.11": "lucro", "1": "ativo", "2.03": "pl"}
 
 
 def calcular():
-    caminho_contas = DATA_DIR / "contas.csv"
     df = pd.read_csv(
-        caminho_contas,
+        DATA_DIR / "contas.csv",
         sep=";",
         encoding="utf-8-sig",
         decimal=",",
         dtype={"cd_cvm": str, "cd_conta": str},
     )
-    obrigatorias = {
-        "ano", "cd_cvm", "nome", "setor", "cd_conta", "valor",
-        "demonstracao", "origem", "versao",
-    }
-    ausentes = obrigatorias.difference(df.columns)
-    if ausentes:
-        raise ValueError(
-            f"{caminho_contas} não contém as colunas obrigatórias: "
-            f"{', '.join(sorted(ausentes))}. Rode scripts/carregar_dfp.py."
-        )
 
     df["cd_conta"] = df["cd_conta"].astype("string").str.strip()
     df["ano"] = pd.to_numeric(df["ano"], errors="raise").astype(int)
     df["valor"] = pd.to_numeric(df["valor"], errors="raise")
     # contas.csv já vem limpo de carregar_dfp.py (regras em raiox/limpeza.py):
     # uma linha por conta e só empresas com receita de venda positiva.
-    df = df.loc[df["cd_conta"].isin(list(CONTAS))].copy()
+    # Fica só com as contas usadas nos indicadores
+    df = df[df["cd_conta"].isin(list(CONTAS))]
 
-    resultado = _montar_indicadores(df) if not df.empty else pd.DataFrame(columns=COLUNAS_SAIDA)
+    resultado = montar_indicadores(df)
     resultado.to_csv(
         DATA_DIR / "indicadores.csv",
         sep=";",
@@ -55,49 +49,57 @@ def calcular():
     return resultado
 
 
-def _montar_indicadores(df):
+def montar_indicadores(df):
     """Uma linha por empresa no ano mais recente, com os indicadores do C2."""
-    # pivot (e não pivot_table) falha se houver conta repetida, em vez de escolher uma.
-    pivot = (
-        df.pivot(index=["ano", "cd_cvm", "nome"], columns="cd_conta", values="valor")
-        .reindex(columns=list(CONTAS))
-        .rename(columns=CONTAS)
-        .reset_index()
-    )
+    # Uma linha por empresa e ano, uma coluna por conta.
+    # pivot (e não pivot_table): se houver conta repetida ele dá erro
+    # em vez de escolher um dos valores
+    tabela = df.pivot(index=["ano", "cd_cvm", "nome"], columns="cd_conta", values="valor")
+    tabela = tabela.rename(columns=CONTAS)
+    tabela = tabela.reset_index()
 
-    ano_atual = int(df["ano"].max())
-    base = pivot[pivot["ano"] == ano_atual].copy()
-    ref = pivot.loc[pivot["ano"] == ano_atual - 2, ["cd_cvm", "receita"]]
-    base = base.merge(
-        ref.rename(columns={"receita": "receita_2a_antes"}), on="cd_cvm", how="left"
-    )
+    # Garante que todas as contas viram coluna, mesmo se faltarem nos dados
+    for nome_coluna in CONTAS.values():
+        if nome_coluna not in tabela.columns:
+            tabela[nome_coluna] = None
 
-    receita = base["receita"]
-    ebit = base["ebit"]
-    lucro = base["lucro"]
-    ativo = base["ativo"]
-    patrimonio_liquido = base["pl"]
-    receita_anterior = base["receita_2a_antes"]
+    ano_atual = tabela["ano"].max()
+    base = tabela[tabela["ano"] == ano_atual]
 
-    base["cresc_2a"] = (
-        receita.div(receita_anterior).sub(1).where(receita_anterior.gt(0))
-    )
-    base["margem_ebit"] = ebit.div(receita).where(receita.gt(0))
-    base["margem_liquida"] = lucro.div(receita).where(receita.gt(0))
-    base["ativo_total"] = ativo
-    base["endividamento"] = (
-        1 - patrimonio_liquido.div(ativo)
-    ).where(ativo.gt(0))
+    # Junta a receita de 2 anos antes (regra 7: se faltar, fica vazia)
+    receita_antes = tabela[tabela["ano"] == ano_atual - 2]
+    receita_antes = receita_antes[["cd_cvm", "receita"]]
+    receita_antes = receita_antes.rename(columns={"receita": "receita_2a_antes"})
+    base = base.merge(receita_antes, on="cd_cvm", how="left")
 
-    dre = df.loc[
-        df["demonstracao"].eq("DRE")
-        & df["ano"].eq(ano_atual)
-        & df["cd_conta"].eq("3.01"),
-        ["cd_cvm", "setor", "origem", "versao"],
-    ].drop_duplicates("cd_cvm", keep="first")
-    base = base.merge(dre, on="cd_cvm", how="left")
+    # Fórmulas da página "Os 6 indicadores"
+    base["cresc_2a"] = base["receita"] / base["receita_2a_antes"] - 1
+    base["margem_ebit"] = base["ebit"] / base["receita"]
+    base["margem_liquida"] = base["lucro"] / base["receita"]
+    base["ativo_total"] = base["ativo"]
+    base["endividamento"] = 1 - base["pl"] / base["ativo"]
+
+    # Regra 7: dividir por zero ou por valor negativo não vale;
+    # o indicador fica vazio em vez de virar infinito
+    base.loc[base["receita_2a_antes"] <= 0, "cresc_2a"] = None
+    base.loc[base["receita"] <= 0, "margem_ebit"] = None
+    base.loc[base["receita"] <= 0, "margem_liquida"] = None
+    base.loc[base["ativo"] <= 0, "endividamento"] = None
+
+    # Setor, origem (con/ind) e versão vêm da linha da receita no último ano
+    receita = df[
+        (df["demonstracao"] == "DRE")
+        & (df["ano"] == ano_atual)
+        & (df["cd_conta"] == "3.01")
+    ]
+    receita = receita[["cd_cvm", "setor", "origem", "versao"]]
+    receita = receita.drop_duplicates(subset="cd_cvm")
+    base = base.merge(receita, on="cd_cvm", how="left")
     base["setor"] = base["setor"].fillna("Não Informado")
-    return base.reindex(columns=COLUNAS_SAIDA).sort_values("nome")
+
+    # Colunas na ordem do contrato C2
+    base = base[COLUNAS_SAIDA]
+    return base.sort_values("nome")
 
 
 if __name__ == "__main__":

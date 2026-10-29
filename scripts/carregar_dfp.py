@@ -1,30 +1,31 @@
 """
-Tutorial: Pipeline de Carga de Dados
+Passo 1 do projeto: baixar e limpar os dados da CVM.
 
-Este é o script principal de extração. Ele baixa os dados de três anos,
-aplica as regras de limpeza de raiox/limpeza.py para remover a "sujeira"
-que vem da CVM, cruza com o cadastro de setores e salva tudo
-em um arquivo CSV e em um banco de dados SQLite.
+Baixa as DFP de 2023 a 2025 e o cadastro de empresas, aplica as regras
+de limpeza de raiox/limpeza.py e salva tudo em data/contas.csv e no
+banco PostgreSQL (endereço em raiox/banco.py).
 """
 import io
-import sqlite3
 import sys
-import zipfile
 import time
-from contextlib import closing
+import zipfile
 from pathlib import Path
+
 import pandas as pd
 import requests
+from sqlalchemy import text
 
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    # Permite rodar direto com "python scripts/carregar_dfp.py".
-    sys.path.insert(0, str(ROOT))
+# Permite rodar direto com "python scripts/carregar_dfp.py"
+sys.path.insert(0, str(ROOT))
 
+from raiox.banco import conectar  # noqa: E402
 from raiox.limpeza import (  # noqa: E402
     CHAVES_CONTA,
     COLUNAS_CONTA,
+    corrigir_escala,
     encontrar_conflitos,
+    encontrar_escala_errada,
     filtrar_empresas_com_receita,
     limpar_demo,
     preferir_consolidado,
@@ -43,9 +44,12 @@ DATA_DIR = ROOT / "data"
 def ler_demo(z, demo, origem, ano):
     """Lê uma demonstração do ZIP anual da CVM e aplica a limpeza."""
     nome_arquivo = f"dfp_cia_aberta_{demo}_{origem}_{ano}.csv"
+
+    # Se o arquivo não está no zip, devolve uma tabela vazia
     if nome_arquivo not in z.namelist():
         return pd.DataFrame(columns=COLUNAS_CONTA)
 
+    # Regra 1: ler com sep=";", encoding="latin-1", decimal="," e CD_CONTA como texto
     df = pd.read_csv(
         z.open(nome_arquivo),
         sep=";",
@@ -56,55 +60,59 @@ def ler_demo(z, demo, origem, ano):
     return limpar_demo(df, demo, origem, ano)
 
 
-def baixar_com_retry(url, tentativas=3):
-    """Caso a internet caia, o script tenta baixar novamente."""
-    if tentativas < 1:
-        raise ValueError("tentativas deve ser pelo menos 1.")
-    for i in range(tentativas):
+def baixar_com_retry(url):
+    """Baixa o arquivo. Se a internet cair, tenta de novo (até 3 vezes)."""
+    for tentativa in range(3):
         try:
             resposta = requests.get(url, timeout=300)
             resposta.raise_for_status()
             return resposta.content
         except requests.exceptions.RequestException:
-            if i < tentativas - 1:
-                time.sleep(2)
-            else:
+            # Na terceira falha desiste e mostra o erro
+            if tentativa == 2:
                 raise
+            time.sleep(2)
 
 
 def main():
     print("Iniciando o download e processamento...")
-    partes = []
 
-    # Baixa o cadastro: vira a tabela empresas e dá o setor de cada empresa
-    url_cad = f"{BASE_URL}/CAD/DADOS/cad_cia_aberta.csv"
-    cadastro = pd.read_csv(io.BytesIO(baixar_com_retry(url_cad)), sep=";", encoding="latin-1", dtype=str)
+    # Cadastro da CVM: vira a tabela empresas e dá o setor de cada empresa
+    url_cadastro = f"{BASE_URL}/CAD/DADOS/cad_cia_aberta.csv"
+    cadastro = pd.read_csv(
+        io.BytesIO(baixar_com_retry(url_cadastro)), sep=";", encoding="latin-1", dtype=str
+    )
     print(f"Colunas do cadastro: {', '.join(cadastro.columns)}")
     empresas = preparar_empresas(cadastro)
-    mapa_setor = dict(zip(empresas["cd_cvm"], empresas["setor"]))
 
+    # Baixa um zip por ano e lê cada demonstração (DRE, BPA, BPP) con e ind
+    partes = []
     for ano in ANOS:
         print(f"Baixando dados do ano {ano}...")
         url = f"{BASE_URL}/DOC/DFP/DADOS/dfp_cia_aberta_{ano}.zip"
-        conteudo = baixar_com_retry(url)
+        z = zipfile.ZipFile(io.BytesIO(baixar_com_retry(url)))
 
-        with zipfile.ZipFile(io.BytesIO(conteudo)) as z:
-            for demo in DEMOS:
-                for origem in ORIGENS:
-                    partes.append(ler_demo(z, demo, origem, ano))
+        for demo in DEMOS:
+            for origem in ORIGENS:
+                parte = ler_demo(z, demo, origem, ano)
+                # Arquivo ausente no zip vem vazio e não entra na junção
+                if not parte.empty:
+                    partes.append(parte)
 
-    # Pedaços vazios (arquivo ausente no ZIP) transformariam valor em texto no concat.
-    partes = [parte for parte in partes if not parte.empty]
-    if not partes:
+    if len(partes) == 0:
         raise ValueError("Nenhuma demonstração DFP foi encontrada nos arquivos baixados.")
+
+    # Junta todos os pedaços numa tabela só
     contas = pd.concat(partes, ignore_index=True)
 
-    # Adiciona o setor
-    contas["setor"] = contas["cd_cvm"].map(mapa_setor).fillna("Não Informado")
+    # Junção com a tabela empresas para trazer o setor
+    contas = contas.merge(empresas[["cd_cvm", "setor"]], on="cd_cvm", how="left")
+    contas["setor"] = contas["setor"].fillna("Não Informado")
 
+    # Regra 5: consolidado, ou individual quando não houver consolidado
     contas = preferir_consolidado(contas)
 
-    # Avisa sobre contas repetidas antes de resolver (divergentes ficam ausentes)
+    # Avisa sobre contas repetidas antes de resolver (divergentes ficam vazias)
     conflitos = encontrar_conflitos(contas)
     if not conflitos.empty:
         chaves = conflitos[CHAVES_CONTA].drop_duplicates()
@@ -114,33 +122,46 @@ def main():
             f"Exemplos:\n{chaves.head(5).to_string(index=False)}"
         )
     contas = resolver_conflitos(contas)
+
+    # Avisa sobre empresas que mandaram milhares declarados como unidade
+    escala_errada = encontrar_escala_errada(contas)
+    if len(escala_errada) > 0:
+        print(
+            f"Aviso: {len(escala_errada)} empresa/ano com receita ~1000× menor "
+            f"que no ano anterior; valores multiplicados por 1000: {escala_errada}"
+        )
+    contas = corrigir_escala(contas, escala_errada)
+
+    # Regra 6: só empresas com receita de venda positiva no último ano
     contas = filtrar_empresas_com_receita(contas)
 
-    # Salva os arquivos
+    # Salva o CSV
     DATA_DIR.mkdir(exist_ok=True)
-    caminho_csv = DATA_DIR / "contas.csv"
-    contas.to_csv(caminho_csv, sep=";", index=False, encoding="utf-8-sig", decimal=",")
+    contas.to_csv(DATA_DIR / "contas.csv", sep=";", index=False, encoding="utf-8-sig", decimal=",")
     print(f"Arquivo contas.csv salvo com {len(contas)} linhas.")
 
-    caminho_db = DATA_DIR / "catalogo.db"
-    with closing(sqlite3.connect(caminho_db)) as conn:
-        with conn:
-            contas.to_sql("contas", conn, if_exists="replace", index=False)
-            conn.execute("CREATE INDEX IF NOT EXISTS idx_cd_cvm ON contas(cd_cvm);")
-            # Garante a regra de raiox/limpeza.py: uma linha por conta.
-            conn.execute(
-                "CREATE UNIQUE INDEX IF NOT EXISTS idx_contas_chave "
-                "ON contas(ano, cd_cvm, demonstracao, cd_conta);"
-            )
-            empresas.to_sql("empresas", conn, if_exists="replace", index=False)
-            conn.execute(
-                "CREATE UNIQUE INDEX IF NOT EXISTS idx_empresas_cd_cvm ON empresas(cd_cvm);"
-            )
-    ativas = int(empresas["situacao"].str.upper().eq("ATIVO").sum())
+    # Salva no banco PostgreSQL: tabelas contas e empresas
+    conn = conectar()
+    contas.to_sql("contas", conn, if_exists="replace", index=False)
+    conn.execute(text("CREATE INDEX IF NOT EXISTS idx_cd_cvm ON contas(cd_cvm);"))
+    # Índice único: o banco recusa duas linhas para a mesma conta
+    conn.execute(
+        text(
+            "CREATE UNIQUE INDEX IF NOT EXISTS idx_contas_chave "
+            "ON contas(ano, cd_cvm, demonstracao, cd_conta);"
+        )
+    )
+    empresas.to_sql("empresas", conn, if_exists="replace", index=False)
+    conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS idx_empresas_cd_cvm ON empresas(cd_cvm);"))
+    conn.commit()
+    conn.close()
+
+    ativas = (empresas["situacao"] == "ATIVO").sum()
     print(
-        f"Banco de dados catalogo.db atualizado "
+        f"Banco de dados PostgreSQL atualizado "
         f"(tabela empresas: {len(empresas)} empresas, {ativas} ativas)."
     )
+
 
 if __name__ == "__main__":
     main()
