@@ -23,7 +23,11 @@ comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguin
 
 ## 0. Situação atual (atualize a cada sessão)
 
-**Em qui 29/10, 11h** (sessão do Eduardo com o Claude Code: ED3, portes da NA1 e da NA2, teste do Docker e do Terraform, retrato do projeto).
+**Em qui 29/10, 12h** (sessão do Eduardo com o Claude Code: ED3, portes da NA1 e da NA2, teste do Docker e do Terraform, decisão do PostgreSQL, retrato do projeto).
+
+> **Decisão de 29/10: o banco é PostgreSQL.** O professor disse que SQLite não vale (regra registrada no CLAUDE.md, no
+> `contratos.md` e em `docs/REQUISITOS.md`, seção "Regras do professor"; PR #13). Por isso a MA2 ficou maior e o Docker
+> passa a subir dois contêineres (tela + PostgreSQL). O replanejamento está nas seções 3, 5 e 7.
 
 **Retomando numa sessão nova do Claude Code?**
 1. Cole: "Leia o CLAUDE.md e a seção 0 do docs/PLANO.md. Confira o estado real com `gh pr list --state all` e
@@ -75,7 +79,9 @@ comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguin
     `sqlalchemy` e `psycopg` no `requirements.txt`; `src/banco.py`). É escopo novo e mexe em contrato (C1 e C2 falam do
     `data/catalogo.db`), no Docker (precisaria de um segundo contêiner com o PostgreSQL), no CI (os testes do banco pulam
     sem PostgreSQL: `tests/banco_teste.py`, `banco_disponivel()`) e no teste do zero (ED10: instalar PostgreSQL).
-    O `indicadores.csv` continua com `sep=";"` (`git show 5508116:scripts/indicadores.py | grep -n sep=`). Decisão em aberto, abaixo.
+    O `indicadores.csv` continua com `sep=";"` (`git show 5508116:scripts/indicadores.py | grep -n sep=`).
+    **Decidido em 29/10: fica o PostgreSQL** (regra do professor). Esse commit vira a base da MA2 (seção 3); na revisão,
+    conferir os testes de "colunas ausentes" que ele apagou e fazer os testes do banco rodarem no CI (hoje pulariam).
 - **Miguel: Docker e Terraform testados pelo Eduardo em 29/10**, numa cópia local da `main` + #11 + a branch dele
   (nada foi enviado ao GitHub). A branch continua sem PR. **Funcionam**; faltam ajustes.
 
@@ -112,10 +118,10 @@ comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguin
 
 | parte | feito | falta |
 |---|---|---|
-| núcleo do produto: dados, ML, IA, validador, avaliação | ~80% | MA2, ED7 (ED3 e ED4 feitos) |
+| núcleo do produto: dados, ML, IA, validador, avaliação | ~75% | MA2 (agora com o PostgreSQL na `main`), ED7 (ED3 e ED4 feitos) |
 | tela e infraestrutura | ~35% | Docker e Terraform funcionam (testados em 29/10), mas numa branch sem PR; MG4 (aviso, modo sem IA automático) |
 | entregáveis: BPMN, EDA, PDF, deck, vídeo, ensaios | ~10% | quase tudo, mas não depende de código novo |
-| **total** | **~44%** | com 9 de 26 dias usados (~35%): o núcleo está adiantado; dados (MA2 e a decisão do PostgreSQL) e o PR do Docker estão no caminho crítico |
+| **total** | **~43%** | com 9 de 26 dias usados (~35%): o núcleo está adiantado; o PostgreSQL na `main` (MA2) e o PR do Docker estão no caminho crítico |
 
 **Folga:** o plano termina na qua 11/11. Sobram 4 dias de reserva (12 a 15/11) antes da entrega de seg 16/11, e mais 2 até a banca.
 Regra: atraso come a folga; **nunca** se acrescenta escopo. Se a folga acabar, use a lista de cortes da seção 7.
@@ -125,7 +131,8 @@ Regra: atraso come a folga; **nunca** se acrescenta escopo. Se a folga acabar, u
    (tela com dados reais) não começa. Plano B da seção 7: o Eduardo converte localmente e a MA2 entra até ter 03/11.
 2. **MG2** (Miguel): o Docker funciona, mas não tem PR. Faltam os 7 ajustes acima. Plano B da seção 7: se não houver PR
    até sex 30/10, o Eduardo abre com os ajustes e o Miguel revisa.
-3. **SQLite × PostgreSQL** (Marcos e grupo): enquanto não decidir, a MA2 e a MG4 podem ser feitas duas vezes.
+3. **PostgreSQL na `main`** (MA2, Marcos, até sáb 31/10): a tela (C1), o Docker (MG2 e MG3), o CI e o teste do zero
+   dependem dele. Plano B na seção 7: o Eduardo porta o commit `5508116` com o Claude e o Marcos revisa.
 4. **Trabalho fora da `main`:** a Náthally e o Marcos ainda sobem nas branches antigas, e cada entrega precisa ser portada
    à mão. Daqui para a frente: **sempre uma branch nova a partir da `main`** (seção 2; para a Náthally, "Create a new branch"
    no GitHub com a `main` selecionada).
@@ -145,20 +152,24 @@ Regra: atraso come a folga; **nunca** se acrescenta escopo. Se a folga acabar, u
   (as regras v2 no prompt; leia o raio-x de exemplo na descrição).
   Dizer se a `feat/metricas` pode ser apagada: a `Semana_01/` foi portada no #5, e as regras v2 e os casos estão nos
   PRs #10 e #11; só o `avaliacao.ipynb` (monta o CSV dos casos) ficou de fora: ela diz se quer guardar. Depois: tempo manual e ROI (NA3), testes com usuários, e revisão dos 10 raio-x quando a ED7 rodar.
-- **Marcos:** combinar com o grupo **hoje** se o PostgreSQL entra (decisão abaixo). MA2 na `main` (branch `marcos-csv-padrao`, a partir da `main`). Trazer o `avaliar_corte_receita.py` para a MA3,
+- **Marcos:** revisar o PR #13 (a regra no contrato). MA2 na `main`, agora com o PostgreSQL: branch `marcos-postgres`, a partir da
+  `main`, trazendo o `5508116` para a estrutura da `main` (`raiox/dados.py` e `scripts/`, sem `src/`), com o CSV padrão (C2). Prazo sáb 31/10. Trazer o `avaliar_corte_receita.py` para a MA3,
   já lendo o CSV padrão, e dar o OK (ou não) no corte de R$ 10 mi. Dizer se a `tratamento_dados` pode ser apagada depois disso.
 - **Miguel:** `git merge main` na `docs-docker-e-terraform`, acertar os 7 pontos acima e abrir o PR até sex 30/10 (MG2 e MG3; o Eduardo revisa).
-  Na MG4, o caminho ficou curto: trocar `USAR_DADOS_FALSOS` por `RAIOX_DADOS`, corrigir o aviso, voltar sozinho para o modo sem IA.
+  Com o PostgreSQL, o Docker vira um `docker-compose.yml` com 2 contêineres (tela + PostgreSQL, com volume para o banco);
+  o Terraform cria os dois (ou é cortado, seção 7). Na MG4: trocar `USAR_DADOS_FALSOS` por `RAIOX_DADOS`, corrigir o aviso e
+  voltar sozinho para o modo sem IA.
   Terminar a MG1 (só merge commit, apagar branch após o merge, check `testes` obrigatório).
-- **Eduardo** (datas na seção 3; agenda detalhada na resposta da sessão de 29/10):
-  1. **hoje, qui 29/10:** ler os diffs do #11 e do #12, preencher o "Eu conferi" (no #10 também)
-     e pedir as revisões (Náthally no #11; Marcos ou Miguel nos dois). No grupo: o custo novo (US$ 0,0012 por raio-x),
-     a ED7 (10 chamadas, ~US$ 0,012), o resultado do teste do Docker para o Miguel, a decisão SQLite × PostgreSQL, e o combinado
-     de revisão (quem aprova escreve o que conferiu; o merge é do autor);
-  2. **sex 30/10:** ED7 se o #11 entrou; revisar o PR do Docker; se não houver PR, plano B (seção 7);
-  3. **sáb 31/10 a dom 01/11:** ED8 (você escreve; o Claude confere com arquivo e linha); ED7 até dom, no máximo;
-  4. **seg 02/11 (feriado) a ter 03/11:** demo ponta a ponta no Docker com a `data/` real e tag `v0.1-demo`;
-  5. estudar a ED3 com `/explicar raiox/ia.py regras` e a ED4 com `/explicar raiox/segmentos.py segmentar` (seção 8).
+- **Eduardo** (datas na seção 3; a lista do que dá para passar ao Claude Code está na resposta da sessão de 29/10):
+  1. **hoje, qui 29/10:** mandar ao grupo: a regra do PostgreSQL (PR #13: Marcos e Miguel revisam), o resultado do teste do
+     Docker para o Miguel, o custo novo (US$ 0,0012 por raio-x) e a ED7 (~US$ 0,012), e o combinado de revisão (quem aprova
+     escreve o que conferiu; o merge é do autor);
+  2. **hoje:** ler os diffs do #11, #12 e #13 e preencher o "Eu conferi" (no #10 também); pedir as revisões;
+  3. **sex 30/10:** ED7 se o #11 entrou; revisar os PRs da MA2 e do Docker; se o Docker não tiver PR, plano B (seção 7);
+  4. **sáb 31/10:** se a MA2 não tiver PR, plano B (o Eduardo porta o PostgreSQL com o Claude); ED8 começa;
+  5. **dom 01/11:** ED7 no máximo; ED8 (você escreve; o Claude confere com arquivo e linha);
+  6. **seg 02/11 (feriado) e ter 03/11:** demo ponta a ponta com `docker compose` (tela + PostgreSQL + `data/` real) e tag `v0.1-demo`;
+  7. no meio disso: `/explicar raiox/ia.py regras` (ED3) e `/explicar raiox/segmentos.py segmentar` (ED4), seção 8.
 
 **Decisões em aberto:**
 - data e horário da banca;
@@ -166,11 +177,9 @@ Regra: atraso come a folga; **nunca** se acrescenta escopo. Se a folga acabar, u
 - nome da pasta da infraestrutura: `infra/` ou `terraform/` (Miguel, no PR do Docker);
 - apagar `tratamento_dados` e `feat/metricas` (Marcos e Náthally);
 - corte de receita mínima de R$ 10 mi (Marcos, MA3);
-- **SQLite ou PostgreSQL** (grupo, até sex 30/10). Proposta desta sessão: **SQLite na versão da banca**. Ele já cumpre o
-  R3 ("SQL: consultas ou persistência"), roda no Docker sem outro serviço e no teste do zero sem instalar nada. O PostgreSQL
-  entra no PDF como próximo passo. Se o grupo quiser o PostgreSQL: PR na `main` até ter 03/11, com o serviço no Docker e no CI;
 - as 3 notas do código vão para a v3 das regras? (Náthally).
 - ✅ decidido em 29/10: Suzano S.A. (13986) e Localiza Rent a Car (19739) nos casos (Náthally).
+- ✅ decidido em 29/10: **PostgreSQL**, porque o professor disse que SQLite não vale (Eduardo, com o grupo; PR #13).
 
 **Já feito, para consulta:** ED1 (3 raio-x reais, 27/10), ED4 (k = 4, silhueta 0,30; os 4 grupos estão na linha R5 do
 [REQUISITOS.md](REQUISITOS.md) e no commit `bed72c5`), PRs #3 a #9 (`gh pr list --state all`). Pasta para quem está
@@ -237,9 +246,9 @@ Todos entram no PR #3, menos os da última linha.
 |---|---|---|---|---|
 | ter 27/10 | ✅ ED0, ED1, ED2, ED5, ED4 (código), ED6; portes MA1 e NA1 | — | — | — |
 | qua 28/10 | ED4 consertar a segmentação | revisar o #4; MA2 | MG1 revisar e mesclar o #3 | revisar o #5; NA1 regras v2 |
-| qui 29/10 | ✅ ED3 (adiantada); portes NA1 e NA2 (PRs #10 e #11); teste do Docker e do Terraform | MA2 cumprir C1/C2 | MG2 Docker | ✅ NA1 e NA2 entregues; revisar o #11 |
-| sex 30/10 | ED7 (se o #11 entrou); revisões; ED8 começa | MA3 dados reais + Drive | MG2/MG3 | NA3 tempo manual |
-| sáb 31/10 | revisões; ED8 começa | MA3 | MG3 Terraform | NA3 tempo manual; marcar testes |
+| qui 29/10 | ✅ ED3 (adiantada); portes NA1 e NA2 (PRs #10 e #11); teste do Docker e do Terraform | MA2: PostgreSQL na `main` + C2 | MG2 Docker + PostgreSQL | ✅ NA1 e NA2 entregues; revisar o #11 |
+| sex 30/10 | ED7 (se o #11 entrou); revisões | MA2 | MG2 (`docker-compose.yml`) | NA3 tempo manual |
+| sáb 31/10 | revisões; ED8 começa; plano B da MA2 se precisar | **MA2 (prazo)**; MA3 | MG3 Terraform | NA3 tempo manual; marcar testes |
 | dom 01/11 | ED7 (prazo final) | MA4 EDA | **MG3: se o Terraform não subiu, fica só o Docker**; MG4 | NA3 |
 | seg 02/11 | feriado (reserva) | | | |
 | ter 03/11 | **demo ponta a ponta · tag `v0.1-demo`** | MA4 | MG4 tela com dados reais | NA3 testes com usuários |
@@ -276,7 +285,7 @@ Todos entram no PR #3, menos os da última linha.
 | # | data | status | objetivo | altera | modo | pronto quando | git |
 |---|---|---|---|---|---|---|---|
 | MA1 | 27/10 | ✅ PR #4 na `main` (27/10) | revisar o #4: o código é seu, só os imports mudaram; decidir sobre o `scripts/dados.py` | — | — | #4 aprovado | `marcos-porta-dados` |
-| MA2 | qua 28–qui 29/10 | — | cumprir C1/C2: CSV padrão (sem `sep=";"` e sem `decimal=","` na **escrita**), `cd_cvm` int, tabela `indicadores` no banco, busca só com empresas ativas e com indicadores | `scripts/`, `raiox/dados.py`, `tests/test_contratos.py` | Plan | `python -m pytest -q tests/test_ponta_a_ponta.py` passa com os seus dados reais | `marcos-csv-padrao` → PR (Eduardo + Miguel) |
+| MA2 | qui 29–sáb 31/10 | 🟡 PostgreSQL pronto na `tratamento_dados` (`5508116`), fora da `main` | **PostgreSQL na `main`** (regra do professor): trazer o `5508116` para a estrutura da `main` (sem `src/`), `DATABASE_URL` e `TEST_DATABASE_URL` no `.env.example`, serviço postgres no CI (`.github/workflows/testes.yml`) para os testes do banco não pularem; e o C1/C2: CSV padrão (sem `sep=";"` e sem `decimal=","` na **escrita**), `cd_cvm` int, tabela `indicadores` no banco, busca só com empresas ativas e com indicadores | `scripts/`, `raiox/dados.py`, `requirements.txt`, CI, `tests/` | Plan | CI verde **rodando** os testes do banco (não pulados); `python -m pytest -q tests/test_ponta_a_ponta.py` passa com os seus dados reais | `marcos-postgres` → PR (Eduardo + Miguel) |
 | MA3 | sex 30–sáb 31/10 | — | dados reais + checagem + 5 empresas conferidas no RI; zip da `data/` no Drive | `avaliacao/conferencia.csv`; consertos | Manual | diferença < 1%; nenhum "erro"; link no grupo | PR |
 | MA4 | dom 01–ter 03/11 | — | EDA com 4 gráficos (nulos, distribuições, extremos, cobertura) | `notebooks/eda.ipynb`, `docs/graficos/` | Manual | "Restart & Run All" sem erro | PR |
 | MA5 | qua 04–qui 05/11 | — | BPMN 2.0 com o Raio-X (obrigatório) e o de hoje (se der tempo), no bpmn.io | `docs/bpmn/` | Plan (o Claude só revisa) | abre no bpmn.io; decisões "tem dados?" e "passou no validador?" | PR |
@@ -287,8 +296,8 @@ Todos entram no PR #3, menos os da última linha.
 | # | data | status | objetivo | altera | modo | pronto quando | git |
 |---|---|---|---|---|---|---|---|
 | MG1 | qua 28/10 | 🟡 #3 na `main` (27/10); falta configurar o GitHub | revisar e mesclar o #3; configurar o GitHub (só merge commit, apagar branch, check `testes`); rodar a tela local | configurações | só leitura | #3 na `main`; print da tela no grupo | merge do #3 |
-| MG2 | qui 29–sex 30/10 | 🟡 funciona (Eduardo testou em 29/10: build, testes, health, tela); sem PR; 7 ajustes na seção 0 | `Dockerfile` + `.dockerignore` (tela, `data/` como volume, chave por variável) | `Dockerfile`, `.dockerignore` | Plan | `docker build`, `docker run -p 8501:8501 …`, `curl localhost:8501/_stcore/health` → `ok` | `miguel-docker` → PR (Eduardo) |
-| MG3 | sáb 31/10–dom 01/11 | 🟡 `apply`, `destroy` e `apply` funcionam (29/10); falta montar a `data/` | Terraform (provider docker), **só se o Docker estiver pronto**. Prazo: dom 01/11; senão, corta | `infra/` | Plan | `terraform apply` sobe; `destroy` + `apply` mantém `data/` | PR |
+| MG2 | qui 29–sex 30/10 | 🟡 funciona (Eduardo testou em 29/10: build, testes, health, tela); sem PR; 7 ajustes na seção 0 | `Dockerfile` + `.dockerignore` + `docker-compose.yml` (tela + PostgreSQL com volume do banco; `data/` como volume; chave e `DATABASE_URL` por variável) | `Dockerfile`, `.dockerignore`, `docker-compose.yml` | Plan | `docker compose up` sobe os 2; `curl localhost:8501/_stcore/health` → `ok`; `scripts/carregar_dfp.py` grava no PostgreSQL do contêiner | `miguel-docker` → PR (Eduardo) |
+| MG3 | sáb 31/10–dom 01/11 | 🟡 `apply`, `destroy` e `apply` funcionam (29/10); falta montar a `data/` | Terraform (provider docker) com os 2 contêineres (tela + PostgreSQL), **só se o Docker estiver pronto**. Prazo: dom 01/11; senão, corta | `infra/` | Plan | `terraform apply` sobe; `destroy` + `apply` mantém `data/` e o banco | PR |
 | MG4 | dom 01–ter 03/11 | — | tela com dados reais: `RAIOX_DADOS` (`falsos`/`real`) no lugar do `USAR_DADOS_FALSOS`; volta sozinha para o modo sem IA, com aviso; `registrar_consulta` dentro do `try`; `tests/test_tela.py` | `app/`, `.env.example`, `tests/` | Plan | 3 empresas reais geram raio-x no contêiner | PR (Eduardo) |
 | MG5 | qua 04/11 | — | diagrama de arquitetura + README (pré-requisitos com Python 3.14; rodar local, Docker e Terraform) | `docs/arquitetura.png`, `README.md` | Manual | um colega entende o fluxo lendo o README | PR |
 | MG6 | qui 05/11 | — | roteiro de 6 min da demo + vídeo v0 | — | — | vídeo salvo em 2 lugares | — |
@@ -325,7 +334,7 @@ Para subir um arquivo:
 | `tests/conftest.py` | todo teste usa a tabela falsa (`RAIOX_DADOS=falsos`) e nada grava em `data/` | Eduardo | sim |
 | `tests/test_raio_x.py` | validador (regra de ouro), contrato C3, fonte, modo sem IA nas 30 empresas falsas, prompt (lê as regras da Náthally, chaves preservadas, só marcadores de indicador), texto sem IA na forma da v2, `RAIOX_DADOS`, segmentação (k = 3, 29 de 30; menor grupo ≥ 5%; empresas pequenas fora do treino; `segmentos.csv` refeito quando o código muda), gráficos, checador | Eduardo | sim |
 | `tests/test_avaliar.py` | `avaliar.py`: colunas do C4, casos válidos, caso com erro, formato do `casos_avaliacao.csv` (5 colunas, `cd_cvm` inteiro em todos) | Eduardo | sim |
-| `tests/test_limpeza.py`, `test_carregar_dfp.py`, `test_dados.py` (PR #4) | regras de limpeza, carga da DFP (rede simulada), catálogo SQLite e C1 | Marcos | sim |
+| `tests/test_limpeza.py`, `test_carregar_dfp.py`, `test_dados.py` (PR #4) | regras de limpeza, carga da DFP (rede simulada), catálogo e C1 (SQLite hoje; PostgreSQL na MA2) | Marcos | sim; com o PostgreSQL, só se o CI tiver o serviço postgres (senão pulam) |
 | `tests/test_contratos.py` (MA2) | C1 e C2 com os falsos: CSV padrão, `cd_cvm` int | Marcos | sim |
 | `tests/test_tela.py` (MG4) | a tela com os falsos: busca, gerar, 6 métricas, sem erro | Miguel | sim |
 | `tests/test_ponta_a_ponta.py` | C2 real, raio-x sem IA de 3 setores, `cd_cvm` dos casos (todos preenchidos e na tabela real) | Eduardo | **não**: pula sem `data/`. Rodar local antes de `v0.1-demo`, `v1.0` e no teste do zero |
@@ -340,7 +349,7 @@ Para subir um arquivo:
 |---|---|---|---|
 | qua 28/10 | Miguel → todos | #3 na `main`; os outros PRs fazem `git merge main` | arquivos de padronização |
 | qua 28/10 | Eduardo → Náthally | 3 raio-x reais | — |
-| qui 29/10 | Marcos → Eduardo | C2 cumprido (MA2) | formato e colunas do C2 |
+| sáb 31/10 | Marcos → todos | PostgreSQL na `main` e C2 cumprido (MA2) | formato e colunas do C2; `DATABASE_URL` |
 | sex 30/10 | Marcos → todos | `data/` v1 no Drive | — |
 | ✅ qui 29/10 | Náthally → Eduardo | regras v2; casos com `cd_cvm` (PRs #10 e #11) | texto das regras e formato do C4 |
 | dom 01/11 | Miguel | decisão: Terraform ou só Docker | infra |
@@ -350,7 +359,9 @@ Para subir um arquivo:
 | qua 11/11 | os 4 | tudo pronto para entregar | entregáveis |
 
 **Como os dados chegam a cada um:**
-- O Marcos publica um zip da pasta `data/` no Drive na sex 30/10 e na sex 06/11.
+- O Marcos publica um zip da pasta `data/` (os CSV) no Drive na sex 30/10 e na sex 06/11.
+- O banco não vai no zip: cada um sobe o PostgreSQL com `docker compose up` e carrega com `python scripts/carregar_dfp.py`
+  (22 s na máquina do Eduardo no ED1).
 - Os scripts continuam reproduzíveis, para o teste do zero.
 - **Por que não cada um rodar os scripts:** multiplica os pontos de falha.
 - **Por que não pôr no Git:** quebra a regra 5 do CLAUDE.md.
@@ -389,7 +400,8 @@ Para subir um arquivo:
 | marco | risco | plano B |
 |---|---|---|
 | qua 28/10 | o `carregar_dfp.py` não roda na máquina do Eduardo | o Marcos manda a `data/` dele; em último caso, 3 raio-x com a tabela falsa |
-| qui 29/10 | a MA2 atrasa | o Eduardo converte o CSV localmente e segue; a MA2 entra até ter 03/11 |
+| sáb 31/10 | a MA2 (PostgreSQL na `main`) atrasa | o Eduardo porta o `5508116` com o Claude Code e o Marcos revisa (dupla de reserva); prazo final ter 03/11, quando as interfaces congelam. **SQLite não é plano B** (regra do professor) |
+| ter 03/11 | o PostgreSQL não sobe no Docker na demo | `docker compose up` ensaiado no teste do zero (ED10); vídeo gravado (MG6/MG7); a busca falsa (`falsos/`) ainda mostra a tela sem banco |
 | dom 01/11 | o Terraform não sobe | fica só o Docker (o guia aceita "Terraform ou conteinerização") |
 | ter 03/11 | a demo não roda inteira | qua e qui 04–05/11 só para isso; o vídeo vira obrigatório; demo por `docker run` ou `streamlit run` local |
 | dia da banca | a API falha ou o crédito acaba (erro 402) | a tela volta sozinha para o modo sem IA, com aviso (MG4); vídeo; saldo conferido em 08/11 |

@@ -8,13 +8,21 @@ o status, quem é o dono, a prova e o que a banca vai ver. As sessões que fecha
 Legenda: ✅ feito · 🟡 em parte · ⬜ falta · ❓ não verificado.
 Estado em **qui 29/10/2026**. As provas foram conferidas lendo o código ou rodando o comando indicado.
 
+## Regras do professor (além do guia)
+
+Valem como o guia. Quem ouvir uma regra nova em aula escreve aqui, com a data, e avisa o grupo.
+
+| regra | desde | fonte | o que muda |
+|---|---|---|---|
+| O banco tem de ser **PostgreSQL**; SQLite não vale | qui 29/10 | professor, em aula (passado ao grupo pelo Eduardo). Não conferi se o `guia_projeto_final.pdf` fala disso | R3; MA2 (PostgreSQL na `main`), MG2 e MG3 (contêiner do banco), CI (serviço postgres), ED10 (teste do zero); `contratos.md` e CLAUDE.md (PR #13) |
+
 ## Matriz
 
 | # | Requisito / entregável | Onde está hoje | Status | Dono | Prova | O que a banca vai ver | Sessões |
 |---|---|---|---|---|---|---|---|
 | R1 | BPMN 2.0 do processo | nenhum `.bpmn` em nenhuma branch | ⬜ | Marcos | `git ls-tree -r --name-only origin/main \| grep -c bpmn` → 0 | 2 diagramas (hoje × com o Raio-X) no PDF e no slide 03–06 | MA5, MA6 |
 | R2 | Python/Pandas: limpeza, nulos, estruturação | `scripts/carregar_dfp.py`, `scripts/indicadores.py`, `raiox/limpeza.py` (na `main` desde o #4) | 🟡 roda com dados reais (595 empresas no ED1), mas o CSV que sai ainda não é o padrão do C2 | Marcos | `scripts/indicadores.py:24` grava com `sep=";"`; `raiox/segmentos.py:47` lê no padrão | código, testes de limpeza, EDA | MA1, MA2, MA3 |
-| R3 | SQL (consulta ou persistência) | `raiox/dados.py` (busca e `registrar_consulta`); `scripts/carregar_dfp.py` grava `contas` e `empresas` no `catalogo.db` | 🟡 falta a tabela `indicadores`, o filtro "ativas e com indicadores" e `cd_cvm` como int; em 28/10 o Marcos migrou o catálogo para PostgreSQL na `tratamento_dados` (fora da `main`, decisão em aberto na seção 0 do PLANO) | Marcos | `grep -n to_sql scripts/indicadores.py` não acha nada; `scripts/indicadores.py:27` lê `cd_cvm` como texto | `catalogo.db`, busca da tela, tabela `consultas` | MA2, MG4 |
+| R3 | SQL (consulta ou persistência), **em PostgreSQL** (regra do professor, abaixo) | `raiox/dados.py` (busca e `registrar_consulta`); `scripts/carregar_dfp.py` grava `contas` e `empresas` | 🟡 a `main` ainda usa SQLite, que não vale; o PostgreSQL está pronto na `tratamento_dados` (`5508116`, Marcos, 28/10) e entra pela MA2; falta também a tabela `indicadores`, o filtro "ativas e com indicadores" e `cd_cvm` como int | Marcos | `grep -n sqlite3 raiox/dados.py` acha o SQLite na `main`; `git show 5508116 --stat` | PostgreSQL no `docker compose`, busca da tela, tabela `consultas` | MA2, MG2, MG4 |
 | R4 | Visualização explicativa | gráfico empresa × grupo na tela; silhueta e grupos (PCA) com os dados reais, antes e depois do ED4, em `docs/graficos/` (`raiox/segmentos.py`) | 🟡 falta a EDA | Marcos (EDA), Eduardo (silhueta, PCA), Miguel (tela) | `ls docs/graficos` mostra 4 PNG; não existe `notebooks/` | `notebooks/eda.ipynb`, `docs/graficos/*.png` | MA4, ED4, MG4 |
 | R5 | Modelo de ML | `raiox/segmentos.py`: K-means (k = 3 a 8) treinado com as empresas de receita a partir de R$ 10 mi, extremos cortados em 5/95, menor grupo ≥ 5%, silhueta, 6 vizinhos | ✅ com os dados reais (ED4, 28/10): k = 4, silhueta 0,30, grupos de 330, 99, 74 e 59 no treino; falta o Marcos confirmar o corte de R$ 10 mi | Eduardo | `python -m raiox.segmentos`; `test_escolher_k_*`, `test_segmentar_nao_deixa_grupo_com_menos_de_5_por_cento` e `test_empresa_pequena_*` em `tests/test_raio_x.py` | `segmentos.csv` real, silhueta, 4 grupos explicados (seção 0 do PLANO), gráficos de antes e depois | ED4 |
 | R6 | GenAI: prompt engineering, LangChain, API | `raiox/ia.py`: `regras()` (lê `avaliacao/regras_prompt.md`, da Náthally), `_chain()`, `validar_e_preencher()` | ✅ ED3 (29/10): o prompt é a v2 da Náthally, que proíbe número por extenso; 3 raio-x reais sem nada removido, sem palavra de intensidade e sem lacuna em forma de pergunta (US$ 0,0012 cada); o validador barra também número por extenso, ½ e ² | Eduardo | `test_validador_*`, `test_regra_de_ouro_*` e `test_prompt_*` em `tests/test_raio_x.py` | demo; `resultados.csv` (itens removidos, custo) | ED1, ED3, ED7 |
