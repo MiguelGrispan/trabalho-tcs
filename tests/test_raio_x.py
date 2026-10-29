@@ -224,6 +224,22 @@ def test_segmentos_csv_e_refeito_quando_o_codigo_muda(tmp_path, monkeypatch):
     assert len(seg) == 30 and seg["grupo"].notna().all()
 
 
+def test_segmentos_funciona_com_data_so_de_leitura(tmp_path, monkeypatch):
+    # no Docker, a data/ pode vir montada só para leitura, e o segmentos.py da imagem é sempre mais novo que o
+    # segmentos.csv: os grupos são refeitos e não dá para gravar. A tela não pode quebrar por isso.
+    monkeypatch.setenv("RAIOX_DADOS", "real")
+    ind = tmp_path / "indicadores.csv"
+    df = pd.read_csv(segmentos.ARQ_FALSO)
+    df.to_csv(ind, index=False)
+    monkeypatch.setattr(segmentos, "ARQ_INDICADORES", ind)
+    monkeypatch.setattr(segmentos, "ARQ_SEGMENTOS", tmp_path / "segmentos.csv")
+
+    def sem_permissao(seg):
+        raise OSError(30, "Read-only file system")
+    monkeypatch.setattr(segmentos, "salvar", sem_permissao)
+    seg = segmentos.carregar_segmentos(df)
+    assert len(seg) == 30 and seg["grupo"].notna().all()
+
 # ---------------------------------------------------------------- checador de dados
 def test_checador_pega_os_erros_plantados():
     ind = pd.read_csv(PASTA / "falsos" / "indicadores_com_erros.csv")
