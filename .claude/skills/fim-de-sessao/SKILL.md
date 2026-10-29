@@ -47,7 +47,9 @@ Siga os passos **em ordem** e pare no primeiro que falhar.
 
 ## 6. Revisão e merge
 
-- Espere o CI: `gh pr checks <número> --watch`. Vermelho: mostre o erro, conserte na mesma branch e espere de novo.
+- Espere o CI: `gh pr checks <número> --watch`. Se aparecer "no checks reported", o CI ainda não começou: espere uns
+  segundos e rode de novo. **Só faça o merge depois de ver `pass`** (em 29/10 o PR #15 foi mesclado antes do CI começar).
+  Vermelho: mostre o erro, conserte na mesma branch e espere de novo.
 - Revise o diff do PR você mesmo (`gh pr diff <número>`): procure dado ou chave, quebra da regra de ouro, mudança fora do
   combinado. Diga em 3 linhas o que o PR muda e o risco que você vê.
 - Se mexeu em pasta de outro dono ou no `contratos.md`, confirme com a pessoa que o dono deu o ok no grupo.
