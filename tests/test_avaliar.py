@@ -42,6 +42,8 @@ def test_caso_com_erro_nao_para_a_rodada():
 def test_casos_avaliacao_do_repositorio_segue_o_c4():
     if not avaliar.ARQ_CASOS.exists():
         pytest.skip("avaliacao/casos_avaliacao.csv ainda não está na main")
-    casos = pd.read_csv(avaliar.ARQ_CASOS, dtype={"cd_cvm": str})
-    assert {"caso_id", "cd_cvm", "produto", "objetivo"} <= set(casos.columns)
+    casos = pd.read_csv(avaliar.ARQ_CASOS)                   # sem parâmetros, como o C2
+    assert list(casos.columns) == ["caso_id", "cd_cvm", "empresa", "produto", "objetivo"]
     assert casos["caso_id"].is_unique
+    assert pd.api.types.is_integer_dtype(casos["cd_cvm"])    # todos preenchidos e sem texto (NA2)
+    assert casos[["empresa", "produto", "objetivo"]].notna().all().all()
