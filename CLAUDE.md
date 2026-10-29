@@ -89,4 +89,4 @@ Lista completa, com o que deve aparecer: `aprender/COMANDOS.md`.
 ## Cuidados
 - Siga o `REGRAS-IA.md` (regras do time para uso de IA).
 - Não leia, mostre nem envie o conteúdo de `.env` (chave do Gemini, plano pré-pago).
-- Toda chamada ao Gemini gasta crédito (≈ US$ 0,0008 por raio-x). Mais de 10 chamadas: avise o grupo antes.
+- Toda chamada ao Gemini gasta crédito (≈ US$ 0,0012 por raio-x). Mais de 10 chamadas: avise o grupo antes.

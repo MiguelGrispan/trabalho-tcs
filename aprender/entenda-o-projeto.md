@@ -92,10 +92,10 @@ rodando os scripts, porque a CVM é pública. Cada pessoa gera o seu `data/` no 
 | **Vizinhos mais próximos** | As 5 empresas com números mais parecidos; viram a lista "para prospectar" | `NearestNeighbors` |
 | **Mediana** | O valor do meio. "O grupo" mostrado ao vendedor é a mediana, porque não é puxada por uma empresa extrema | `montar()` |
 | **LLM** | Modelo de linguagem (Gemini). Escreve texto; aqui ele só escreve frases com marcadores | `raiox/ia.py` |
-| **Prompt** | As instruções que mandamos ao LLM. As nossas são 10 regras (`REGRAS`), cada uma nasceu de um erro real | `REGRAS` em `ia.py` |
+| **Prompt** | As instruções que mandamos ao LLM. São as regras da Náthally (`avaliacao/regras_prompt.md`) mais 3 notas do código | `regras()` em `ia.py` |
 | **LangChain** | Biblioteca que liga o Python ao LLM: monta o prompt, chama a API e devolve o resultado | `_chain()` |
 | **Saída estruturada** | O LLM devolve campos fixos (`resumo`, `perguntas`, `lacunas`), não um texto solto; isso usa Pydantic | classe `RaioX` |
-| **Token** | Pedacinho de texto que a API cobra. Cada raio-x custa cerca de US$ 0,0008 | `gerar_llm()` |
+| **Token** | Pedacinho de texto que a API cobra. Cada raio-x custa cerca de US$ 0,0012 | `gerar_llm()` |
 | **Streamlit** | Biblioteca que transforma um script Python numa página web | `app/streamlit_app.py` |
 | **Contrato** | Combinado do formato que uma parte entrega para outra (nomes de colunas, funções) | `contratos.md` |
 | **Falso** | Arquivo "de mentira" no formato do contrato, para ninguém ficar parado esperando o colega | `falsos/` |
