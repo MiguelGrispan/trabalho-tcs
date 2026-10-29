@@ -88,7 +88,7 @@ comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguin
   | tela simulada (`AppTest` do Streamlit): busca, escolhe, preenche, gera | ✅ sem erro, 6 métricas, texto novo da ED3 |
   | tela com a IA (`-e RAIOX_IA_REAL=1`, `.env` montado só para leitura) | ✅ o Gemini respondeu (~2.250 tokens: leu as regras da Náthally); US$ 0,0011 |
   | tela com a `data/` real (`-e RAIOX_DADOS=real -v data:/app/data`) | ✅ WEG com números reais; ⚠️ o aviso diz "empresas e números inventados" |
-  | `data/` real só para leitura (`-v data:/app/data:ro`) | ❌ o raio-x não saía. Bug do Eduardo (ED4): numa imagem, o `segmentos.py` é sempre mais novo que o `segmentos.csv`, e gravar dá erro. Consertado na branch `eduardo-segmentos-somente-leitura` (com teste) |
+  | `data/` real só para leitura (`-v data:/app/data:ro`) | ❌ o raio-x não saía. Bug do Eduardo (ED4): numa imagem, o `segmentos.py` é sempre mais novo que o `segmentos.csv`, e gravar dá erro. Consertado no PR #12 (`eduardo-segmentos-somente-leitura`, com teste) |
   | a chave (`.env`) entra na imagem? | ✅ não |
   | `terraform init` + `apply` (imagem `hashicorp/terraform:1.9.8`; provider docker 4.6.0) | ✅ sobe; health `ok` |
   | `terraform destroy` + `apply` | ✅ sobe de novo; mas sem volume, então a `data/` não existe no contêiner (critério da MG3 não passa) |
@@ -151,7 +151,7 @@ Regra: atraso come a folga; **nunca** se acrescenta escopo. Se a folga acabar, u
   Na MG4, o caminho ficou curto: trocar `USAR_DADOS_FALSOS` por `RAIOX_DADOS`, corrigir o aviso, voltar sozinho para o modo sem IA.
   Terminar a MG1 (só merge commit, apagar branch após o merge, check `testes` obrigatório).
 - **Eduardo** (datas na seção 3; agenda detalhada na resposta da sessão de 29/10):
-  1. **hoje, qui 29/10:** ler os diffs do #11 e do `eduardo-segmentos-somente-leitura`, preencher o "Eu conferi" (no #10 também)
+  1. **hoje, qui 29/10:** ler os diffs do #11 e do #12, preencher o "Eu conferi" (no #10 também)
      e pedir as revisões (Náthally no #11; Marcos ou Miguel nos dois). No grupo: o custo novo (US$ 0,0012 por raio-x),
      a ED7 (10 chamadas, ~US$ 0,012), o resultado do teste do Docker para o Miguel, a decisão SQLite × PostgreSQL, e o combinado
      de revisão (quem aprova escreve o que conferiu; o merge é do autor);
