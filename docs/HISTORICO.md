@@ -33,6 +33,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   O Miguel tira a aprovação obrigatória da `main`, e os PRs #11 a #14 entram às 11h17 (73 testes passando).
   O PR #15 (só documentação) foi mesclado antes do CI começar; o CI passou depois, e o `/fim-de-sessao` agora espera
   o `pass` (PR #16). É por isso que o check `testes` deve ficar obrigatório no GitHub (MG1).
+  Documentos de orientação enxugados (PR #17): cada informação num lugar só, sem as instruções velhas que contradiziam as novas.
 
 ## Decisões (e por quê)
 
@@ -48,6 +49,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 29/10 | Suzano S.A. (13986) e Localiza Rent a Car (19739) nos casos | as duas empresas tinham mais de um código na CVM |
 | 29/10 | **banco PostgreSQL** | regra do professor: SQLite não vale |
 | 29/10 | GitHub simples: CI verde + revisão do Claude Code; pessoa só para contrato ou pasta de outro dono | o clique de "aprovar" travava tudo e não era revisão de verdade |
+| 29/10 | cada informação num lugar só: o agora na seção 0 do PLANO, o status no REQUISITOS, o passado aqui | instruções de 26/10 continuavam nos guias e contradiziam as novas (ex.: "main só com 1 revisão"; trazer o `verificar_automatico.py`, que já tinha sido cortado) |
 
 **Já cortado do escopo:** verificação com yfinance, receita em 3 anos, filtro de setor, RAG, nome dos grupos pelo LLM,
 exportar o raio-x, 20 casos (ficaram 10). A lista e a ordem dos próximos cortes estão no PLANO, seção 7.
@@ -61,3 +63,12 @@ exportar o raio-x, 20 casos (ficaram 10). A lista e a ordem dos próximos cortes
   para ver o teste falhar.
 - **Aprovar sem ler não é revisão:** quem revisa de verdade é o CI (mais de 70 testes) e a leitura do diff; a pessoa entra
   quando a mudança afeta o trabalho dela.
+- **Documento velho confunde mais que documento nenhum:** uma lista de tarefas de 26/10, já trocada pelo PLANO, ainda mandava
+  trazer arquivos que tinham sido cortados. Agora o que passou sai do guia e vem para cá.
+
+**Se começássemos do zero** (para aprender, não para refazer):
+1. Matriz do guia com dono no dia 1, antes de qualquer código.
+2. Contratos com o formato do arquivo e falsos no mesmo formato: os bugs do CSV com `;` e do `cd_cvm` como texto são de contrato.
+3. Repositório-esqueleto feito por uma pessoa, de onde todos clonam, com CI e versões fixas desde o início.
+4. Docker "olá mundo" na primeira semana.
+5. Cada um trabalhando contra os falsos, com integração semanal e tag.
