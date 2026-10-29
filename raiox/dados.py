@@ -1,67 +1,70 @@
-"""Acesso aos dados do catálogo SQLite."""
+"""Acesso aos dados do catálogo PostgreSQL (contrato C1, usado pela tela do Miguel)."""
 import json
-import sqlite3
-from contextlib import closing
 from datetime import datetime, timezone
-from pathlib import Path
-from typing import Any
 
-ROOT = Path(__file__).resolve().parents[1]
-DB_PATH = ROOT / "data" / "catalogo.db"
+from sqlalchemy import text
 
-
-def conectar() -> sqlite3.Connection:
-    """Abre uma conexão com o catálogo."""
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    return sqlite3.connect(DB_PATH)
+from raiox.banco import catalogo_existe, conectar
 
 
-def buscar_empresas(texto: str) -> list[dict[str, Any]]:
-    """Busca empresas com receita de venda positiva no exercício mais recente."""
-    if not DB_PATH.exists():
+def buscar_empresas(texto):
+    """Busca empresas pelo nome: até 20, ordenadas pelo nome.
+
+    O catálogo já vem limpo de carregar_dfp.py: só tem empresas com receita
+    de venda positiva e uma linha por conta, então a conta 3.01 do último
+    ano dá uma linha por empresa.
+    """
+    if not catalogo_existe():
         return []
 
-    # O catálogo já vem limpo de carregar_dfp.py (regras em raiox/limpeza.py):
-    # só tem empresas com receita de venda positiva e uma linha por conta,
-    # então a 3.01 do último ano dá uma linha por empresa.
-    termo = texto.strip().replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+    # No LIKE do SQL, "%" e "_" são curingas. Coloca uma "\" antes deles
+    # para buscar o texto exatamente como foi digitado
+    termo = texto.strip()
+    termo = termo.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+    # ILIKE é o LIKE do PostgreSQL que ignora maiúsculas e minúsculas
     consulta = """
         SELECT cd_cvm, nome, setor
         FROM contas
         WHERE ano = (SELECT MAX(ano) FROM contas)
           AND cd_conta = '3.01'
-          AND nome LIKE ? ESCAPE '\\'
-        ORDER BY nome COLLATE NOCASE
+          AND nome ILIKE :termo ESCAPE '\\'
+        ORDER BY LOWER(nome)
         LIMIT 20
     """
-    with closing(conectar()) as conn:
-        rows = conn.execute(consulta, (f"%{termo}%",)).fetchall()
+    conn = conectar()
+    linhas = conn.execute(text(consulta), {"termo": f"%{termo}%"}).fetchall()
+    conn.close()
 
-    return [
-        {"cd_cvm": codigo, "nome": nome, "setor": setor}
-        for codigo, nome, setor in rows
-    ]
+    # Transforma cada linha do banco num dicionário
+    empresas = []
+    for cd_cvm, nome, setor in linhas:
+        empresas.append({"cd_cvm": cd_cvm, "nome": nome, "setor": setor})
+
+    return empresas
 
 
-def registrar_consulta(registro: dict[str, Any]) -> None:
-    """Persiste o registro de consulta em formato JSON."""
-    if not isinstance(registro, dict):
-        raise TypeError("registro deve ser um dicionário.")
-
-    payload = json.dumps(registro, ensure_ascii=False, allow_nan=False)
+def registrar_consulta(registro):
+    """Guarda cada consulta na tabela consultas, em formato JSON."""
+    texto_json = json.dumps(registro, ensure_ascii=False)
     criado_em = datetime.now(timezone.utc).isoformat()
-    with closing(conectar()) as conn:
-        with conn:
-            conn.execute(
-                """
-                CREATE TABLE IF NOT EXISTS consultas (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    criado_em TEXT NOT NULL,
-                    registro_json TEXT NOT NULL
-                )
-                """
+
+    conn = conectar()
+    # SERIAL: o PostgreSQL numera o id sozinho (1, 2, 3...)
+    conn.execute(
+        text(
+            """
+            CREATE TABLE IF NOT EXISTS consultas (
+                id SERIAL PRIMARY KEY,
+                criado_em TEXT NOT NULL,
+                registro_json TEXT NOT NULL
             )
-            conn.execute(
-                "INSERT INTO consultas (criado_em, registro_json) VALUES (?, ?)",
-                (criado_em, payload),
-            )
+            """
+        )
+    )
+    conn.execute(
+        text("INSERT INTO consultas (criado_em, registro_json) VALUES (:criado_em, :registro_json)"),
+        {"criado_em": criado_em, "registro_json": texto_json},
+    )
+    conn.commit()
+    conn.close()

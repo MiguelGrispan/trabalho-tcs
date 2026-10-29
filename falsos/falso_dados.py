@@ -13,5 +13,5 @@ def buscar_empresas(texto: str) -> list[dict]:
 
 
 def registrar_consulta(registro: dict) -> None:
-    """No real, grava uma linha na tabela consultas do catalogo.db. Aqui só mostra no terminal."""
+    """No real, grava uma linha na tabela consultas do PostgreSQL. Aqui só mostra no terminal."""
     print("[consulta registrada]", registro)

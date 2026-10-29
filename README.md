@@ -22,7 +22,7 @@ explicado para iniciantes e um notebook que segue uma empresa do começo ao fim.
 
 ```
 CVM (ZIPs da DFP 2023–2025 + cadastro)
-   │  scripts/carregar_dfp.py      limpa contas, prefere consolidado      → data/contas.csv, data/catalogo.db
+   │  scripts/carregar_dfp.py      limpa contas, prefere consolidado      → data/contas.csv, PostgreSQL (contas, empresas)
    ▼
 scripts/indicadores.py             6 indicadores por empresa (C2)        → data/indicadores.csv
    │
@@ -61,7 +61,8 @@ Na raiz: `contratos.md`, `REGRAS-IA.md` (regras do time para uso de IA), `CLAUDE
 
 ## Como rodar
 
-Pré-requisitos: Python 3.14 (a versão do CI e do `requirements.txt`) e Git. Todos os comandos rodam na **raiz do repositório**.
+Pré-requisitos: Python 3.14 (a versão do CI e do `requirements.txt`; o 3.11 não instala as versões fixadas), Git e
+PostgreSQL (o banco do catálogo, regra do professor). Todos os comandos rodam na **raiz do repositório**.
 
 ```bash
 python -m venv .venv
@@ -69,14 +70,33 @@ source .venv/bin/activate          # Windows: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
-Chave do Gemini (só para os modos com IA): copie `.env.example` para `.env` e cole a chave,
-ou dê dois cliques em `aprender/atalhos/configurar_chave.command`. O `.env` nunca vai para o Git.
+Copie `.env.example` para `.env`. O `.env` nunca vai para o Git, porque tem a chave do Gemini e a senha do banco.
+- Chave do Gemini (só para os modos com IA): cole em `GOOGLE_API_KEY`, ou dê dois cliques em `aprender/atalhos/configurar_chave.command`.
+- PostgreSQL: troque `SUA_SENHA` em `DATABASE_URL` e `TEST_DATABASE_URL` pela senha do usuário `postgres`. Sem essas linhas,
+  o código tenta a senha `postgres` (`raiox/banco.py`).
+
+**Banco** (uma vez só): crie o banco do catálogo e o banco dos testes, que é apagado a cada teste.
+
+```bash
+psql -U postgres -c "CREATE DATABASE raiox"
+psql -U postgres -c "CREATE DATABASE raiox_teste"
+```
+
+**Dados da CVM** (uns minutos; precisa de internet):
+
+```bash
+python scripts/carregar_dfp.py        # baixa a DFP 2023–2025, limpa (raiox/limpeza.py) → data/contas.csv e tabelas contas e empresas
+python scripts/indicadores.py         # 6 indicadores por empresa (C2) → data/indicadores.csv
+python scripts/verificar_automatico.py   # opcional: compara receita, EBIT e lucro com o Yahoo Finance
+```
 
 **Testes** (não gastam crédito):
 
 ```bash
 python -m pytest -q
 ```
+
+Sem o PostgreSQL de testes (`TEST_DATABASE_URL`), os testes de banco aparecem como `skipped`: confira com `python -m pytest -q -rs`.
 
 **Tela** (de dentro de `app/`, para o Streamlit ler o tema):
 

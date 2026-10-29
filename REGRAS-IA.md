@@ -16,7 +16,7 @@ Se uma chave vazou (colou num chat, subiu no Git): avise o grupo e troque a chav
 ## 2. O que nunca vai para o Git
 
 - `.env` (já está no `.gitignore`).
-- Dados brutos da CVM e arquivos gerados (`contas.csv`, `indicadores.csv`, `catalogo.db`, os zips da DFP). Ficam em `data/`, que o Git ignora.
+- Dados brutos da CVM e arquivos gerados (`contas.csv`, `indicadores.csv`, os zips da DFP). Ficam em `data/`, que o Git ignora.
 - Arquivos acima de 10 MB.
 
 Antes de todo commit, rode `git status` e leia a lista. Se aparecer algo que não deveria, pare.

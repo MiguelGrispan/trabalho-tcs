@@ -1,45 +1,48 @@
 """Funções de acesso aos dados usadas pela interface do projeto."""
-import sqlite3
-from contextlib import closing
-from pathlib import Path
+from sqlalchemy import text
 
+from raiox.banco import catalogo_existe, conectar
 from raiox.dados import buscar_empresas, registrar_consulta  # noqa: F401 (reexporta C1)
 from raiox.limpeza import codigo_cvm
 
-ROOT = Path(__file__).resolve().parents[1]
-DB_PATH = ROOT / "data" / "catalogo.db"
 
-
-def obter_indicadores(cd_cvm: str) -> dict:
-    """Calcula os indicadores disponíveis para a empresa no último exercício."""
-    if not DB_PATH.exists():
+def obter_indicadores(cd_cvm):
+    """Calcula os indicadores da empresa no último exercício, direto do catálogo."""
+    if not catalogo_existe():
         return {}
 
     codigo = codigo_cvm(cd_cvm)
-    with closing(sqlite3.connect(DB_PATH)) as conn:
-        linha_ano = conn.execute("SELECT MAX(ano) FROM contas").fetchone()
-        if linha_ano is None or linha_ano[0] is None:
-            return {}
-        ano = int(linha_ano[0])
+    conn = conectar()
 
-        registros = conn.execute(
+    ano = conn.execute(text("SELECT MAX(ano) FROM contas")).fetchone()[0]
+    if ano is None:
+        conn.close()
+        return {}
+
+    registros = conn.execute(
+        text(
             """
             SELECT ano, cd_conta, valor
             FROM contas
-            WHERE cd_cvm = ?
-              AND ano IN (?, ?)
+            WHERE cd_cvm = :cd_cvm
+              AND ano IN (:ano, :ano_anterior)
               AND (
                   (demonstracao = 'DRE' AND cd_conta IN ('3.01', '3.05', '3.11'))
                   OR (demonstracao = 'BPA' AND cd_conta = '1')
                   OR (demonstracao = 'BPP' AND cd_conta = '2.03')
               )
-            """,
-            (codigo, ano, ano - 2),
-        ).fetchall()
+            """
+        ),
+        {"cd_cvm": codigo, "ano": ano, "ano_anterior": ano - 2},
+    ).fetchall()
+    conn.close()
 
-    # O catálogo já vem limpo de carregar_dfp.py (regras em raiox/limpeza.py):
-    # uma linha por conta e só empresas com receita de venda positiva.
-    valores = {(exercicio, conta): valor for exercicio, conta, valor in registros}
+    # Dicionário (ano, conta) -> valor
+    valores = {}
+    for exercicio, conta, valor in registros:
+        valores[(exercicio, conta)] = valor
+
+    # Empresa fora do catálogo
     if (ano, "3.01") not in valores:
         return {}
 
@@ -50,27 +53,28 @@ def obter_indicadores(cd_cvm: str) -> dict:
     ativo = valores.get((ano, "1"))
     patrimonio_liquido = valores.get((ano, "2.03"))
 
+    # Regra 7: sem dado ou divisão por zero, o indicador fica vazio (None)
+    cresc_2a = None
+    if receita is not None and receita_anterior is not None and receita_anterior > 0:
+        cresc_2a = receita / receita_anterior - 1
+
+    margem_ebit = None
+    if ebit is not None and receita is not None and receita > 0:
+        margem_ebit = ebit / receita
+
+    margem_liquida = None
+    if lucro is not None and receita is not None and receita > 0:
+        margem_liquida = lucro / receita
+
+    endividamento = None
+    if patrimonio_liquido is not None and ativo is not None and ativo > 0:
+        endividamento = 1 - patrimonio_liquido / ativo
+
     return {
         "receita": receita,
-        "cresc_2a": (
-            receita / receita_anterior - 1
-            if receita is not None and receita_anterior is not None and receita_anterior > 0
-            else None
-        ),
-        "margem_ebit": (
-            ebit / receita
-            if ebit is not None and receita is not None and receita > 0
-            else None
-        ),
-        "margem_liquida": (
-            lucro / receita
-            if lucro is not None and receita is not None and receita > 0
-            else None
-        ),
+        "cresc_2a": cresc_2a,
+        "margem_ebit": margem_ebit,
+        "margem_liquida": margem_liquida,
         "ativo_total": ativo,
-        "endividamento": (
-            1 - patrimonio_liquido / ativo
-            if patrimonio_liquido is not None and ativo is not None and ativo > 0
-            else None
-        ),
+        "endividamento": endividamento,
     }

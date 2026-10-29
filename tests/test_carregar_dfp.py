@@ -1,6 +1,5 @@
 import contextlib
 import io
-import sqlite3
 import tempfile
 import zipfile
 import unittest
@@ -8,10 +7,13 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pandas as pd
+from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError
 
 from scripts import carregar_dfp
 from scripts.carregar_dfp import ler_demo
 from raiox.limpeza import CHAVES_CONTA, encontrar_conflitos
+from tests.banco_teste import TesteComBanco, precisa_do_banco
 
 COLUNAS_DFP = [
     "CD_CVM", "DENOM_CIA", "VERSAO", "ESCALA_MOEDA", "ORDEM_EXERC",
@@ -96,10 +98,12 @@ class CarregarDfpTests(unittest.TestCase):
         self.assertTrue(resultado.empty)
 
 
-class PipelineCompletoTests(unittest.TestCase):
+@precisa_do_banco
+class PipelineCompletoTests(TesteComBanco):
     """Roda o main() inteiro com downloads falsos: nada de internet."""
 
     def setUp(self):
+        super().setUp()
         self.temp_dir = tempfile.TemporaryDirectory()
         self.data_dir = Path(self.temp_dir.name)
 
@@ -184,27 +188,34 @@ class PipelineCompletoTests(unittest.TestCase):
         """O banco não aceita gêmeos: o índice único barra na entrada. 🚪"""
         self.rodar_main()
 
-        with contextlib.closing(sqlite3.connect(self.data_dir / "catalogo.db")) as conn:
+        with self.engine.connect() as conn:
             indices = {
                 linha[0] for linha in conn.execute(
-                    "SELECT name FROM sqlite_master WHERE type = 'index'"
+                    text("SELECT indexname FROM pg_indexes WHERE tablename = 'contas'")
                 )
             }
-            total_empresas = conn.execute("SELECT COUNT(*) FROM empresas").fetchone()[0]
-            tipos_valor = {
-                linha[0] for linha in conn.execute(
-                    "SELECT DISTINCT typeof(valor) FROM contas"
+            total_empresas = conn.execute(text("SELECT COUNT(*) FROM empresas")).fetchone()[0]
+            tipo_valor = conn.execute(
+                text(
+                    "SELECT data_type FROM information_schema.columns "
+                    "WHERE table_name = 'contas' AND column_name = 'valor'"
                 )
-            }
-            with self.assertRaises(sqlite3.IntegrityError):
+            ).fetchone()[0]
+            ebit_ausente = conn.execute(
+                text("SELECT COUNT(*) FROM contas WHERE cd_conta = '3.05' AND valor IS NULL")
+            ).fetchone()[0]
+            with self.assertRaises(IntegrityError):
                 conn.execute(
-                    "INSERT INTO contas (ano, cd_cvm, demonstracao, cd_conta) "
-                    "VALUES (2025, '1', 'DRE', '3.01')"
+                    text(
+                        "INSERT INTO contas (ano, cd_cvm, demonstracao, cd_conta) "
+                        "VALUES (2025, '1', 'DRE', '3.01')"
+                    )
                 )
 
         self.assertIn("idx_contas_chave", indices)
         self.assertEqual(total_empresas, 3)
-        self.assertEqual(tipos_valor, {"real", "null"})  # null = conta divergente
+        self.assertEqual(tipo_valor, "double precision")  # número, não texto
+        self.assertEqual(ebit_ausente, 1)  # null = conta divergente
 
 
 if __name__ == "__main__":
