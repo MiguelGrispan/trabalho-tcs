@@ -23,7 +23,7 @@ comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguin
 
 ## 0. Situação atual (atualize a cada sessão)
 
-**Em qui 29/10, manhã** (sessão do Eduardo com o Claude Code: ED3, portes da NA1 e da NA2, retrato do projeto).
+**Em qui 29/10, 11h** (sessão do Eduardo com o Claude Code: ED3, portes da NA1 e da NA2, teste do Docker e do Terraform, retrato do projeto).
 
 **Retomando numa sessão nova do Claude Code?**
 1. Cole: "Leia o CLAUDE.md e a seção 0 do docs/PLANO.md. Confira o estado real com `gh pr list --state all` e
@@ -71,14 +71,39 @@ comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguin
 - **Marcos:** subiu em 28/10 na `tratamento_dados` (sem história em comum com a `main`, estrutura antiga com `src/`) um
   script que avalia o corte de R$ 10 mi (`scripts/avaliar_corte_receita.py`), uma consulta SQL (`sql/prova_s1.sql`) e um
   `docs/Raio-X Comercial.pdf`. **A MA2 (CSV padrão, prazo hoje) não começou na `main`**: o script novo ainda lê com `sep=";"`.
-- **Miguel:** a `docs-docker-e-terraform` ganhou 1 commit em 28/10 (CMD do Dockerfile). **Ainda sem PR.** O que o Eduardo
-  viu lendo os arquivos (não rodou `docker build`):
-  - mudanças reais: só `Dockerfile`, `.dockerignore`, `terraform/` e `.gitignore` (`git diff --stat origin/main...origin/docs-docker-e-terraform`).
-    Com 2 pontos (`origin/main origin/docs-…`) parece que apaga as skills e os gráficos: é só porque a branch é anterior aos
-    #7–#9. Antes do PR: `git merge main`;
-  - o `Dockerfile` usa Python 3.12; o CI e o `requirements.txt` usam 3.14 (não testado se instala em 3.12);
-  - o `.dockerignore` não tira a `data/` (o plano pede a `data/` como volume) nem a `aprender/`. Não pode tirar a
-    `avaliacao/`: com a IA ligada, o prompt lê `avaliacao/regras_prompt.md`.
+  - **28/10, 20h10, também na `tratamento_dados`: "migra catálogo de SQLite para PostgreSQL"** (`5508116`, 18 arquivos;
+    `sqlalchemy` e `psycopg` no `requirements.txt`; `src/banco.py`). É escopo novo e mexe em contrato (C1 e C2 falam do
+    `data/catalogo.db`), no Docker (precisaria de um segundo contêiner com o PostgreSQL), no CI (os testes do banco pulam
+    sem PostgreSQL: `tests/banco_teste.py`, `banco_disponivel()`) e no teste do zero (ED10: instalar PostgreSQL).
+    O `indicadores.csv` continua com `sep=";"` (`git show 5508116:scripts/indicadores.py | grep -n sep=`). Decisão em aberto, abaixo.
+- **Miguel: Docker e Terraform testados pelo Eduardo em 29/10**, numa cópia local da `main` + #11 + a branch dele
+  (nada foi enviado ao GitHub). A branch continua sem PR. **Funcionam**; faltam ajustes.
+
+  | teste (na máquina do Eduardo, Docker 29.8) | resultado |
+  |---|---|
+  | `docker build` como está (Python 3.12) | ✅ 4 min 40 s; imagem de 1,61 GB |
+  | `docker build` com `python:3.14-slim` (igual ao CI) | ✅ build, 69 passed e 3 skipped, health `ok`; imagem de 1,62 GB |
+  | `python -m pytest -q` dentro do contêiner | ✅ 69 passed, 3 skipped (igual ao CI) |
+  | `curl localhost:8501/_stcore/health` | ✅ `ok` |
+  | tela simulada (`AppTest` do Streamlit): busca, escolhe, preenche, gera | ✅ sem erro, 6 métricas, texto novo da ED3 |
+  | tela com a IA (`-e RAIOX_IA_REAL=1`, `.env` montado só para leitura) | ✅ o Gemini respondeu (~2.250 tokens: leu as regras da Náthally); US$ 0,0011 |
+  | tela com a `data/` real (`-e RAIOX_DADOS=real -v data:/app/data`) | ✅ WEG com números reais; ⚠️ o aviso diz "empresas e números inventados" |
+  | `data/` real só para leitura (`-v data:/app/data:ro`) | ❌ o raio-x não saía. Bug do Eduardo (ED4): numa imagem, o `segmentos.py` é sempre mais novo que o `segmentos.csv`, e gravar dá erro. Consertado na branch `eduardo-segmentos-somente-leitura` (com teste) |
+  | a chave (`.env`) entra na imagem? | ✅ não |
+  | `terraform init` + `apply` (imagem `hashicorp/terraform:1.9.8`; provider docker 4.6.0) | ✅ sobe; health `ok` |
+  | `terraform destroy` + `apply` | ✅ sobe de novo; mas sem volume, então a `data/` não existe no contêiner (critério da MG3 não passa) |
+
+  **O que o Miguel acerta antes do PR** (cada item tem prova no teste acima):
+  1. `git merge main` (a branch é anterior aos #7 a #10; com 2 pontos, o diff parece apagar as skills e os gráficos);
+  2. `.dockerignore`: tirar a `data/` (hoje ela entra na imagem: um arquivo marcador posto na `data/` apareceu dentro dela)
+     e a `aprender/`. Não tirar a `avaliacao/`: com a IA ligada, o prompt lê `avaliacao/regras_prompt.md`;
+  3. `Dockerfile`: trocar para `FROM python:3.14-slim`, a versão do CI (testado: funciona igual);
+  4. `terraform/main.tf`: montar a `data/` como volume (`volumes { host_path = "<caminho>/data", container_path = "/app/data" }`)
+     e passar `RAIOX_DADOS=real` (e `RAIOX_IA_REAL=1`, se a demo usar a IA). Hoje o Terraform só sobe a versão de teste,
+     e a chave que ele pede não é usada;
+  5. `terraform/variables.tf`: a `google_api_key` é obrigatória, então o Terraform pede chave até para a demo sem IA. Deixar opcional;
+  6. `.gitignore`: a primeira linha é ` ```gitignore ` e a última é ` ``` `, sobra de cópia de um chat. Apagar as duas;
+  7. lembrar no README: a chave fica em texto puro no `terraform.tfstate` (o `.gitignore` já tira esse arquivo; não mandar para ninguém).
 - **Mudança local no PLANO.md guardada:** às 9h17 o editor do Eduardo reformatou as tabelas deste arquivo (só espaços e
   traços; `git diff -w` mostra só isso). Ficou num `git stash` para não poluir os PRs. Para descartar: `git stash drop`.
   Para não acontecer de novo: desligar "Format On Save" para Markdown no VS Code.
@@ -88,9 +113,9 @@ comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguin
 | parte | feito | falta |
 |---|---|---|
 | núcleo do produto: dados, ML, IA, validador, avaliação | ~80% | MA2, ED7 (ED3 e ED4 feitos) |
-| tela e infraestrutura | ~25% | MG2 a MG4: Docker e Terraform numa branch sem PR; a tela ainda usa só os falsos |
+| tela e infraestrutura | ~35% | Docker e Terraform funcionam (testados em 29/10), mas numa branch sem PR; MG4 (aviso, modo sem IA automático) |
 | entregáveis: BPMN, EDA, PDF, deck, vídeo, ensaios | ~10% | quase tudo, mas não depende de código novo |
-| **total** | **~42%** | com 9 de 26 dias usados (~35%): o núcleo está adiantado; dados (MA2) e infra estão no caminho crítico |
+| **total** | **~44%** | com 9 de 26 dias usados (~35%): o núcleo está adiantado; dados (MA2 e a decisão do PostgreSQL) e o PR do Docker estão no caminho crítico |
 
 **Folga:** o plano termina na qua 11/11. Sobram 4 dias de reserva (12 a 15/11) antes da entrega de seg 16/11, e mais 2 até a banca.
 Regra: atraso come a folga; **nunca** se acrescenta escopo. Se a folga acabar, use a lista de cortes da seção 7.
@@ -98,8 +123,10 @@ Regra: atraso come a folga; **nunca** se acrescenta escopo. Se a folga acabar, u
 **Caminho crítico agora** (o que trava os outros):
 1. **MA2** (Marcos): sem CSV padrão, o `test_ponta_a_ponta.py` só passa na máquina de quem converteu à mão, e a MG4
    (tela com dados reais) não começa. Plano B da seção 7: o Eduardo converte localmente e a MA2 entra até ter 03/11.
-2. **MG2** (Miguel): Docker sem PR. Plano B da seção 7: se não houver PR até sex 30/10, o Eduardo faz e o Miguel revisa.
-3. **Trabalho fora da `main`:** a Náthally e o Marcos ainda sobem nas branches antigas, e cada entrega precisa ser portada
+2. **MG2** (Miguel): o Docker funciona, mas não tem PR. Faltam os 7 ajustes acima. Plano B da seção 7: se não houver PR
+   até sex 30/10, o Eduardo abre com os ajustes e o Miguel revisa.
+3. **SQLite × PostgreSQL** (Marcos e grupo): enquanto não decidir, a MA2 e a MG4 podem ser feitas duas vezes.
+4. **Trabalho fora da `main`:** a Náthally e o Marcos ainda sobem nas branches antigas, e cada entrega precisa ser portada
    à mão. Daqui para a frente: **sempre uma branch nova a partir da `main`** (seção 2; para a Náthally, "Create a new branch"
    no GitHub com a `main` selecionada).
 
@@ -110,7 +137,7 @@ Regra: atraso come a folga; **nunca** se acrescenta escopo. Se a folga acabar, u
 - **Falta (Eduardo):** o `tests/test_aprender.py` exige exatamente "5 passed" no notebook.
 - **Falta (Marcos):** `test_resolver_conflitos_trata_valor_vazio_como_divergente` passa só pela ordem das linhas;
   `test_obter_indicadores_deixa_ausente_…` não olha o `ativo_total`; `test_calcular_exporta_…` não tem receita de 2 anos antes igual a zero.
-- **Outros:** com dados reais, a tela mostra "empresas e números inventados" (MG4); o C4 diz que o `conferencia.csv` é da
+- **Outros:** com dados reais, a tela mostra "empresas e números inventados" (MG4; o resto da tela já funciona com dados reais); o C4 diz que o `conferencia.csv` é da
   Náthally, mas quem escreve é o Marcos.
 
 **Próximo passo de cada um:**
@@ -118,18 +145,20 @@ Regra: atraso come a folga; **nunca** se acrescenta escopo. Se a folga acabar, u
   (as regras v2 no prompt; leia o raio-x de exemplo na descrição).
   Dizer se a `feat/metricas` pode ser apagada: a `Semana_01/` foi portada no #5, e as regras v2 e os casos estão nos
   PRs #10 e #11; só o `avaliacao.ipynb` (monta o CSV dos casos) ficou de fora: ela diz se quer guardar. Depois: tempo manual e ROI (NA3), testes com usuários, e revisão dos 10 raio-x quando a ED7 rodar.
-- **Marcos:** MA2 na `main` (branch `marcos-csv-padrao`, a partir da `main`). Trazer o `avaliar_corte_receita.py` para a MA3,
+- **Marcos:** combinar com o grupo **hoje** se o PostgreSQL entra (decisão abaixo). MA2 na `main` (branch `marcos-csv-padrao`, a partir da `main`). Trazer o `avaliar_corte_receita.py` para a MA3,
   já lendo o CSV padrão, e dar o OK (ou não) no corte de R$ 10 mi. Dizer se a `tratamento_dados` pode ser apagada depois disso.
-- **Miguel:** `git merge main` na `docs-docker-e-terraform`, acertar os 3 pontos acima e abrir o PR (MG2; o Eduardo revisa).
+- **Miguel:** `git merge main` na `docs-docker-e-terraform`, acertar os 7 pontos acima e abrir o PR até sex 30/10 (MG2 e MG3; o Eduardo revisa).
+  Na MG4, o caminho ficou curto: trocar `USAR_DADOS_FALSOS` por `RAIOX_DADOS`, corrigir o aviso, voltar sozinho para o modo sem IA.
   Terminar a MG1 (só merge commit, apagar branch após o merge, check `testes` obrigatório).
-- **Eduardo:**
-  1. ler o diff do #11, preencher o "Eu conferi" (no #10 também, mesmo já mesclado) e pedir as revisões do #11 (Náthally; Marcos ou Miguel);
-     combinar no grupo: quem aprova deixa uma linha dizendo o que conferiu, e o merge é do autor (seção 2);
-  2. avisar o grupo do custo novo (US$ 0,0012 por raio-x) e da ED7 (10 chamadas, ~US$ 0,012);
-  3. **ED7** assim que o #11 entrar (pode ser sex 30/10, antes do prazo de dom 01/11: a Náthally ganha tempo para a NA4);
-  4. ED8 (você escreve; o Claude confere com arquivo e linha);
-  5. estudar a ED3 com `/explicar raiox/ia.py regras` e a ED4 com `/explicar raiox/segmentos.py segmentar` (seção 8);
-  6. revisar o PR do Docker quando o Miguel abrir; se não abrir até sex 30/10, plano B da seção 7.
+- **Eduardo** (datas na seção 3; agenda detalhada na resposta da sessão de 29/10):
+  1. **hoje, qui 29/10:** ler os diffs do #11 e do `eduardo-segmentos-somente-leitura`, preencher o "Eu conferi" (no #10 também)
+     e pedir as revisões (Náthally no #11; Marcos ou Miguel nos dois). No grupo: o custo novo (US$ 0,0012 por raio-x),
+     a ED7 (10 chamadas, ~US$ 0,012), o resultado do teste do Docker para o Miguel, a decisão SQLite × PostgreSQL, e o combinado
+     de revisão (quem aprova escreve o que conferiu; o merge é do autor);
+  2. **sex 30/10:** ED7 se o #11 entrou; revisar o PR do Docker; se não houver PR, plano B (seção 7);
+  3. **sáb 31/10 a dom 01/11:** ED8 (você escreve; o Claude confere com arquivo e linha); ED7 até dom, no máximo;
+  4. **seg 02/11 (feriado) a ter 03/11:** demo ponta a ponta no Docker com a `data/` real e tag `v0.1-demo`;
+  5. estudar a ED3 com `/explicar raiox/ia.py regras` e a ED4 com `/explicar raiox/segmentos.py segmentar` (seção 8).
 
 **Decisões em aberto:**
 - data e horário da banca;
@@ -137,6 +166,9 @@ Regra: atraso come a folga; **nunca** se acrescenta escopo. Se a folga acabar, u
 - nome da pasta da infraestrutura: `infra/` ou `terraform/` (Miguel, no PR do Docker);
 - apagar `tratamento_dados` e `feat/metricas` (Marcos e Náthally);
 - corte de receita mínima de R$ 10 mi (Marcos, MA3);
+- **SQLite ou PostgreSQL** (grupo, até sex 30/10). Proposta desta sessão: **SQLite na versão da banca**. Ele já cumpre o
+  R3 ("SQL: consultas ou persistência"), roda no Docker sem outro serviço e no teste do zero sem instalar nada. O PostgreSQL
+  entra no PDF como próximo passo. Se o grupo quiser o PostgreSQL: PR na `main` até ter 03/11, com o serviço no Docker e no CI;
 - as 3 notas do código vão para a v3 das regras? (Náthally).
 - ✅ decidido em 29/10: Suzano S.A. (13986) e Localiza Rent a Car (19739) nos casos (Náthally).
 
@@ -205,7 +237,7 @@ Todos entram no PR #3, menos os da última linha.
 |---|---|---|---|---|
 | ter 27/10 | ✅ ED0, ED1, ED2, ED5, ED4 (código), ED6; portes MA1 e NA1 | — | — | — |
 | qua 28/10 | ED4 consertar a segmentação | revisar o #4; MA2 | MG1 revisar e mesclar o #3 | revisar o #5; NA1 regras v2 |
-| qui 29/10 | ✅ ED3 (adiantada); portes NA1 e NA2 (PRs #10 e #11) | MA2 cumprir C1/C2 | MG2 Docker | ✅ NA1 e NA2 entregues; revisar o #11 |
+| qui 29/10 | ✅ ED3 (adiantada); portes NA1 e NA2 (PRs #10 e #11); teste do Docker e do Terraform | MA2 cumprir C1/C2 | MG2 Docker | ✅ NA1 e NA2 entregues; revisar o #11 |
 | sex 30/10 | ED7 (se o #11 entrou); revisões; ED8 começa | MA3 dados reais + Drive | MG2/MG3 | NA3 tempo manual |
 | sáb 31/10 | revisões; ED8 começa | MA3 | MG3 Terraform | NA3 tempo manual; marcar testes |
 | dom 01/11 | ED7 (prazo final) | MA4 EDA | **MG3: se o Terraform não subiu, fica só o Docker**; MG4 | NA3 |
@@ -255,8 +287,8 @@ Todos entram no PR #3, menos os da última linha.
 | # | data | status | objetivo | altera | modo | pronto quando | git |
 |---|---|---|---|---|---|---|---|
 | MG1 | qua 28/10 | 🟡 #3 na `main` (27/10); falta configurar o GitHub | revisar e mesclar o #3; configurar o GitHub (só merge commit, apagar branch, check `testes`); rodar a tela local | configurações | só leitura | #3 na `main`; print da tela no grupo | merge do #3 |
-| MG2 | qui 29–sex 30/10 | 🟡 branch `docs-docker-e-terraform` (último commit 28/10), sem PR; 3 pontos na seção 0 | `Dockerfile` + `.dockerignore` (tela, `data/` como volume, chave por variável) | `Dockerfile`, `.dockerignore` | Plan | `docker build`, `docker run -p 8501:8501 …`, `curl localhost:8501/_stcore/health` → `ok` | `miguel-docker` → PR (Eduardo) |
-| MG3 | sáb 31/10–dom 01/11 | 🟡 `terraform/` na mesma branch, sem PR | Terraform (provider docker), **só se o Docker estiver pronto**. Prazo: dom 01/11; senão, corta | `infra/` | Plan | `terraform apply` sobe; `destroy` + `apply` mantém `data/` | PR |
+| MG2 | qui 29–sex 30/10 | 🟡 funciona (Eduardo testou em 29/10: build, testes, health, tela); sem PR; 7 ajustes na seção 0 | `Dockerfile` + `.dockerignore` (tela, `data/` como volume, chave por variável) | `Dockerfile`, `.dockerignore` | Plan | `docker build`, `docker run -p 8501:8501 …`, `curl localhost:8501/_stcore/health` → `ok` | `miguel-docker` → PR (Eduardo) |
+| MG3 | sáb 31/10–dom 01/11 | 🟡 `apply`, `destroy` e `apply` funcionam (29/10); falta montar a `data/` | Terraform (provider docker), **só se o Docker estiver pronto**. Prazo: dom 01/11; senão, corta | `infra/` | Plan | `terraform apply` sobe; `destroy` + `apply` mantém `data/` | PR |
 | MG4 | dom 01–ter 03/11 | — | tela com dados reais: `RAIOX_DADOS` (`falsos`/`real`) no lugar do `USAR_DADOS_FALSOS`; volta sozinha para o modo sem IA, com aviso; `registrar_consulta` dentro do `try`; `tests/test_tela.py` | `app/`, `.env.example`, `tests/` | Plan | 3 empresas reais geram raio-x no contêiner | PR (Eduardo) |
 | MG5 | qua 04/11 | — | diagrama de arquitetura + README (pré-requisitos com Python 3.14; rodar local, Docker e Terraform) | `docs/arquitetura.png`, `README.md` | Manual | um colega entende o fluxo lendo o README | PR |
 | MG6 | qui 05/11 | — | roteiro de 6 min da demo + vídeo v0 | — | — | vídeo salvo em 2 lugares | — |
