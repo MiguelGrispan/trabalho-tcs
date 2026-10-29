@@ -8,11 +8,12 @@ comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguin
 
 **Como usar este plano:**
 - Cada linha das tabelas da seção 3 é uma sessão de trabalho, com um código (por exemplo, MA2).
-- Para começar, abra o Claude Code e diga:
-  > Leia o CLAUDE.md e faça a sessão MA2 do docs/PLANO.md.
-- **Ao terminar uma sessão:**
-  1. atualize a seção 0 (situação atual) e a coluna "status" da sessão, no mesmo PR;
-  2. se a sessão fecha uma linha do REQUISITOS.md, atualize essa linha também.
+- Para começar, abra o Claude Code e digite `/inicio-de-sessao MA2` (ele cuida do Git).
+- **Para terminar,** digite `/fim-de-sessao`. Ele:
+  1. atualiza a seção 0 (situação atual) e a coluna "status" da sessão;
+  2. atualiza a linha do REQUISITOS.md, se a sessão fecha uma;
+  3. escreve de 1 a 3 linhas no [HISTORICO.md](HISTORICO.md) (o resumo de tudo o que já aconteceu);
+  4. abre o PR, espera o CI e faz o merge depois do seu "pode".
 
 **Hipóteses deste plano:**
 - Cada pessoa tem de 6 a 12 h por semana, fora a aula.
@@ -213,12 +214,12 @@ Todos entram no PR #3, menos os da última linha.
 | tema | combinado | por que, e não a alternativa óbvia |
 |---|---|---|
 | Modelo | `main` + **uma branch curta por sessão**, com nome `pessoa-tarefa` (ex.: `marcos-csv-padrao`) | branch pessoal longa acumula diferença e vira PR gigante. Hífen, não barra: o Git não deixa criar `eduardo/...` enquanto existir a branch `eduardo` |
-| Criar a branch | `git switch main` → `git pull` → `git switch -c pessoa-tarefa` | sempre a partir da `main` atual |
+| Criar a branch | `/inicio-de-sessao` faz: `git switch main` → `git pull` → `git switch -c pessoa-tarefa` | sempre a partir da `main` atual |
 | Quando abrir PR | quando o "pronto quando" da sessão passa e `python -m pytest -q` está verde | PR pequeno é revisado no mesmo dia |
-| Quem revisa | quem **recebe** o contrato. Marcos → Eduardo (e Miguel, se mexer no C1). Eduardo → Marcos (e Miguel, se mexer no C3). Miguel → Eduardo. Náthally → Eduardo | quem recebe percebe quando quebra |
-| Quem faz o merge | o autor, depois de 1 aprovação e com o CI verde | tira o Miguel do gargalo |
+| Quem revisa | o CI (os testes) e o Claude Code, que lê o diff no `/fim-de-sessao`. Uma pessoa só quando o PR mexe no `contratos.md` ou na pasta dela: o ok vem no grupo, não no GitHub | combinado em 29/10: o clique de "aprovar" travava tudo e ninguém lia o diff de verdade; quem recebe o contrato continua avisado |
+| Quem faz o merge | o autor (o `/fim-de-sessao` faz), com o CI verde, depois de um "pode" | até 29/10, os 10 merges foram todos do Miguel |
 | Tipo de merge | **merge commit**. O Miguel desliga squash e rebase e liga "apagar branch após o merge" | guarda os commits pequenos (prova do processo para a banca) e não quebra quem continua na branch |
-| Proteção da `main` | o PR #3 aparece como "review required": a `main` já parece exigir revisão. Na MG1, o Miguel confirma e acrescenta o check `testes` como obrigatório, se der | — |
+| Proteção da `main` | **MG1, Miguel (só ele é admin):** em Settings → Branches → regra da `main`: manter "Require a pull request", tirar "Require approvals", ligar "Require status checks" com o `testes`; em Settings → General: só "Allow merge commits" e ligar "Automatically delete head branches". Em 29/10 a `main` exige 1 aprovação e nenhum check (`gh pr view 13 --json reviewDecision`) | sem pedir aprovação, o CI vira a trava de verdade: nada entra com teste vermelho |
 | Trazer a `main` | `git switch main` → `git pull` → `git switch pessoa-tarefa` → `git merge main` → `python -m pytest -q` → `git push`. Conflito: `git merge --abort` e fale com o dono do arquivo | o `rebase` exige `push --force`, o jeito mais comum de apagar trabalho do colega |
 | Tags | `v0.1-demo` na **ter 03/11** e `v1.0` na **sex 06/11**. Depois, só `v1.0.1`… com consertos. Quem cria é o Eduardo: `git tag -a v1.0 -m "versão da banca"` e `git push origin v1.0` | avaliação final, vídeo e teste do zero rodam na mesma versão |
 | Arquivo comum (`README`, `contratos`, `requirements`, `tests/`, `docs/`) | um PR por vez; avise no grupo | evita conflito |
@@ -237,8 +238,9 @@ Todos entram no PR #3, menos os da última linha.
   - quando a conversa muda de assunto;
   - quando o Claude começa a esquecer as instruções do início.
   - Nunca use `/clear` com mudança sem commit: anote antes onde parou.
-- **Fim de toda sessão:** `python -m pytest -q` → `git status` (leia a lista) → commit → push → PR → atualizar a seção 0.
-  No Claude Code, `/fim-de-sessao` faz isso passo a passo (`.claude/skills/fim-de-sessao/SKILL.md`).
+- **Começo de toda sessão:** `/inicio-de-sessao` (`.claude/skills/inicio-de-sessao/SKILL.md`).
+- **Fim de toda sessão:** `/fim-de-sessao` (`.claude/skills/fim-de-sessao/SKILL.md`): testes → `git status` → seção 0, REQUISITOS e
+  HISTORICO → commit → push → PR → CI → leitura do diff → "pode" → merge.
 
 ### Calendário
 
