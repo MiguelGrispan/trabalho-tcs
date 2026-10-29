@@ -46,9 +46,8 @@ def test_casos_de_avaliacao_existem_na_tabela_real():
     from avaliacao import avaliar
     if not avaliar.ARQ_CASOS.exists():
         pytest.skip("avaliacao/casos_avaliacao.csv ainda não está na main")
-    casos = pd.read_csv(avaliar.ARQ_CASOS, dtype={"cd_cvm": str})
-    preenchidos = casos["cd_cvm"].dropna().str.strip()
-    preenchidos = preenchidos[preenchidos != ""].astype(int)
+    casos = pd.read_csv(avaliar.ARQ_CASOS)
+    assert casos["cd_cvm"].notna().all(), "caso sem cd_cvm"
     df, _ = segmentos.carregar_indicadores()
-    faltando = set(preenchidos) - set(df["cd_cvm"])
+    faltando = set(casos["cd_cvm"].astype(int)) - set(df["cd_cvm"])
     assert not faltando, f"cd_cvm dos casos que não estão no indicadores.csv: {sorted(faltando)}"
