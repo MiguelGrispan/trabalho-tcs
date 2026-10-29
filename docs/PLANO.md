@@ -24,20 +24,22 @@ comandos de prova, estão em [aprender/seguindo-o-projeto.md](../aprender/seguin
 
 ## 0. Situação atual (atualize a cada sessão)
 
-**Em qui 29/10, 12h** (sessão do Eduardo com o Claude Code: ED3, portes da NA1 e da NA2, teste do Docker e do Terraform, decisão do PostgreSQL, retrato do projeto).
+**Em qui 29/10, 11h20** (sessão do Eduardo com o Claude Code: ED3, portes da NA1 e da NA2, teste do Docker e do Terraform, decisão do PostgreSQL, Git simplificado, PRs #11 a #14 na `main`).
 
 > **Decisão de 29/10: o banco é PostgreSQL.** O professor disse que SQLite não vale (regra registrada no CLAUDE.md, no
 > `contratos.md` e em `docs/REQUISITOS.md`, seção "Regras do professor"; PR #13). Por isso a MA2 ficou maior e o Docker
 > passa a subir dois contêineres (tela + PostgreSQL). O replanejamento está nas seções 3, 5 e 7.
 
 **Retomando numa sessão nova do Claude Code?**
-1. Cole: "Leia o CLAUDE.md e a seção 0 do docs/PLANO.md. Confira o estado real com `gh pr list --state all` e
-   `git log --oneline -15`. Depois faça a sessão ED7" (só se o PR #11 já entrou na `main`; se não, revise PRs
-   ou escreva a ED8, que é você quem escreve). Guia de como usar o Claude Code: `aprender/claude-code.md`.
+1. Digite `/inicio-de-sessao ED7` (troque pelo código da sua sessão; o Eduardo segue a "ordem" abaixo).
+   Ele atualiza a `main`, cria a branch e confere o GitHub. No fim, `/fim-de-sessao`. Guia: `aprender/claude-code.md`.
 2. Antes de mexer em qualquer coisa, a sessão deve dizer o que mudou desde esta nota.
 
 **O que mudou desde 28/10, 11h30:**
-- **Os PRs #7, #8 e #9 entraram na `main`** em 28/10, e o **#10** em 29/10, 9h24. A `main` está em `8e95fe2`; com a `data/` real, 68 passed.
+- **11h17: os PRs #11, #12, #13 e #14 entraram na `main`** (`8c51fcc`), depois do #10 (9h24) e dos #7 a #9 (28/10).
+  Com a `data/` real, 73 passed; o CI da `main` está verde. O Miguel tirou a aprovação obrigatória do GitHub (`gh pr view` mostra
+  os PRs como `CLEAN`, sem `REVIEW_REQUIRED`). Ainda falta o resto da MG1: check `testes` obrigatório e "apagar branch após o merge".
+  Branches já inteiras na `main` foram apagadas; sobram `docs-docker-e-terraform` (Miguel), `tratamento_dados` (Marcos) e `feat/metricas` (Náthally).
 - **A Náthally entregou as regras v2 e os `cd_cvm` dos 10 casos** (29/10, 9h), mas na `feat/metricas`, que não tem
   história em comum com a `main`. O Eduardo portou os dois, sem mudar as decisões dela:
   - **PR #10 (NA2):** `cd_cvm` dos 10 casos, como número inteiro e com a coluna `empresa` (C4). Ela escolheu
@@ -149,28 +151,30 @@ Regra: atraso come a folga; **nunca** se acrescenta escopo. Se a folga acabar, u
   Náthally, mas quem escreve é o Marcos.
 
 **Próximo passo de cada um:**
-- **Náthally:** conferir os 10 códigos na `main` (`avaliacao/casos_avaliacao.csv`, já entrou pelo #10) e aprovar o #11
-  (as regras v2 no prompt; leia o raio-x de exemplo na descrição).
+- **Náthally:** conferir os 10 códigos na `main` (`avaliacao/casos_avaliacao.csv`) e ler o exemplo da WEG no PR #11 (as regras v2
+  dela já são o prompt). Se quiser mudar algo, vira a v3.
   Dizer se a `feat/metricas` pode ser apagada: a `Semana_01/` foi portada no #5, e as regras v2 e os casos estão nos
   PRs #10 e #11; só o `avaliacao.ipynb` (monta o CSV dos casos) ficou de fora: ela diz se quer guardar. Depois: tempo manual e ROI (NA3), testes com usuários, e revisão dos 10 raio-x quando a ED7 rodar.
-- **Marcos:** revisar o PR #13 (a regra no contrato). MA2 na `main`, agora com o PostgreSQL: branch `marcos-postgres`, a partir da
+- **Marcos:** ler a regra do PostgreSQL no `contratos.md` (já na `main`, PR #13). MA2 na `main`, agora com o PostgreSQL: branch `marcos-postgres`, a partir da
   `main`, trazendo o `5508116` para a estrutura da `main` (`raiox/dados.py` e `scripts/`, sem `src/`), com o CSV padrão (C2). Prazo sáb 31/10. Trazer o `avaliar_corte_receita.py` para a MA3,
   já lendo o CSV padrão, e dar o OK (ou não) no corte de R$ 10 mi. Dizer se a `tratamento_dados` pode ser apagada depois disso.
 - **Miguel:** `git merge main` na `docs-docker-e-terraform`, acertar os 7 pontos acima e abrir o PR até sex 30/10 (MG2 e MG3; o Eduardo revisa).
   Com o PostgreSQL, o Docker vira um `docker-compose.yml` com 2 contêineres (tela + PostgreSQL, com volume para o banco);
   o Terraform cria os dois (ou é cortado, seção 7). Na MG4: trocar `USAR_DADOS_FALSOS` por `RAIOX_DADOS`, corrigir o aviso e
   voltar sozinho para o modo sem IA.
-  Terminar a MG1 (só merge commit, apagar branch após o merge, check `testes` obrigatório).
-- **Eduardo** (datas na seção 3; a lista do que dá para passar ao Claude Code está na resposta da sessão de 29/10):
-  1. **hoje, qui 29/10:** mandar ao grupo: a regra do PostgreSQL (PR #13: Marcos e Miguel revisam), o resultado do teste do
-     Docker para o Miguel, o custo novo (US$ 0,0012 por raio-x) e a ED7 (~US$ 0,012), e o combinado de revisão (quem aprova
-     escreve o que conferiu; o merge é do autor);
-  2. **hoje:** ler os diffs do #11, #12 e #13 e preencher o "Eu conferi" (no #10 também); pedir as revisões;
-  3. **sex 30/10:** ED7 se o #11 entrou; revisar os PRs da MA2 e do Docker; se o Docker não tiver PR, plano B (seção 7);
-  4. **sáb 31/10:** se a MA2 não tiver PR, plano B (o Eduardo porta o PostgreSQL com o Claude); ED8 começa;
-  5. **dom 01/11:** ED7 no máximo; ED8 (você escreve; o Claude confere com arquivo e linha);
-  6. **seg 02/11 (feriado) e ter 03/11:** demo ponta a ponta com `docker compose` (tela + PostgreSQL + `data/` real) e tag `v0.1-demo`;
-  7. no meio disso: `/explicar raiox/ia.py regras` (ED3) e `/explicar raiox/segmentos.py segmentar` (ED4), seção 8.
+  Terminar a MG1 (a aprovação obrigatória já saiu): marcar o check `testes` como obrigatório, "Automatically delete head branches",
+  e deixar só "Allow merge commits" (PLANO, seção 2).
+- **Eduardo: a ordem** (uma coisa de cada vez; o Claude Code faz o Git):
+  1. **agora:** mandar a mensagem ao grupo (o Claude escreve): tudo na `main`, o fluxo novo (`/inicio-de-sessao` e `/fim-de-sessao`),
+     a regra do PostgreSQL, os ajustes do Docker, o custo novo (US$ 0,0012 por raio-x) e a ED7 (~US$ 0,012);
+  2. **agora, 2 min:** `git stash drop` (a formatação do editor, guardada) e desligar "Format On Save" para Markdown no VS Code;
+  3. **hoje:** `/inicio-de-sessao ED7`: a avaliação com IA nos 10 casos, que o Claude roda e resume para a Náthally;
+  4. **hoje ou amanhã:** perguntar ao professor a data da banca e se há **outras regras além do guia** (anotar no REQUISITOS);
+  5. **sex 30/10:** pedir ao Claude para revisar e testar os PRs da MA2 e do Docker quando chegarem; sem PR do Docker, plano B (seção 7);
+  6. **sáb 31/10:** sem PR da MA2, plano B (o Claude porta o PostgreSQL e o Marcos confere); começar a ED8;
+  7. **dom 01/11:** ED8 (você escreve; o Claude confere com arquivo e linha);
+  8. **seg 02 e ter 03/11:** demo ponta a ponta com `docker compose` (tela + PostgreSQL + `data/` real) e tag `v0.1-demo`;
+  9. no meio disso: `/explicar raiox/ia.py regras` (ED3) e `/explicar raiox/segmentos.py segmentar` (ED4), seção 8.
 
 **Decisões em aberto:**
 - data e horário da banca;
@@ -297,7 +301,7 @@ Todos entram no PR #3, menos os da última linha.
 
 | # | data | status | objetivo | altera | modo | pronto quando | git |
 |---|---|---|---|---|---|---|---|
-| MG1 | qua 28/10 | 🟡 #3 na `main` (27/10); falta configurar o GitHub | revisar e mesclar o #3; configurar o GitHub (só merge commit, apagar branch, check `testes`); rodar a tela local | configurações | só leitura | #3 na `main`; print da tela no grupo | merge do #3 |
+| MG1 | qua 28/10 | 🟡 aprovação obrigatória tirada (29/10); falta o check `testes` obrigatório, apagar branch após o merge e só merge commit | revisar e mesclar o #3; configurar o GitHub (só merge commit, apagar branch, check `testes`); rodar a tela local | configurações | só leitura | #3 na `main`; print da tela no grupo | merge do #3 |
 | MG2 | qui 29–sex 30/10 | 🟡 funciona (Eduardo testou em 29/10: build, testes, health, tela); sem PR; 7 ajustes na seção 0 | `Dockerfile` + `.dockerignore` + `docker-compose.yml` (tela + PostgreSQL com volume do banco; `data/` como volume; chave e `DATABASE_URL` por variável) | `Dockerfile`, `.dockerignore`, `docker-compose.yml` | Plan | `docker compose up` sobe os 2; `curl localhost:8501/_stcore/health` → `ok`; `scripts/carregar_dfp.py` grava no PostgreSQL do contêiner | `miguel-docker` → PR (Eduardo) |
 | MG3 | sáb 31/10–dom 01/11 | 🟡 `apply`, `destroy` e `apply` funcionam (29/10); falta montar a `data/` | Terraform (provider docker) com os 2 contêineres (tela + PostgreSQL), **só se o Docker estiver pronto**. Prazo: dom 01/11; senão, corta | `infra/` | Plan | `terraform apply` sobe; `destroy` + `apply` mantém `data/` e o banco | PR |
 | MG4 | dom 01–ter 03/11 | — | tela com dados reais: `RAIOX_DADOS` (`falsos`/`real`) no lugar do `USAR_DADOS_FALSOS`; volta sozinha para o modo sem IA, com aviso; `registrar_consulta` dentro do `try`; `tests/test_tela.py` | `app/`, `.env.example`, `tests/` | Plan | 3 empresas reais geram raio-x no contêiner | PR (Eduardo) |
@@ -314,7 +318,7 @@ Para subir um arquivo:
 
 | # | data | status | objetivo | altera | pronto quando |
 |---|---|---|---|---|---|
-| NA1 | qua 28–qui 29/10 | ✅ regras v2 em 29/10 (na `feat/metricas`; portadas no PR #11, falta o OK dela) | revisar o #5; regras v2 alinhadas ao código (`aprender/seguindo-o-projeto.md`, item 7) | `avaliacao/regras_prompt.md` | PR aberto |
+| NA1 | qua 28–qui 29/10 | ✅ regras v2 em 29/10 (na `main` pelo PR #11) | revisar o #5; regras v2 alinhadas ao código (`aprender/seguindo-o-projeto.md`, item 7) | `avaliacao/regras_prompt.md` | PR aberto |
 | NA2 | sex 30/10 | ✅ códigos em 29/10 (na `main` pelo PR #10; ela ainda confere) | preencher o `cd_cvm` dos 10 casos (busca da tela ou `indicadores.csv` do Drive; WEG = 5410) | `avaliacao/casos_avaliacao.csv` | `tests/test_ponta_a_ponta.py` passa (o Eduardo roda) |
 | NA3 | sáb 31/10–qui 05/11 | — | `tempo_manual.csv` (3 empresas), 3 testes com usuários (sem nome), conta do ROI | `avaliacao/` | 3 testes feitos; ROI com números medidos |
 | NA4 | qua 04/11 | — | `revisao.csv` sobre o `resultados.csv`; métricas | `avaliacao/revisao.csv`, `docs/produto/metricas.md` | % de comparações certas, % de perguntas ligadas ao produto, utilidade, custo, tempo |
