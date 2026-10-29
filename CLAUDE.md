@@ -7,8 +7,9 @@ Náthally (produto e métricas, deck), Miguel (tela e infraestrutura). Banca pre
 Antes de qualquer tarefa, leia `docs/PLANO.md` (sessões, datas e donos; a pessoa diz qual sessão está fazendo, ex.: "MA2")
 e `docs/REQUISITOS.md` (o que o guia exige e o status). O que está quebrado, com prova: `aprender/seguindo-o-projeto.md`.
 Material para quem está aprendendo (comandos, guias, notebook passo a passo, atalhos): `aprender/`; como usar o Claude Code no time: `aprender/claude-code.md`. Quem usa Codex: o `AGENTS.md` aponta para este arquivo.
-**Sessão nova?** Comece pela seção 0 do `docs/PLANO.md` (situação atual). Depois confira o estado real com
-`gh pr list --state all` e `git log --oneline -15`, porque a nota pode estar velha.
+**Sessão nova?** `/inicio-de-sessao` (ex.: `/inicio-de-sessao MA2`): atualiza a `main`, cria a branch, lê a seção 0 do
+`docs/PLANO.md` e confere o estado real (`gh pr list --state all`, `git log --oneline -15`), porque a nota pode estar velha.
+Tudo o que já aconteceu, em versão resumida: `docs/HISTORICO.md`.
 
 ## O produto
 O vendedor escolhe uma companhia aberta da CVM, informa o produto e o objetivo da reunião e recebe:
@@ -64,14 +65,17 @@ Caminhos: todo código que usa `data/` ou `docs/` aponta para a **raiz** do repo
 2. **Contrato antes de código.** Mudou um formato entre partes? Primeiro o `contratos.md`, avisando quem recebe; depois o código.
 3. **Testes antes de dizer "pronto".** Rode `python -m pytest -q` e mostre o resultado. Mudou a tela? Abra a tela também.
    Toda mudança de comportamento vem com teste novo ou atualizado no mesmo PR (lista dos testes: `docs/PLANO.md`, seção 4).
-   Ao terminar uma sessão, atualize a seção 0 do `docs/PLANO.md` (situação atual): é por ela que a próxima sessão começa.
-   Atalho: `/fim-de-sessao`. Para aprender a explicar um trecho do código: `/explicar`.
+   Ao terminar uma sessão, atualize a seção 0 do `docs/PLANO.md` (é por ela que a próxima sessão começa) e escreva de 1 a 3
+   linhas no `docs/HISTORICO.md`. Atalho: `/fim-de-sessao`. Para aprender a explicar um trecho do código: `/explicar`.
 4. **O LLM nunca escreve números** (regra de ouro). Acima/abaixo/em linha é calculado por código.
 5. **Nada de dados nem `.env` no Git.** Antes de todo commit, rode `git status` e leia a lista.
 6. **A demo não pode quebrar.** O modo sem IA (sem `RAIOX_IA_REAL`) é o plano B: precisa continuar funcionando.
-7. **`main` só por pull request**, com o CI verde e 1 pessoa revisando. No PR, 2 linhas: o que foi feito com IA e o que você conferiu.
-8. **Git:** uma branch curta por sessão, a partir da `main` atualizada, com nome `pessoa-tarefa` (ex.: `marcos-porta-dados`).
-   Para trazer a `main`, use `git merge main`. Nunca `rebase`, `push --force` nem commit direto na `main`.
+7. **`main` só por pull request, com o CI verde.** Quem revisa é o CI (os testes) e o Claude Code, que lê o diff no `/fim-de-sessao`;
+   o merge é feito pelo próprio autor, depois de um "pode". Uma pessoa só precisa dar o ok (no grupo, não no GitHub) quando o PR
+   mexe no `contratos.md` ou na pasta dela. No PR, 2 linhas: o que foi feito com IA e o que o autor entendeu ou conferiu
+   (vale "ainda não li": o que não vale é inventar).
+8. **Git: o Claude Code faz.** Comece com `/inicio-de-sessao` e termine com `/fim-de-sessao`: ele cria a branch `pessoa-tarefa`
+   a partir da `main` e faz o merge no fim. Para trazer a `main`, `git merge main`. Nunca `rebase`, `push --force` nem commit na `main`.
 
 ## Como responder ao time (iniciantes)
 - Português simples. Explique o porquê de cada mudança, não só o quê.

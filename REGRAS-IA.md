@@ -46,8 +46,11 @@ Antes de todo commit, rode `git status` e leia a lista. Se aparecer algo que nã
 - Para trazer a `main` para a sua branch: `git switch main`, `git pull`, `git switch pessoa-tarefa`, `git merge main` e rode os testes.
   Deu conflito? `git merge --abort` e fale com o dono do arquivo.
 - Nunca `rebase` nem `push --force`: reescrevem a história e podem apagar o trabalho de um colega.
-- Na `main` só entra por pull request, com os testes passando (o CI roda sozinho no PR) e 1 pessoa do grupo revisando.
-  Depois da aprovação, quem abriu o PR faz o merge (tipo "merge commit").
+- **O jeito fácil (desde 29/10):** no Claude Code, `/inicio-de-sessao` no começo e `/fim-de-sessao` no fim. Ele faz os passos acima,
+  abre o PR, espera o CI, lê o diff e faz o merge depois do seu "pode".
+- Na `main` só entra por pull request, com os testes passando (o CI roda sozinho no PR). Não precisa de aprovação no GitHub:
+  o CI e a leitura do diff pelo Claude Code são a revisão. Quem abriu o PR faz o merge (tipo "merge commit").
+  Mexeu no `contratos.md` ou na pasta de outro dono? Antes do merge, o dono dá o ok no grupo.
 - Quem não programa com IA pode subir arquivos pelo navegador: no GitHub, "Add file → Upload files",
   escolha "Create a new branch" e abra o PR.
 
@@ -65,8 +68,8 @@ No pull request, escreva em 2 linhas o que foi gerado com IA e o que você revis
 
 ## Checklist do pull request
 
-- [ ] Rodei os testes e passaram.
-- [ ] Li o diff inteiro e sei explicar cada mudança.
+- [ ] Rodei os testes e passaram (o CI do PR está verde).
+- [ ] Sei dizer o que o PR muda (ou pedi `/explicar`).
 - [ ] Não tem `.env`, chave nem dado bruto no commit.
-- [ ] Não mudei contrato sem avisar quem recebe.
-- [ ] Escrevi o que foi feito com IA e o que eu revisei.
+- [ ] Não mudei contrato nem pasta de outro dono sem o ok dele no grupo.
+- [ ] Escrevi o que foi feito com IA e o que eu entendi ou conferi.

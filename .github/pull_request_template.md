@@ -5,18 +5,18 @@
 ## Uso de IA (vira a seção "Como usamos IA para programar" do README)
 
 - Feito com IA:
-- Eu conferi:
+- O que eu entendi ou conferi (vale "ainda não li"; não vale inventar):
 
 ## Checklist (REGRAS-IA.md)
 
-- [ ] Rodei `python -m pytest -q` e passou; o CI deste PR está verde.
-- [ ] Li o diff inteiro e sei explicar cada mudança.
-- [ ] Li o `git status` antes do commit: não tem `.env`, chave nem dado bruto.
-- [ ] Não mudei contrato sem mudar antes o `contratos.md` e avisar quem recebe.
-- [ ] Mexi só nas minhas pastas, ou combinei com o dono.
+O `/fim-de-sessao` confere estes itens antes do merge:
+
+- [ ] O CI deste PR está verde.
+- [ ] Não tem `.env`, chave nem dado bruto (`git status` lido).
+- [ ] Mexeu no `contratos.md` ou na pasta de outro dono? O dono deu o ok no grupo.
 - [ ] O modo sem IA continua funcionando.
-- [ ] Atualizei o status no `docs/REQUISITOS.md` e marquei a sessão no `docs/PLANO.md`.
+- [ ] PLANO (seção 0 e status), REQUISITOS e HISTORICO atualizados.
 
-## Para quem revisa
+## Revisão
 
-Não aprove com o CI vermelho. Rode o que o PR diz que roda.
+O CI e o Claude Code revisam. Uma pessoa só entra quando o PR mexe no contrato ou na pasta dela (ok no grupo).

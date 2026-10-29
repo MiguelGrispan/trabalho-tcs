@@ -6,9 +6,11 @@ As regras de uso de IA do time estão no [REGRAS-IA.md](../REGRAS-IA.md); este g
 ## Em 1 minuto
 
 1. Abra o Terminal na **raiz do projeto** (a pasta `trabalho-tcs/`) e digite `claude`.
-2. Cole a **frase de abertura** (abaixo), trocando `XX` pelo código da sua sessão.
-3. Trabalhe numa tarefa só. O Claude cria a branch `pessoa-tarefa` e pede licença antes de mudar arquivos.
-4. No fim, digite `/fim-de-sessao`. Ele roda os testes, confere o que vai para o Git, atualiza o PLANO e abre o PR.
+2. Digite `/inicio-de-sessao XX`, trocando `XX` pelo código da sua sessão (não sabe? digite só `/inicio-de-sessao`).
+   Ele atualiza a `main`, cria a sua branch e diz o que mudou e por onde começar. (A frase de abertura abaixo faz o mesmo.)
+3. Trabalhe numa tarefa só. O Claude pede licença antes de mudar arquivos.
+4. No fim, digite `/fim-de-sessao`. Ele roda os testes, atualiza o PLANO e o HISTORICO, abre o PR, espera o CI, lê o diff e,
+   depois do seu "pode", faz o merge na `main`. Você não precisa mexer no GitHub.
 5. Antes da próxima tarefa, digite `/clear`.
 
 ## A frase de abertura
@@ -83,11 +85,12 @@ Digite `/fim-de-sessao`. Ele faz, nesta ordem:
 1. roda os testes;
 2. lê o `git status` com você;
 3. atualiza a seção 0 do PLANO e o REQUISITOS;
-4. faz o commit;
-5. pede a sua confirmação antes do push;
-6. abre o PR.
+4. escreve de 1 a 3 linhas no `docs/HISTORICO.md`;
+5. faz o commit, o push e abre o PR;
+6. espera o CI e lê o diff;
+7. pede o seu "pode" e faz o merge.
 
-Ele deixa o campo "Eu conferi" do PR para você preencher. Sem a skill, o mesmo passo a passo está no `CLAUDE.md`, regra 3.
+Ele pergunta o que você entendeu ou conferiu e escreve isso no PR (vale "ainda não li"; não vale inventar). Sem a skill, o mesmo passo a passo está no `CLAUDE.md`, regra 3.
 
 Depois: `/clear` para a próxima tarefa, ou `/exit` para sair.
 Para voltar a uma conversa antiga: `claude --continue` (a última) ou `/resume` (escolher numa lista). Para tarefa nova, prefira uma sessão nova.
