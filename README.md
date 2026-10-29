@@ -82,7 +82,7 @@ python -m pytest -q
 
 ```bash
 cd app && streamlit run streamlit_app.py                     # texto montado sem IA, sem custo
-cd app && RAIOX_IA_REAL=1 streamlit run streamlit_app.py     # Gemini escreve o texto (≈ US$ 0,0008 por raio-x)
+cd app && RAIOX_IA_REAL=1 streamlit run streamlit_app.py     # Gemini escreve o texto (≈ US$ 0,0012 por raio-x)
 ```
 
 Enquanto o `raiox/dados.py` não estiver pronto, a tela usa as empresas inventadas de `falsos/`.
@@ -106,6 +106,6 @@ python -m raiox.checagem --teste   # checador com dados que têm erros de propó
 | atalho | o que faz | gasta crédito? |
 |---|---|---|
 | `aprender/atalhos/rodar_tela.command` | abre a tela com texto montado sem IA | não |
-| `aprender/atalhos/rodar_tela_com_ia.command` | abre a tela com o Gemini escrevendo o raio-x | sim (≈ US$ 0,0008 por raio-x) |
+| `aprender/atalhos/rodar_tela_com_ia.command` | abre a tela com o Gemini escrevendo o raio-x | sim (≈ US$ 0,0012 por raio-x) |
 | `aprender/atalhos/rodar_testes.command` | roda os testes automáticos | não |
 | `aprender/atalhos/configurar_chave.command` | guarda a chave do Gemini no `.env` | não |

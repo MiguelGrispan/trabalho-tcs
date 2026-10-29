@@ -85,11 +85,12 @@ O teste do contrato C3 pede a empresa 90001, que só existe na tabela falsa. Des
 tabela falsa em todo teste (`RAIOX_DADOS=falsos`), mesmo com os dados reais na `data/`.
 **Prova:** `grep -n "RAIOX_DADOS" tests/conftest.py`; com a `data/` real, `python -m pytest -q` não tem `failed`.
 
-### 7) As regras do texto estão em duas versões diferentes 🟡 (Náthally + Eduardo)
-A v1 da Náthally (hoje em `avaliacao/regras_prompt.md`, desde o #5) e as regras v3 no `raiox/ia.py` não batem:
-a v1 não conhece a posição "em linha", pede resumo de 2 a 4 frases (o código pede 2 ou 3) e diz que o LLM recebe
-o nome da empresa (ele não recebe, de propósito: veja `entrada = {...}` em `montar()`).
-**Prova:** `grep -n "frases" avaliacao/regras_prompt.md raiox/ia.py` e `grep -n "entrada = " raiox/ia.py`. A v2 é a sessão NA1 do PLANO.
+### 7) As regras do texto estavam em duas versões diferentes ✅ (ED3, 29/10)
+Até 28/10, a v1 da Náthally (`avaliacao/regras_prompt.md`) e a cópia v3 no `raiox/ia.py` não batiam (posição "em linha",
+número de frases, nome da empresa na entrada). Desde a ED3 não existe mais cópia: o prompt **lê o arquivo da Náthally**
+(regras v2, 29/10) e acrescenta só 3 notas do código (`NOTAS_DO_CODIGO`). Se ela mudar o arquivo, o Gemini recebe a mudança.
+**Prova:** `grep -n "def regras" -A 4 raiox/ia.py`; `python -m pytest -q -k prompt` (4 testes, um deles confere que o
+prompt começa com o texto do arquivo dela).
 
 ### 8) Não existe empacotamento 🟡 (Miguel)
 Na `main`, ainda sem `Dockerfile` nem Terraform. O Miguel começou na branch `docs-docker-e-terraform` (27/10), ainda sem PR. Pontos que precisam estar no desenho: a pasta `data/` entra no
@@ -117,7 +118,7 @@ o contêiner roda a tela de dentro de `app/` (é onde o Streamlit acha o tema).
 | `raiox/dados.py` | tela | `buscar_empresas`, `registrar_consulta` (C1) | ⬜ chave na tela (item 5) |
 | `raiox/ia.py` | tela | `preparar_raio_x` (C3) | ✅ testado |
 | `raiox/ia.py` | `avaliacao/avaliar.py` | `preparar_raio_x` (C4) | ✅ `avaliar.py` na `main` desde o #6 |
-| regras da Náthally | `REGRAS` no `raiox/ia.py` | texto do prompt | 🟡 versões diferentes (item 7) |
+| regras da Náthally (`avaliacao/regras_prompt.md`) | `regras()` no `raiox/ia.py` | texto do prompt | ✅ o código lê o arquivo dela (item 7) |
 | tela + `data/` | Docker/Terraform | contêiner | 🟡 branch do Miguel, sem PR (item 8) |
 
 ---

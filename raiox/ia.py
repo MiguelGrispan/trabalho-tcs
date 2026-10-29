@@ -17,12 +17,14 @@ import re
 import time
 import unicodedata
 from functools import lru_cache
+from pathlib import Path
 
 import pandas as pd
 from pydantic import BaseModel, Field
 
 from raiox import segmentos
 
+ARQ_REGRAS = Path(__file__).resolve().parent.parent / "avaliacao" / "regras_prompt.md"   # da Náthally
 MODELO = "gemini-3.1-flash-lite"
 PRECO_US_POR_MILHAO = {"entrada": 0.25, "saida": 1.50}  # página oficial de preços do Google, 20/10/2026
 
@@ -105,50 +107,62 @@ def montar(seg: pd.DataFrame, cd_cvm: int, produto: str, objetivo: str):
 
 # ------------------------------------------------------------------ LLM
 class Pergunta(BaseModel):
-    texto: str = Field(description="Pergunta aberta para a reunião. Sem dígitos; use marcadores.")
-    base: str = Field(description="id do indicador que motivou a pergunta, ou 'lacuna'.")
+    texto: str = Field(description="Pergunta aberta, começando com Como, Quais, O que ou Onde. Sem números; "
+                                   "use marcadores.")
+    base: str = Field(description="id do indicador que fundamenta a pergunta.")
 
 
 class RaioX(BaseModel):
-    resumo: str = Field(description="2 ou 3 frases sobre a empresa contra o grupo. Sem dígitos; use marcadores.")
+    resumo: str = Field(description="Três frases sobre a empresa em relação ao grupo. Sem números; use marcadores.")
     perguntas: list[Pergunta] = Field(description="De 3 a 5 perguntas.")
-    lacunas: list[str] = Field(description="De 2 a 4 coisas úteis para a venda que os números não mostram.")
+    lacunas: list[str] = Field(description="De 2 a 4 frases afirmativas curtas, sem ponto de interrogação, "
+                                           "sobre o que ainda precisa ser descoberto.")
+# As descrições acima também vão para o Gemini (formato da resposta): precisam dizer o mesmo que as regras da Náthally.
 
 
-# Regras v3. A Náthally é dona do texto das regras (avaliacao/regras_prompt.md); quando ela mandar a versão dela,
-# troque aqui. ATENÇÃO: no ChatPromptTemplate, {x} é variável. Marcadores precisam de chave dupla: {{margem_ebit}}.
-REGRAS = """Você prepara um raio-x para a primeira reunião comercial de um vendedor B2B.
-Regras:
-1. Nunca escreva números nem dígitos. Para citar um valor, use apenas os marcadores da lista, entre chaves.
-2. Sempre escreva o nome do indicador e, depois, o marcador entre parênteses. Exemplo:
-   "a margem EBIT ({{margem_ebit}}) está acima do grupo ({{margem_ebit_grupo}})".
-   Nunca use o marcador sozinho no lugar do nome do indicador.
-3. Os marcadores terminados em _grupo são o valor típico do grupo de empresas parecidas, não da empresa.
-   Compare sempre com "o grupo de empresas parecidas". Nunca diga "o setor", "a média do setor" ou "o mercado".
-4. Use a posição de cada indicador exatamente como veio: acima, abaixo, em linha ou sem dado.
-5. Não afirme causa e efeito que os números não mostram (por exemplo, "a dívida pressiona a margem").
-   Se quiser explorar uma possível causa, transforme em pergunta.
-6. Para a empresa use {{empresa}}. Para o produto do vendedor escreva "a solução de {{produto}}".
-   {{ano}} é o ano dos números: use só para situar os dados ("em {{ano}}"), nunca para falar de orçamento ou planos.
-7. resumo: 2 ou 3 frases sobre o perfil financeiro da empresa em relação ao grupo.
-8. perguntas: de 3 a 5 perguntas abertas, cada uma ligada a um único indicador e ao objetivo da reunião.
-   Em base, informe o id desse indicador.
-9. lacunas: de 2 a 4 coisas úteis para a venda que os números não mostram (quem decide, orçamento, fornecedor atual).
-10. Não recomende investimento e não fale de ações na bolsa."""
+# O texto das regras é da Náthally (avaliacao/regras_prompt.md, v2 de 29/10). O prompt lê o arquivo dela, sem cópia,
+# para o que ela escreve e o que o Gemini recebe nunca ficarem diferentes. As notas abaixo são do código (Eduardo):
+# dizem o que os dados são de verdade. Se ela concordar, elas vão para a v3 dela e saem daqui.
+NOTAS_DO_CODIGO = """## Notas do código
+
+- O grupo é formado por empresas com receita, crescimento, margens e endividamento parecidos, não pelo setor. \
+Chame-o de "o grupo"; nunca de "o setor", "a média do setor" ou "o mercado".
+- Escreva o nome do indicador antes do marcador da empresa, como no exemplo "Certo" acima. \
+Nunca use o marcador sozinho no lugar do nome do indicador.
+- A lista de marcadores que você pode usar vem na mensagem, junto com a entrada."""
 
 PEDIDO = "Marcadores permitidos: {marcadores}\n\nEntrada:\n{entrada}"
+
+
+def regras() -> str:
+    """O prompt de sistema: as regras da Náthally e as notas do código. Só é lido quando a IA é usada,
+    para o modo sem IA (plano B da demo) funcionar mesmo sem o arquivo."""
+    return ARQ_REGRAS.read_text(encoding="utf-8").strip() + "\n\n" + NOTAS_DO_CODIGO
+
+
+def _prompt():
+    from langchain_core.messages import SystemMessage
+    from langchain_core.prompts import ChatPromptTemplate
+
+    # SystemMessage, e não ("system", texto): no ChatPromptTemplate, {x} é variável, e as regras têm {margem_ebit}.
+    # Assim as chaves chegam ao Gemini como estão. Só o PEDIDO tem variáveis: {marcadores} e {entrada}.
+    return ChatPromptTemplate.from_messages([SystemMessage(content=regras()), ("human", PEDIDO)])
 
 
 @lru_cache(maxsize=1)
 def _chain():
     from dotenv import load_dotenv
-    from langchain_core.prompts import ChatPromptTemplate
     from langchain_google_genai import ChatGoogleGenerativeAI
 
     load_dotenv()
-    prompt = ChatPromptTemplate.from_messages([("system", REGRAS), ("human", PEDIDO)])
     llm = ChatGoogleGenerativeAI(model=MODELO, temperature=0.2)
-    return prompt | llm.with_structured_output(RaioX, include_raw=True)   # include_raw: para ler os tokens
+    return _prompt() | llm.with_structured_output(RaioX, include_raw=True)   # include_raw: para ler os tokens
+
+
+def marcadores_do_llm(valores: dict) -> list[str]:
+    """Os marcadores que o Gemini pode usar (regras v2): só {id} e {id_grupo}, e só os que têm valor.
+    {empresa}, {setor}, {ano} e {produto} ficam de fora; o validador ainda os aceita, porque o normalizar() os cria."""
+    return [m for i in INDICADORES for m in (i, f"{i}_grupo") if valores[m] != "sem dado"]
 
 
 def gerar_llm(entrada: dict, marcadores: list[str]) -> tuple[RaioX, dict]:
@@ -163,7 +177,12 @@ def gerar_llm(entrada: dict, marcadores: list[str]) -> tuple[RaioX, dict]:
 
 
 def texto_sem_ia(entrada: dict) -> RaioX:
-    """Texto montado por modelo fixo, também com marcadores. Serve para testar sem gastar crédito."""
+    """Texto montado por modelo fixo, também com marcadores e nas mesmas regras do Gemini (v2 da Náthally):
+    resumo de três frases, perguntas que começam com Como/Quais/O que/Onde e lacunas afirmativas.
+    Serve para testar sem gastar crédito e é o plano B da demo."""
+    def sem_dado(i):
+        return entrada["indicadores"][i]["posicao"] == "sem dado"
+
     def frase(i):
         nome, posicao = INDICADORES[i][1], entrada["indicadores"][i]["posicao"]
         if posicao == "sem dado":
@@ -171,14 +190,21 @@ def texto_sem_ia(entrada: dict) -> RaioX:
         if posicao == "em linha":
             return f"{nome} ({{{i}}}) em linha com o grupo"
         return f"{nome} ({{{i}}}) {posicao} do grupo ({{{i}_grupo}})"
+
+    def nome_e_valor(i):   # sem valor, a pergunta cita só o nome (regra v2: nada de pergunta sobre valor que não há)
+        return INDICADORES[i][1] if sem_dado(i) else f"{INDICADORES[i][1]} ({{{i}}})"
+
     return RaioX(
-        resumo=f"Em {{ano}}, a {{empresa}} tem {frase('receita')}, {frase('cresc_2a')} e {frase('margem_ebit')}.",
-        perguntas=[Pergunta(texto=f"Com a {frase('margem_ebit')}, quais custos da operação mais pesam hoje, "
-                                  "e onde a solução de {produto} poderia ajudar?", base="margem_ebit"),
-                   Pergunta(texto=f"Com o {frase('cresc_2a')}, quais são as prioridades da área para o próximo ano?",
-                            base="cresc_2a"),
-                   Pergunta(texto="Quem participa da decisão de compra de uma solução como esta?", base="lacuna")],
-        lacunas=["Quem decide a compra", "Fornecedor atual", "Orçamento disponível para o próximo ciclo"])
+        resumo=(f"Em {{ano}}, a {{empresa}} tem {frase('receita')} e {frase('cresc_2a')}. "
+                f"Na rentabilidade, tem {frase('margem_ebit')} e {frase('margem_liquida')}. "
+                f"No balanço, tem {frase('endividamento')} e {frase('ativo_total')}."),
+        perguntas=[Pergunta(texto=f"Onde a solução de {{produto}} poderia reduzir os custos que pesam na "
+                                  f"{nome_e_valor('margem_ebit')}?", base="margem_ebit"),
+                   Pergunta(texto=f"Quais são as prioridades da área para o próximo ano, considerando o "
+                                  f"{nome_e_valor('cresc_2a')}?", base="cresc_2a"),
+                   Pergunta(texto=f"Quais áreas da operação mais usariam a solução de {{produto}}, considerando a "
+                                  f"{nome_e_valor('receita')}?", base="receita")],
+        lacunas=["Pessoas que decidem a compra", "Fornecedor atual", "Orçamento disponível para o próximo ciclo"])
 
 
 # ------------------------------------------------------------------ validar e preencher
@@ -253,7 +279,7 @@ def preparar_raio_x(cd_cvm: int, produto: str, objetivo: str, usar_ia: bool = Tr
     t0 = time.time()
     entrada, valores, raio_x = montar(_base(), int(cd_cvm), produto, objetivo)
     if usar_ia:
-        rx, uso = gerar_llm(entrada, list(valores))
+        rx, uso = gerar_llm(entrada, marcadores_do_llm(valores))
     else:
         rx, uso = texto_sem_ia(entrada), {"tokens_entrada": 0, "tokens_saida": 0, "custo_usd": 0.0}
     raio_x.update(validar_e_preencher(rx, valores))
