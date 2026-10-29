@@ -33,7 +33,8 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   O Miguel tira a aprovação obrigatória da `main`, e os PRs #11 a #14 entram às 11h17 (73 testes passando).
   O PR #15 (só documentação) foi mesclado antes do CI começar; o CI passou depois, e o `/fim-de-sessao` agora espera
   o `pass` (PR #16). É por isso que o check `testes` deve ficar obrigatório no GitHub (MG1).
-  Documentos de orientação enxugados (PR #17): cada informação num lugar só, sem as instruções velhas que contradiziam as novas.
+  O Marcos abre o PR #18 (MA2, PostgreSQL) e a Náthally abre a issue #17 (ano fiscal da Camil, de março a fevereiro).
+  Documentos de orientação enxugados (PR #19): cada informação num lugar só, sem as instruções velhas que contradiziam as novas.
 
 ## Decisões (e por quê)
 

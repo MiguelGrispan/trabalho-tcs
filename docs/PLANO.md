@@ -17,17 +17,19 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em qui 29/10, à tarde.** Na `main`: PRs #1 a #17. Com a `data/` real, 73 passed; o CI da `main` está verde.
+**Em qui 29/10, à tarde.** Na `main`: PRs #1 a #16 e o #19 (documentos enxutos). Com a `data/` real, 73 passed; o CI da `main` está verde.
 
 **Decisão de 29/10: o banco é PostgreSQL** (o professor disse que SQLite não vale; PR #13). Por isso a MA2 ficou maior e o
 Docker passa a subir dois contêineres (tela + PostgreSQL). Até a MA2 entrar, a `main` ainda usa SQLite.
 
 **Onde está cada frente:**
-- **Dados (Marcos, MA2):** começou na branch `marcos-postgres` (4 commits em 29/10, das 10h48 às 11h07; ainda sem PR). Ela traz
-  o PostgreSQL para a estrutura da `main`, mas traz também `scripts/verificar_automatico.py` (yfinance) e `scripts/graficos.py`,
-  que a seção 7 já cortou, e um `docs/Raio-X Comercial.pdf`: decidir na revisão do PR
-  (`git diff --stat main...origin/marcos-postgres`). Na `main`, o `indicadores.csv` ainda sai com `sep=";"`
-  (`scripts/indicadores.py:24`), então o C2 continua pendente.
+- **Dados (Marcos, MA2):** PR #18 aberto em 29/10, 11h42 (branch `marcos-postgres`, 26 arquivos, CI verde), ainda sem revisão.
+  Ele traz o PostgreSQL para a estrutura da `main`, mas traz também `scripts/verificar_automatico.py` (yfinance) e
+  `scripts/graficos.py`, que a seção 7 já cortou, e um `docs/Raio-X Comercial.pdf`: decidir na revisão (`gh pr diff 18`).
+  Na `main`, o `indicadores.csv` ainda sai com `sep=";"` (`scripts/indicadores.py:24`), então o C2 continua pendente.
+- **Issue #17 (Náthally, 29/10):** a Camil tem ano fiscal de março a fevereiro, e, segundo ela, o raio-x trata a DFP encerrada
+  em 28/02/2025 como se fosse a de 2025, o que desalinha os números em um ano. Ainda não conferido. É dos dados (Marcos):
+  conferir na revisão do #18 ou na MA3 (que compara 5 empresas com o RI).
 - **IA (Eduardo):** ED3 feita (PR #11): o prompt lê as regras v2 da Náthally (`avaliacao/regras_prompt.md`); 3 raio-x reais
   sem nada removido pelo validador; US$ 0,0012 por raio-x. A comparação antes × depois das regras está no PR #11. Próxima: ED7.
 - **Docker e Terraform (Miguel, MG2 e MG3):** na branch `docs-docker-e-terraform`, sem PR. O Eduardo testou em 29/10, numa cópia
@@ -58,8 +60,8 @@ Docker passa a subir dois contêineres (tela + PostgreSQL). Até a MA2 entrar, a
 Se um dos dois primeiros atrasar, vale o plano B da seção 7.
 
 **Próximo passo de cada um:**
-- **Marcos:** abrir o PR da `marcos-postgres` (MA2) com o CSV padrão (C2) e o serviço postgres no CI, e dizer no PR se o
-  `verificar_automatico.py` e o `graficos.py` ficam. Depois, MA3: trazer o `avaliar_corte_receita.py` (hoje na `tratamento_dados`)
+- **Marcos:** no PR #18 (MA2), confirmar o CSV padrão (C2) e o serviço postgres no CI (o "pronto quando" pede os testes do
+  banco rodando, não pulados), dizer se o `verificar_automatico.py` e o `graficos.py` ficam e olhar a issue #17. Depois, MA3: trazer o `avaliar_corte_receita.py` (hoje na `tratamento_dados`)
   já lendo o CSV padrão e dar o OK, ou não, no corte de R$ 10 mi. Dizer se a `tratamento_dados` pode ser apagada.
 - **Miguel:** os 7 ajustes acima e o PR até sex 30/10 (o Eduardo revisa); terminar a MG1.
 - **Náthally:** conferir os 10 códigos em `avaliacao/casos_avaliacao.csv`; dizer se a `feat/metricas` pode ser apagada
@@ -71,7 +73,7 @@ Se um dos dois primeiros atrasar, vale o plano B da seção 7.
   2. desligar "Format On Save" para Markdown no VS Code (em 29/10 ele reformatou as tabelas deste arquivo);
   3. `/inicio-de-sessao ED7`: a avaliação com IA nos 10 casos, resumida para a Náthally;
   4. perguntar ao professor a data da banca e se há outras regras além do guia (anotar no REQUISITOS);
-  5. sex 30/10: revisar e testar os PRs da MA2 e do Docker quando chegarem;
+  5. revisar e testar o PR #18 (MA2) agora, e o do Docker quando chegar (sex 30/10);
   6. sáb 31/10: se faltar algum dos dois PRs, plano B (seção 7); começar a ED8;
   7. ter 03/11: demo ponta a ponta com `docker compose` (tela + PostgreSQL + `data/` real) e tag `v0.1-demo`;
   8. no meio disso: `/explicar` nos pontos da seção 8.
@@ -85,7 +87,7 @@ Se um dos dois primeiros atrasar, vale o plano B da seção 7.
 **Decisões em aberto:**
 - data e horário da banca (Eduardo pergunta ao professor);
 - `scripts/dados.py` ou `raiox/dados.py`: ficar com um só (Marcos);
-- `verificar_automatico.py` e `graficos.py`, que voltaram na `marcos-postgres` depois de cortados (Marcos e Eduardo, no PR da MA2);
+- `verificar_automatico.py` e `graficos.py`, que voltaram no PR #18 depois de cortados (Marcos e Eduardo, na revisão);
 - pasta da infraestrutura: `infra/` ou `terraform/` (Miguel, no PR do Docker);
 - apagar `tratamento_dados` e `feat/metricas` (Marcos e Náthally);
 - corte de receita mínima de R$ 10 mi (Marcos, MA3);
@@ -146,7 +148,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 |---|---|---|---|---|
 | ter 27/10 | ✅ ED0, ED1, ED2, ED5, ED4 (código), ED6; portes MA1 e NA1 | ✅ #4 na `main` (MA1) | ✅ #3 na `main` | ✅ #5 na `main` |
 | qua 28/10 | ✅ ED4 (segmentação consertada, PR #9) | MA2 (passou para 29–31/10) | MG1; começa o Docker | NA1 regras v2 |
-| qui 29/10 | ✅ ED3 (adiantada); portes NA1 e NA2 (PRs #10 e #11); teste do Docker e do Terraform | 🟡 MA2 começou (`marcos-postgres`) | MG2 Docker + PostgreSQL | ✅ NA1 e NA2 entregues |
+| qui 29/10 | ✅ ED3 (adiantada); portes NA1 e NA2 (PRs #10 e #11); teste do Docker e do Terraform | 🟡 MA2: PR #18 aberto | MG2 Docker + PostgreSQL | ✅ NA1 e NA2 entregues |
 | sex 30/10 | ED7; revisões | MA2 | MG2 (`docker-compose.yml`) | NA3 tempo manual |
 | sáb 31/10 | revisões; ED8 começa; plano B da MA2 se precisar | **MA2 (prazo)**; MA3 | MG3 Terraform | NA3 tempo manual; marcar testes |
 | dom 01/11 | ED7 (prazo final) | MA4 EDA | **MG3: se o Terraform não subiu, fica só o Docker**; MG4 | NA3 |
@@ -185,7 +187,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | # | data | status | objetivo | altera | modo | pronto quando | git |
 |---|---|---|---|---|---|---|---|
 | MA1 | 27/10 | ✅ PR #4 | revisar o #4: o código é seu, só os imports mudaram; decidir sobre o `scripts/dados.py` | — | — | #4 aprovado | `marcos-porta-dados` |
-| MA2 | qui 29–sáb 31/10 | 🟡 começou na `marcos-postgres` (29/10), sem PR | **PostgreSQL na `main`** (regra do professor): trazer o `5508116` para a estrutura da `main` (sem `src/`), `DATABASE_URL` e `TEST_DATABASE_URL` no `.env.example`, serviço postgres no CI (`.github/workflows/testes.yml`) para os testes do banco não pularem; e o C1/C2: CSV padrão (sem `sep=";"` e sem `decimal=","` na **escrita**), `cd_cvm` int, tabela `indicadores` no banco, busca só com empresas ativas e com indicadores | `scripts/`, `raiox/dados.py`, `requirements.txt`, CI, `tests/` | Plan | CI verde **rodando** os testes do banco (não pulados); `python -m pytest -q tests/test_ponta_a_ponta.py` passa com os seus dados reais | `marcos-postgres` → PR (Eduardo + Miguel) |
+| MA2 | qui 29–sáb 31/10 | 🟡 PR #18 aberto (29/10, CI verde), falta a revisão | **PostgreSQL na `main`** (regra do professor): trazer o `5508116` para a estrutura da `main` (sem `src/`), `DATABASE_URL` e `TEST_DATABASE_URL` no `.env.example`, serviço postgres no CI (`.github/workflows/testes.yml`) para os testes do banco não pularem; e o C1/C2: CSV padrão (sem `sep=";"` e sem `decimal=","` na **escrita**), `cd_cvm` int, tabela `indicadores` no banco, busca só com empresas ativas e com indicadores | `scripts/`, `raiox/dados.py`, `requirements.txt`, CI, `tests/` | Plan | CI verde **rodando** os testes do banco (não pulados); `python -m pytest -q tests/test_ponta_a_ponta.py` passa com os seus dados reais | `marcos-postgres` → PR (Eduardo + Miguel) |
 | MA3 | sex 30–sáb 31/10 | — | dados reais + checagem + 5 empresas conferidas no RI; zip da `data/` no Drive | `avaliacao/conferencia.csv`; consertos | Manual | diferença < 1%; nenhum "erro"; link no grupo | PR |
 | MA4 | dom 01–ter 03/11 | — | EDA com 4 gráficos (nulos, distribuições, extremos, cobertura) | `notebooks/eda.ipynb`, `docs/graficos/` | Manual | "Restart & Run All" sem erro | PR |
 | MA5 | qua 04–qui 05/11 | — | BPMN 2.0 com o Raio-X (obrigatório) e o de hoje (se der tempo), no bpmn.io | `docs/bpmn/` | Plan (o Claude só revisa) | abre no bpmn.io; decisões "tem dados?" e "passou no validador?" | PR |
