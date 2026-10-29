@@ -3,6 +3,7 @@ Testes automáticos do Raio-X. Rodar na raiz do repositório:  python -m pytest 
 Nenhum teste chama a API do Gemini (não gasta crédito).
 """
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -133,6 +134,46 @@ def test_modo_sem_ia_funciona_para_todas_as_empresas_falsas():
         r = ia.preparar_raio_x(int(cd), "software de gestão", "primeira reunião", usar_ia=False)
         assert r["removidos"] == [], cd
         assert r["resumo"] and len(r["perguntas"]) >= 3 and len(r["lacunas"]) >= 2, cd
+
+
+# ---------------------------------------------------------------- prompt: regras v2 da Náthally (ED3)
+def test_prompt_usa_as_regras_da_nathally():
+    # o Gemini recebe o arquivo dela inteiro, sem cópia, mais as notas do código
+    texto = ia.ARQ_REGRAS.read_text(encoding="utf-8").strip()
+    assert ia.regras().startswith(texto) and ia.regras().endswith(ia.NOTAS_DO_CODIGO)
+    assert "números por extenso" in texto            # pendência de 27/10: o prompt também proíbe "dez por cento"
+
+
+def test_prompt_mantem_os_marcadores_com_chave():
+    # no LangChain, {x} é variável: as chaves das regras precisam chegar ao Gemini como estão
+    sistema, pedido = ia._prompt().format_messages(marcadores="{receita}", entrada="{}")
+    assert "{margem_ebit}" in sistema.content and "{cresc_2a_grupo}" in sistema.content
+    assert pedido.content == "Marcadores permitidos: {receita}\n\nEntrada:\n{}"
+
+
+def test_prompt_so_oferece_marcadores_de_indicador_com_valor(monkeypatch):
+    valores = {**{m: "6,2%" for i in ia.INDICADORES for m in (i, f"{i}_grupo")}, **VALORES, "cresc_2a": "sem dado"}
+    assert ia.marcadores_do_llm(valores) == [m for i in ia.INDICADORES for m in (i, f"{i}_grupo")
+                                             if m != "cresc_2a"]          # sem empresa, setor, ano e produto
+    pedidos = []
+
+    def gemini_falso(entrada, marcadores):
+        pedidos.append(marcadores)
+        return ia.texto_sem_ia(entrada), {"tokens_entrada": 0, "tokens_saida": 0, "custo_usd": 0.0}
+    monkeypatch.setattr(ia, "gerar_llm", gemini_falso)
+    ia.preparar_raio_x(90001, "software de gestão", "primeira reunião")
+    assert "empresa" not in pedidos[0] and "margem_ebit_grupo" in pedidos[0]
+
+
+def test_texto_sem_ia_segue_as_regras_v2():
+    # plano B da demo: o texto fixo segue a mesma forma que as regras pedem ao Gemini
+    seg = ia._base()
+    for cd in seg["cd_cvm"]:
+        rx = ia.texto_sem_ia(ia.montar(seg, int(cd), "software de gestão", "primeira reunião")[0])
+        assert len(re.findall(r"[.!?](?:\s|$)", rx.resumo)) == 3, cd                       # três frases
+        assert all(p.texto.startswith(("Como", "Quais", "O que", "Onde")) for p in rx.perguntas), cd
+        assert all(p.base in ia.INDICADORES for p in rx.perguntas), cd
+        assert all("?" not in l and not l.startswith(("Quem", "Qual", "Como")) for l in rx.lacunas), cd
 
 
 # ---------------------------------------------------------------- dados reais × falsos
