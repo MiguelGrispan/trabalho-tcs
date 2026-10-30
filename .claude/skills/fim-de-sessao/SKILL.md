@@ -15,7 +15,8 @@ Siga os passos **em ordem** e pare no primeiro que falhar.
 
 ## 2. Testes
 
-- Rode `python -m pytest -q` (ou `~/bootcamp/bin/python -m pytest -q`, se não houver `.venv`) e mostre a última linha.
+- Rode `python -m pytest -q` (ou `~/bootcamp/bin/python -m pytest -q`, se não houver `.venv`; sem Python 3.14 na máquina,
+  `docker compose run --rm tela python -m pytest -q`, depois de `docker compose build tela`) e mostre a última linha.
 - Se algo falhar, **pare** e mostre o erro inteiro. Não feche sessão com teste vermelho.
 - Se o comportamento mudou e nenhum teste novo ou atualizado entrou, escreva o teste antes de seguir (CLAUDE.md, regra 3).
 - Se a tela mudou, abra a tela ou simule com o `AppTest` do Streamlit.
@@ -29,6 +30,8 @@ Siga os passos **em ordem** e pare no primeiro que falhar.
 
 ## 4. Documentos de estado
 
+- **Antes de escrever, releia `docs/professor/requisitos_projeto.MD` e `docs/professor/guia_projeto_final.pdf`.** Nenhuma nota
+  pode dizer que algo exigido ali é opcional, extra ou cortável; toda frase sobre o que o professor exige cita o arquivo e o item.
 - **`docs/PLANO.md`, seção 0:** data e hora aproximada; o que mudou, com prova (arquivo, linha ou comando); os testes
   (quantos passaram e quantos foram pulados); o próximo passo. Apague o que ficou velho, em vez de só acrescentar.
 - **`docs/PLANO.md`, seção 3:** a coluna "status" da sessão (✅ feito, 🟡 em parte).
@@ -51,7 +54,7 @@ Siga os passos **em ordem** e pare no primeiro que falhar.
   segundos e rode de novo. **Só faça o merge depois de ver `pass`** (em 29/10 o PR #15 foi mesclado antes do CI começar).
   Vermelho: mostre o erro, conserte na mesma branch e espere de novo.
 - Revise o diff do PR você mesmo (`gh pr diff <número>`): procure dado ou chave, quebra da regra de ouro, mudança fora do
-  combinado. Diga em 3 linhas o que o PR muda e o risco que você vê.
+  combinado e qualquer coisa que contradiga os arquivos do professor (`docs/professor/`). Diga em 3 linhas o que o PR muda e o risco que você vê.
 - Se mexeu em pasta de outro dono ou no `contratos.md`, confirme com a pessoa que o dono deu o ok no grupo.
 - Peça **um "pode"** à pessoa. Com o "pode": `gh pr merge <número> --merge --delete-branch`.
 - Se o GitHub recusar o merge, mostre a mensagem inteira e pare: não tente contornar.

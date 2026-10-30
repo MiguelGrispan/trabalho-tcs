@@ -4,11 +4,30 @@ Projeto final da trilha IA Aplicada (SENAI/TCS). Equipe: Marcos (dados), Eduardo
 Náthally (produto e métricas, deck), Miguel (tela e infraestrutura). Banca prevista para qua 18/11/2026
 (**data e horário a confirmar**; professores + especialistas da TCS). Os entregáveis vão **48 h antes**: seg 16/11.
 
-**Antes de qualquer tarefa,** leia o `docs/PLANO.md` (a seção 0 diz o que está acontecendo agora; a seção 3 tem a sessão
-que a pessoa está fazendo, ex.: "MA2"; a seção 7, o que já foi cortado) e o `docs/REQUISITOS.md` (o que o guia exige e o status).
+## Fonte da verdade: os arquivos do professor (leia antes de tudo)
+O que o projeto precisa ter vem de dois arquivos do professor (André Santos, repositório do curso), guardados sem mudança em `docs/professor/`:
+1. `docs/professor/requisitos_projeto.MD` (29/10/2026): o que deve ser entregue (documentação, ML ou IA de terceiro, aplicação com Terraform);
+2. `docs/professor/guia_projeto_final.pdf` (07/10/2026, 10 páginas): requisitos técnicos mínimos, apresentação de 20 min, pesos da banca e entregáveis.
+
+Mais as regras ditas em aula, anotadas em `docs/REQUISITOS.md` ("Regras do professor"), como o PostgreSQL.
+
+**Em toda sessão, antes de qualquer tarefa, leia os dois arquivos inteiros** (o PDF com a ferramenta Read). Eles valem mais que este
+arquivo, o PLANO e o REQUISITOS. Quando os dois diferem, vale o mais exigente: o guia diz "Terraform ou conteinerização", mas o
+`requisitos_projeto.MD` exige "Infraestrutura automatizada com Terraform", então **o Terraform é obrigatório**.
+
+**Contra alucinação (vale para o Claude Code e para quem lê):**
+- Nunca diga que algo exigido nesses arquivos é opcional, extra, "já coberto por outra coisa" ou que pode ser cortado.
+  Toda afirmação sobre o que o professor exige vem com o arquivo e o item (ex.: "`requisitos_projeto.MD`, Aplicação: Terraform").
+- Se uma nota (PLANO, REQUISITOS, guias de `aprender/`) contradiz os arquivos do professor, a nota está errada: avise a pessoa e corrija a nota.
+- Se o arquivo do professor não é claro (ex.: se o Streamlit conta como "Backend e Frontend"), diga que não sabe e anote a pergunta
+  em `docs/REQUISITOS.md` para o Eduardo levar ao professor. Não decida sozinho.
+- Cortar escopo (PLANO, seção 7) só vale para o que **não** está nos arquivos do professor.
+
+**Depois,** leia o `docs/PLANO.md` (seção 0: o que está acontecendo agora; seção 3: a sessão da pessoa, ex.: "MA2"; seção 7: o que
+foi cortado) e o `docs/REQUISITOS.md` (cada requisito do professor, onde está no projeto e o status).
 O passado, resumido: `docs/HISTORICO.md`. Guias para iniciantes: `aprender/` (comece por `aprender/claude-code.md`).
-**Sessão nova:** `/inicio-de-sessao` (ex.: `/inicio-de-sessao MA2`) atualiza a `main`, cria a branch e confere o estado real
-no GitHub, porque a nota da seção 0 pode estar velha. **Fim:** `/fim-de-sessao`.
+**Sessão nova:** `/inicio-de-sessao` (ex.: `/inicio-de-sessao MA2`) atualiza a `main`, cria a branch, lê os arquivos do professor e
+confere o estado real no GitHub, porque a nota da seção 0 pode estar velha. **Fim:** `/fim-de-sessao`.
 
 ## O produto
 O vendedor escolhe uma companhia aberta da CVM, informa o produto e o objetivo da reunião e recebe:
@@ -20,34 +39,41 @@ O LLM (Gemini via LangChain) nunca escreve números. Ele usa marcadores como {ma
 o validador remove qualquer dígito fora de marcador; o código troca os marcadores pelos valores da tabela.
 Não quebre essa regra em nenhuma mudança.
 
-## O que o guia oficial exige (e onde fica no projeto)
+## O que o professor exige (e onde fica no projeto)
 Todo trabalho precisa servir a um destes itens. Se uma tarefa não serve a nenhum, pergunte antes de fazer.
+Fonte: **G** = `guia_projeto_final.pdf` (seção) · **R** = `requisitos_projeto.MD` (seção) · **A** = regra dita em aula (`docs/REQUISITOS.md`).
+O status de cada item, com a prova, fica no `docs/REQUISITOS.md`.
 
-| Requisito do guia | Onde fica | Dono |
-|---|---|---|
-| BPMN 2.0 do processo | `docs/bpmn/` (`.bpmn` + `.png`) | Marcos |
-| Python/Pandas: limpeza, nulos, estruturação | `scripts/carregar_dfp.py`, `scripts/indicadores.py` | Marcos |
-| SQL (consultas ou persistência), **em PostgreSQL** (regra do professor) | `raiox/dados.py` e `scripts/carregar_dfp.py`; endereço do banco em `DATABASE_URL`, no `.env` | Marcos |
-| Visualização explicativa (Matplotlib/Seaborn ou dashboard) | `notebooks/`, `docs/graficos/`, gráfico da tela | Marcos, Eduardo |
-| Modelo de ML | `raiox/segmentos.py` (K-means + vizinhos) | Eduardo |
-| GenAI: prompt engineering, LangChain, API | `raiox/ia.py` (+ auditoria em `raiox/checagem.py`) | Eduardo |
-| Interface funcional | `app/streamlit_app.py` | Miguel |
-| Boas práticas e agentic coding | `tests/`, `contratos.md`, `REGRAS-IA.md`, este arquivo, pull requests | todos |
-| Arquitetura + Terraform ou contêiner | `Dockerfile`, `docker-compose.yml` (tela + PostgreSQL), `infra/` | Miguel |
-| Governança e ética (viabilidade, limites, viés, confiabilidade, uso responsável) | validador, texto de ética no PDF | Náthally, todos |
+| Requisito | Fonte | Onde fica | Dono |
+|---|---|---|---|
+| BPMN 2.0 do processo da regra de negócio da aplicação | G §2; R Documentação | `docs/bpmn/` (`.bpmn` + `.png`) | Marcos |
+| Python/Pandas: limpeza, nulos, estruturação de uma base pública | G §2; R Machine Learning | `scripts/carregar_dfp.py`, `scripts/indicadores.py`, `raiox/limpeza.py` | Marcos |
+| SQL (consultas ou persistência) e banco de dados da aplicação, **em PostgreSQL** | G §2; R Aplicação; A (29/10: SQLite não vale) | `raiox/banco.py`, `raiox/dados.py`, `scripts/carregar_dfp.py`; endereço em `DATABASE_URL`, no `.env` | Marcos |
+| Visualização explicativa (Matplotlib/Seaborn ou dashboard) | G §2 | `notebooks/`, `docs/graficos/`, gráfico da tela | Marcos, Eduardo |
+| ML treinado com os dados limpos e usado na aplicação | G §2; R Machine Learning | `raiox/segmentos.py` (K-means + vizinhos) | Eduardo |
+| GenAI: prompt engineering, LangChain, API, com uma base de conhecimento para a IA usar | G §2; R Integração com IA de terceiro | `raiox/ia.py` (+ auditoria em `raiox/checagem.py`); a base são os dados da CVM | Eduardo |
+| Aplicação web com **backend e frontend** e interface funcional | R Aplicação; G §2 | `app/streamlit_app.py` (tela), `raiox/` (o que roda por trás) | Miguel |
+| **Infraestrutura automatizada com Terraform** (local ou nuvem): obrigatória | R Aplicação; G §2 e §6 | `infra/` (Terraform, MG3), `Dockerfile`, `docker-compose.yml` | Miguel |
+| Arquivos de prompts usados no vibecoding | R Aplicação | `CLAUDE.md`, `AGENTS.md`, `REGRAS-IA.md`, `.claude/skills/`, `.github/pull_request_template.md` | todos (coordena Eduardo) |
+| Boas práticas e agentic coding | G §2 | `tests/`, `contratos.md`, CI, pull requests | todos |
+| Governança e ética (viabilidade, limites, viés, confiabilidade, uso responsável) | G §2 | validador, texto de ética no PDF | Náthally, todos |
 
-**Regras do professor (além do guia):** valem como o guia e ficam em `docs/REQUISITOS.md` (seção "Regras do professor").
-- **O banco é PostgreSQL. SQLite não vale** (29/10). Nada novo com `sqlite3`; desde a MA2 (PRs #21 e #22) a `main` usa só o PostgreSQL.
+**Regras do professor ditas em aula** (valem como os arquivos; ficam em `docs/REQUISITOS.md`, seção "Regras do professor"):
+- **O banco é PostgreSQL. SQLite não vale** (29/10). O `requisitos_projeto.MD` diz "banco de dados à sua escolha", mas em aula o
+  professor fixou o PostgreSQL: vale o PostgreSQL. Nada novo com `sqlite3`; desde a MA2 (PRs #21 e #22) a `main` usa só o PostgreSQL.
   O endereço do banco (`DATABASE_URL`) tem senha: fica no `.env`, como a chave do Gemini.
 
-**Entregáveis (48 h antes):** (1) repositório organizado, com README de arquitetura, pré-requisitos e como rodar,
-e os scripts de infraestrutura e notebooks; (2) PDF com BPMN 2.0, justificativa técnica (inclui por que não
-RAG nem fine-tuning) e análise de ética e segurança; (3) deck em PDF ou PPTX. Também: vídeo gravado da demo (plano B).
+**Entregáveis (48 h antes da banca; G §6 e R "Composição do projeto"):**
+(1) repositório Git organizado, com README em markdown sobre o tema, o objetivo e as tecnologias, com a arquitetura, os pré-requisitos
+e as instruções para rodar; os scripts de infraestrutura (Terraform), os notebooks e os arquivos de prompts do vibecoding;
+(2) documento (PDF, ou markdown) com as etapas desenvolvidas no processo (R), o BPMN 2.0, a justificativa técnica das escolhas
+(ex.: RAG × fine-tuning) e a análise de ética e segurança (G); (3) slides (deck em PDF ou PPTX) para no máximo 20 minutos.
+Também: vídeo gravado da demo, como reserva (dica do G §3).
 
-**Apresentação (20 min, tempo é avaliado):** contexto e problema 3 · BPMN e arquitetura 3 · demo ao vivo 6 ·
-detalhe técnico 4 · governança e ética 2 · conclusão 2.
-**Pesos da banca:** inovação e valor de negócio (ROI) 20% · qualidade técnica e arquitetura 30% ·
-protótipo funcional 20% · governança e ética 15% · comunicação e equipe 15%.
+**Apresentação (20 min, tempo é avaliado; G §3):** contexto e problema 3 · BPMN e arquitetura 3 · demo ao vivo 6 ·
+detalhe técnico (dados, ML/GenAI e infraestrutura com Terraform) 4 · governança e ética 2 · conclusão 2.
+**Pesos da banca (G §5):** inovação e valor de negócio (ROI) 20% · qualidade técnica e arquitetura 30% (inclui "estrutura de
+DevOps/Terraform") · protótipo funcional 20% · governança e ética 15% · comunicação e equipe 15%.
 
 ## Estrutura e donos
 
@@ -57,6 +83,7 @@ protótipo funcional 20% · governança e ética 15% · comunicação e equipe 1
 | `scripts/`, `raiox/dados.py`, `raiox/checagem.py`, `docs/bpmn/`, `notebooks/` | Marcos |
 | `app/`, `Dockerfile`, `.dockerignore`, `docker-compose.yml`, `infra/` | Miguel |
 | o resto de `avaliacao/` (regras do prompt, casos e planilhas do C4), `docs/produto/` | Náthally |
+| `docs/professor/` | ninguém edita: são cópias dos arquivos do professor. Se ele publicar versão nova, troque o arquivo inteiro, avise o grupo e revise o CLAUDE.md e o REQUISITOS |
 
 Pastas comuns (avise o grupo antes de mexer): `tests/`, `falsos/` (dados falsos no formato dos contratos;
 os falsos chamam o código real sem IA), `docs/`, `aprender/` (guias e atalhos do Mac; nada ali é usado pelo código), `contratos.md`, `README.md`.
