@@ -17,9 +17,10 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em sex 30/10, 11h55.** Na `main`: PRs #1 a #16 e #19 a #25 (o #24 é a MG2, Docker do Miguel, mesclado às 11h32 com o CI verde;
-o #25 registra a MG1). **PR #26:** os guias passam a ensinar o `docker compose` (CLAUDE.md, README, `aprender/COMANDOS.md` seção 6,
-`aprender/entenda-o-projeto.md`, `aprender/seguindo-o-projeto.md`), com o ok do Eduardo segundo o Miguel (arquivos comuns).
+**Em sex 30/10, 12h05.** Na `main`: PRs #1 a #16 e #19 a #26 (o #24 é a MG2, Docker do Miguel, mesclado às 11h32 com o CI verde;
+o #25 registra a MG1; o #26 põe o `docker compose` nos guias). **PR #27:** o `contratos.md` e o `aprender/seguindo-o-projeto.md`
+deixam de dizer que o projeto usa SQLite (o banco é o PostgreSQL desde a MA2). Ficam as frases que registram a regra do
+professor ("SQLite não vale"), no CLAUDE.md, no `contratos.md`, no REQUISITOS e no HISTORICO. `git grep -n -i sqlite` mostra o que sobrou.
 **O PostgreSQL está na `main`** (MA2: PR #21 do Marcos e PR #22). Com a `data/` real e o PostgreSQL local: 87 passed,
 nenhum pulado. O CI agora também roda os testes do banco (#22).
 
@@ -104,7 +105,8 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
 
 **Próximo passo de cada um:**
 - **Marcos:** MA3: a issue #17 e as diferenças de Magalu e RD Saúde (acima), o OK, ou não, no corte de R$ 10 mi, e os 3 itens
-  do C1 e do C2 que sobraram (acima), com teste. Dizer o que fazer com `verificar_automatico.py`, `graficos.py` e o PDF, e se a
+  do C1 e do C2 que sobraram (acima), com teste. Dizer o que fazer com `verificar_automatico.py`, `graficos.py` e o PDF (o `docs/Raio-X Comercial.pdf`
+  ainda fala de `catalogo.db` e `sqlite3`: parece o plano de 21/10 impresso), e se a
   `tratamento_dados` pode ser apagada.
 - **Miguel:** mandar no grupo o print da tela rodando no Docker (MG1); MG3 (Terraform, acima) até dom 01/11, ou cortar (seção 7);
   para a IA no Docker, conferir o `GOOGLE_API_KEY` no `.env` (no `docker compose config` dele, em 30/10, chegou vazio; ninguém abriu o arquivo);
@@ -127,7 +129,6 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
 **Pendências pequenas:**
 - Eduardo: o `tests/test_aprender.py:19` exige exatamente "5 passed" no notebook; refazer os gráficos e os números do K-means
   depois da MA3 (acima).
-- O `contratos.md:9-10` ainda diz que a `main` usa SQLite (velho desde o #21): corrigir avisando o grupo (arquivo comum).
 - Marcos: `test_resolver_conflitos_trata_valor_vazio_como_divergente` (`tests/test_limpeza.py:147`) passa só pela ordem das linhas;
   `test_obter_indicadores_deixa_ausente_…` (`tests/test_dados.py:83`) não olha o `ativo_total`; `test_calcular_exporta_…` não tem
   receita de 2 anos antes igual a zero. (Os nomes ainda existem; não reli o corpo dos testes depois do #21.)
