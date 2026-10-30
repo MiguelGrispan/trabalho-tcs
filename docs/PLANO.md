@@ -17,7 +17,7 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em sex 30/10, 11h30.** Na `main`: PRs #1 a #16 e #19 a #23; o PR #24 (MG2, Docker do Miguel) está aberto.
+**Em sex 30/10, 11h40.** Na `main`: PRs #1 a #16 e #19 a #24 (o #24 é a MG2, Docker do Miguel, mesclado às 11h32 com o CI verde).
 **O PostgreSQL está na `main`** (MA2: PR #21 do Marcos e PR #22). Com a `data/` real e o PostgreSQL local: 87 passed,
 nenhum pulado. O CI agora também roda os testes do banco (#22).
 
@@ -88,20 +88,23 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
   inventados", e se a API falha a tela para. Desde o #23 o erro da API chega em até uns 30 s ao `except` de
   `app/streamlit_app.py:89`; falta a MG4 chamar ali o `preparar_raio_x(..., usar_ia=False)` com um aviso, em vez do `st.stop()`.
 - **Produto (Náthally):** regras v2 (PR #11) e `cd_cvm` dos 10 casos (PR #10) na `main`. Ela ainda confere os 10 códigos.
-- **GitHub (Miguel, MG1):** falta o check `testes` obrigatório, "Automatically delete head branches" e só "Allow merge commits".
+- **GitHub (Miguel, MG1): feito.** Conferido em 30/10, 11h35, pela API (`gh api repos/MiguelGrispan/trabalho-tcs/branches/main/protection`
+  e `gh api repos/MiguelGrispan/trabalho-tcs`): a `main` exige PR (0 aprovações) e o check `testes`, inclusive para o admin
+  (`enforce_admins`), sem force push nem apagar a `main`; só "Allow merge commits"; "Automatically delete head branches" ligado.
+  Na prática: o #24 ficou `BLOCKED` enquanto o CI rodava e `CLEAN` depois do `pass`. A nota das 9h30 dizia que faltava; não conferi quando foi ligado.
   Sobram as branches antigas `tratamento_dados` (Marcos) e `feat/metricas` (Náthally).
 
 **Caminho crítico** (o que trava os outros):
 1. **MA3, os números certos** (Marcos): a Camil errada na demo é pior que nenhum raio-x.
 2. **MG4, a tela com dados reais** (Miguel, até ter 03/11): o aviso certo e o modo sem IA automático, para a demo de ter 03/11.
-   O Docker (#24) já sobe tudo; falta o merge do #24 (sex 30/10).
+   O Docker (#24, na `main`) já sobe tudo.
 3. **Trabalho fora da `main`:** toda entrega sai de uma branch nova a partir da `main` (seção 2); senão, alguém tem de portar à mão.
 
 **Próximo passo de cada um:**
 - **Marcos:** MA3: a issue #17 e as diferenças de Magalu e RD Saúde (acima), o OK, ou não, no corte de R$ 10 mi, e os 3 itens
   do C1 e do C2 que sobraram (acima), com teste. Dizer o que fazer com `verificar_automatico.py`, `graficos.py` e o PDF, e se a
   `tratamento_dados` pode ser apagada.
-- **Miguel:** merge do #24 (MG2); terminar a MG1 (5 min no GitHub); MG3 (Terraform, acima) até dom 01/11, ou cortar (seção 7);
+- **Miguel:** mandar no grupo o print da tela rodando no Docker (MG1); MG3 (Terraform, acima) até dom 01/11, ou cortar (seção 7);
   MG4 até ter 03/11. Na máquina dele, a `.venv` é de 23/10 (Python 3.12, sem o `sqlalchemy`): o `python -m pytest -q` local
   quebra na coleta (4 erros de import). Até refazer a `.venv` com Python 3.14, os testes rodam no contêiner:
   `docker compose run --rm tela python -m pytest -q`.
@@ -114,7 +117,7 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
   1. hoje: ensinar o Claude Code ao Miguel; mandar ao grupo a mensagem geral (fluxo `/inicio-de-sessao` e `/fim-de-sessao`,
      regra do PostgreSQL, ajustes do Docker, resultado da ED7). Em 30/10, só a mensagem ao Marcos sobre o #22 está confirmada;
   2. perguntar ao professor a data da banca e se há outras regras além do guia (anotar no REQUISITOS);
-  3. sáb 31/10: se o #24 (Docker) ainda não entrou, revisar com o Miguel; começar a ED8;
+  3. sáb 31/10: começar a ED8 (o #24, Docker, já entrou; quem tem o `raiox-postgres` na porta 5432: ver "PostgreSQL local", acima);
   4. ter 03/11: demo ponta a ponta com `docker compose` (tela + PostgreSQL + `data/` real) e tag `v0.1-demo`;
   5. no meio disso: `/explicar` nos pontos da seção 8.
 
@@ -141,7 +144,7 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
 | parte | feito | falta |
 |---|---|---|
 | núcleo do produto: dados, ML, IA, validador, avaliação | ~88% | MA3 (Camil, Magalu, RD Saúde); `cd_cvm` int e só ativas no C1; tabela `indicadores` |
-| tela e infraestrutura | ~50% | merge do #24 (Docker); MG3 (Terraform, cortável); MG4 (aviso, modo sem IA automático); MG1; MG5 (diagrama e README) |
+| tela e infraestrutura | ~50% | MG3 (Terraform, cortável); MG4 (aviso, modo sem IA automático); MG5 (diagrama e README); MG6 e MG7 (vídeo) |
 | entregáveis: BPMN, EDA, PDF, deck, vídeo, ensaios | ~10% | quase tudo, mas não depende de código novo |
 | **total** | **~51%** | com 10 de 26 dias usados (~38%): o núcleo está adiantado; o Docker deixou de travar os outros |
 
@@ -240,7 +243,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 
 | # | data | status | objetivo | altera | modo | pronto quando | git |
 |---|---|---|---|---|---|---|---|
-| MG1 | qua 28/10 | 🟡 #3 na `main` e aprovação obrigatória tirada (29/10); falta o check `testes` obrigatório, apagar branch após o merge e só merge commit | configurar o GitHub (seção 2, "Proteção da `main`"); rodar a tela local | configurações | só leitura | as 3 configurações feitas; print da tela no grupo | — |
+| MG1 | qua 28/10 | ✅ conferido em 30/10: PR e check `testes` obrigatórios, só merge commit, apagar branch após o merge; tela rodando no Docker (o print vai para o grupo) | configurar o GitHub (seção 2, "Proteção da `main`"); rodar a tela local | configurações | só leitura | as 3 configurações feitas; print da tela no grupo | — |
 | MG2 | qui 29–sex 30/10 | ✅ PR #24 (30/10): os 2 contêineres `healthy`, health `ok`, `carregar_dfp.py` no banco do contêiner, 87 passed no contêiner | `Dockerfile` + `.dockerignore` + `docker-compose.yml` (tela + PostgreSQL com volume do banco; `data/` como volume; chave e `DATABASE_URL` por variável) | `Dockerfile`, `.dockerignore`, `docker-compose.yml` | Plan | `docker compose up` sobe os 2; `curl localhost:8501/_stcore/health` → `ok`; `scripts/carregar_dfp.py` grava no PostgreSQL do contêiner | `miguel-docker` → PR (Eduardo) |
 | MG3 | sáb 31/10–dom 01/11 | 🟡 `apply`, `destroy` e `apply` funcionam (29/10), na `docs-docker-e-terraform`; faltam a `data/`, a chave opcional e o PostgreSQL (seção 0) | Terraform (provider docker) com os 2 contêineres (tela + PostgreSQL), **só se o Docker estiver pronto**. Prazo: dom 01/11; senão, corta | `infra/` | Plan | `terraform apply` sobe; `destroy` + `apply` mantém `data/` e o banco | PR |
 | MG4 | dom 01–ter 03/11 | — | tela com dados reais: `RAIOX_DADOS` (`falsos`/`real`) no lugar do `USAR_DADOS_FALSOS`; volta sozinha para o modo sem IA, com aviso; `registrar_consulta` dentro do `try`; `tests/test_tela.py` | `app/`, `.env.example`, `tests/` | Plan | 3 empresas reais geram raio-x no contêiner | PR (Eduardo) |
