@@ -3,7 +3,10 @@
 Meta: **feito, não perfeito**. O código congela na **sex 06/11** e tudo fica pronto para entregar na **qua 11/11**, com folga
 até a entrega de **seg 16/11** (banca prevista para qua 18/11, a confirmar). Se a banca vier antes, já estamos prontos.
 
-**Onde está cada coisa:** o que fazer agora → seção 0; quem faz o quê e quando → seção 3; o que o guia exige e o status de
+**O que o projeto precisa ter** vem dos arquivos do professor, em `docs/professor/` (`requisitos_projeto.MD` e
+`guia_projeto_final.pdf`). Eles valem mais que este plano: nada que esteja neles pode ser cortado (seção 7).
+
+**Onde está cada coisa:** o que fazer agora → seção 0; quem faz o quê e quando → seção 3; o que o professor exige e o status de
 cada item → [REQUISITOS.md](REQUISITOS.md); o que já aconteceu → [HISTORICO.md](HISTORICO.md).
 
 **Como usar:** cada linha das tabelas da seção 3 é uma sessão de trabalho, com um código (ex.: MA2). No Claude Code, comece
@@ -17,10 +20,16 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em sex 30/10, 13h05.** Na `main`: PRs #1 a #16 e #19 a #26 (o #24 é a MG2, Docker do Miguel, mesclado às 11h32 com o CI verde;
-o #25 registra a MG1; o #26 põe o `docker compose` nos guias). **PR #27:** o `contratos.md` e o `aprender/seguindo-o-projeto.md`
-deixam de dizer que o projeto usa SQLite (o banco é o PostgreSQL desde a MA2). Ficam as frases que registram a regra do
-professor ("SQLite não vale"), no CLAUDE.md, no `contratos.md`, no REQUISITOS e no HISTORICO. `git grep -n -i sqlite` mostra o que sobrou.
+**Em sex 30/10, 13h30.** Na `main`: PRs #1 a #16 e #19 a #27 (o #24 é a MG2, Docker do Miguel; o #25 registra a MG1; o #26 põe o
+`docker compose` nos guias; o #27 tira dos textos o "a `main` usa SQLite").
+
+> **Decisão de 30/10: o Terraform é obrigatório, e os arquivos do professor são a fonte da verdade** (PR #28).
+> O `requisitos_projeto.MD` do professor (29/10, repositório do curso; cópia em `docs/professor/`) pede, em "Aplicação",
+> "Infraestrutura automatizada com Terraform, podendo rodar localmente ou na nuvem". As notas seguiam só o guia em PDF (07/10),
+> que aceita "Terraform ou conteinerização", e tratavam o Terraform como cortável: errado. O R também pede backend e frontend,
+> banco de dados, os arquivos de prompts do vibecoding, README com as tecnologias e um documento com as etapas desenvolvidas.
+> O CLAUDE.md, o AGENTS.md, o REGRAS-IA.md e as 3 skills agora mandam ler os dois arquivos em toda sessão. O que ficou a
+> responder ao professor está no REQUISITOS ("Perguntas para o professor"); o que falta, nas linhas R9, R13, R14, D1b, D1c e D2.
 **O PostgreSQL está na `main`** (MA2: PR #21 do Marcos e PR #22). Com a `data/` real e o PostgreSQL local: 87 passed,
 nenhum pulado. O CI agora também roda os testes do banco (#22).
 
@@ -80,7 +89,8 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
   (eram 330, 99, 74 e 59). Os PNG de `docs/graficos/` ainda são de 28/10: refazer com `python -m raiox.segmentos` depois da MA3.
 - **Docker (Miguel, MG2):** feito no PR #24 (acima). Dos 7 ajustes de 29/10, os do Docker (1, 2, 3 e 6) entraram: a branch nova
   já parte da `main`, e o `.gitignore` com as linhas de cópia de chat não veio (o da `main` já tem as regras do Terraform).
-- **Terraform (Miguel, MG3, sáb 31/10–dom 01/11):** continua na branch `docs-docker-e-terraform` (`terraform/`, sem mudança).
+- **Terraform (Miguel, MG3, sáb 31/10–dom 01/11): obrigatório** (`requisitos_projeto.MD`, Aplicação). Continua só na branch
+  `docs-docker-e-terraform` (`terraform/`, sem mudança): na `main` não há nenhum `.tf` (`git ls-files | grep -c '\.tf$'` → 0).
   Faltam os 3 ajustes de 29/10 e os 2 contêineres:
   1. `terraform/main.tf`: montar a `data/` como volume (`volumes { host_path = "<caminho>/data", container_path = "/app/data" }`)
      e passar `RAIOX_DADOS` e `RAIOX_IA_REAL` como no `docker-compose.yml`. Hoje, depois de `destroy` + `apply`, a `data/` some;
@@ -98,17 +108,19 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
   Sobram as branches antigas `tratamento_dados` (Marcos) e `feat/metricas` (Náthally).
 
 **Caminho crítico** (o que trava os outros):
-1. **MA3, os números certos** (Marcos): a Camil errada na demo é pior que nenhum raio-x.
-2. **MG4, a tela com dados reais** (Miguel, até ter 03/11): o aviso certo e o modo sem IA automático, para a demo de ter 03/11.
-   O Docker (#24, na `main`) já sobe tudo.
-3. **Trabalho fora da `main`:** toda entrega sai de uma branch nova a partir da `main` (seção 2); senão, alguém tem de portar à mão.
+1. **MG3, o Terraform na `main`** (Miguel, até dom 01/11): é obrigatório e hoje não está na `main`. Plano B: a dupla de
+   reserva da infra (Miguel ↔ Eduardo, seção 7) termina junto na seg 02/11.
+2. **MA3, os números certos** (Marcos): a Camil errada na demo é pior que nenhum raio-x.
+3. **MG4, a tela com dados reais** (Miguel, até ter 03/11): a busca e a consulta no PostgreSQL (hoje a tela usa `falsos/`,
+   `app/streamlit_app.py:26`), o aviso certo e o modo sem IA automático, para a demo de ter 03/11.
+4. **Trabalho fora da `main`:** toda entrega sai de uma branch nova a partir da `main` (seção 2); senão, alguém tem de portar à mão.
 
 **Próximo passo de cada um:**
 - **Marcos:** MA3: a issue #17 e as diferenças de Magalu e RD Saúde (acima), o OK, ou não, no corte de R$ 10 mi, e os 3 itens
   do C1 e do C2 que sobraram (acima), com teste. Dizer o que fazer com `verificar_automatico.py`, `graficos.py` e o PDF (o `docs/Raio-X Comercial.pdf`
   ainda fala de `catalogo.db` e `sqlite3`: parece o plano de 21/10 impresso), e se a
   `tratamento_dados` pode ser apagada.
-- **Miguel:** mandar no grupo o print da tela rodando no Docker (MG1); MG3 (Terraform, acima) até dom 01/11, ou cortar (seção 7);
+- **Miguel:** mandar no grupo o print da tela rodando no Docker (MG1); MG3 (Terraform, obrigatório, acima) até dom 01/11;
   para a IA no Docker, conferir o `GOOGLE_API_KEY` no `.env` (no `docker compose config` dele, em 30/10, chegou vazio; ninguém abriu o arquivo);
   MG4 até ter 03/11. Na máquina dele, a `.venv` é de 23/10 (Python 3.12, sem o `sqlalchemy`): o `python -m pytest -q` local
   quebra na coleta (4 erros de import). Até refazer a `.venv` com Python 3.14, os testes rodam no contêiner:
@@ -121,7 +133,8 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
 - **Eduardo, em ordem** (o Claude Code faz o Git):
   1. hoje: ensinar o Claude Code ao Miguel; mandar ao grupo a mensagem geral (fluxo `/inicio-de-sessao` e `/fim-de-sessao`,
      regra do PostgreSQL, ajustes do Docker, resultado da ED7). Em 30/10, só a mensagem ao Marcos sobre o #22 está confirmada;
-  2. perguntar ao professor a data da banca e se há outras regras além do guia (anotar no REQUISITOS);
+  2. perguntar ao professor a data da banca, as 3 perguntas do REQUISITOS ("Perguntas para o professor": backend e frontend,
+     arquivos de prompts, base de conhecimento) e se há outras regras além dos arquivos dele (anotar no REQUISITOS);
   3. sáb 31/10: começar a ED8 (o #24, Docker, já entrou; quem tem o `raiox-postgres` na porta 5432: ver "PostgreSQL local", acima);
   4. ter 03/11: demo ponta a ponta com `docker compose` (tela + PostgreSQL + `data/` real) e tag `v0.1-demo`;
   5. no meio disso: `/explicar` nos pontos da seção 8.
@@ -138,19 +151,21 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
 - data e horário da banca (Eduardo pergunta ao professor);
 - `scripts/dados.py` ou `raiox/dados.py`: ficar com um só (os dois existem; Marcos);
 - `verificar_automatico.py`, `yfinance` e `graficos.py`, cortados na seção 7 e de volta na `main` pelo #21 (Marcos e Eduardo);
-- pasta do Terraform: `infra/` (onde já está o `infra/banco/` do #24) ou `terraform/` (Miguel, na MG3);
+- pasta do Terraform: `infra/` (onde já está o `infra/banco/` do #24) ou `terraform/` (Miguel, na MG3; o Terraform em si não está em aberto: é obrigatório);
+- as 3 perguntas para o professor (REQUISITOS): backend e frontend, arquivos de prompts do vibecoding, base de conhecimento (Eduardo pergunta);
 - apagar `tratamento_dados` e `feat/metricas` (Marcos e Náthally);
 - corte de receita mínima de R$ 10 mi (Marcos, MA3; números do `avaliar_corte_receita.py` acima);
 - as 3 notas do código (`NOTAS_DO_CODIGO`, em `raiox/ia.py`) vão para a v3 das regras? (Náthally).
 
-**Progresso estimado** (Eduardo, 30/10, 9h30; a linha "tela e infraestrutura" e o total, Claude na MG2, 11h30: estimativa, não medida):
+**Progresso estimado** (Eduardo, 30/10, 9h30; a linha "tela e infraestrutura" e o total, Claude, 13h30, depois de ler o
+`requisitos_projeto.MD`: estimativa, não medida):
 
 | parte | feito | falta |
 |---|---|---|
 | núcleo do produto: dados, ML, IA, validador, avaliação | ~88% | MA3 (Camil, Magalu, RD Saúde); `cd_cvm` int e só ativas no C1; tabela `indicadores` |
-| tela e infraestrutura | ~50% | MG3 (Terraform, cortável); MG4 (aviso, modo sem IA automático); MG5 (diagrama e README); MG6 e MG7 (vídeo) |
+| tela e infraestrutura | ~45% | MG3 (Terraform, obrigatório); MG4 (a tela usar o PostgreSQL, o aviso, o modo sem IA automático); MG5 (diagrama e README); MG6 e MG7 (vídeo); resposta do professor sobre backend e frontend |
 | entregáveis: BPMN, EDA, PDF, deck, vídeo, ensaios | ~10% | quase tudo, mas não depende de código novo |
-| **total** | **~51%** | com 10 de 26 dias usados (~38%): o núcleo está adiantado; o Docker deixou de travar os outros |
+| **total** | **~49%** | com 10 de 26 dias usados (~38%): o núcleo está adiantado. Caiu um pouco porque o `requisitos_projeto.MD` (29/10) acrescentou itens: Terraform obrigatório, banco usado pela tela, documento das etapas, prompts do vibecoding |
 
 **Folga:** sobram 4 dias de reserva (12 a 15/11) antes da entrega de seg 16/11, e mais 2 até a banca.
 Regra: atraso come a folga; **nunca** se acrescenta escopo. Se a folga acabar, use a lista de cortes da seção 7.
@@ -201,8 +216,8 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | qui 29/10 | ✅ ED3 e ED7 (adiantadas); portes NA1 e NA2 (PRs #10 e #11); teste do Docker e do Terraform | ✅ MA2: PR #18 fechado; PR #21 mesclado às 17h52 | MG2 Docker + PostgreSQL | ✅ NA1 e NA2 entregues |
 | sex 30/10 | ✅ conferência da MA2 e PR #22 (CI com PostgreSQL, CSV do C2); ensinar o Claude Code ao Miguel | MA3 | MG2 (`docker-compose.yml`), **prazo do PR** | NA3 tempo manual |
 | sáb 31/10 | revisões; ED8 começa; plano B da MA2 se precisar | **MA2 (prazo)**; MA3 | MG3 Terraform | NA3 tempo manual; marcar testes |
-| dom 01/11 | revisões | MA4 EDA | **MG3: se o Terraform não subiu, fica só o Docker**; MG4 | NA3 |
-| seg 02/11 | feriado (reserva) | | | |
+| dom 01/11 | revisões | MA4 EDA | **MG3: prazo do Terraform na `main` (obrigatório)**; MG4 | NA3 |
+| seg 02/11 (feriado) | reserva: se a MG3 não entrou, termina o Terraform com o Miguel | | reserva da MG3 | |
 | ter 03/11 | **demo ponta a ponta · tag `v0.1-demo`** | MA4 | MG4 tela com dados reais | NA3 testes com usuários |
 | qua 04/11 | ED8 justificativa + "Como usamos IA" | MA5 BPMN | MG5 arquitetura + README | NA4 revisão + métricas |
 | qui 05/11 | só bugs | MA5 | MG6 vídeo v0 | NA3 (3 testes feitos) |
@@ -227,7 +242,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | ED5 | 27/10 | ✅ PR #6 | `avaliacao/avaliar.py` (C4) | `avaliacao/`, `tests/` | — | `python -m avaliacao.avaliar` grava o C4 | `eduardo-ia-testes` |
 | ED6 | 27/10 | ✅ PR #6 | teste ponta a ponta (pula sem `data/`) | `tests/test_ponta_a_ponta.py` | — | pula no CI; roda local com dados reais | `eduardo-ia-testes` |
 | ED7 | qui 29/10 | ✅ PR #20 | `python -m avaliacao.avaliar --com-ia` nos 10 casos (avisar o grupo) | `avaliacao/resultados.csv` | Manual | 10 linhas; custo anotado (feito: 10 linhas, 0 erros, 0 removidos, US$ 0,0118) | `eduardo-avaliacao-ia` |
-| ED8 | qua 04/11 | — | justificativa técnica para o PDF + README "Como usamos IA" | `docs/justificativa.md`, `README.md` | Manual (você escreve; a IA confere com arquivo e linha) | o Marcos lê e entende | PR |
+| ED8 | qua 04/11 | — | justificativa técnica para o PDF (inclui RAG × fine-tuning e por que os dados da CVM são a base de conhecimento da IA) + README "Como usamos IA para programar", ligado aos arquivos de prompts do vibecoding (REQUISITOS R14) | `docs/justificativa.md`, `README.md` | Manual (você escreve; a IA confere com arquivo e linha) | o Marcos lê e entende | PR |
 | ED9 | sex 06/11 | — | congelar | só bugs | Plan | CI verde + ponta a ponta verde | **tag `v1.0`** |
 | ED10 | sáb 07/11 | — | teste do zero em outra máquina, só com o README | consertos | Manual | rodou sem ajuda, ou cada falha virou PR | `v1.0.1` se precisar |
 | ED11 | sex 06/11 | — | avaliação final na `v1.0` (só se a IA mudou depois do ED7) + ensaio de defesa | `resultados.csv` | Plan | 10 perguntas da banca respondidas sem consulta | PR |
@@ -241,7 +256,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | MA3 | sex 30–sáb 31/10 | — | dados reais + checagem + 5 empresas conferidas no RI; zip da `data/` no Drive | `avaliacao/conferencia.csv`; consertos | Manual | diferença < 1%; nenhum "erro"; link no grupo | PR |
 | MA4 | dom 01–ter 03/11 | — | EDA com 4 gráficos (nulos, distribuições, extremos, cobertura) | `notebooks/eda.ipynb`, `docs/graficos/` | Manual | "Restart & Run All" sem erro | PR |
 | MA5 | qua 04–qui 05/11 | — | BPMN 2.0 com o Raio-X (obrigatório) e o de hoje (se der tempo), no bpmn.io | `docs/bpmn/` | Plan (o Claude só revisa) | abre no bpmn.io; decisões "tem dados?" e "passou no validador?" | PR |
-| MA6 | sáb 07–seg 09/11 | — | montar o `documentacao.pdf` | `docs/documentacao.pdf` | fora do Claude | BPMN + justificativa + ética + arquitetura | PR |
+| MA6 | sáb 07–seg 09/11 | — | montar o `documentacao.pdf` | `docs/documentacao.pdf` | fora do Claude | etapas desenvolvidas no processo (R Documentação; a base é o `docs/HISTORICO.md`) + BPMN + justificativa + ética + arquitetura | PR |
 
 ### Miguel (Claude Code)
 
@@ -249,9 +264,9 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 |---|---|---|---|---|---|---|---|
 | MG1 | qua 28/10 | ✅ conferido em 30/10: PR e check `testes` obrigatórios, só merge commit, apagar branch após o merge; tela rodando no Docker (o print vai para o grupo) | configurar o GitHub (seção 2, "Proteção da `main`"); rodar a tela local | configurações | só leitura | as 3 configurações feitas; print da tela no grupo | — |
 | MG2 | qui 29–sex 30/10 | ✅ PR #24 (30/10): os 2 contêineres `healthy`, health `ok`, `carregar_dfp.py` no banco do contêiner, 87 passed no contêiner | `Dockerfile` + `.dockerignore` + `docker-compose.yml` (tela + PostgreSQL com volume do banco; `data/` como volume; chave e `DATABASE_URL` por variável) | `Dockerfile`, `.dockerignore`, `docker-compose.yml` | Plan | `docker compose up` sobe os 2; `curl localhost:8501/_stcore/health` → `ok`; `scripts/carregar_dfp.py` grava no PostgreSQL do contêiner | `miguel-docker` → PR (Eduardo) |
-| MG3 | sáb 31/10–dom 01/11 | 🟡 `apply`, `destroy` e `apply` funcionam (29/10), na `docs-docker-e-terraform`; faltam a `data/`, a chave opcional e o PostgreSQL (seção 0) | Terraform (provider docker) com os 2 contêineres (tela + PostgreSQL), **só se o Docker estiver pronto**. Prazo: dom 01/11; senão, corta | `infra/` | Plan | `terraform apply` sobe; `destroy` + `apply` mantém `data/` e o banco | PR |
-| MG4 | dom 01–ter 03/11 | — | tela com dados reais: `RAIOX_DADOS` (`falsos`/`real`) no lugar do `USAR_DADOS_FALSOS`; volta sozinha para o modo sem IA, com aviso; `registrar_consulta` dentro do `try`; `tests/test_tela.py` | `app/`, `.env.example`, `tests/` | Plan | 3 empresas reais geram raio-x no contêiner | PR (Eduardo) |
-| MG5 | qua 04/11 | — | diagrama de arquitetura + README (pré-requisitos com Python 3.14; rodar local, Docker e Terraform) | `docs/arquitetura.png`, `README.md` | Manual | um colega entende o fluxo lendo o README | PR |
+| MG3 | sáb 31/10–dom 01/11 | 🟡 `apply`, `destroy` e `apply` funcionam (29/10), na `docs-docker-e-terraform`; faltam a `data/`, a chave opcional e o PostgreSQL (seção 0) | **Terraform na `main`, obrigatório** (`requisitos_projeto.MD`, Aplicação: "Infraestrutura automatizada com Terraform"): provider docker com os 2 contêineres (tela + PostgreSQL), a partir do `terraform/` da branch `docs-docker-e-terraform`. Prazo: dom 01/11; reserva: seg 02/11 com o Eduardo. Não pode ser cortado | `infra/` (ou `terraform/`) | Plan | `terraform apply` sobe a tela e o banco; `destroy` + `apply` mantém a `data/` e o banco | PR |
+| MG4 | dom 01–ter 03/11 | — | tela com dados reais e **com o banco** (R Aplicação: banco de dados): `RAIOX_DADOS` (`falsos`/`real`) no lugar do `USAR_DADOS_FALSOS`, e com `real` a busca e o `registrar_consulta` usam o PostgreSQL (`raiox/dados.py`); volta sozinha para o modo sem IA, com aviso; `registrar_consulta` dentro do `try`; `tests/test_tela.py` | `app/`, `.env.example`, `tests/` | Plan | 3 empresas reais geram raio-x no contêiner, e cada consulta aparece na tabela `consultas` | PR (Eduardo) |
+| MG5 | qua 04/11 | — | diagrama de arquitetura + README (tema, objetivo e tecnologias já estão; pré-requisitos com Python 3.14; rodar local, Docker e Terraform) | `docs/arquitetura.png`, `README.md` | Manual | um colega entende o fluxo lendo o README; o README cobre o que o R pede em "Documentação" | PR |
 | MG6 | qui 05/11 | — | roteiro de 6 min da demo + vídeo v0 | — | — | vídeo salvo em 2 lugares | — |
 | MG7 | sáb 07/11 | — | vídeo final na `v1.0` | — | — | vídeo salvo em 2 lugares | — |
 
@@ -301,7 +316,7 @@ Para subir um arquivo:
 |---|---|---|---|
 | sex 30/10 | Marcos → todos | `data/` v1 no Drive | — |
 | sáb 31/10 | Marcos → todos | PostgreSQL na `main` e C2 cumprido (MA2) | formato e colunas do C2; `DATABASE_URL` |
-| dom 01/11 | Miguel | decisão: Terraform ou só Docker | infra |
+| dom 01/11 | Miguel | Terraform na `main` (MG3, obrigatório) | infra |
 | ter 03/11 | os 4 | demo ponta a ponta; tag `v0.1-demo` | **interfaces** (C1, C3, `RAIOX_DADOS`) e escopo: nada novo |
 | sex 06/11 | os 4 | tag `v1.0` | código |
 | dom 08/11 | todos → Náthally | conteúdo dos slides | roteiro |
@@ -330,14 +345,16 @@ Para subir um arquivo:
 | R6b RAG × fine-tuning | ED8, ED11 |
 | R7 Interface | MG4, MG6 |
 | R8 Boas práticas e agentic coding | ED0, ED2, ED6, ED8, todos os PRs |
-| R9 Arquitetura e infra | MG2, MG3, MG5 |
+| R9 Arquitetura e infra com Terraform (obrigatório) | MG2, MG3, MG5 |
 | R10 Governança e ética | NA5, ED8, MG4 |
 | R11 ROI | NA1, NA3 |
 | R12 Métricas | NA2, ED5, ED7, NA4, ED11 |
+| R13 Backend, frontend e banco na aplicação | MG4 (+ pergunta ao professor, Eduardo) |
+| R14 Prompts do vibecoding | ED8 |
 | D1 Repositório | ED0, MA1, NA1, ED9 |
 | D1b README | MG5, ED8, ED10 |
-| D1c Infra e notebooks | MG2, MG3, MA4 |
-| D2 PDF | MA6 (com MA5, ED8, NA5, MG5) |
+| D1c Infra (Terraform) e notebooks | MG2, MG3, MA4 |
+| D2 Documento (etapas, BPMN, justificativa, ética) | MA6 (com MA5, ED8, NA5, MG5) |
 | D3 Deck | NA5, NA6 |
 | D4 Vídeo | MG6, MG7 |
 | D5 20 minutos | NA6 + ensaios de 10–11/11 |
@@ -349,7 +366,7 @@ Para subir um arquivo:
 | marco | risco | plano B |
 |---|---|---|
 | sex 30/10 | o Miguel não abre o PR do Docker | no sáb 31/10, o Eduardo abre o PR com os 7 ajustes e o `docker-compose.yml` com o PostgreSQL (seção 0) e o Miguel revisa |
-| dom 01/11 | o Terraform não sobe | fica só o Docker (o guia aceita "Terraform ou conteinerização") |
+| dom 01/11 | o Terraform não sobe | a dupla de reserva da infra (Miguel ↔ Eduardo) termina na seg 02/11 (feriado). **Não pode ser cortado**: o `requisitos_projeto.MD` exige o Terraform (o guia aceitava "ou conteinerização", mas vale o mais exigente) |
 | ter 03/11 | o PostgreSQL não sobe no Docker na demo | `docker compose up` ensaiado no teste do zero (ED10); vídeo gravado (MG6/MG7); a busca falsa (`falsos/`) ainda mostra a tela sem banco |
 | ter 03/11 | a demo não roda inteira | qua e qui 04–05/11 só para isso; o vídeo vira obrigatório; demo por `docker run` ou `streamlit run` local |
 | dia da banca | a API falha ou o crédito acaba (erro 402) | a tela volta sozinha para o modo sem IA, com aviso (MG4); vídeo; saldo conferido em 08/11 |
@@ -365,11 +382,11 @@ Para subir um arquivo:
 - 20 casos (ficam 10);
 - conferência da Náthally no RI (fica a do Marcos, com 5 empresas).
 
-**Se faltar tempo, cortar nesta ordem:**
-1. Terraform
-2. BPMN "hoje"
-3. testes com usuários de 3 para 2
-4. ED11 (fica o resultado do ED7)
+**Se faltar tempo, cortar nesta ordem** (só o que **não** está nos arquivos do professor; o Terraform, o BPMN com o Raio-X,
+o documento, o deck, o README e os prompts do vibecoding não podem ser cortados):
+1. BPMN "hoje" (o do processo com o Raio-X é obrigatório)
+2. testes com usuários de 3 para 2
+3. ED11 (fica o resultado do ED7)
 
 ---
 
