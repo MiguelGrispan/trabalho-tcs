@@ -34,9 +34,10 @@ myenv/
 .ssh/
 
 # ==============================
-# Terraform (Atenção ao comentário acima)
+# Infraestrutura (o estado do Terraform pode guardar a chave em texto puro)
 # ==============================
-terraform/  
+terraform/
+infra/
 .terraform/
 *.tfstate
 *.tfstate.*
@@ -47,11 +48,17 @@ terraform/
 # ==============================
 # Dados e arquivos gerados
 # ==============================
+# A data/ fica fora da imagem: o docker-compose.yml monta a data/ do computador como volume.
+data/
 outputs/
 work/
 *.log
 crash.log
 crash.*.log
+
+# Ficam na imagem de propósito:
+#   avaliacao/  com a IA ligada, o prompt lê avaliacao/regras_prompt.md
+#   tests/ e aprender/  para rodar os testes dentro do contêiner (tests/test_aprender.py roda o notebook de aprender/)
 
 # ==============================
 # Sistema operacional
