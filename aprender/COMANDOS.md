@@ -31,6 +31,7 @@ No Mac do Eduardo, o ambiente é `~/bootcamp`: `source ~/bootcamp/bin/activate`.
 | rodar só um arquivo | raiz | `python -m pytest -q tests/test_raio_x.py` | só os testes daquele arquivo |
 | rodar só os testes com uma palavra no nome | raiz | `python -m pytest -q -k validador` | só os testes do validador |
 | teste de ponta a ponta com os dados reais | raiz | `python -m pytest -q tests/test_ponta_a_ponta.py` | passa se você tiver a `data/` real; é pulado se não tiver |
+| rodar os testes sem instalar Python | raiz | `docker compose run --rm tela python -m pytest -q` | o mesmo resultado, dentro do contêiner (seção 6) |
 | dois cliques (Mac) | — | `aprender/atalhos/rodar_testes.command` | a mesma lista de testes, numa janela |
 
 **Deu `failed`?** Leia a última linha do erro. Ela diz o arquivo, a linha e o que era esperado. Não apague o teste: ou o código quebrou, ou o contrato mudou.
@@ -81,17 +82,23 @@ Com os dados falsos, as empresas vão de `90001` a `90030`.
 
 ---
 
-## 6. Docker e Terraform (Miguel) ⏳ (sessões MG2 e MG3)
+## 6. Docker ✅ (MG2, PR #24) e Terraform ⏳ (MG3) (Miguel)
 
-Os comandos previstos estão abaixo. Confira com o Miguel quando o PR dele entrar: o nome da imagem e as pastas podem mudar.
+O `docker-compose.yml` sobe 2 contêineres: a `tela` e o `banco` (PostgreSQL 17, o mesmo do CI). Conferido em 30/10 no Linux do Miguel.
 
 | o que | onde | comando | o que deve aparecer |
 |---|---|---|---|
-| construir a imagem | raiz | `docker build -t raiox .` | `Successfully tagged raiox` (ou `naming to ... raiox`) |
-| rodar o contêiner | raiz | `docker run -p 8501:8501 -v "$PWD/data:/app/data" --env-file .env raiox` | a tela em `http://localhost:8501` |
-| conferir se está no ar | qualquer pasta | `curl localhost:8501/_stcore/health` | `ok` |
-| subir com Terraform | `infra/` | `terraform init` e depois `terraform apply` | `Apply complete!` |
-| derrubar | `infra/` | `terraform destroy` | `Destroy complete!` |
+| subir a tela e o banco | raiz | `docker compose up -d --build` | a 1ª vez demora uns 5 min; depois, a tela em `http://localhost:8501` |
+| ver se os 2 estão de pé | raiz | `docker compose ps` | `banco` e `tela` com `(healthy)` |
+| conferir a tela | qualquer pasta | `curl localhost:8501/_stcore/health` | `ok` |
+| ligar a IA (gasta crédito) | raiz | `RAIOX_IA_REAL=1 docker compose up -d` | a chave vem do `GOOGLE_API_KEY` do `.env`; sem ela, o "Gerar raio-x" mostra um erro (a volta sozinha para o modo sem IA é a MG4) |
+| carregar a CVM no banco do contêiner | raiz | `docker compose run --rm --user "$(id -u):$(id -g)" tela python scripts/carregar_dfp.py` e depois o mesmo com `scripts/indicadores.py` | "contas.csv salvo com 384561 linhas" e "Banco de dados PostgreSQL atualizado" (cerca de 1 min, com o download). No Mac, sem o `--user` |
+| rodar os testes no contêiner | raiz | `docker compose run --rm tela python -m pytest -q` | `87 passed` em 30/10, nenhum pulado |
+| ver o que a tela escreve | raiz | `docker compose logs -f tela` | as mensagens da tela (`Ctrl + C` sai) |
+| subir só o banco (para rodar o Python fora do Docker) | raiz | `docker compose up -d banco` | o PostgreSQL na porta 5432, já com o `raiox` e o `raiox_teste` |
+| desligar | raiz | `docker compose down` | os 2 param; o banco fica guardado no volume `banco-dados` |
+| subir com Terraform ⏳ (MG3) | `terraform/` (ou `infra/`, decisão da MG3) | `terraform init` e depois `terraform apply` | `Apply complete!` |
+| derrubar ⏳ (MG3) | a mesma pasta | `terraform destroy` | `Destroy complete!` |
 
 ---
 
@@ -130,6 +137,8 @@ eles fazem, ou para fazer à mão.
 | `ModuleNotFoundError: No module named 'raiox'` | você não está na raiz | `cd` até a pasta `trabalho-tcs/` e rode de novo |
 | `command not found: streamlit` (ou `pytest`) | o ambiente não está ativado | `source .venv/bin/activate` |
 | `Empresa X não está na tabela de indicadores` | o `cd_cvm` não existe nos dados que você tem (real × falso) | confira com `python -m raiox.segmentos` quais dados estão sendo usados |
-| a tabela tem 1 coluna só | o CSV está com `;` | use a conversão da seção 3 (até a MA2) |
+| a tabela tem 1 coluna só | o CSV está com `;` (a sua `data/` é anterior a 30/10) | rode de novo os dois scripts da seção 3 |
+| `port is already allocated` ao subir o `docker compose` | outro programa já usa a porta 5432 (outro PostgreSQL) ou a 8501 (outra tela) | pare o outro, ou suba o banco em outra porta: `PORTA_BANCO=5433 docker compose up -d` |
+| `Permission denied` em `data/` dentro do contêiner (Linux) | o contêiner roda com outro usuário | acrescente `--user "$(id -u):$(id -g)"` no `docker compose run` |
 | `402` ou "quota" ao chamar a IA | o crédito do Gemini acabou | avise o Eduardo; use o modo sem IA |
 | a tela abre sem as cores do projeto | você rodou da raiz, não de `app/` | `cd app` antes do `streamlit run` |

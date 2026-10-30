@@ -33,11 +33,11 @@ Todo trabalho precisa servir a um destes itens. Se uma tarefa não serve a nenhu
 | GenAI: prompt engineering, LangChain, API | `raiox/ia.py` (+ auditoria em `raiox/checagem.py`) | Eduardo |
 | Interface funcional | `app/streamlit_app.py` | Miguel |
 | Boas práticas e agentic coding | `tests/`, `contratos.md`, `REGRAS-IA.md`, este arquivo, pull requests | todos |
-| Arquitetura + Terraform ou contêiner | `Dockerfile`, `infra/` | Miguel |
+| Arquitetura + Terraform ou contêiner | `Dockerfile`, `docker-compose.yml` (tela + PostgreSQL), `infra/` | Miguel |
 | Governança e ética (viabilidade, limites, viés, confiabilidade, uso responsável) | validador, texto de ética no PDF | Náthally, todos |
 
 **Regras do professor (além do guia):** valem como o guia e ficam em `docs/REQUISITOS.md` (seção "Regras do professor").
-- **O banco é PostgreSQL. SQLite não vale** (29/10). Nada novo com `sqlite3`; a `main` ainda usa SQLite até a MA2 entrar.
+- **O banco é PostgreSQL. SQLite não vale** (29/10). Nada novo com `sqlite3`; desde a MA2 (PRs #21 e #22) a `main` usa só o PostgreSQL.
   O endereço do banco (`DATABASE_URL`) tem senha: fica no `.env`, como a chave do Gemini.
 
 **Entregáveis (48 h antes):** (1) repositório organizado, com README de arquitetura, pré-requisitos e como rodar,
@@ -55,7 +55,7 @@ protótipo funcional 20% · governança e ética 15% · comunicação e equipe 1
 |---|---|
 | `raiox/ia.py`, `raiox/segmentos.py`, `avaliacao/avaliar.py`, `avaliacao/resultados.csv` | Eduardo |
 | `scripts/`, `raiox/dados.py`, `raiox/checagem.py`, `docs/bpmn/`, `notebooks/` | Marcos |
-| `app/`, `Dockerfile`, `infra/` | Miguel |
+| `app/`, `Dockerfile`, `.dockerignore`, `docker-compose.yml`, `infra/` | Miguel |
 | o resto de `avaliacao/` (regras do prompt, casos e planilhas do C4), `docs/produto/` | Náthally |
 
 Pastas comuns (avise o grupo antes de mexer): `tests/`, `falsos/` (dados falsos no formato dos contratos;
@@ -92,6 +92,9 @@ Lista completa, com o que deve aparecer: `aprender/COMANDOS.md`.
 - Testes: `python -m pytest -q` (não chamam a API).
 - Módulos: `python -m raiox.ia ... --sem-ia`, `python -m raiox.segmentos`, `python -m raiox.checagem --teste`.
 - Tela: `cd app && streamlit run streamlit_app.py`. `RAIOX_IA_REAL=1` liga o Gemini. Até o `raiox/dados.py` ficar pronto, a tela usa `falsos/`.
+- Docker (tela + PostgreSQL): `docker compose up -d --build` (tela em `http://localhost:8501`), `docker compose ps` (os 2 `healthy`),
+  testes no contêiner com `docker compose run --rm tela python -m pytest -q`, e `docker compose down` para desligar.
+  Os outros comandos estão no topo do `docker-compose.yml`.
 
 ## Cuidados
 - Siga o `REGRAS-IA.md` (regras do time para uso de IA).

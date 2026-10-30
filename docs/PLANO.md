@@ -17,7 +17,9 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em sex 30/10, 11h40.** Na `main`: PRs #1 a #16 e #19 a #24 (o #24 é a MG2, Docker do Miguel, mesclado às 11h32 com o CI verde).
+**Em sex 30/10, 11h55.** Na `main`: PRs #1 a #16 e #19 a #25 (o #24 é a MG2, Docker do Miguel, mesclado às 11h32 com o CI verde;
+o #25 registra a MG1). **PR #26:** os guias passam a ensinar o `docker compose` (CLAUDE.md, README, `aprender/COMANDOS.md` seção 6,
+`aprender/entenda-o-projeto.md`, `aprender/seguindo-o-projeto.md`), com o ok do Eduardo segundo o Miguel (arquivos comuns).
 **O PostgreSQL está na `main`** (MA2: PR #21 do Marcos e PR #22). Com a `data/` real e o PostgreSQL local: 87 passed,
 nenhum pulado. O CI agora também roda os testes do banco (#22).
 
@@ -105,6 +107,7 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
   do C1 e do C2 que sobraram (acima), com teste. Dizer o que fazer com `verificar_automatico.py`, `graficos.py` e o PDF, e se a
   `tratamento_dados` pode ser apagada.
 - **Miguel:** mandar no grupo o print da tela rodando no Docker (MG1); MG3 (Terraform, acima) até dom 01/11, ou cortar (seção 7);
+  para a IA no Docker, conferir o `GOOGLE_API_KEY` no `.env` (no `docker compose config` dele, em 30/10, chegou vazio; ninguém abriu o arquivo);
   MG4 até ter 03/11. Na máquina dele, a `.venv` é de 23/10 (Python 3.12, sem o `sqlalchemy`): o `python -m pytest -q` local
   quebra na coleta (4 erros de import). Até refazer a `.venv` com Python 3.14, os testes rodam no contêiner:
   `docker compose run --rm tela python -m pytest -q`.

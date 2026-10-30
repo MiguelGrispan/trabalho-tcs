@@ -48,6 +48,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   No Linux dele: os 2 contêineres saudáveis, a CVM carregada no banco do contêiner, 87 testes dentro do contêiner e o raio-x da WEG na tela.
   O #24 entra às 11h32, com o CI verde. A MG1 já estava feita no GitHub (PR e check `testes` obrigatórios, só merge commit,
   apagar branch após o merge): o #24 ficou bloqueado até o CI passar, o que teria evitado o caso do #15.
+  PR #26: os guias (CLAUDE.md, README e `aprender/`) passam a ensinar o `docker compose`, e saem deles o `docker run` antigo e o SQLite.
 
 ## Decisões (e por quê)
 
