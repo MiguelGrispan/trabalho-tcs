@@ -17,8 +17,14 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em sex 30/10, 9h.** Na `main`: PRs #1 a #16 e #19 a #22. **O PostgreSQL está na `main`** (MA2: PR #21 do Marcos e PR #22).
-Com a `data/` real e o PostgreSQL local: 86 passed, nenhum pulado. O CI agora também roda os testes do banco (#22).
+**Em sex 30/10, 9h30.** Na `main`: PRs #1 a #16 e #19 a #23. **O PostgreSQL está na `main`** (MA2: PR #21 do Marcos e PR #22).
+Com a `data/` real e o PostgreSQL local: 87 passed, nenhum pulado. O CI agora também roda os testes do banco (#22).
+
+**PR #23 (Eduardo, 30/10): o Gemini desiste rápido se a API travar.** Antes, a biblioteca esperava sem limite de tempo e
+fazia até 6 tentativas (`timeout = None`, `max_retries = 6`, conferido na `langchain-google-genai` 4.4.2): na banca, a tela
+ficaria girando em vez de mostrar o erro. Agora `raiox/ia.py` usa `TEMPO_LIMITE_S = 15` e `TENTATIVAS = 2` (o pedido e mais
+uma): o erro chega em até uns 30 s. Conferido: 1 chamada real (WEG, 2,8 s, US$ 0,0011, 0 removidos) e, com o limite forçado
+em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_api_travar`.
 
 **MA2, conferida pelo Eduardo em 30/10:**
 - **PR #21 (Marcos, 29/10, 17h52):** `raiox/banco.py` abre a conexão (`DATABASE_URL`; sem ela, `postgres:postgres@localhost:5432/raiox`),
@@ -52,7 +58,10 @@ Com a `data/` real e o PostgreSQL local: 86 passed, nenhum pulado. O CI agora ta
   16h38), tem os 6 indicadores das 10 empresas tirados do RI, com links. Contra a ED7, batem 7 de 10. Diferem: Camil (issue #17),
   Magalu (margem EBIT 5,0% × 5,81%) e RD Saúde (margem EBIT 6,2% × 5,27%, endividamento 70,9% × 62,4%, ativo R$ 25,2 bi × 20,6 bi;
   suponho, sem conferir, que a fonte dela tire o arrendamento). Serve à MA3. Ela precisa subi-lo numa branch nova (seção 3).
-- **IA (Eduardo):** ED7 feita (PR #20). Próxima: ED8 (qua 04/11).
+- **IA (Eduardo):** ED7 feita (PR #20); limite do Gemini (PR #23). Próxima: ED8 (qua 04/11). Conferido em 30/10 com a `data/`
+  real: o raio-x sem IA roda nas 595 empresas (0 erros, 0 removidos), e a busca do PostgreSQL devolve as mesmas 595.
+  O K-means mudou um pouco com os dados do #22: silhueta 0,29 (era 0,30) e treino de 327, 76, 59 e 102 empresas
+  (eram 330, 99, 74 e 59). Os PNG de `docs/graficos/` ainda são de 28/10: refazer com `python -m raiox.segmentos` depois da MA3.
 - **Docker e Terraform (Miguel, MG2 e MG3):** na branch `docs-docker-e-terraform`, sem commit desde 28/10 e sem PR (o prazo era hoje).
   Funcionam (teste do Eduardo em 29/10). O Eduardo ensina o Claude Code ao Miguel hoje. Faltam 7 ajustes antes do PR:
   1. `git merge main` (a branch é anterior aos #7 a #22; sem isso, o diff parece apagar as skills, os gráficos e o PostgreSQL);
@@ -68,7 +77,8 @@ Com a `data/` real e o PostgreSQL local: 86 passed, nenhum pulado. O CI agora ta
   Com o PostgreSQL, o Docker vira um `docker-compose.yml` com 2 contêineres (MG2): o banco igual ao do CI (`postgres:17`,
   usuário `postgres`) e a tela com `DATABASE_URL=postgresql://postgres:<senha>@<nome do serviço do banco>:5432/raiox`.
 - **Tela (Miguel, MG4):** com `RAIOX_DADOS=real`, a tela já gera o raio-x de empresas reais, mas o aviso diz "empresas e números
-  inventados", e se a API falha a tela para.
+  inventados", e se a API falha a tela para. Desde o #23 o erro da API chega em até uns 30 s ao `except` de
+  `app/streamlit_app.py:89`; falta a MG4 chamar ali o `preparar_raio_x(..., usar_ia=False)` com um aviso, em vez do `st.stop()`.
 - **Produto (Náthally):** regras v2 (PR #11) e `cd_cvm` dos 10 casos (PR #10) na `main`. Ela ainda confere os 10 códigos.
 - **GitHub (Miguel, MG1):** falta o check `testes` obrigatório, "Automatically delete head branches" e só "Allow merge commits".
   Sobram as branches antigas `tratamento_dados` (Marcos) e `feat/metricas` (Náthally).
@@ -98,7 +108,9 @@ Com a `data/` real e o PostgreSQL local: 86 passed, nenhum pulado. O CI agora ta
   5. no meio disso: `/explicar` nos pontos da seção 8.
 
 **Pendências pequenas:**
-- Eduardo: o `tests/test_aprender.py:19` exige exatamente "5 passed" no notebook.
+- Eduardo: o `tests/test_aprender.py:19` exige exatamente "5 passed" no notebook; refazer os gráficos e os números do K-means
+  depois da MA3 (acima).
+- O `contratos.md:9-10` ainda diz que a `main` usa SQLite (velho desde o #21): corrigir avisando o grupo (arquivo comum).
 - Marcos: `test_resolver_conflitos_trata_valor_vazio_como_divergente` (`tests/test_limpeza.py:147`) passa só pela ordem das linhas;
   `test_obter_indicadores_deixa_ausente_…` (`tests/test_dados.py:83`) não olha o `ativo_total`; `test_calcular_exporta_…` não tem
   receita de 2 anos antes igual a zero. (Os nomes ainda existem; não reli o corpo dos testes depois do #21.)
@@ -254,7 +266,7 @@ Para subir um arquivo:
 | arquivo | o que testa | dono | roda no CI? |
 |---|---|---|---|
 | `tests/conftest.py` | todo teste usa a tabela falsa (`RAIOX_DADOS=falsos`) e nada grava em `data/` | Eduardo | sim |
-| `tests/test_raio_x.py` | validador (regra de ouro), contrato C3, fonte, modo sem IA nas 30 empresas falsas, prompt (lê as regras da Náthally, chaves preservadas, só marcadores de indicador), texto sem IA na forma da v2, `RAIOX_DADOS`, segmentação (k = 3, 29 de 30; menor grupo ≥ 5%; empresas pequenas fora do treino; `segmentos.csv` refeito quando o código muda), gráficos, checador | Eduardo | sim |
+| `tests/test_raio_x.py` | validador (regra de ouro), contrato C3, fonte, modo sem IA nas 30 empresas falsas, prompt (lê as regras da Náthally, chaves preservadas, só marcadores de indicador), texto sem IA na forma da v2, limite de tempo e de tentativas do Gemini, `RAIOX_DADOS`, segmentação (k = 3, 29 de 30; menor grupo ≥ 5%; empresas pequenas fora do treino; `segmentos.csv` refeito quando o código muda), gráficos, checador | Eduardo | sim |
 | `tests/test_avaliar.py` | `avaliar.py`: colunas do C4, casos válidos, caso com erro, formato do `casos_avaliacao.csv` (5 colunas, `cd_cvm` inteiro em todos) | Eduardo | sim |
 | `tests/test_limpeza.py`, `test_carregar_dfp.py`, `test_dados.py`, `test_banco.py`, `test_verificar_automatico.py` (PRs #4 e #21) | regras de limpeza, carga da DFP (rede simulada), catálogo e C1 em PostgreSQL (banco de teste separado: `tests/banco_teste.py`); o C2 (CSV padrão, `cd_cvm` int) em `test_calcular_grava_csv_padrao_com_cd_cvm_inteiro` (#22) | Marcos | sim: o CI sobe um PostgreSQL desde o #22 (sem ele, os testes do banco pulam; `-rs` mostra quais) |
 | C1 na busca (MA3) | `cd_cvm` int e só companhias ativas | Marcos | ainda não existe |
@@ -356,6 +368,7 @@ Antes da banca, o Eduardo explica em voz alta, sem olhar, cada um destes pontos.
 | `raiox/ia.py`, `montar()` | o que vai para o LLM e o que nunca vai (`valores`) |
 | `raiox/ia.py`, `validar_e_preencher()` | por que a IA não consegue escrever número na tela |
 | `raiox/ia.py`, `regras()`, `_prompt()` e `marcadores_do_llm()` | por que o prompt lê o arquivo da Náthally em vez de uma cópia, por que `SystemMessage` (as chaves `{margem_ebit}`), por que o Gemini só recebe `{id}` e `{id_grupo}`, por que o custo subiu de US$ 0,0008 para 0,0012 |
+| `raiox/ia.py`, `_llm()` | por que 15 s e 2 tentativas (sem limite, a biblioteca espera para sempre e tenta 6 vezes), e o que a tela faz com o erro |
 | `avaliacao/avaliar.py`, `avaliar()` | o laço, por que um erro não para a rodada, as colunas do C4 |
 | `tests/conftest.py` | por que todo teste usa a tabela falsa |
 

@@ -42,6 +42,8 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 - **30/10** · O Eduardo confere a MA2: o banco funciona (carga real em 44 s), mas o CI não tinha PostgreSQL (17 testes pulados)
   e o `indicadores.csv` ainda saía com `;`, formato que o resto do código não lê. O PR #22 corrige os dois, com o ok do Marcos
   (86 testes, nenhum pulado).
+  PR #23: o Gemini passa a desistir em até uns 30 s. Antes, esperava sem limite e tentava 6 vezes: com a API travada na banca,
+  a tela ficaria girando em vez de cair no plano B.
 
 ## Decisões (e por quê)
 
@@ -59,6 +61,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 29/10 | GitHub simples: CI verde + revisão do Claude Code; pessoa só para contrato ou pasta de outro dono | o clique de "aprovar" travava tudo e não era revisão de verdade |
 | 29/10 | cada informação num lugar só: o agora na seção 0 do PLANO, o status no REQUISITOS, o passado aqui | instruções de 26/10 continuavam nos guias e contradiziam as novas (ex.: "main só com 1 revisão"; trazer o `verificar_automatico.py`, que já tinha sido cortado) |
 | 30/10 | o CI sobe um PostgreSQL só para os testes (`postgres:17`, banco `raiox_teste`) | sem ele, os testes do banco eram pulados e o CI ficava verde sem testar o banco |
+| 30/10 | Gemini com limite de 15 s por tentativa e 2 tentativas | um raio-x leva uns 2 s; sem limite, a API travada deixava a tela girando, sem chegar ao modo sem IA |
 
 **Já cortado do escopo:** verificação com yfinance, receita em 3 anos, filtro de setor, RAG, nome dos grupos pelo LLM,
 exportar o raio-x, 20 casos (ficaram 10). A lista e a ordem dos próximos cortes estão no PLANO, seção 7.
