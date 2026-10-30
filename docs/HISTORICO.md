@@ -44,6 +44,8 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   (86 testes, nenhum pulado).
   PR #23: o Gemini passa a desistir em até uns 30 s. Antes, esperava sem limite e tentava 6 vezes: com a API travada na banca,
   a tela ficaria girando em vez de cair no plano B.
+  O Miguel faz a primeira sessão com o Claude Code, a **MG2** (PR #24): `docker compose up` sobe a tela e o PostgreSQL juntos.
+  No Linux dele: os 2 contêineres saudáveis, a CVM carregada no banco do contêiner, 87 testes dentro do contêiner e o raio-x da WEG na tela.
 
 ## Decisões (e por quê)
 
@@ -62,6 +64,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 29/10 | cada informação num lugar só: o agora na seção 0 do PLANO, o status no REQUISITOS, o passado aqui | instruções de 26/10 continuavam nos guias e contradiziam as novas (ex.: "main só com 1 revisão"; trazer o `verificar_automatico.py`, que já tinha sido cortado) |
 | 30/10 | o CI sobe um PostgreSQL só para os testes (`postgres:17`, banco `raiox_teste`) | sem ele, os testes do banco eram pulados e o CI ficava verde sem testar o banco |
 | 30/10 | Gemini com limite de 15 s por tentativa e 2 tentativas | um raio-x leva uns 2 s; sem limite, a API travada deixava a tela girando, sem chegar ao modo sem IA |
+| 30/10 | Docker com `docker compose` (tela + PostgreSQL); a `data/` entra como volume, nunca na imagem | um comando sobe tudo igual em qualquer máquina; a `data/` não vai para o Git nem para a imagem, e o banco fica guardado num volume |
 
 **Já cortado do escopo:** verificação com yfinance, receita em 3 anos, filtro de setor, RAG, nome dos grupos pelo LLM,
 exportar o raio-x, 20 casos (ficaram 10). A lista e a ordem dos próximos cortes estão no PLANO, seção 7.
