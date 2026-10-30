@@ -50,6 +50,9 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   apagar branch após o merge): o #24 ficou bloqueado até o CI passar, o que teria evitado o caso do #15.
   PR #26: os guias (CLAUDE.md, README e `aprender/`) passam a ensinar o `docker compose`, e saem deles o `docker run` antigo e o SQLite.
   PR #27: o `contratos.md` deixa de dizer que a `main` usa SQLite; sobram só as frases da regra do professor ("SQLite não vale").
+  **PR #28: os 2 arquivos do professor entram em `docs/professor/` e viram a fonte da verdade.** O `requisitos_projeto.MD` (29/10)
+  exige o Terraform, que as notas (e o Claude, numa resposta ao Miguel) tratavam como cortável por causa do "ou" do guia de 07/10.
+  CLAUDE.md, AGENTS.md, REGRAS-IA.md, as 3 skills, PLANO, REQUISITOS, README e `aprender/` passam a seguir os dois arquivos.
 
 ## Decisões (e por quê)
 
@@ -68,6 +71,8 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 29/10 | cada informação num lugar só: o agora na seção 0 do PLANO, o status no REQUISITOS, o passado aqui | instruções de 26/10 continuavam nos guias e contradiziam as novas (ex.: "main só com 1 revisão"; trazer o `verificar_automatico.py`, que já tinha sido cortado) |
 | 30/10 | o CI sobe um PostgreSQL só para os testes (`postgres:17`, banco `raiox_teste`) | sem ele, os testes do banco eram pulados e o CI ficava verde sem testar o banco |
 | 30/10 | Gemini com limite de 15 s por tentativa e 2 tentativas | um raio-x leva uns 2 s; sem limite, a API travada deixava a tela girando, sem chegar ao modo sem IA |
+| 30/10 | os arquivos do professor (`docs/professor/`) valem mais que qualquer nota; quando os dois diferem, vale o mais exigente; nada que esteja neles pode ser cortado | uma nota tinha virado "regra" (Terraform cortável) contra o `requisitos_projeto.MD`, e o Claude Code repetiu o erro |
+| 30/10 | **Terraform obrigatório** | `requisitos_projeto.MD`, Aplicação: "Infraestrutura automatizada com Terraform, podendo rodar localmente ou na nuvem" |
 | 30/10 | Docker com `docker compose` (tela + PostgreSQL); a `data/` entra como volume, nunca na imagem | um comando sobe tudo igual em qualquer máquina; a `data/` não vai para o Git nem para a imagem, e o banco fica guardado num volume |
 
 **Já cortado do escopo:** verificação com yfinance, receita em 3 anos, filtro de setor, RAG, nome dos grupos pelo LLM,
@@ -86,6 +91,8 @@ exportar o raio-x, 20 casos (ficaram 10). A lista e a ordem dos próximos cortes
   quando a mudança afeta o trabalho dela.
 - **Documento velho confunde mais que documento nenhum:** uma lista de tarefas de 26/10, já trocada pelo PLANO, ainda mandava
   trazer arquivos que tinham sido cortados. Agora o que passou sai do guia e vem para cá.
+- **A fonte vale mais que o resumo da fonte:** o REQUISITOS resumia só o guia de 07/10, e o resumo virou "verdade" até para a IA,
+  que disse que o Terraform não era preciso. Agora os arquivos do professor ficam no repositório e são lidos em toda sessão.
 
 **Se começássemos do zero** (para aprender, não para refazer):
 1. Matriz do guia com dono no dia 1, antes de qualquer código.

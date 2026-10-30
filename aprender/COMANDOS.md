@@ -82,7 +82,7 @@ Com os dados falsos, as empresas vão de `90001` a `90030`.
 
 ---
 
-## 6. Docker ✅ (MG2, PR #24) e Terraform ⏳ (MG3) (Miguel)
+## 6. Docker ✅ (MG2, PR #24) e Terraform ⏳ (MG3, obrigatório) (Miguel)
 
 O `docker-compose.yml` sobe 2 contêineres: a `tela` e o `banco` (PostgreSQL 17, o mesmo do CI). Conferido em 30/10 no Linux do Miguel.
 

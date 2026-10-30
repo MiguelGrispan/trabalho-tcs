@@ -3,7 +3,8 @@
 **Foto de 26/10/2026** (seções 2, 3 e 6 conferidas de novo em 28/10). Serve para aprender a diagnosticar um projeto e a
 provar cada afirmação com um comando, **não** para saber o que fazer hoje: o status de cada requisito está no
 [REQUISITOS.md](../docs/REQUISITOS.md) e as tarefas no [PLANO.md](../docs/PLANO.md). Onde este arquivo divergir deles, valem eles.
-Escrito pelo Claude Code a pedido do Eduardo, comparando o repositório com o guia oficial do projeto final. Para entender os conceitos antes, leia [entenda-o-projeto.md](entenda-o-projeto.md).
+Escrito pelo Claude Code a pedido do Eduardo, comparando o repositório com o guia oficial do projeto final (o PDF de 07/10).
+Desde 30/10, os requisitos vêm dos dois arquivos do professor, em `docs/professor/` (o `requisitos_projeto.MD`, de 29/10, exige o Terraform). Para entender os conceitos antes, leia [entenda-o-projeto.md](entenda-o-projeto.md).
 
 Legenda: ✅ feito · 🟡 em parte · ⬜ falta. Cada afirmação tem uma **prova**: um comando que você roda na pasta
 do repositório e vê o mesmo resultado. Se não bater, este texto está errado e deve ser corrigido.
@@ -98,7 +99,7 @@ Desde o #24, `docker compose up -d --build` sobe a tela e o PostgreSQL. Os três
 entra no contêiner montada de fora (ela não está no Git nem na imagem); a chave entra como variável, nunca no código nem na
 imagem; o contêiner roda a tela de dentro de `app/` (é onde o Streamlit acha o tema).
 **Prova:** `docker compose ps` mostra os 2 `healthy`; `grep -n "data/" .dockerignore`; `grep -n "cd app" Dockerfile`.
-O Terraform continua na branch `docs-docker-e-terraform` (MG3).
+O Terraform, **obrigatório** (`requisitos_projeto.MD`, Aplicação), continua só na branch `docs-docker-e-terraform` (MG3).
 
 ### 9) Como os dados chegam a quem não é o Marcos 🟡 combinado: zip da `data/` no Drive (PLANO, seção 5)
 `data/` não vai para o Git. Cada pessoa roda `python scripts/carregar_dfp.py` e `python scripts/indicadores.py`

@@ -3,6 +3,7 @@
 Este arquivo explica o Raio-X Comercial do zero: o que ele faz, por que foi feito assim, como o código funciona
 e como trabalhar nele sem quebrar nada. Não precisa saber programar bem para ler.
 O que falta fazer, e quem faz, está no [PLANO](../docs/PLANO.md) (seção 3) e no [REQUISITOS](../docs/REQUISITOS.md).
+O que o projeto **precisa** ter vem dos arquivos do professor, em [docs/professor/](../docs/professor/): eles valem mais que qualquer nota.
 
 ---
 
@@ -105,7 +106,7 @@ rodando os scripts, porque a CVM é pública. Cada pessoa gera o seu `data/` no 
 | **Docker** | "Caixa" que leva o programa com tudo que ele precisa, para rodar igual em qualquer computador | `Dockerfile` (a caixa da tela) |
 | **Docker Compose** | Sobe várias caixas juntas com um comando: aqui, a tela e o PostgreSQL | `docker-compose.yml` |
 | **Volume** | Pasta do seu computador que a caixa enxerga, sem copiar para dentro dela: é assim que a `data/` chega à tela | `docker-compose.yml` |
-| **Terraform** | Arquivo que descreve a infraestrutura (a "caixa" e a porta) e cria tudo com um comando | em andamento (MG3), na branch `docs-docker-e-terraform` |
+| **Terraform** | Arquivo que descreve a infraestrutura (a "caixa" e a porta) e cria tudo com um comando | **obrigatório** (`requisitos_projeto.MD`); em andamento (MG3), por enquanto só na branch `docs-docker-e-terraform` |
 
 ---
 
@@ -123,7 +124,7 @@ avaliacao/      medir se funciona: casos de teste, revisão, tempo, custo (C4)  
 tests/          os testes automáticos
 falsos/         tabela de 30 empresas inventadas + versões falsas de C1 e C3
 docs/           estes textos e os gráficos (docs/graficos/)
-infra/          o script do banco do Docker (infra/banco/); Terraform na MG3 .. Miguel
+infra/          o script do banco do Docker (infra/banco/); o Terraform (MG3) . Miguel
 aprender/       guias, comandos, notebook e atalhos de dois cliques no Mac: configurar a chave, rodar testes, abrir a tela
 data/           gerado por cada um; fora do Git
 ```
@@ -235,4 +236,6 @@ Valem para o que o ChatGPT, o Gemini, o Claude **ou um colega** disser sobre o p
 | E se a API do Gemini cair na demo? | Modo sem IA (mesma tela, texto fixo) e vídeo gravado |
 | Quais os limites e vieses? | Só companhias abertas; bancos e seguradoras fora; dados anuais; grupos só por números; não é recomendação de investimento |
 | Quanto custa e quanto economiza? | Custo por raio-x medido em tokens; tempo à mão × ferramenta medido pela Náthally |
-| Onde está o contêiner (e o Terraform)? | `Dockerfile` e `docker-compose.yml`: `docker compose up` sobe a tela e o PostgreSQL, com a `data/` como volume e a chave fora da imagem. O Terraform (MG3) é extra: o guia pede "Terraform **ou** contêiner" |
+| Onde está o Terraform (e o contêiner)? | O Terraform é **obrigatório** (`requisitos_projeto.MD`, Aplicação: "Infraestrutura automatizada com Terraform"): `terraform apply` sobe a tela e o PostgreSQL (MG3). O `Dockerfile` e o `docker-compose.yml` são a base: a `data/` entra como volume e a chave fica fora da imagem |
+| Vocês têm backend e frontend? | A tela em Streamlit (frontend), os módulos de `raiox/` e o PostgreSQL (o que roda por trás). Se o professor responder que precisa de uma API separada, a resposta muda (`docs/REQUISITOS.md`, "Perguntas para o professor") |
+| Onde estão os prompts do vibecoding? | No README, seção "Prompts usados no vibecoding": `CLAUDE.md`, `AGENTS.md`, `REGRAS-IA.md`, `.claude/skills/` e o modelo de PR |

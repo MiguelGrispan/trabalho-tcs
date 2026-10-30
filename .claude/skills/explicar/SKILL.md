@@ -26,7 +26,8 @@ Quem chama quer **saber explicar sozinho**, sem consulta, na banca. O objetivo n
 4. **Rodar.** Rode um comando curto que mostre o resultado de verdade, por exemplo:
    `RAIOX_DADOS=falsos <python> -c "from raiox import segmentos as s; ..."`. Mostre a saída e compare com a previsão.
 5. **Explicar o porquê.** Para cada decisão do trecho: o que faz, por que foi feita assim e o que daria errado sem ela.
-   Ligue a decisão ao requisito do guia (`docs/REQUISITOS.md`) que ela atende.
+   Ligue a decisão ao requisito do professor que ela atende, com o arquivo e o item (`docs/professor/requisitos_projeto.MD`
+   ou `docs/professor/guia_projeto_final.pdf`; o status está no `docs/REQUISITOS.md`).
 6. **Treinar a banca.** Faça 3 perguntas, uma de cada vez, como um professor ou um especialista da TCS faria
    (ex.: "por que K-means e não outro modelo?", "como você sabe que a IA não inventa número?").
    Depois de cada resposta, diga o que ficou certo, o que faltou e onde está a prova no código.

@@ -35,6 +35,9 @@ Antes de todo commit, rode `git status` e leia a lista. Se aparecer algo que nã
 - Peça "explique o que você mudou e por quê". Se você não consegue explicar, não suba.
 - Desconfie de: número sem fonte; "deve funcionar"; biblioteca ou função que você nunca viu; arquivo que a IA diz ter lido mas não abriu; resposta que muda quando você pergunta de novo.
 - Número que a IA calculou ou "achou": confira 2 ou 3 valores na fonte (CVM ou site de RI da empresa).
+- A IA disse que algo "não é obrigatório", "é opcional" ou "pode cortar"? Confira nos arquivos do professor
+  (`docs/professor/requisitos_projeto.MD` e `docs/professor/guia_projeto_final.pdf`). Sem o item do arquivo como prova, não vale.
+  Foi assim que o Terraform quase foi tratado como opcional em 30/10: o guia diz "ou conteinerização", mas o `requisitos_projeto.MD` exige o Terraform.
 
 ## 5. Git do time
 

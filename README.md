@@ -12,6 +12,37 @@ O texto é escrito por um LLM (Gemini via LangChain) que **nunca escreve número
 como `{margem_ebit}`, um validador remove qualquer dígito fora de marcador e o código troca os marcadores pelos valores da tabela.
 
 Projeto final da trilha IA Aplicada (SENAI/TCS) · Marcos, Eduardo, Náthally e Miguel.
+O que o projeto precisa ter vem dos arquivos do professor, em [docs/professor/](docs/professor/)
+(`requisitos_projeto.MD` e `guia_projeto_final.pdf`); o status de cada requisito está em [docs/REQUISITOS.md](docs/REQUISITOS.md).
+
+## Tecnologias
+
+| parte | tecnologia (versão fixa no `requirements.txt`) |
+|---|---|
+| linguagem | Python 3.14 |
+| dados: limpeza, nulos, indicadores | Pandas 3.0, NumPy 2.5; dados públicos da CVM (DFP 2023–2025), baixados com `requests` |
+| banco de dados | PostgreSQL 17, com SQLAlchemy 2.1 e psycopg 3.3 |
+| machine learning | scikit-learn 1.9: K-means (grupos de empresas parecidas) e NearestNeighbors (5 parecidas) |
+| IA generativa | Gemini (`gemini-3.1-flash-lite`) pela API, com LangChain (`langchain-core`, `langchain-google-genai`) e saída estruturada com Pydantic |
+| tela (aplicação web) | Streamlit 1.66 |
+| gráficos | Matplotlib 3.11 |
+| infraestrutura | Docker e Docker Compose (tela + PostgreSQL); Terraform (obrigatório; entra na `main` na sessão MG3) |
+| testes e CI | pytest 9.1, GitHub Actions (com um PostgreSQL só para os testes) |
+| programação com IA (vibecoding) | Claude Code e Codex, guiados pelos arquivos de prompts listados abaixo |
+
+## Prompts usados no vibecoding
+
+Os arquivos que dizem às IAs de programação como trabalhar neste projeto:
+
+| arquivo | para quê |
+|---|---|
+| [CLAUDE.md](CLAUDE.md) | contexto, requisitos do professor, donos e regras; o Claude Code lê em toda sessão |
+| [AGENTS.md](AGENTS.md) | o mesmo, para o Codex |
+| [REGRAS-IA.md](REGRAS-IA.md) | o que nunca vai para uma IA, como pedir e como conferir o que ela fez |
+| [.claude/skills/](.claude/skills/) | `/inicio-de-sessao`, `/fim-de-sessao` e `/explicar`: os passos que o Claude Code segue |
+| [.github/pull_request_template.md](.github/pull_request_template.md) | em todo PR: o que foi feito com IA e o que o autor conferiu |
+
+O prompt do produto (o que o Gemini recebe para escrever o raio-x) é outro: [avaliacao/regras_prompt.md](avaliacao/regras_prompt.md).
 
 **Vai programar com o Claude Code?** Comece pelo [aprender/claude-code.md](aprender/claude-code.md): `/inicio-de-sessao`, `/fim-de-sessao`, os modos e os limites.
 
@@ -50,8 +81,8 @@ scripts/        preparação dos dados da CVM: verificar_dfp, carregar_dfp, indi
 avaliacao/      avaliação do raio-x (contrato C4) · Náthally e Eduardo
 tests/          testes automáticos (não chamam a API)
 falsos/         dados e módulos falsos no formato dos contratos, para ninguém esperar ninguém
-docs/           plano, requisitos do guia, gráficos (docs/graficos/) e documentos da entrega
-infra/          implantação: o script do banco do docker-compose.yml (infra/banco/); o Terraform vem na MG3 · Miguel
+docs/           arquivos do professor (docs/professor/), plano, requisitos, gráficos (docs/graficos/) e documentos da entrega
+infra/          implantação: o script do banco do docker-compose.yml (infra/banco/); o Terraform (obrigatório) entra na MG3 · Miguel
 aprender/       só para quem está aprendendo: comandos, guias, notebook passo a passo, atalhos do Mac
 data/           dados da CVM e arquivos gerados: fica só no seu computador, não vai para o Git
 ```
