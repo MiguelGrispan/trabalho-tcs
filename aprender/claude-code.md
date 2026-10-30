@@ -24,6 +24,9 @@ As regras de uso de IA do time estão no [REGRAS-IA.md](../REGRAS-IA.md); este g
 - É o Claude trabalhando **no seu computador, dentro da pasta do projeto**: ele lê arquivos, edita e roda comandos.
 - No começo de **toda** sessão, ele lê o `CLAUDE.md` sozinho. Por isso já conhece os donos de cada pasta, a regra de ouro
   (o LLM nunca escreve números), as regras de Git e os comandos de teste. Você não precisa repetir isso.
+- O `CLAUDE.md` e o `/inicio-de-sessao` mandam ele ler também os **arquivos do professor** (`docs/professor/`), que valem mais
+  que qualquer nota. Se ele disser que algo do professor é opcional ou pode ser cortado sem citar o arquivo e o item, desconfie
+  e peça a prova (em 30/10 ele errou assim com o Terraform).
 - Ele **não lembra** das conversas anteriores. O que liga uma sessão à outra são os arquivos: a seção 0 do PLANO, os commits e os PRs.
   Por isso o PLANO tem de estar atualizado no fim de cada sessão.
 

@@ -14,7 +14,8 @@ Leia nesta ordem:
 | [seguindo-o-projeto.md](seguindo-o-projeto.md) | foto de 26/10: como diagnosticar um projeto, com o comando que prova cada item. O que falta **hoje** está no [REQUISITOS](../docs/REQUISITOS.md) | consulta |
 | [atalhos/](atalhos/) | dois cliques no Mac: configurar a chave, rodar os testes, abrir a tela | — |
 
-O plano com datas e donos está em [../docs/PLANO.md](../docs/PLANO.md), e o que o guia exige, em [../docs/REQUISITOS.md](../docs/REQUISITOS.md).
+O que o professor exige está nos arquivos dele, em [../docs/professor/](../docs/professor/) (eles valem mais que qualquer nota);
+o status de cada requisito, em [../docs/REQUISITOS.md](../docs/REQUISITOS.md); o plano com datas e donos, em [../docs/PLANO.md](../docs/PLANO.md).
 
 **Como entender um código que você não escreveu:**
 1. Rode o código antes de ler.
