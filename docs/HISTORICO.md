@@ -46,6 +46,8 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   a tela ficaria girando em vez de cair no plano B.
   O Miguel faz a primeira sessão com o Claude Code, a **MG2** (PR #24): `docker compose up` sobe a tela e o PostgreSQL juntos.
   No Linux dele: os 2 contêineres saudáveis, a CVM carregada no banco do contêiner, 87 testes dentro do contêiner e o raio-x da WEG na tela.
+  O #24 entra às 11h32, com o CI verde. A MG1 já estava feita no GitHub (PR e check `testes` obrigatórios, só merge commit,
+  apagar branch após o merge): o #24 ficou bloqueado até o CI passar, o que teria evitado o caso do #15.
 
 ## Decisões (e por quê)
 
