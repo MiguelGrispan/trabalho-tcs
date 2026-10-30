@@ -27,6 +27,10 @@ from raiox import segmentos
 ARQ_REGRAS = Path(__file__).resolve().parent.parent / "avaliacao" / "regras_prompt.md"   # da Náthally
 MODELO = "gemini-3.1-flash-lite"
 PRECO_US_POR_MILHAO = {"entrada": 0.25, "saida": 1.50}  # página oficial de preços do Google, 20/10/2026
+# Sem estes limites, a biblioteca espera a resposta sem limite de tempo e faz até 6 tentativas.
+# Um raio-x leva uns 2 s (ED7); se a API travar, o erro chega em até uns 30 s e a tela pode cair no modo sem IA.
+TEMPO_LIMITE_S = 15
+TENTATIVAS = 2      # contando a primeira: o pedido e mais uma tentativa (ex.: erro 429 de limite por minuto)
 
 # id: (nome na tela, nome dentro do texto, tipo de formatação, fonte)
 INDICADORES = {
@@ -149,14 +153,17 @@ def _prompt():
     return ChatPromptTemplate.from_messages([SystemMessage(content=regras()), ("human", PEDIDO)])
 
 
-@lru_cache(maxsize=1)
-def _chain():
+def _llm():
     from dotenv import load_dotenv
     from langchain_google_genai import ChatGoogleGenerativeAI
 
     load_dotenv()
-    llm = ChatGoogleGenerativeAI(model=MODELO, temperature=0.2)
-    return _prompt() | llm.with_structured_output(RaioX, include_raw=True)   # include_raw: para ler os tokens
+    return ChatGoogleGenerativeAI(model=MODELO, temperature=0.2, timeout=TEMPO_LIMITE_S, max_retries=TENTATIVAS)
+
+
+@lru_cache(maxsize=1)
+def _chain():
+    return _prompt() | _llm().with_structured_output(RaioX, include_raw=True)   # include_raw: para ler os tokens
 
 
 def marcadores_do_llm(valores: dict) -> list[str]:

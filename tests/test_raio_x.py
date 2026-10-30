@@ -176,6 +176,15 @@ def test_texto_sem_ia_segue_as_regras_v2():
         assert all("?" not in l and not l.startswith(("Quem", "Qual", "Como")) for l in rx.lacunas), cd
 
 
+def test_gemini_desiste_rapido_se_a_api_travar(monkeypatch):
+    # sem limite, a biblioteca espera para sempre e tenta 6 vezes: na banca, a tela ficaria girando
+    # em vez de mostrar o erro e cair no modo sem IA. Só monta o cliente: não chama a API.
+    monkeypatch.setenv("GOOGLE_API_KEY", "chave-falsa-do-teste")
+    llm = ia._llm()
+    assert llm.timeout == ia.TEMPO_LIMITE_S and ia.TEMPO_LIMITE_S <= 20
+    assert llm.max_retries == ia.TENTATIVAS and ia.TENTATIVAS <= 2
+
+
 # ---------------------------------------------------------------- dados reais × falsos
 def test_raiox_dados_falsos_ignora_tabela_real(tmp_path, monkeypatch):
     real = tmp_path / "indicadores.csv"
