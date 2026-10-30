@@ -45,14 +45,9 @@ No Mac do Eduardo, o ambiente é `~/bootcamp`: `source ~/bootcamp/bin/activate`.
 | baixar e limpar a DFP 2023–2025 ✅ | raiz | `python scripts/carregar_dfp.py` | uns 20 s; "contas.csv salvo com ... linhas" e "Banco de dados PostgreSQL atualizado" |
 | calcular os 6 indicadores ✅ | raiz | `python scripts/indicadores.py` | nada na tela; cria `data/indicadores.csv` (cerca de 595 empresas) |
 | checar a tabela com os dados falsos (5 erros plantados) ✅ | raiz | `python -m raiox.checagem --teste` | uma lista de alertas e "Salvo em anomalias.csv" |
-| checar a tabela real ⏳ (MA2) | raiz | `python -m raiox.checagem data/indicadores.csv data/contas.csv` | só funciona depois que a MA2 trocar o CSV para o formato padrão |
+| checar a tabela real ✅ | raiz | `python -m raiox.checagem data/indicadores.csv data/contas.csv` | "595 empresas · ... · 0 erros" e "Salvo em anomalias.csv" |
 
-**Até a MA2 entrar:** o `indicadores.csv` sai com `;` e vírgula decimal, e o resto do código não lê esse formato.
-Converta só na sua `data/` (foi o que o Eduardo fez no ED1):
-
-```bash
-python -c "import pandas as pd; d=pd.read_csv('data/indicadores.csv',sep=';',decimal=',',encoding='utf-8-sig'); d.to_csv('data/indicadores.csv',index=False)"
-```
+Se a sua `data/` é anterior a 30/10, o `indicadores.csv` ainda está com `;`: rode de novo os dois scripts acima.
 
 ---
 
