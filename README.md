@@ -51,13 +51,32 @@ avaliacao/      avaliação do raio-x (contrato C4) · Náthally e Eduardo
 tests/          testes automáticos (não chamam a API)
 falsos/         dados e módulos falsos no formato dos contratos, para ninguém esperar ninguém
 docs/           plano, requisitos do guia, gráficos (docs/graficos/) e documentos da entrega
-infra/          implantação · Miguel
+infra/          implantação: o script do banco do docker-compose.yml (infra/banco/); o Terraform vem na MG3 · Miguel
 aprender/       só para quem está aprendendo: comandos, guias, notebook passo a passo, atalhos do Mac
 data/           dados da CVM e arquivos gerados: fica só no seu computador, não vai para o Git
 ```
 
 Na raiz: `contratos.md`, `REGRAS-IA.md` (regras do time para uso de IA), `CLAUDE.md` (contexto e donos de cada pasta),
-`requirements.txt` e `.env.example`.
+`requirements.txt`, `.env.example`, e o `Dockerfile` e o `docker-compose.yml` (o contêiner).
+
+## Como rodar com Docker (o caminho mais curto)
+
+Pré-requisito: Docker com o Compose (`docker compose version`). Não precisa instalar Python nem PostgreSQL. Na raiz do repositório:
+
+```bash
+docker compose up -d --build        # sobe a tela e o PostgreSQL (a 1ª vez demora uns 5 min) → http://localhost:8501
+docker compose ps                   # os 2 (banco e tela) devem aparecer como "healthy"
+docker compose run --rm tela python -m pytest -q    # os testes dentro do contêiner, com o banco de testes
+docker compose down                 # desliga os 2; o banco continua guardado no volume
+```
+
+- **Dados da CVM no banco do contêiner:** `docker compose run --rm --user "$(id -u):$(id -g)" tela python scripts/carregar_dfp.py`
+  e o mesmo com `scripts/indicadores.py` (no Linux, o `--user` deixa o contêiner gravar na sua `data/`; no Mac não precisa).
+- **IA ligada:** `RAIOX_IA_REAL=1 docker compose up -d`. A chave vem do `GOOGLE_API_KEY` do `.env`, que o Compose lê sozinho.
+  A chave e a `data/` nunca entram na imagem (`.dockerignore`): a `data/` entra como volume.
+- **Porta 5432 ocupada** por outro PostgreSQL: `PORTA_BANCO=5433 docker compose up -d`.
+
+Sem Docker, siga a seção abaixo.
 
 ## Como rodar
 
@@ -76,6 +95,7 @@ Copie `.env.example` para `.env`. O `.env` nunca vai para o Git, porque tem a ch
   o código tenta a senha `postgres` (`raiox/banco.py`).
 
 **Banco** (uma vez só): crie o banco do catálogo e o banco dos testes, que é apagado a cada teste.
+Com Docker, `docker compose up -d banco` sobe um PostgreSQL já com os dois bancos, na porta 5432 (a do código).
 
 ```bash
 psql -U postgres -c "CREATE DATABASE raiox"

@@ -101,9 +101,11 @@ rodando os scripts, porque a CVM é pública. Cada pessoa gera o seu `data/` no 
 | **Falso** | Arquivo "de mentira" no formato do contrato, para ninguém ficar parado esperando o colega | `falsos/` |
 | **Teste (pytest)** | Código que confere outro código sozinho. `N passed` = as N conferências deram certo | `tests/` |
 | **`.env`** | Arquivo com a chave secreta do Gemini. Fica só no seu computador, nunca no Git, nunca colado em chat | raiz |
-| **Branch / PR** | Branch é sua cópia de trabalho; pull request (PR) é o pedido para juntar na `main`, revisado por alguém | GitHub |
-| **Docker** | "Caixa" que leva o programa com tudo que ele precisa, para rodar igual em qualquer computador | `Dockerfile` (em andamento, MG2) |
-| **Terraform** | Arquivo que descreve a infraestrutura (a "caixa" e a porta) e cria tudo com um comando | `infra/` (em andamento, MG3) |
+| **Branch / PR** | Branch é sua cópia de trabalho; pull request (PR) é o pedido para juntar na `main`, que só entra com os testes do CI verdes | GitHub |
+| **Docker** | "Caixa" que leva o programa com tudo que ele precisa, para rodar igual em qualquer computador | `Dockerfile` (a caixa da tela) |
+| **Docker Compose** | Sobe várias caixas juntas com um comando: aqui, a tela e o PostgreSQL | `docker-compose.yml` |
+| **Volume** | Pasta do seu computador que a caixa enxerga, sem copiar para dentro dela: é assim que a `data/` chega à tela | `docker-compose.yml` |
+| **Terraform** | Arquivo que descreve a infraestrutura (a "caixa" e a porta) e cria tudo com um comando | em andamento (MG3), na branch `docs-docker-e-terraform` |
 
 ---
 
@@ -121,13 +123,14 @@ avaliacao/      medir se funciona: casos de teste, revisão, tempo, custo (C4)  
 tests/          os testes automáticos
 falsos/         tabela de 30 empresas inventadas + versões falsas de C1 e C3
 docs/           estes textos e os gráficos (docs/graficos/)
-infra/          Terraform (vazio por enquanto)  .............................. Miguel
+infra/          o script do banco do Docker (infra/banco/); Terraform na MG3 .. Miguel
 aprender/       guias, comandos, notebook e atalhos de dois cliques no Mac: configurar a chave, rodar testes, abrir a tela
 data/           gerado por cada um; fora do Git
 ```
 
 Arquivos da raiz: `README.md` (vitrine), `contratos.md` (formatos entre as partes), `REGRAS-IA.md`
-(como o time usa IA), `CLAUDE.md` (contexto para o Claude Code), `requirements.txt` (bibliotecas), `.env.example`.
+(como o time usa IA), `CLAUDE.md` (contexto para o Claude Code), `requirements.txt` (bibliotecas), `.env.example`,
+`Dockerfile` e `docker-compose.yml` (a tela e o PostgreSQL em contêineres).
 
 **Regra das pastas:** cada pasta tem dono. Precisa mudar algo na pasta de outro? Fale com o dono antes.
 
@@ -177,6 +180,10 @@ python scripts/carregar_dfp.py       # baixa a CVM → data/contas.csv e o Postg
 python scripts/indicadores.py        # → data/indicadores.csv
 ```
 
+**Sem instalar Python nem PostgreSQL:** com o Docker instalado, `docker compose up -d --build` sobe a tela e o banco,
+e `docker compose run --rm tela python -m pytest -q` roda os testes dentro do contêiner. Os outros comandos (carregar a CVM,
+ligar a IA, desligar) estão no `aprender/COMANDOS.md`, seção 6.
+
 > Atenção: hoje esses dois passos ainda não conversam com o resto (detalhe em `seguindo-o-projeto.md`, item "o que falta para funcionar").
 
 ---
@@ -195,7 +202,8 @@ git push -u origin minha-tarefa             # 6. mande para o GitHub
 gh pr create                                # 7. abra o pull request (ou pelo site)
 ```
 
-Alguém do grupo revisa e junta na `main`. **Nunca use `git push --force` na branch de outra pessoa.**
+O CI roda os testes no PR; com ele verde, quem abriu o PR faz o merge na `main` (o GitHub não deixa antes). No Claude Code,
+o `/inicio-de-sessao` e o `/fim-de-sessao` fazem estes passos por você. **Nunca use `git push --force` na branch de outra pessoa.**
 
 Por que criar a branch **a partir da `main`**: se a sua branch não tem a `main` como ponto de partida, o GitHub
 não consegue juntar as duas ("não há história em comum"). Isso aconteceu com `tratamento_dados` e `feat/metricas`.
@@ -227,4 +235,4 @@ Valem para o que o ChatGPT, o Gemini, o Claude **ou um colega** disser sobre o p
 | E se a API do Gemini cair na demo? | Modo sem IA (mesma tela, texto fixo) e vídeo gravado |
 | Quais os limites e vieses? | Só companhias abertas; bancos e seguradoras fora; dados anuais; grupos só por números; não é recomendação de investimento |
 | Quanto custa e quanto economiza? | Custo por raio-x medido em tokens; tempo à mão × ferramenta medido pela Náthally |
-| Onde está o Terraform/contêiner? | `infra/` e `Dockerfile`: `terraform apply` sobe a tela |
+| Onde está o contêiner (e o Terraform)? | `Dockerfile` e `docker-compose.yml`: `docker compose up` sobe a tela e o PostgreSQL, com a `data/` como volume e a chave fora da imagem. O Terraform (MG3) é extra: o guia pede "Terraform **ou** contêiner" |

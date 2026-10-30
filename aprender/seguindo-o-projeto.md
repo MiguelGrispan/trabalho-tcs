@@ -93,10 +93,12 @@ número de frases, nome da empresa na entrada). Desde a ED3 não existe mais có
 **Prova:** `grep -n "def regras" -A 4 raiox/ia.py`; `python -m pytest -q -k prompt` (4 testes, um deles confere que o
 prompt começa com o texto do arquivo dela).
 
-### 8) Não existe empacotamento 🟡 (Miguel)
-Na `main`, ainda sem `Dockerfile` nem Terraform. O Miguel começou na branch `docs-docker-e-terraform` (27/10), ainda sem PR. Pontos que precisam estar no desenho: a pasta `data/` entra no
-contêiner montada de fora (ela não está no Git); a chave entra como variável sensível, nunca no código nem na imagem;
-o contêiner roda a tela de dentro de `app/` (é onde o Streamlit acha o tema).
+### 8) Não existe empacotamento ✅ Docker no PR #24 (30/10); Terraform na MG3 (Miguel)
+Desde o #24, `docker compose up -d --build` sobe a tela e o PostgreSQL. Os três pontos do desenho estão lá: a pasta `data/`
+entra no contêiner montada de fora (ela não está no Git nem na imagem); a chave entra como variável, nunca no código nem na
+imagem; o contêiner roda a tela de dentro de `app/` (é onde o Streamlit acha o tema).
+**Prova:** `docker compose ps` mostra os 2 `healthy`; `grep -n "data/" .dockerignore`; `grep -n "cd app" Dockerfile`.
+O Terraform continua na branch `docs-docker-e-terraform` (MG3).
 
 ### 9) Como os dados chegam a quem não é o Marcos 🟡 combinado: zip da `data/` no Drive (PLANO, seção 5)
 `data/` não vai para o Git. Cada pessoa roda `python scripts/carregar_dfp.py` e `python scripts/indicadores.py`
@@ -115,12 +117,12 @@ o contêiner roda a tela de dentro de `app/` (é onde o Streamlit acha o tema).
 | `scripts/carregar_dfp.py` | `scripts/indicadores.py` | `data/contas.csv` | ✅ mesmo formato dos dois lados |
 | `scripts/carregar_dfp.py` | `raiox/checagem.py` | `data/contas.csv` | ✅ CSV padrão (item 1) |
 | `scripts/indicadores.py` | `raiox/segmentos.py` e `raiox/ia.py` | `data/indicadores.csv` (C2) | ✅ CSV padrão e `cd_cvm` int (itens 1 e 2) |
-| `scripts/carregar_dfp.py` | `raiox/dados.py` | `data/catalogo.db` | 🟡 falta filtro e tipo (itens 2 e 3) |
+| `scripts/carregar_dfp.py` | `raiox/dados.py` | PostgreSQL (tabelas `contas` e `empresas`) | 🟡 falta filtro e tipo (itens 2 e 3) |
 | `raiox/dados.py` | tela | `buscar_empresas`, `registrar_consulta` (C1) | ⬜ chave na tela (item 5) |
 | `raiox/ia.py` | tela | `preparar_raio_x` (C3) | ✅ testado |
 | `raiox/ia.py` | `avaliacao/avaliar.py` | `preparar_raio_x` (C4) | ✅ `avaliar.py` na `main` desde o #6 |
 | regras da Náthally (`avaliacao/regras_prompt.md`) | `regras()` no `raiox/ia.py` | texto do prompt | ✅ o código lê o arquivo dela (item 7) |
-| tela + `data/` | Docker/Terraform | contêiner | 🟡 branch do Miguel, sem PR (item 8) |
+| tela + `data/` | Docker/Terraform | contêiner | ✅ Docker com `docker compose` (#24); Terraform na MG3 (item 8) |
 
 ---
 
