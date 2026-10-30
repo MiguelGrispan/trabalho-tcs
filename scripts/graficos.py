@@ -16,7 +16,7 @@ pd.set_option("display.width", 200)
 
 # %%
 # dtype=str: sem isso o pandas pode ler "1" como número e "3.01" como texto na mesma coluna
-data = pd.read_csv('data/contas.csv', sep=';', decimal=',', dtype={"cd_cvm": str, "cd_conta": str})
+data = pd.read_csv('data/contas.csv', dtype={"cd_cvm": str, "cd_conta": str})
 
 # Printando informações gerais da base de dados
 print(data.info())
@@ -65,7 +65,7 @@ print(receita.pivot_table(index="nome", columns="ano", values="valor").head(10))
 # Carregando o `indicadores.csv`:
 
 # %%
-indicadores = pd.read_csv('data/indicadores.csv', sep=';', decimal=',', dtype={"cd_cvm": str})
+indicadores = pd.read_csv('data/indicadores.csv', dtype={"cd_cvm": str})
 
 print(indicadores.info())
 

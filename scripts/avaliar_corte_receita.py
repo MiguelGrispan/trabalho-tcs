@@ -18,7 +18,7 @@ CORTE = 10e6  # R$ 10 mi, o valor proposto
 # Carregando o `indicadores.csv`:
 
 # %%
-indicadores = pd.read_csv('data/indicadores.csv', sep=';', decimal=',', dtype={"cd_cvm": str})
+indicadores = pd.read_csv('data/indicadores.csv', dtype={"cd_cvm": str})
 
 # log de zero não existe
 indicadores = indicadores[indicadores["receita"] > 0]

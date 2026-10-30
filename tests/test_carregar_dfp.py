@@ -154,11 +154,9 @@ class PipelineCompletoTests(TesteComBanco):
         ):
             carregar_dfp.main()
 
+        # CSV padrão (contrato C2): só o dtype, sem sep nem decimal
         return pd.read_csv(
             self.data_dir / "contas.csv",
-            sep=";",
-            encoding="utf-8-sig",
-            decimal=",",
             dtype={"cd_cvm": str, "cd_conta": str},
         )
 
