@@ -66,7 +66,7 @@ O `raiox/dados.py` não converte mais com `str()` (desde o #4), mas devolve o qu
 `buscar_empresas` procura na tabela `contas` do banco. Se a empresa não estiver no `indicadores.csv`, o vendedor
 escolhe e recebe o erro "Empresa X não está na tabela de indicadores". O contrato C1 pede
 "só companhias ativas e com indicadores", e a consulta não filtra nenhum dos dois.
-O C2 também fala numa tabela `indicadores` dentro do `catalogo.db`, mas o `indicadores.py` só grava o CSV.
+O C2 também fala numa tabela `indicadores` no PostgreSQL, mas o `indicadores.py` só grava o CSV.
 **Prova:** leia a consulta SQL em `raiox/dados.py`, função `buscar_empresas`: ela não usa `situacao` nem `indicadores`.
 `grep -n "to_sql" scripts/indicadores.py` não acha nada.
 **Conserto sugerido:** o `indicadores.py` grava também a tabela `indicadores` no banco, e a busca faz `JOIN` com ela.

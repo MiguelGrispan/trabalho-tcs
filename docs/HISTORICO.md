@@ -49,6 +49,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   O #24 entra às 11h32, com o CI verde. A MG1 já estava feita no GitHub (PR e check `testes` obrigatórios, só merge commit,
   apagar branch após o merge): o #24 ficou bloqueado até o CI passar, o que teria evitado o caso do #15.
   PR #26: os guias (CLAUDE.md, README e `aprender/`) passam a ensinar o `docker compose`, e saem deles o `docker run` antigo e o SQLite.
+  PR #27: o `contratos.md` deixa de dizer que a `main` usa SQLite; sobram só as frases da regra do professor ("SQLite não vale").
 
 ## Decisões (e por quê)
 

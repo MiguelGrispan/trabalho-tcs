@@ -6,8 +6,8 @@ Este é o único arquivo de contratos do repositório.
 
 **Banco: PostgreSQL** (regra do professor, 29/10: SQLite não vale; `docs/REQUISITOS.md`, "Regras do professor").
 O endereço fica em `DATABASE_URL`, no `.env` (tem senha: nunca vai para o Git).
-> Pendente (MA2): a `main` ainda grava e lê o `data/catalogo.db` (SQLite). O código com PostgreSQL existe na branch
-> `tratamento_dados` (Marcos, 28/10, commit `5508116`) e entra na `main` pela MA2.
+Desde a MA2 (PRs #21 e #22, 29 e 30/10), as tabelas `contas`, `empresas` e `consultas` ficam no PostgreSQL; a conexão
+abre em `raiox/banco.py`. No Docker, o `docker-compose.yml` sobe o banco e passa o `DATABASE_URL` para a tela.
 
 ## C1 · `raiox/dados.py` · Marcos → Miguel
 
