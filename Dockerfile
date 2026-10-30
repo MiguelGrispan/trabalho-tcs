@@ -14,7 +14,8 @@ RUN python -m pip install -r requirements.txt
 
 # Executa a aplicação com um usuário sem privilégios de administrador.
 # A data/ e o .env não entram na imagem (.dockerignore): a data/ chega como volume e a chave como variável.
-RUN useradd --create-home --uid 10001 appuser
+# O chown deixa o appuser gravar em /app (o cache do pytest, por exemplo); o WORKDIR cria a pasta como root.
+RUN useradd --create-home --uid 10001 appuser && chown appuser:appuser /app
 COPY --chown=appuser:appuser . .
 USER appuser
 

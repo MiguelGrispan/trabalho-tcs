@@ -1,0 +1,61 @@
+# Sobe o Raio-X inteiro: a tela (Streamlit) e o banco (PostgreSQL), cada um no seu contêiner.
+#
+# Comandos (na raiz do repositório):
+#   docker compose up -d --build     sobe os 2 (a 1ª vez demora uns 5 min) → http://localhost:8501
+#   docker compose ps                os 2 devem aparecer como "healthy"
+#   docker compose logs -f tela      o que a tela está escrevendo (Ctrl+C sai)
+#   docker compose down              desliga os 2 (o banco continua guardado no volume banco-dados)
+#
+# Carregar a CVM no banco do contêiner (baixa os zips da DFP e grava data/contas.csv, data/indicadores.csv e as tabelas):
+#   docker compose run --rm --user "$(id -u):$(id -g)" tela python scripts/carregar_dfp.py
+#   docker compose run --rm --user "$(id -u):$(id -g)" tela python scripts/indicadores.py
+#   (no Linux, o --user deixa o contêiner gravar na sua data/; no Mac não precisa)
+#
+# Testes dentro do contêiner, com o banco de testes (raiox_teste):
+#   docker compose run --rm tela python -m pytest -q
+#
+# Variáveis (do terminal ou do .env, que o docker compose lê sozinho):
+#   GOOGLE_API_KEY   chave do Gemini; só é usada com RAIOX_IA_REAL=1
+#   RAIOX_IA_REAL=1  liga o Gemini (gasta crédito); sem ela, o texto é montado sem IA (plano B da demo)
+#   RAIOX_DADOS      "falsos" força as empresas inventadas; vazio usa a data/ real, se ela existir
+#   SENHA_BANCO      senha do PostgreSQL do contêiner (padrão: postgres, a mesma do código e do CI)
+#   PORTA_BANCO      porta do banco no seu computador (padrão: 5432, o endereço padrão do raiox/banco.py)
+
+services:
+  banco:
+    image: postgres:17                                  # a mesma versão do CI
+    environment:
+      POSTGRES_PASSWORD: ${SENHA_BANCO:-postgres}
+      POSTGRES_DB: raiox
+    volumes:
+      - banco-dados:/var/lib/postgresql/data            # o banco sobrevive ao "docker compose down"
+      - ./infra/banco:/docker-entrypoint-initdb.d:ro    # na 1ª vez, cria também o banco de testes
+    ports:
+      - "127.0.0.1:${PORTA_BANCO:-5432}:5432"           # só o seu computador enxerga o banco
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d raiox"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  tela:
+    build: .
+    image: raiox-tela
+    depends_on:
+      banco:
+        condition: service_healthy                      # a tela só sobe com o banco aceitando conexões
+    environment:
+      # "banco" é o nome do serviço acima: dentro do compose, é o endereço do PostgreSQL
+      DATABASE_URL: postgresql://postgres:${SENHA_BANCO:-postgres}@banco:5432/raiox
+      TEST_DATABASE_URL: postgresql://postgres:${SENHA_BANCO:-postgres}@banco:5432/raiox_teste
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      RAIOX_IA_REAL: ${RAIOX_IA_REAL:-}
+      RAIOX_DADOS: ${RAIOX_DADOS:-}
+    volumes:
+      - ./data:/app/data                                # a data/ não vai para o Git nem para a imagem
+    ports:
+      - "8501:8501"
+
+volumes:
+  banco-dados:
