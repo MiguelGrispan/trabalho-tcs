@@ -135,9 +135,10 @@ def main():
     # Regra 6: só empresas com receita de venda positiva no último ano
     contas = filtrar_empresas_com_receita(contas)
 
-    # Salva o CSV
+    # Salva o CSV no formato padrão do contrato C2 (vírgula e ponto decimal),
+    # que o pd.read_csv lê sem nenhum parâmetro
     DATA_DIR.mkdir(exist_ok=True)
-    contas.to_csv(DATA_DIR / "contas.csv", sep=";", index=False, encoding="utf-8-sig", decimal=",")
+    contas.to_csv(DATA_DIR / "contas.csv", index=False)
     print(f"Arquivo contas.csv salvo com {len(contas)} linhas.")
 
     # Salva no banco PostgreSQL: tabelas contas e empresas

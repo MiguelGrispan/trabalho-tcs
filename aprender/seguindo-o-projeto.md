@@ -39,7 +39,7 @@ Mudou para [REQUISITOS.md](../docs/REQUISITOS.md), que é atualizado a cada PR. 
 
 Em ordem: cada item depende do anterior.
 
-### 1) Os CSV são gravados num formato e lidos em outro ⬜ (Marcos + Eduardo)
+### 1) Os CSV são gravados num formato e lidos em outro ✅ consertado em 30/10 (tests/test_dados.py)
 O `scripts/indicadores.py` grava o `indicadores.csv` com `;` e vírgula decimal (padrão do Excel brasileiro).
 O `raiox/segmentos.py` lê no padrão do Python (`,` e ponto). Resultado: a tabela chega com **1 coluna só** e tudo quebra.
 O mesmo acontece entre o `contas.csv` (gravado pelo `carregar_dfp.py`) e o `raiox/checagem.py`.
@@ -57,7 +57,7 @@ print('colunas lidas:', len(pd.read_csv('/tmp/x.csv').columns))"   # mostra: col
 as duas linhas `to_csv(... sep=";", decimal=",")` do Marcos (e a `read_csv` correspondente no `indicadores.py`).
 Arquivo para abrir no Excel, se precisar, é um export separado.
 
-### 2) `cd_cvm` como texto ⬜ (Marcos)
+### 2) `cd_cvm` como texto 🟡 o `indicadores.csv` já sai com int (30/10); o `raiox/dados.py` ainda devolve texto (Marcos)
 O contrato diz que `cd_cvm` é número inteiro. O `carregar_dfp.py` e o `indicadores.py` leem como texto.
 O `raiox/dados.py` não converte mais com `str()` (desde o #4), mas devolve o que vem do banco. Já está anotado no `contratos.md` (C1 e C2).
 **Prova:** `grep -n '"cd_cvm": str' scripts/indicadores.py`.
@@ -113,8 +113,8 @@ o contêiner roda a tela de dentro de `app/` (é onde o Streamlit acha o tema).
 | De | Para | Pelo quê | Status |
 |---|---|---|---|
 | `scripts/carregar_dfp.py` | `scripts/indicadores.py` | `data/contas.csv` | ✅ mesmo formato dos dois lados |
-| `scripts/carregar_dfp.py` | `raiox/checagem.py` | `data/contas.csv` | ⬜ formato (item 1) |
-| `scripts/indicadores.py` | `raiox/segmentos.py` e `raiox/ia.py` | `data/indicadores.csv` (C2) | ⬜ formato e tipo (itens 1 e 2) |
+| `scripts/carregar_dfp.py` | `raiox/checagem.py` | `data/contas.csv` | ✅ CSV padrão (item 1) |
+| `scripts/indicadores.py` | `raiox/segmentos.py` e `raiox/ia.py` | `data/indicadores.csv` (C2) | ✅ CSV padrão e `cd_cvm` int (itens 1 e 2) |
 | `scripts/carregar_dfp.py` | `raiox/dados.py` | `data/catalogo.db` | 🟡 falta filtro e tipo (itens 2 e 3) |
 | `raiox/dados.py` | tela | `buscar_empresas`, `registrar_consulta` (C1) | ⬜ chave na tela (item 5) |
 | `raiox/ia.py` | tela | `preparar_raio_x` (C3) | ✅ testado |

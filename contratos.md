@@ -30,8 +30,8 @@ Uma linha por empresa. Valores em reais (já convertidos da escala MIL). Margens
 sem nenhum parâmetro. Vale também para o `data/contas.csv`, que o `raiox/checagem.py` lê.
 Se alguém precisar abrir no Excel brasileiro (`;` e vírgula decimal), gere um arquivo à parte; o `indicadores.csv` não muda.
 
-> Pendente (sessão MA2 do `docs/PLANO.md`): hoje o `scripts/indicadores.py` e o `scripts/carregar_dfp.py` gravam com `;`
-> e vírgula decimal, e o `cd_cvm` sai como texto.
+> Pendente: a tabela `indicadores` no PostgreSQL ainda não existe; hoje o C2 é só o CSV.
+> O formato padrão e o `cd_cvm` int já valem (PR do Eduardo de 30/10, com testes em `tests/test_dados.py`).
 
 | coluna | tipo | exemplo |
 |---|---|---|

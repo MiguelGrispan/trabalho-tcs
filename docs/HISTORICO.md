@@ -38,6 +38,10 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   O Marcos fecha o PR #18 sem merge e sem comentário (11h51). **ED7** (PR #20): 10 raio-x com IA, 0 itens removidos,
   US$ 0,0118; comparados com a conferência manual da Náthally no RI, batem 7 de 10 (Camil é a issue #17; Magalu e RD Saúde vão à MA3).
   Quem reformatava as tabelas do PLANO era a extensão Office Viewer do VS Code (abre todo `.md`), não o "Format On Save".
+  Às 17h52, o Marcos mescla o PR #21: **o PostgreSQL entra na `main`** (MA2).
+- **30/10** · O Eduardo confere a MA2: o banco funciona (carga real em 44 s), mas o CI não tinha PostgreSQL (17 testes pulados)
+  e o `indicadores.csv` ainda saía com `;`, formato que o resto do código não lê. O PR #22 corrige os dois, com o ok do Marcos
+  (86 testes, nenhum pulado).
 
 ## Decisões (e por quê)
 
@@ -54,6 +58,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 29/10 | **banco PostgreSQL** | regra do professor: SQLite não vale |
 | 29/10 | GitHub simples: CI verde + revisão do Claude Code; pessoa só para contrato ou pasta de outro dono | o clique de "aprovar" travava tudo e não era revisão de verdade |
 | 29/10 | cada informação num lugar só: o agora na seção 0 do PLANO, o status no REQUISITOS, o passado aqui | instruções de 26/10 continuavam nos guias e contradiziam as novas (ex.: "main só com 1 revisão"; trazer o `verificar_automatico.py`, que já tinha sido cortado) |
+| 30/10 | o CI sobe um PostgreSQL só para os testes (`postgres:17`, banco `raiox_teste`) | sem ele, os testes do banco eram pulados e o CI ficava verde sem testar o banco |
 
 **Já cortado do escopo:** verificação com yfinance, receita em 3 anos, filtro de setor, RAG, nome dos grupos pelo LLM,
 exportar o raio-x, 20 casos (ficaram 10). A lista e a ordem dos próximos cortes estão no PLANO, seção 7.
@@ -65,6 +70,8 @@ exportar o raio-x, 20 casos (ficaram 10). A lista e a ordem dos próximos cortes
 - **Número bonito pode enganar:** a silhueta de 0,77 media só a separação de 9 empresas extremas.
 - **Teste que passa nem sempre testa:** dois testes passavam com o campo vazio. Agora estragamos o código de propósito
   para ver o teste falhar.
+- **Teste pulado não é teste que passou:** com o PR #21, o CI ficou verde com 17 testes do banco pulados, porque não havia
+  PostgreSQL no CI. Agora o CI sobe o banco e lista os pulados (`pytest -rs`).
 - **Aprovar sem ler não é revisão:** quem revisa de verdade é o CI (mais de 70 testes) e a leitura do diff; a pessoa entra
   quando a mudança afeta o trabalho dela.
 - **Documento velho confunde mais que documento nenhum:** uma lista de tarefas de 26/10, já trocada pelo PLANO, ainda mandava

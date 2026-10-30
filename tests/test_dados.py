@@ -125,13 +125,7 @@ class IndicadoresTests(unittest.TestCase):
                 "cd_cvm", "nome", "setor", "cd_conta", "ds_conta", "valor",
                 "ano", "demonstracao", "origem", "versao",
             ])
-            contas.to_csv(
-                data_dir / "contas.csv",
-                sep=";",
-                index=False,
-                encoding="utf-8-sig",
-                decimal=",",
-            )
+            contas.to_csv(data_dir / "contas.csv", index=False)
 
             with patch.object(indicadores, "DATA_DIR", data_dir):
                 resultado = indicadores.calcular()
@@ -154,13 +148,33 @@ class IndicadoresTests(unittest.TestCase):
             ], columns=[
                 "cd_cvm", "nome", "setor", "cd_conta", "ds_conta", "valor",
                 "ano", "demonstracao", "origem", "versao",
-            ]).to_csv(
-                data_dir / "contas.csv", sep=";", index=False, encoding="utf-8-sig", decimal=","
-            )
+            ]).to_csv(data_dir / "contas.csv", index=False)
 
             with patch.object(indicadores, "DATA_DIR", data_dir):
                 with self.assertRaises(ValueError):
                     indicadores.calcular()
+
+    def test_calcular_grava_csv_padrao_com_cd_cvm_inteiro(self):
+        """Contrato C2: o pd.read_csv lê sem nenhum parâmetro e o cd_cvm é número."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            data_dir = Path(temp_dir)
+            pd.DataFrame([
+                ["5410", "WEG S.A.", "Máquinas", "3.01", "Receita de Venda", 1234.5, 2025, "DRE", "con", 1],
+                ["5410", "WEG S.A.", "Máquinas", "3.01", "Receita de Venda", 1000.0, 2023, "DRE", "con", 1],
+            ], columns=[
+                "cd_cvm", "nome", "setor", "cd_conta", "ds_conta", "valor",
+                "ano", "demonstracao", "origem", "versao",
+            ]).to_csv(data_dir / "contas.csv", index=False)
+
+            with patch.object(indicadores, "DATA_DIR", data_dir):
+                indicadores.calcular()
+
+            # Com ";" ou vírgula decimal, viria uma coluna só ou a receita como texto
+            lido = pd.read_csv(data_dir / "indicadores.csv")
+            self.assertEqual(list(lido.columns), indicadores.COLUNAS_SAIDA)
+            self.assertTrue(pd.api.types.is_integer_dtype(lido["cd_cvm"]))
+            self.assertEqual(lido.loc[0, "cd_cvm"], 5410)
+            self.assertEqual(lido.loc[0, "receita"], 1234.5)
 
 
 if __name__ == "__main__":

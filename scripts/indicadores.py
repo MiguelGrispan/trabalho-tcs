@@ -24,9 +24,6 @@ CONTAS = {"3.01": "receita", "3.05": "ebit", "3.11": "lucro", "1": "ativo", "2.0
 def calcular():
     df = pd.read_csv(
         DATA_DIR / "contas.csv",
-        sep=";",
-        encoding="utf-8-sig",
-        decimal=",",
         dtype={"cd_cvm": str, "cd_conta": str},
     )
 
@@ -39,13 +36,10 @@ def calcular():
     df = df[df["cd_conta"].isin(list(CONTAS))]
 
     resultado = montar_indicadores(df)
-    resultado.to_csv(
-        DATA_DIR / "indicadores.csv",
-        sep=";",
-        index=False,
-        encoding="utf-8-sig",
-        decimal=",",
-    )
+    # Contrato C2: cd_cvm é número inteiro e o CSV é o padrão
+    # (vírgula e ponto decimal), que o pd.read_csv lê sem nenhum parâmetro
+    resultado["cd_cvm"] = resultado["cd_cvm"].astype(int)
+    resultado.to_csv(DATA_DIR / "indicadores.csv", index=False)
     return resultado
 
 
