@@ -17,7 +17,7 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em sex 30/10, 12h05.** Na `main`: PRs #1 a #16 e #19 a #26 (o #24 é a MG2, Docker do Miguel, mesclado às 11h32 com o CI verde;
+**Em sex 30/10, 13h05.** Na `main`: PRs #1 a #16 e #19 a #26 (o #24 é a MG2, Docker do Miguel, mesclado às 11h32 com o CI verde;
 o #25 registra a MG1; o #26 põe o `docker compose` nos guias). **PR #27:** o `contratos.md` e o `aprender/seguindo-o-projeto.md`
 deixam de dizer que o projeto usa SQLite (o banco é o PostgreSQL desde a MA2). Ficam as frases que registram a regra do
 professor ("SQLite não vale"), no CLAUDE.md, no `contratos.md`, no REQUISITOS e no HISTORICO. `git grep -n -i sqlite` mostra o que sobrou.
