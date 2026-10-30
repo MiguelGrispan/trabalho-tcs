@@ -1,0 +1,60 @@
+# ==============================
+# Git e desenvolvimento local
+# ==============================
+.git/
+.github/
+
+# ==============================
+# Python: ambientes e caches
+# ==============================
+**/__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+myenv/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# ==============================
+# Editores
+# ==============================
+.vscode/
+.idea/
+
+# ==============================
+# Variáveis de ambiente e segredos
+# ==============================
+.env
+.env.*
+!.env.example
+
+.streamlit/secrets.toml
+.aws/
+.ssh/
+
+# ==============================
+# Terraform (Atenção ao comentário acima)
+# ==============================
+terraform/  
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+*.tfplan
+
+# ==============================
+# Dados e arquivos gerados
+# ==============================
+outputs/
+work/
+*.log
+crash.log
+crash.*.log
+
+# ==============================
+# Sistema operacional
+# ==============================
+.DS_Store
+Thumbs.db
