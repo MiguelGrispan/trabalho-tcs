@@ -120,6 +120,9 @@ Parte das regras não depende de lembrar: o `.claude/settings.json` e o `.claude
 - **No CI:** o `tests/test_guarda.py` confere o repositório inteiro, inclusive o que veio pelo navegador ou pelo Codex.
 
 Bloqueado? Diga à pessoa o motivo e o caminho certo. **Não contorne** (outro comando, um script Python, outro arquivo).
+O hook procura o perigo em qualquer ponto do comando, inclusive no texto de uma mensagem: mensagem de commit ou PR que cita o
+`.env` ou um comando proibido vai por arquivo (escreva com a ferramenta Write fora do repositório e use `git commit -F <arquivo>`
+ou `gh pr create --body-file <arquivo>`). Para procurar esse texto no código, use a ferramenta Grep (um `grep` no terminal com ele é bloqueado).
 
 ## Como responder ao time (iniciantes)
 - Português simples. Explique o porquê de cada mudança, não só o quê.

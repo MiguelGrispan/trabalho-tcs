@@ -9,8 +9,8 @@
       "Bash(gh pr list *)"
     ],
     "ask": [
-      "Bash(gh pr merge *)",
-      "Bash(*RAIOX_IA_REAL=1*)",
+      "Bash(gh *merge*)",
+      "Bash(*RAIOX_IA_REAL=*)",
       "Bash(*--com-ia*)",
       "Bash(*rodar_tela_com_ia*)"
     ],
@@ -22,6 +22,7 @@
       "Read(!.env.example)",
       "Edit(!.env.example)",
       "Bash(git pull --rebase *)",
+      "Bash(git pull -r *)",
       "Bash(git push --force *)",
       "Bash(git push -f *)",
       "Bash(git rebase *)",

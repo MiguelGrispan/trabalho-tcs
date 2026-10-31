@@ -104,10 +104,10 @@ Algumas regras do `CLAUDE.md` não dependem de ele lembrar. O `.claude/settings.
 
 | o que aparece | por quê | o que fazer |
 |---|---|---|
-| "Bloqueado: o .env…" | a chave do Gemini nunca passa pelo Claude | se precisar, rode você mesmo no terminal |
+| "Bloqueado: o .env…" | a chave do Gemini nunca passa pelo Claude | se precisar, rode você mesmo no terminal. Era só o texto de uma mensagem de commit ou PR? Ele mesmo resolve: escreve num arquivo e usa `-F` / `--body-file` |
 | "Bloqueado: o push --force / rebase / reset --hard / git clean / add --force…" | apagam trabalho ou passam por cima do `.gitignore` | para trazer a `main`: `git merge main` |
 | "Bloqueado: você está na main" | commit só em branch `pessoa-tarefa` | `/inicio-de-sessao` |
-| "Bloqueado: o commit levaria data/… (ou chave, ou arquivo grande)" | REGRAS-IA.md, seção 2 | `git restore --staged <arquivo>` |
+| "Bloqueado: o commit pode levar data/… (ou chave, ou arquivo grande)" | REGRAS-IA.md, seção 2. O hook confere tudo o que está mudado ou solto na pasta, não só o que vai no commit | `git restore --staged <arquivo>`; arquivo seu que não vai para o Git: ponha no `.gitignore` |
 | pedido de permissão com "gasta crédito do Gemini" | o Gemini é pré-pago | aceite só se for de propósito |
 | pedido de permissão com "está na pasta de…" ou "contratos.md" | regras 1 e 2 do `CLAUDE.md` | aceite só se o dono deu o ok no grupo |
 | pedido de permissão com "muda as travas ou o CI de todos" | `.claude/settings.json`, `.claude/hooks/` ou `.github/workflows/` | aceite só se o grupo sabe |

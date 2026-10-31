@@ -30,10 +30,13 @@ apaga trabalho e pede permissão para o merge (depois do "pode" falado: segunda 
 dado, `.env`, chave ou arquivo acima de 10 MB; pergunta antes de mexer em pasta de outro dono, no `contratos.md`, em
 `docs/professor/` e nas próprias travas e no CI) e no fim de cada resposta (roda o `pytest` se mudou código). Subagent `revisor`
 (só lê) no passo 6 do `/fim-de-sessao`. O `requisitos_projeto.MD` entra no `CLAUDE.md` por import e carrega sozinho.
-**O `revisor` estreou no próprio #30** e achou furos que o autor deixou passar, todos corrigidos com teste: `gh issue create --body
-"$(cat …)"` publicaria a chave; `git add -A && git commit`, `git -C`, `pull --rebase`, `.env.local` e nome com acento escapavam;
-o atalho `rodar_tela_com_ia.command` ligava o Gemini sem perguntar; mensagem de commit num comando composto era bloqueada à toa.
-Conferido: 57 testes novos (`tests/test_guarda.py`); o hook bloqueou comandos do Claude nesta sessão, no modo bypass; numa sessão
+**O `revisor` estreou no próprio #30 e revisou duas vezes.** Na 1ª, achou furos que o autor deixou passar (`--body "$(cat …)"`
+publicaria a chave; `git add -A && git commit`, `git -C`, `pull --rebase`, `.env.local`, nome com acento e o atalho
+`rodar_tela_com_ia.command` escapavam). Na 2ª, mostrou que a correção tinha aberto furos novos: separar "texto de mensagem" de
+"comando" por regex deixava passar comando em linha nova, `bash -c` e aspas aninhadas. **Decisão:** o hook não tenta entender
+o shell; procura o perigo em qualquer ponto do comando e, na dúvida, bloqueia. Mensagem de commit ou PR que cita o `.env` ou um
+comando proibido vai por arquivo (`git commit -F`, `gh pr create --body-file`); o commit confere tudo o que está solto na pasta.
+Conferido: 84 testes novos (`tests/test_guarda.py`, com os casos do revisor); o hook bloqueou comandos do Claude nesta sessão, no modo bypass; numa sessão
 nova (`claude -p`), o import e o resumo do começo apareceram. **Não conferido:** se o "ask" de um hook aparece no modo bypass (por
 isso merge e Gemini também são regra `ask` do settings, que vale em todo modo); o Linux; o `user.name` do Git do Marcos.
 Quem usa Claude Code: depois do merge, `git pull` e abra o `claude` de novo na raiz; sem `.venv`, ponha o `RAIOX_PYTHON` no seu
@@ -335,7 +338,7 @@ Para subir um arquivo:
 | `tests/test_tela.py` (MG4) | a tela com os falsos: busca, gerar, 6 métricas, sem erro | Miguel | sim |
 | `tests/test_ponta_a_ponta.py` | C2 real, raio-x sem IA de 3 setores, `cd_cvm` dos casos (todos preenchidos e na tabela real) | Eduardo | **não**: pula sem `data/`. Rodar local antes de `v0.1-demo`, `v1.0` e no teste do zero |
 | `tests/test_aprender.py` | o notebook `aprender/passo_a_passo.ipynb` roda inteiro e vai para o Git sem saídas | Eduardo | sim |
-| `tests/test_guarda.py` (#30, 57 testes) | as travas do Claude Code (`.claude/hooks/guarda.py`): o que bloqueia, o que pergunta e o que libera; o teste do fim de resposta; e o repositório inteiro sem `data/`, `.env`, chave nem arquivo acima de 10 MB (vale para os 4, inclusive upload pelo navegador) | Eduardo | sim (os de Git pulam no contêiner, que não tem `git`) |
+| `tests/test_guarda.py` (#30, 84 testes) | as travas do Claude Code (`.claude/hooks/guarda.py`): o que bloqueia, o que pergunta e o que libera; o teste do fim de resposta; e o repositório inteiro sem `data/`, `.env`, chave nem arquivo acima de 10 MB (vale para os 4, inclusive upload pelo navegador) | Eduardo | sim (os de Git pulam no contêiner, que não tem `git`) |
 | Docker | `curl localhost:8501/_stcore/health` → `ok`; os testes dentro do contêiner: `docker compose run --rm tela python -m pytest -q` (87 passed em 30/10) | Miguel | não (checklist da demo) |
 | Terraform | `terraform fmt -check` e `terraform validate` no CI (`.github/workflows/terraform.yml`, PRs que mexem em `infra/`); `apply`, `docker exec raiox-tela python -m pytest -q` (87 passed em 31/10) e `destroy` + `apply` na mão | Miguel | só o `fmt` e o `validate` |
 

@@ -45,6 +45,9 @@ Siga os passos **em ordem** e pare no primeiro que falhar.
 ## 5. Commit, push e PR
 
 - Commits pequenos, com mensagem em português que diga o que mudou.
+- Mensagem ou descrição de PR que cita o `.env` ou um comando proibido (`rebase`, `push --force`…): o hook bloqueia o texto
+  na linha de comando. Escreva com a ferramenta Write num arquivo fora do repositório e use `git commit -F <arquivo>` e
+  `gh pr create --body-file <arquivo>`. O modelo de PR cita o `.env`: a descrição do PR vai sempre por arquivo.
 - `git push -u origin pessoa-tarefa` e `gh pr create`, seguindo `.github/pull_request_template.md`:
   - "Feito com IA": o que a IA fez nesta sessão;
   - "O que eu entendi ou conferi": **pergunte à pessoa** e escreva o que ela disser, mesmo que seja "ainda não li". Não invente.

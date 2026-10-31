@@ -7,6 +7,7 @@ O guarda.py roda como o Claude Code o roda: um processo que recebe um JSON pela 
   JSON com ask  → pergunta à pessoa
   nada          → libera
 Os testes com Git usam um repositório de mentira numa pasta temporária: nada muda no repositório de verdade.
+Muitos casos vieram do subagent revisor, que revisou o PR #30 duas vezes e achou furos nas duas.
 """
 import importlib.util
 import json
@@ -75,21 +76,43 @@ def repo(tmp_path):
 @pytest.mark.parametrize("comando", [
     f"cat {ENV}",
     f"grep GOOGLE {ENV}",
+    f'cat -b "{ENV}"',
+    f"echo oi\ncat {ENV}",
+    f"python3 - <<'EOF'\nprint(open('{ENV}').read())\nEOF",
+    f'gh issue create --title "x" --body "$(cat {ENV})"',            # o shell executa o $( ) da mensagem
+    f'gh issue create --body "`cat {ENV}`"',
+    f"echo '-m \"'; cat {ENV}; echo '\"'",                           # aspas que enganavam a 2ª versão
+    f"git commit -m \"$(cat <<'EOF'\nmsg\nEOF\ncat {ENV}\nEOF\n)\"",  # heredoc que fecha antes do que parece
+    f'git commit -m "explica o {ENV}"',                              # só texto? vai por arquivo (-F); ver abaixo
+])
+def test_bloqueia_qualquer_comando_que_cite_o_env(comando):
+    r = bash(comando)
+    assert decisao(r) == "bloqueia"
+    assert "-F <arquivo>" in r.stderr          # a mensagem de bloqueio ensina a saída certa
+
+
+@pytest.mark.parametrize("comando", [
     "git push origin miguel-tela --force",      # o --force no fim: a regra deny do settings.json não pega; o hook pega
     "git push -f origin miguel-tela",
+    "git push -uf origin miguel-tela",
+    "git push origin +main",
+    "git -C ../outra-pasta push origin miguel-tela --force",
     "git rebase main",
+    "git --no-pager rebase main",
+    'git -C "minha pasta" rebase main',
+    "cd app && git rebase main",
+    "echo oi\ngit rebase main",                 # comando em linha nova (achado da 2ª revisão)
+    "if true; then git push --force; fi",
+    "bash -c 'git reset --hard'",
+    "echo main | xargs git rebase",
+    "git pull --rebase origin main",
+    "git pull -r",
     "git reset --hard HEAD~1",
     "git clean -fdx",
     "git add -f data/contas.csv",
-    f"python3 - <<'EOF'\nprint(open('{ENV}').read())\nEOF",   # heredoc fora de commit e PR é código: continua conferido
-    # achados do revisor no PR #30: o shell executa $( ) dentro da mensagem, então ela não pode esconder o comando
-    f'gh issue create --title "x" --body "$(cat {ENV})"',
-    f'git commit -m "$(cat <<EOF\n$(cat {ENV})\nEOF\n)"',     # heredoc com EOF sem aspas: o shell executa o $( )
-    "git pull --rebase origin main",
-    "git -C ../outra-pasta push origin miguel-tela --force",
-    "cd app && git rebase main",
+    "git add -fA",
 ])
-def test_bloqueia_env_e_git_que_apaga_trabalho(comando):
+def test_bloqueia_git_que_apaga_trabalho(comando):
     r = bash(comando)
     assert decisao(r) == "bloqueia"
     assert "Bloqueado" in r.stderr
@@ -97,8 +120,11 @@ def test_bloqueia_env_e_git_que_apaga_trabalho(comando):
 
 @pytest.mark.parametrize("comando", [
     "RAIOX_IA_REAL=1 streamlit run app/streamlit_app.py",
+    'RAIOX_IA_REAL="1" streamlit run app/streamlit_app.py',
     "python -m avaliacao.avaliar --com-ia",
     "python -m raiox.ia --cvm 5410 --produto ERP --objetivo venda",   # sem --sem-ia, o raiox.ia chama o Gemini
+    "python3.11 -mraiox.ia --cvm 5410",
+    'python -c "from raiox.ia import gerar_llm; gerar_llm({}, [])"',
     "bash aprender/atalhos/rodar_tela_com_ia.command",                # o atalho liga o Gemini por dentro
 ])
 def test_pergunta_antes_de_gastar_credito_do_gemini(comando):
@@ -112,13 +138,22 @@ def test_pergunta_antes_de_gastar_credito_do_gemini(comando):
     "python -m pytest -q",
     ".venv/bin/python -c 'import os; print(os.environ)'",
     "git push -u origin miguel-tela",
+    "git push --set-upstream origin feature-fix",
+    "git pull",
+    "git log --oneline -5",
     "python -m raiox.ia --cvm 5410 --produto ERP --objetivo venda --sem-ia",
     "python -m avaliacao.avaliar",
-    'grep -rn "git rebase" docs/',                             # procurar o texto não é rodar o comando
     'python -c "from raiox.ia import validar_e_preencher"',   # importar não chama o Gemini
+    "gh pr create --title 'Travas' --body-file /tmp/corpo.md",  # mensagem por arquivo: a saída certa
+    "cat .claude/hooks/guarda.py",                              # ler as travas pode
 ])
 def test_libera_o_trabalho_normal(comando):
     assert decisao(bash(comando)) == "libera"
+
+
+def test_pergunta_antes_de_mudar_as_travas_pelo_terminal():
+    assert decisao(bash("sed -i '' 's/2/0/' .claude/hooks/guarda.py")) == "ask"
+    assert decisao(bash("echo x >> .github/workflows/testes.yml")) == "ask"
 
 
 # ---------------------------------------------------------------- arquivos (PreToolUse, Edit e Write)
@@ -135,6 +170,8 @@ def test_libera_o_trabalho_normal(comando):
     ("eduardo", "contratos.md", "ask"),
     ("eduardo", ".claude/settings.json", "ask"),           # as travas e o CI mudam a máquina e os PRs de todos
     ("eduardo", ".claude/hooks/guarda.py", "ask"),
+    ("eduardo", ".claude/agents/revisor.md", "ask"),
+    ("eduardo", "tests/test_guarda.py", "ask"),
     ("miguel", ".github/workflows/testes.yml", "ask"),
 ])
 def test_pergunta_antes_de_mexer_em_pasta_de_outro_dono(pessoa, arquivo, esperado):
@@ -167,9 +204,19 @@ def test_tabela_de_donos_do_claude_md_continua_legivel():
 @precisa_git
 def test_bloqueia_commit_na_main(repo):
     git(repo, "switch", "-q", "main")
-    r = bash('git commit -m "teste"', raiz=repo)
-    assert decisao(r) == "bloqueia"
-    assert "main" in r.stderr
+    for comando in ('git commit -m "teste"', f'git -C {repo} commit -m "x"', 'git commit -m "x" && git switch -c nova'):
+        r = bash(comando, raiz=repo)
+        assert decisao(r) == "bloqueia" and "main" in r.stderr, comando
+
+
+@precisa_git
+def test_libera_commit_limpo_com_mensagem_por_arquivo(repo, tmp_path_factory):
+    mensagem = tmp_path_factory.mktemp("msg") / "mensagem.txt"
+    mensagem.write_text(f"Explica por que o {ENV} e o git rebase são proibidos.\n")
+    (repo / "novo.py").write_text("x = 1\n")
+    git(repo, "add", "novo.py")
+    assert decisao(bash(f"git commit -F {mensagem}", raiz=repo)) == "libera"
+    assert decisao(bash('git add novo.py && git commit -m "novo"', raiz=repo)) == "libera"
 
 
 @precisa_git
@@ -178,8 +225,7 @@ def test_bloqueia_commit_com_dado_ou_chave(repo):
     (repo / "data" / "contas.csv").write_text("a,b\n1,2\n")
     git(repo, "add", "-f", "data/contas.csv")
     r = bash('git commit -m "dados"', raiz=repo)
-    assert decisao(r) == "bloqueia"
-    assert "data/contas.csv" in r.stderr
+    assert decisao(r) == "bloqueia" and "data/contas.csv" in r.stderr
 
     git(repo, "restore", "--staged", "data/contas.csv")
     (repo / "config.py").write_text(f'CHAVE = "{CHAVE_FALSA}"\n')
@@ -188,54 +234,44 @@ def test_bloqueia_commit_com_dado_ou_chave(repo):
 
 
 @precisa_git
-def test_libera_commit_limpo_mesmo_que_a_mensagem_fale_de_env_e_rebase(repo):
-    (repo / "novo.py").write_text("x = 1\n")
-    git(repo, "add", "novo.py")
-    assert decisao(bash(f'git commit -m "explica por que o {ENV} e o git rebase são proibidos"', raiz=repo)) == "libera"
-    # o jeito que o Claude Code escreve mensagem longa: heredoc, com "aspas" no meio
-    heredoc = f'git commit -m "$(cat <<\'EOF\'\nO "{ENV}" fica fora; nada de git rebase.\nEOF\n)"'
-    assert decisao(bash(heredoc, raiz=repo)) == "libera"
-    # no meio de um comando composto também (achado do revisor)
-    (repo / "outro.py").write_text("y = 2\n")
-    assert decisao(bash(f'git add outro.py && git commit -m "fala do {ENV}"', raiz=repo)) == "libera"
-
-
-def test_libera_pr_cuja_descricao_fala_do_env():
-    corpo = f'gh pr create --title "Travas" --body "$(cat <<\'EOF\'\nDeny para ler o "{ENV}".\nEOF\n)"'
-    assert decisao(bash(corpo)) == "libera"
-    assert decisao(bash(f'git push -u origin x && {corpo}')) == "libera"
-    assert decisao(bash(corpo + f" && cat {ENV}")) == "bloqueia"     # o que vem depois da mensagem continua conferido
-
-
-@precisa_git
-def test_commit_com_add_no_mesmo_comando_confere_o_que_o_add_vai_por(repo):
-    """O hook roda antes do comando: o git add ainda não aconteceu, então ele olha os arquivos novos e mudados."""
+@pytest.mark.parametrize("comando", [
+    'git add . && git commit -m "x"',
+    'git add .\ngit commit -m "x"',
+    'git commit -am "x"',
+    "bash -c 'git add -A && git commit -m x'",
+])
+def test_commit_confere_o_que_esta_solto_na_pasta(repo, comando):
+    """O hook roda antes do comando: não sabe o que um git add vai pôr no stage. Por isso confere tudo o que está
+    mudado ou novo na pasta (fora do .gitignore). Na dúvida, bloqueia."""
     (repo / "config.py").write_text(f'CHAVE = "{CHAVE_FALSA}"\n')
-    r = bash('git add . && git commit -m "config"', raiz=repo)
+    r = bash(comando, raiz=repo)
     assert decisao(r) == "bloqueia" and "chave do Google" in r.stderr
 
-    (repo / "config.py").unlink()
+
+@precisa_git
+def test_commit_confere_arquivo_grande_e_arquivo_rastreado_mudado(repo):
     with open(repo / "grande.bin", "wb") as f:
         f.truncate(10 * 1024 * 1024 + 1)
-    r = bash(f'git -C {repo} add -A && git -C {repo} commit -m "grande"', raiz=repo)
-    assert decisao(r) == "bloqueia" and "acima de 10 MB" in r.stderr
+    assert "acima de 10 MB" in bash('git add -A && git commit -m "grande"', raiz=repo).stderr
+    (repo / "grande.bin").unlink()
+    (repo / "config.py").write_text("CHAVE = ''\n")
+    git(repo, "add", "config.py")
+    git(repo, "commit", "-qm", "config")
+    (repo / "config.py").write_text(f'CHAVE = "{CHAVE_FALSA}"\n')    # rastreado e mudado, ainda fora do stage
+    assert "chave do Google" in bash('git commit -am "x"', raiz=repo).stderr
 
 
 @precisa_git
-def test_libera_o_commit_que_apaga_uma_chave_vazada(repo):
+def test_libera_o_commit_que_tira_do_git_uma_chave_ou_um_dado(repo):
+    (repo / "data").mkdir()
+    (repo / "data" / "contas.csv").write_text("a\n")
     (repo / "config.py").write_text(f'CHAVE = "{CHAVE_FALSA}"\n')
-    git(repo, "add", "config.py")
+    git(repo, "add", "-f", "data/contas.csv", "config.py")
     git(repo, "commit", "-qm", "erro")                     # entrou sem passar pelo hook (ex.: fora do Claude Code)
     (repo / "config.py").write_text('CHAVE = ""\n')
     git(repo, "add", "config.py")
-    assert decisao(bash('git commit -m "tira a chave"', raiz=repo)) == "libera"
-
-
-@precisa_git
-def test_libera_commit_na_branch_nova_criada_no_mesmo_comando(repo):
-    git(repo, "switch", "-q", "main")
-    assert decisao(bash('git switch -c eduardo-nova && git commit -m "x"', raiz=repo)) == "libera"
-    assert decisao(bash(f'git -C {repo} commit -m "x"', raiz=repo)) == "bloqueia"
+    git(repo, "rm", "-q", "--cached", "data/contas.csv")
+    assert decisao(bash('git commit -m "tira a chave e o dado"', raiz=repo)) == "libera"
 
 
 # ---------------------------------------------------------------- fim da resposta (Stop)
@@ -287,15 +323,22 @@ def test_repositorio_sem_dado_chave_nem_arquivo_grande():
 @precisa_git
 def test_conferir_acha_dado_e_chave_no_git(repo):
     (repo / "data").mkdir()
-    (repo / "data" / "contas.csv").write_text("a\n")
-    (repo / "data" / "relatório.csv").write_text("a\n")    # com acento, o Git põe o nome entre aspas se não avisarmos
-    (repo / f"{ENV}.local").write_text("SENHA=x\n")         # qualquer .env, não só o de nome exato
-    (repo / "config.py").write_text(f'CHAVE = "{CHAVE_FALSA}"\n')
-    git(repo, "add", "-f", "data/contas.csv", "data/relatório.csv", f"{ENV}.local", "config.py")
+    arquivos = {
+        "data/contas.csv": "a\n",
+        "data/relatório.csv": "a\n",       # com acento, o Git põe o nome entre aspas se não avisarmos
+        f"{ENV}.local": "SENHA=x\n",       # qualquer .env, não só o de nome exato
+        f"prod{ENV}": "SENHA=x\n",
+        "BASE.ZIP": "x",                   # maiúscula também
+        "banco.sqlite": "x",
+        "config.py": f'CHAVE = "{CHAVE_FALSA}"\n',
+    }
+    for nome, conteudo in arquivos.items():
+        (repo / nome).write_text(conteudo)
+    git(repo, "add", "-f", *arquivos)
     git(repo, "commit", "-qm", "erro de propósito")
     r = rodar("conferir", raiz=repo)
     assert r.returncode == 1
-    for esperado in ("data/contas.csv", "data/relatório.csv", f"{ENV}.local", "chave do Google em config.py"):
+    for esperado in [n for n in arquivos if n != "config.py"] + ["chave do Google em config.py"]:
         assert esperado in r.stdout
 
 
@@ -303,9 +346,9 @@ def test_conferir_acha_dado_e_chave_no_git(repo):
 def test_settings_do_projeto_liga_a_guarda_e_as_travas():
     config = json.loads((PASTA / ".claude" / "settings.json").read_text(encoding="utf-8"))
     regras = config["permissions"]
-    assert f"Read({ENV})" in regras["deny"]
+    assert f"Read({ENV})" in regras["deny"] and f"Read({ENV}.*)" in regras["deny"]
     assert "Bash(git push --force *)" in regras["deny"]
-    assert "Bash(gh pr merge *)" in regras["ask"]          # o "pode" antes do merge, até no modo bypass
+    assert "Bash(gh *merge*)" in regras["ask"]             # a 2ª trava do merge, até no modo bypass
     comandos = {evento: grupo["hooks"][0]["command"] for evento, grupos in config["hooks"].items() for grupo in grupos}
     assert comandos.keys() == {"SessionStart", "PreToolUse", "Stop"}
     for evento, modo in [("SessionStart", "inicio"), ("PreToolUse", "antes"), ("Stop", "fim")]:
