@@ -27,20 +27,40 @@ RAIZ = Path(os.environ.get("CLAUDE_PROJECT_DIR") or Path(__file__).resolve().par
 CHAVE_GOOGLE = r"AIza[0-9A-Za-z_-]{35}"
 LIMITE_BYTES = 10 * 1024 * 1024  # REGRAS-IA.md, seção 2: nada acima de 10 MB
 
+# Onde começa um comando: no início ou depois de ; & | ( $( `, com variáveis na frente (X=1 git ...).
+# Assim "grep 'git rebase' docs/" não conta como rebase, mas "cd x && git rebase" conta.
+INICIO = r"(?:^|[;&|(`]|\$\()\s*(?:\w+=\S*\s+)*"
+GIT = INICIO + r"git(?:\s+-[cC]\s+\S+)*\s+"   # git -C pasta ... e git -c chave=valor ... também valem
+ATE_O_FIM = r"[^;&|\n]*"                       # o resto do mesmo comando, sem passar para o próximo
+
 # Comandos que reescrevem a história ou apagam trabalho (CLAUDE.md, regra 8)
 PERIGOSOS = [
-    (r"\bgit\s+rebase\b", "o rebase reescreve a história"),
-    (r"\bgit\s+push\b.*\s(-f|--force(-with-lease)?)(\s|$)", "o push --force pode apagar o trabalho de um colega"),
-    (r"\bgit\s+reset\s+--hard\b", "o reset --hard apaga mudanças sem commit"),
-    (r"\bgit\s+clean\b", "o git clean apaga arquivos fora do Git (com -x, a data/ e o .env)"),
-    (r"\bgit\s+add\b.*\s(-f|--force)(\s|$)", "o add --force passa por cima do .gitignore (data/, .env)"),
+    (GIT + r"rebase\b", "o rebase reescreve a história"),
+    (GIT + r"pull\b" + ATE_O_FIM + r"--rebase", "o pull --rebase reescreve a história"),
+    (GIT + r"push\b" + ATE_O_FIM + r"\s(-f|--force(-with-lease)?)(\s|=|$)", "o push --force pode apagar o trabalho de um colega"),
+    (GIT + r"reset\s+--hard\b", "o reset --hard apaga mudanças sem commit"),
+    (GIT + r"clean\b", "o git clean apaga arquivos fora do Git (com -x, a data/ e o .env)"),
+    (GIT + r"add\b" + ATE_O_FIM + r"\s(-f|--force)(\s|$)", "o add --force passa por cima do .gitignore (data/, .env)"),
 ]
+
+# Texto de mensagem (commit, PR, issue) que o shell NÃO executa: pode falar de .env ou de rebase à vontade
+OPCAO_DE_MENSAGEM = r"(?:-m|-am|--message|--body|--title|-b|-t)(?:\s+|=)"
+MENSAGEM_HEREDOC = OPCAO_DE_MENSAGEM + r"""["']?\$\(cat\s+<<-?\s*(['"])(\w+)\1\n.*?\n\s*\2\s*\)["']?"""
+MENSAGEM_LITERAL = OPCAO_DE_MENSAGEM + r"""('[^']*'|"(?:[^"\\$`]|\\.|\$(?!\())*")"""
+
+
+def sem_mensagens(cmd):
+    """Tira só o que é texto puro: aspas simples, aspas duplas sem $( nem crase, heredoc com <<'EOF' entre aspas.
+    Um "$(cat .env)" dentro da mensagem é executado pelo shell, então continua no comando e é conferido."""
+    cmd = re.sub(MENSAGEM_HEREDOC, " ", cmd, flags=re.S)
+    return re.sub(MENSAGEM_LITERAL, " ", cmd)
 
 
 def git(*args):
-    """Roda um comando git na raiz e devolve a saída (vazia se der erro ou se não houver git, como no contêiner)."""
+    """Roda um comando git na raiz e devolve a saída (vazia se der erro ou se não houver git, como no contêiner).
+    core.quotePath=false: nome com acento sai como é ("data/relatório.csv"), não entre aspas e com códigos."""
     try:
-        r = subprocess.run(["git", "-C", str(RAIZ), *args], capture_output=True, text=True)
+        r = subprocess.run(["git", "-C", str(RAIZ), "-c", "core.quotePath=false", *args], capture_output=True, text=True)
     except OSError:
         return ""
     return r.stdout.strip()
@@ -72,11 +92,13 @@ def proibido(caminho):
     """Diz por que um arquivo não pode ir para o Git, ou None se pode (REGRAS-IA.md, seção 2)."""
     if caminho.startswith("data/") and caminho != "data/.gitkeep":
         return "dado da CVM ou gerado (data/)"
-    if re.search(r"(^|/)\.env$", caminho):
-        return "o .env, com a chave do Gemini"
+    if re.search(r"(^|/)\.env(\.[^/]*)?$", caminho) and not caminho.endswith(".env.example"):
+        return "um .env (chave ou senha)"
+    if caminho.endswith(".streamlit/secrets.toml"):
+        return "segredos do Streamlit"
     if re.search(r"\.(db|zip|parquet)$", caminho):
         return "banco ou arquivo de dados"
-    if re.search(r"\.tfstate(\.|$)|\.tfvars$", caminho):
+    if re.search(r"\.tfstate(\.|$)|\.tfvars(\.json)?$", caminho):
         return "estado ou variáveis do Terraform (podem guardar senha)"
     arquivo = RAIZ / caminho
     if arquivo.is_file() and arquivo.stat().st_size > LIMITE_BYTES:
@@ -107,17 +129,36 @@ def dono_de(relativo):
     return dono
 
 
+def linhas_novas(diff):
+    """Só as linhas que o commit acrescenta: apagar uma chave vazada tem de poder."""
+    return [l for l in diff.splitlines() if l.startswith("+") and not l.startswith("+++")]
+
+
+def commit_levaria(cmd):
+    """O que já está no stage e, se o mesmo comando tem git add ou commit -a, o que ele ainda vai pôr lá.
+    O hook roda ANTES do comando: por isso olha também os arquivos mudados e os novos (fora do .gitignore)."""
+    arquivos = set(git("diff", "--cached", "--name-only").splitlines())
+    texto = "\n".join(linhas_novas(git("diff", "--cached")))
+    if re.search(GIT + r"add\b", cmd) or re.search(GIT + r"commit\b" + ATE_O_FIM + r"\s-\w*a", cmd):
+        novos = git("ls-files", "--others", "--exclude-standard").splitlines()
+        arquivos |= set(git("ls-files", "--modified").splitlines()) | set(novos)
+        texto += "\n" + "\n".join(linhas_novas(git("diff")))
+        for novo in novos:
+            arquivo = RAIZ / novo
+            if arquivo.is_file() and arquivo.stat().st_size <= LIMITE_BYTES:
+                texto += "\n" + arquivo.read_text(encoding="utf-8", errors="ignore")
+    ruins = [f"{f} ({proibido(f)})" for f in sorted(arquivos) if proibido(f)]
+    if re.search(CHAVE_GOOGLE, texto):
+        ruins.append("uma chave do Google (AIza...) no texto")
+    return ruins
+
+
 def antes(dados):
     ferramenta = dados.get("tool_name", "")
     entrada = dados.get("tool_input", {})
 
     if ferramenta == "Bash":
-        cmd = entrada.get("command", "")
-        # Num commit, PR ou issue, tira o texto da mensagem: um commit que só FALA de .env ou de rebase pode.
-        # O heredoc (<<'EOF' ... EOF) só sai nesses comandos: num "python3 - <<EOF", ele é código e continua conferido.
-        if re.match(r"\s*(git\s+commit|gh\s+(pr|issue)\s)", cmd):
-            cmd = re.sub(r"<<-?\s*['\"]?(\w+)['\"]?\n.*?\n\s*\1\b", " ", cmd, flags=re.S)
-            cmd = re.sub(r"""(?:-m|--message|--body|--title)\s+("(?:[^"\\]|\\.)*"|'[^']*')""", " ", cmd)
+        cmd = sem_mensagens(entrada.get("command", ""))
         # 1. O .env (chave do Gemini) nunca passa pelo Claude; o .env.example pode
         if re.search(r"\.env\b(?!\.example)", cmd):
             bloquear("Bloqueado: o .env guarda a chave do Gemini e não passa pelo Claude (CLAUDE.md, Cuidados). "
@@ -127,20 +168,19 @@ def antes(dados):
             if re.search(padrao, cmd):
                 bloquear(f"Bloqueado: {motivo} (CLAUDE.md, regra 8). Para trazer a main: git merge main.")
         # 3. Commit: nunca na main e nunca com dado, .env, chave ou arquivo grande (REGRAS-IA.md, seção 2)
-        if re.search(r"\bgit\s+commit\b", cmd):
-            if git("branch", "--show-current") == "main":
+        if re.search(GIT + r"commit\b", cmd):
+            nova_branch = re.search(GIT + r"(switch\s+-c|checkout\s+-b)\b", cmd)
+            if git("branch", "--show-current") == "main" and not nova_branch:
                 bloquear("Bloqueado: você está na main. Rode /inicio-de-sessao para criar a branch pessoa-tarefa "
                          "(CLAUDE.md, regra 8).")
-            ruins = [f"{f} ({proibido(f)})" for f in git("diff", "--cached", "--name-only").splitlines() if proibido(f)]
-            if re.search(CHAVE_GOOGLE, git("diff", "--cached")):
-                ruins.append("uma chave do Google (AIza...) no texto")
+            ruins = commit_levaria(cmd)
             if ruins:
-                bloquear("Bloqueado: o commit levaria " + "; ".join(ruins) + ". Tire do commit com "
+                bloquear("Bloqueado: o commit pode levar " + "; ".join(ruins) + ". Tire do commit com "
                          "git restore --staged <arquivo> e confira o git status (REGRAS-IA.md, seção 2).")
         # 4. Gemini de verdade gasta crédito pré-pago: pergunta antes.
         #    Atenção: no raiox/ia.py o padrão é COM IA (python -m raiox.ia sem --sem-ia; preparar_raio_x sem usar_ia=False)
-        gemini = (re.search(r"RAIOX_IA_REAL=1|--com-ia|usar_ia=True", cmd)
-                  or (re.search(r"\braiox\.ia\b", cmd) and "--sem-ia" not in cmd)
+        gemini = (re.search(r"RAIOX_IA_REAL=1|--com-ia|usar_ia=True|rodar_tela_com_ia", cmd)
+                  or (re.search(r"-m\s+raiox\.ia\b", cmd) and "--sem-ia" not in cmd)
                   or ("preparar_raio_x(" in cmd and "usar_ia=False" not in cmd))
         if gemini:
             perguntar("Isto chama o Gemini e gasta crédito (≈ US$ 0,0012 por raio-x). "
@@ -152,10 +192,13 @@ def antes(dados):
             relativo = Path(caminho).resolve().relative_to(RAIZ).as_posix()
         except ValueError:
             return  # arquivo fora do projeto: não é com este hook
-        # 5. Contrato antes de código (CLAUDE.md, regra 2)
+        # 5. As próprias travas e o CI: mudam o computador e os PRs de todos
+        if relativo == ".claude/settings.json" or relativo.startswith((".claude/hooks/", ".github/workflows/")):
+            perguntar(f"{relativo} muda as travas ou o CI de todos. O grupo sabe? (CLAUDE.md, pastas comuns)")
+        # 6. Contrato antes de código (CLAUDE.md, regra 2)
         if relativo == "contratos.md":
             perguntar("O contratos.md é o formato entre as partes. Quem recebe já foi avisado? (CLAUDE.md, regra 2)")
-        # 6. Pasta de outro dono (CLAUDE.md, regra 1). Quem sou: RAIOX_PESSOA ou o nome do Git
+        # 7. Pasta de outro dono (CLAUDE.md, regra 1). Quem sou: RAIOX_PESSOA ou o nome do Git
         dono = dono_de(relativo)
         if dono and " " in dono:  # não é um nome, é uma regra (ex.: docs/professor/, "ninguém edita")
             perguntar(f"{relativo}: {dono} (CLAUDE.md, Estrutura e donos)")

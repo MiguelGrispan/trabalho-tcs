@@ -11,11 +11,17 @@
     "ask": [
       "Bash(gh pr merge *)",
       "Bash(*RAIOX_IA_REAL=1*)",
-      "Bash(*--com-ia*)"
+      "Bash(*--com-ia*)",
+      "Bash(*rodar_tela_com_ia*)"
     ],
     "deny": [
       "Read(.env)",
       "Edit(.env)",
+      "Read(.env.*)",
+      "Edit(.env.*)",
+      "Read(!.env.example)",
+      "Edit(!.env.example)",
+      "Bash(git pull --rebase *)",
       "Bash(git push --force *)",
       "Bash(git push -f *)",
       "Bash(git rebase *)",

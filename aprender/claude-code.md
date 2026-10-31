@@ -89,7 +89,7 @@ Digite `/fim-de-sessao`. Ele faz, nesta ordem:
 4. escreve de 1 a 3 linhas no `docs/HISTORICO.md`;
 5. faz o commit, o push e abre o PR;
 6. espera o CI e pede a revisão do diff ao `revisor`, um segundo Claude que só lê e não viu a sessão;
-7. roda o merge: o pedido de permissão que aparece **é** o seu "pode" (recusou, nada acontece).
+7. pede o seu "pode" e roda o merge; aparece ainda um pedido de permissão, que é a segunda trava (recusou, nada acontece).
 
 Ele pergunta o que você entendeu ou conferiu e escreve isso no PR (vale "ainda não li"; não vale inventar).
 Sem a skill, peça ao Claude: "siga o arquivo `.claude/skills/fim-de-sessao/SKILL.md`".
@@ -110,16 +110,20 @@ Algumas regras do `CLAUDE.md` não dependem de ele lembrar. O `.claude/settings.
 | "Bloqueado: o commit levaria data/… (ou chave, ou arquivo grande)" | REGRAS-IA.md, seção 2 | `git restore --staged <arquivo>` |
 | pedido de permissão com "gasta crédito do Gemini" | o Gemini é pré-pago | aceite só se for de propósito |
 | pedido de permissão com "está na pasta de…" ou "contratos.md" | regras 1 e 2 do `CLAUDE.md` | aceite só se o dono deu o ok no grupo |
-| pedido de permissão para `gh pr merge` | é o seu "pode" | leia o resumo do `revisor` antes |
+| pedido de permissão com "muda as travas ou o CI de todos" | `.claude/settings.json`, `.claude/hooks/` ou `.github/workflows/` | aceite só se o grupo sabe |
+| pedido de permissão para `gh pr merge` | segunda trava, depois do seu "pode" | leia o resumo do `revisor` antes |
 | "Os testes falharam…", e ele continua trabalhando | ele mudou código e o `pytest` ficou vermelho | deixe ele consertar |
 
 **Configure uma vez:** o teste do fim de cada resposta precisa de um Python com o `pytest`. Com `.venv` na raiz, nada a fazer.
 Sem `.venv`, crie (ou abra) o `.claude/settings.local.json`, que é só seu e não vai para o Git, com o caminho do seu Python:
 `{"env": {"RAIOX_PYTHON": "~/bootcamp/bin/python"}}`.
+O hook descobre quem é você pelo nome no Git (`git config user.name`) e precisa que ele comece com o seu primeiro nome
+(`MiguelAlves` serve). Se não começar, ele vai perguntar em todo arquivo seu: acrescente `"RAIOX_PESSOA": "miguel"` (o seu nome) no mesmo `env`.
 
 **Os limites:** as travas só valem no Claude Code. Para o Codex e para quem sobe arquivo pelo navegador, quem confere é o CI
 (`tests/test_guarda.py` reprova dado, `.env`, chave e arquivo grande no Git). E nada impede um script Python de abrir o `.env`
-sozinho: por isso a regra "não contorne" está no `CLAUDE.md`.
+sozinho, nem um comando de terminal (`sed -i`, `>`) de escrever na pasta de outro dono sem a pergunta: por isso a regra
+"não contorne" está no `CLAUDE.md`.
 
 ## Nunca
 

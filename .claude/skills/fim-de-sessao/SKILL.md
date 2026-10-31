@@ -59,8 +59,8 @@ Siga os passos **em ordem** e pare no primeiro que falhar.
   sessão e não torce pelo código: enxerga o que quem escreveu deixa passar. Se ele disser **BLOQUEIA**, pare, conserte e peça
   de novo. Depois, diga em 3 linhas o que o PR muda e o risco que sobrou.
 - Se mexeu em pasta de outro dono ou no `contratos.md`, confirme com a pessoa que o dono deu o ok no grupo.
-- Rode `gh pr merge <número> --merge --delete-branch`. O Claude Code pede permissão antes (regra `ask` do `.claude/settings.json`,
-  que vale até no modo bypass): **a aprovação da pessoa é o "pode"**. Se ela recusar, pare.
+- Peça **um "pode"** à pessoa. Com o "pode": `gh pr merge <número> --merge --delete-branch`. O Claude Code ainda pede
+  permissão antes (regra `ask` do `.claude/settings.json`): é a segunda trava, para o merge nunca sair sem ela ver. Recusou, pare.
 - Se o GitHub recusar o merge, mostre a mensagem inteira e pare: não tente contornar.
 - Depois do merge: `git switch main` e `git pull`.
 

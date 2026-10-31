@@ -25,14 +25,17 @@ em `docs/professor/`; o #29 é a MG3, Terraform). O #30 (ED12, travas do Claude 
 
 **PR #30 (Eduardo, ED12, 31/10): regras que eram só texto viraram travas** (`requisitos_projeto.MD`, Aplicação: "Arquivos utilizados
 de prompts para o vibecoding"; guia §2: "agentic coding"). `.claude/settings.json` (do grupo) bloqueia ler o `.env` e o Git que
-apaga trabalho e pede permissão para o merge (a aprovação é o "pode") e para ligar o Gemini; os 3 hooks chamam o
+apaga trabalho e pede permissão para o merge (depois do "pode" falado: segunda trava) e para ligar o Gemini; os 3 hooks chamam o
 `.claude/hooks/guarda.py`: no começo da sessão (branch e data desta seção), antes de cada ação (bloqueia commit na `main` ou com
-dado, `.env`, chave ou arquivo acima de 10 MB; pergunta antes de mexer em pasta de outro dono, no `contratos.md` e em
-`docs/professor/`) e no fim de cada resposta (roda o `pytest` se mudou código). Subagent `revisor` (só lê) no passo 6 do
-`/fim-de-sessao`. O `requisitos_projeto.MD` entra no `CLAUDE.md` por import e carrega sozinho. Conferido: 43 testes novos
-(`tests/test_guarda.py`), local 111 passed e 17 pulados (sem o PostgreSQL ligado); o hook bloqueou um comando do Claude nesta
-sessão, no modo bypass; numa sessão nova (`claude -p`), o import e o resumo do começo apareceram. **Não conferido:** se o "ask" de
-um hook aparece no modo bypass (por isso merge e Gemini também são regra `ask` do settings, que vale em todo modo); o Linux.
+dado, `.env`, chave ou arquivo acima de 10 MB; pergunta antes de mexer em pasta de outro dono, no `contratos.md`, em
+`docs/professor/` e nas próprias travas e no CI) e no fim de cada resposta (roda o `pytest` se mudou código). Subagent `revisor`
+(só lê) no passo 6 do `/fim-de-sessao`. O `requisitos_projeto.MD` entra no `CLAUDE.md` por import e carrega sozinho.
+**O `revisor` estreou no próprio #30** e achou furos que o autor deixou passar, todos corrigidos com teste: `gh issue create --body
+"$(cat …)"` publicaria a chave; `git add -A && git commit`, `git -C`, `pull --rebase`, `.env.local` e nome com acento escapavam;
+o atalho `rodar_tela_com_ia.command` ligava o Gemini sem perguntar; mensagem de commit num comando composto era bloqueada à toa.
+Conferido: 57 testes novos (`tests/test_guarda.py`); o hook bloqueou comandos do Claude nesta sessão, no modo bypass; numa sessão
+nova (`claude -p`), o import e o resumo do começo apareceram. **Não conferido:** se o "ask" de um hook aparece no modo bypass (por
+isso merge e Gemini também são regra `ask` do settings, que vale em todo modo); o Linux; o `user.name` do Git do Marcos.
 Quem usa Claude Code: depois do merge, `git pull` e abra o `claude` de novo na raiz; sem `.venv`, ponha o `RAIOX_PYTHON` no seu
 `.claude/settings.local.json` (`aprender/claude-code.md`, "Travas").
 
@@ -332,7 +335,7 @@ Para subir um arquivo:
 | `tests/test_tela.py` (MG4) | a tela com os falsos: busca, gerar, 6 métricas, sem erro | Miguel | sim |
 | `tests/test_ponta_a_ponta.py` | C2 real, raio-x sem IA de 3 setores, `cd_cvm` dos casos (todos preenchidos e na tabela real) | Eduardo | **não**: pula sem `data/`. Rodar local antes de `v0.1-demo`, `v1.0` e no teste do zero |
 | `tests/test_aprender.py` | o notebook `aprender/passo_a_passo.ipynb` roda inteiro e vai para o Git sem saídas | Eduardo | sim |
-| `tests/test_guarda.py` (#30) | as travas do Claude Code (`.claude/hooks/guarda.py`): o que bloqueia, o que pergunta e o que libera; o teste do fim de resposta; e o repositório inteiro sem `data/`, `.env`, chave nem arquivo acima de 10 MB (vale para os 4, inclusive upload pelo navegador) | Eduardo | sim (os de Git pulam no contêiner, que não tem `git`) |
+| `tests/test_guarda.py` (#30, 57 testes) | as travas do Claude Code (`.claude/hooks/guarda.py`): o que bloqueia, o que pergunta e o que libera; o teste do fim de resposta; e o repositório inteiro sem `data/`, `.env`, chave nem arquivo acima de 10 MB (vale para os 4, inclusive upload pelo navegador) | Eduardo | sim (os de Git pulam no contêiner, que não tem `git`) |
 | Docker | `curl localhost:8501/_stcore/health` → `ok`; os testes dentro do contêiner: `docker compose run --rm tela python -m pytest -q` (87 passed em 30/10) | Miguel | não (checklist da demo) |
 | Terraform | `terraform fmt -check` e `terraform validate` no CI (`.github/workflows/terraform.yml`, PRs que mexem em `infra/`); `apply`, `docker exec raiox-tela python -m pytest -q` (87 passed em 31/10) e `destroy` + `apply` na mão | Miguel | só o `fmt` e o `validate` |
 

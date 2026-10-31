@@ -59,7 +59,8 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   No teste da IA, o `apply` falhou com o compose ligado (as mesmas portas): virou aviso no README e nos "Erros comuns".
 - **31/10** · **ED12** (PR #30): as regras do `CLAUDE.md` que dá para conferir por máquina viram **travas**: o Claude Code não lê o
   `.env`, não apaga trabalho no Git nem faz commit na `main` ou com dado; pergunta antes do merge, do Gemini e de mexer em pasta
-  de outro dono; roda os testes quando muda código. Um segundo Claude (o `revisor`) revisa os PRs sem ter escrito o código.
+  de outro dono; roda os testes quando muda código. Um segundo Claude (o `revisor`) revisa os PRs sem ter escrito o código:
+  na estreia, no próprio #30, achou um jeito de vazar a chave e outros furos que o autor deixou passar, corrigidos no mesmo PR.
 
 ## Decisões (e por quê)
 

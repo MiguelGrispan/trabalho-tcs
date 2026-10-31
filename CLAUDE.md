@@ -114,7 +114,8 @@ Parte das regras não depende de lembrar: o `.claude/settings.json` e o `.claude
 (o porquê e o que fazer quando aparecem: `aprender/claude-code.md`; os testes: `tests/test_guarda.py`).
 - **Bloqueia:** ler ou mostrar o `.env`; `push --force`, `rebase`, `reset --hard`, `git clean`, `add --force`; commit na `main`;
   commit com `data/`, `.env`, chave `AIza…`, `.db`, `.zip`, `.parquet`, estado do Terraform ou arquivo acima de 10 MB.
-- **Pergunta antes:** o merge do PR (a aprovação é o "pode"); ligar o Gemini; editar o `contratos.md`, `docs/professor/` ou a pasta de outro dono.
+- **Pergunta antes:** o merge do PR (depois do "pode" falado, a permissão é a segunda trava); ligar o Gemini; editar o `contratos.md`,
+  `docs/professor/`, a pasta de outro dono, o `.claude/settings.json`, `.claude/hooks/` ou `.github/workflows/`.
 - **No fim de cada resposta:** se um `.py` ou `.ipynb` mudou, roda o `pytest`; vermelho, você volta e conserta.
 - **No CI:** o `tests/test_guarda.py` confere o repositório inteiro, inclusive o que veio pelo navegador ou pelo Codex.
 
