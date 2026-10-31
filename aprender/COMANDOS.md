@@ -143,6 +143,7 @@ eles fazem, ou para fazer à mão.
 | `Empresa X não está na tabela de indicadores` | o `cd_cvm` não existe nos dados que você tem (real × falso) | confira com `python -m raiox.segmentos` quais dados estão sendo usados |
 | a tabela tem 1 coluna só | o CSV está com `;` (a sua `data/` é anterior a 30/10) | rode de novo os dois scripts da seção 3 |
 | `port is already allocated` ao subir o `docker compose` | outro programa já usa a porta 5432 (outro PostgreSQL) ou a 8501 (outra tela) | pare o outro, ou suba o banco em outra porta: `PORTA_BANCO=5433 docker compose up -d` |
+| `port is already allocated` no `terraform apply` | o `docker compose` (ou outro programa) já usa a 5432 ou a 8501 | `docker compose down` na raiz e o `terraform apply` de novo, ou outras portas: `terraform apply -var porta_tela=8502 -var porta_banco=5433`. O contêiner que não ligou o Terraform troca sozinho (*tainted*) |
 | `Permission denied` em `data/` dentro do contêiner (Linux) | o contêiner roda com outro usuário | acrescente `--user "$(id -u):$(id -g)"` no `docker compose run` |
 | `402` ou "quota" ao chamar a IA | o crédito do Gemini acabou | avise o Eduardo; use o modo sem IA |
 | a tela abre sem as cores do projeto | você rodou da raiz, não de `app/` | `cd app` antes do `streamlit run` |

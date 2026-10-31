@@ -122,8 +122,9 @@ docker exec raiox-tela python -m pytest -q   # os testes dentro do contêiner, c
 terraform destroy    # apaga os 2 contêineres e a rede; o banco e a data/ continuam
 ```
 
-- **Um de cada vez:** o compose e o Terraform usam as portas 8501 e 5432. Rode `docker compose down` antes do `terraform apply`,
-  ou suba o Terraform em outras portas: `terraform apply -var porta_tela=8502 -var porta_banco=5433`.
+- **Um de cada vez:** o compose e o Terraform usam as portas 8501 e 5432 (com os 2 ligados, o `apply` dá
+  `port is already allocated`). Rode `docker compose down` antes do `terraform apply`, ou suba o Terraform em outras portas:
+  `terraform apply -var porta_tela=8502 -var porta_banco=5433`. As mesmas variáveis valem para o `destroy`.
 - **O que sobrevive ao `destroy`:** a `data/` (pasta do seu computador, montada na tela) e o banco (volume `raiox-banco-dados`,
   que o Terraform não cria nem apaga). Apagar o banco de vez: `docker volume rm raiox-banco-dados`. O banco do compose e o do
   Terraform são volumes diferentes: a CVM carregada num não aparece no outro (os comandos de carga estão no topo do `infra/main.tf`).
