@@ -81,6 +81,7 @@ def repo(tmp_path):
     "git reset --hard HEAD~1",
     "git clean -fdx",
     "git add -f data/contas.csv",
+    f"python3 - <<'EOF'\nprint(open('{ENV}').read())\nEOF",   # heredoc fora de commit e PR é código: continua conferido
 ])
 def test_bloqueia_env_e_git_que_apaga_trabalho(comando):
     r = bash(comando)
@@ -179,6 +180,15 @@ def test_libera_commit_limpo_mesmo_que_a_mensagem_fale_de_env_e_rebase(repo):
     (repo / "novo.py").write_text("x = 1\n")
     git(repo, "add", "novo.py")
     assert decisao(bash(f'git commit -m "explica por que o {ENV} e o git rebase são proibidos"', raiz=repo)) == "libera"
+    # o jeito que o Claude Code escreve mensagem longa: heredoc, com "aspas" no meio
+    heredoc = f'git commit -m "$(cat <<\'EOF\'\nO "{ENV}" fica fora; nada de git rebase.\nEOF\n)"'
+    assert decisao(bash(heredoc, raiz=repo)) == "libera"
+
+
+def test_libera_pr_cuja_descricao_fala_do_env():
+    corpo = f'gh pr create --title "Travas" --body "$(cat <<\'EOF\'\nDeny para ler o "{ENV}".\nEOF\n)"'
+    assert decisao(bash(corpo)) == "libera"
+    assert decisao(bash(corpo + f" && cat {ENV}")) == "bloqueia"     # o que vem depois da mensagem continua conferido
 
 
 # ---------------------------------------------------------------- fim da resposta (Stop)

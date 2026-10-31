@@ -112,9 +112,12 @@ def antes(dados):
     entrada = dados.get("tool_input", {})
 
     if ferramenta == "Bash":
-        # Tira o texto das mensagens (-m, --body, --title): um commit que só FALA de .env ou de rebase pode
-        cmd = re.sub(r"""(?:-m|--message|--body|--title)\s+("(?:[^"\\]|\\.)*"|'[^']*')""", " ",
-                     entrada.get("command", ""))
+        cmd = entrada.get("command", "")
+        # Num commit, PR ou issue, tira o texto da mensagem: um commit que só FALA de .env ou de rebase pode.
+        # O heredoc (<<'EOF' ... EOF) só sai nesses comandos: num "python3 - <<EOF", ele é código e continua conferido.
+        if re.match(r"\s*(git\s+commit|gh\s+(pr|issue)\s)", cmd):
+            cmd = re.sub(r"<<-?\s*['\"]?(\w+)['\"]?\n.*?\n\s*\1\b", " ", cmd, flags=re.S)
+            cmd = re.sub(r"""(?:-m|--message|--body|--title)\s+("(?:[^"\\]|\\.)*"|'[^']*')""", " ", cmd)
         # 1. O .env (chave do Gemini) nunca passa pelo Claude; o .env.example pode
         if re.search(r"\.env\b(?!\.example)", cmd):
             bloquear("Bloqueado: o .env guarda a chave do Gemini e não passa pelo Claude (CLAUDE.md, Cuidados). "

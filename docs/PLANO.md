@@ -29,7 +29,7 @@ apaga trabalho e pede permissão para o merge (a aprovação é o "pode") e para
 `.claude/hooks/guarda.py`: no começo da sessão (branch e data desta seção), antes de cada ação (bloqueia commit na `main` ou com
 dado, `.env`, chave ou arquivo acima de 10 MB; pergunta antes de mexer em pasta de outro dono, no `contratos.md` e em
 `docs/professor/`) e no fim de cada resposta (roda o `pytest` se mudou código). Subagent `revisor` (só lê) no passo 6 do
-`/fim-de-sessao`. O `requisitos_projeto.MD` entra no `CLAUDE.md` por import e carrega sozinho. Conferido: 41 testes novos
+`/fim-de-sessao`. O `requisitos_projeto.MD` entra no `CLAUDE.md` por import e carrega sozinho. Conferido: 43 testes novos
 (`tests/test_guarda.py`), local 111 passed e 17 pulados (sem o PostgreSQL ligado); o hook bloqueou um comando do Claude nesta
 sessão, no modo bypass; numa sessão nova (`claude -p`), o import e o resumo do começo apareceram. **Não conferido:** se o "ask" de
 um hook aparece no modo bypass (por isso merge e Gemini também são regra `ask` do settings, que vale em todo modo); o Linux.
