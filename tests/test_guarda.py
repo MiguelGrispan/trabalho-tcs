@@ -103,6 +103,11 @@ def test_bloqueia_qualquer_comando_que_cite_o_env(comando):
     'python -c "from dotenv import dotenv_values; print(dotenv_values())"',
     "docker compose config",                   # o compose mostra as variáveis já lidas do .env
     "printenv",
+    "grep --recursive AIza .",                 # achados da 4ª revisão
+    "find . -type f | xargs grep -n AIza",
+    "grep -n AIza $(find . -type f)",
+    "cat .[!.]*",
+    "git grep --no-index AIza",
 ])
 def test_bloqueia_busca_que_le_o_env_sem_citar_o_nome(comando):
     r = bash(comando)
@@ -133,6 +138,7 @@ def test_bloqueia_busca_que_le_o_env_sem_citar_o_nome(comando):
     "git config pull.rebase true",               # o que o próprio Git sugere quando o pull diverge
     "git -c pull.rebase=true pull",
     'git commit --no-verify -m "x"',              # pularia o pre-commit
+    'git commit -n -m "x"',
     "git -c core.hooksPath=/dev/null commit -m x",
     "git config --unset core.hooksPath",
     "git push origin main",                       # main só por PR (o GitHub também recusa)
@@ -181,6 +187,8 @@ def test_pergunta_antes_de_gastar_credito_do_gemini(comando):
     "gh pr create --title 'Travas' --body-file /tmp/corpo.md",  # mensagem por arquivo: a saída certa
     "cat .claude/hooks/guarda.py",                              # ler as travas pode
     "git grep -n AIza",                                         # git grep só lê arquivos do Git
+    "git grep -rn AIza",
+    "git config --get core.hooksPath",
     "grep -n validar raiox/ia.py",                              # grep num arquivo pode
     "find . -name '*.py'",
     "git config core.hooksPath .githooks",                      # ligar o pre-commit pode
@@ -330,6 +338,8 @@ def test_commit_com_senha_de_banco_de_verdade_e_bloqueado(repo):
     assert "senha de banco" in bash('git add config.py && git commit -m "x"', raiz=repo).stderr
     (repo / "config.py").write_text('URL = "postgresql://postgres:postgres@localhost:5432/raiox"\n')  # a de teste local
     assert decisao(bash('git add config.py && git commit -m "x"', raiz=repo)) == "libera"
+    (repo / "config.py").write_text(f'URL = "{URL_SENHA_FALSA.replace("postgresql", "postgresql+psycopg")}"\n')
+    assert "senha de banco" in bash('git add config.py && git commit -m "x"', raiz=repo).stderr   # forma do SQLAlchemy
 
 
 @precisa_git

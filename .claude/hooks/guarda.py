@@ -32,8 +32,8 @@ RAIZ = Path(os.environ.get("CLAUDE_PROJECT_DIR") or Path(__file__).resolve().par
 # Chave de API do Google (Gemini): começa com AIza e tem 39 caracteres
 CHAVE_GOOGLE = r"AIza[0-9A-Za-z_-]{35}"
 # Senha num endereço de banco (postgresql://usuario:senha@...). As de exemplo e de teste local podem.
-URL_COM_SENHA = r"postgres(?:ql)?://[^:/\s@\"']+:([^@\s\"']+)@"
-SENHAS_DE_EXEMPLO = {"postgres", "senha", "SUA_SENHA"}
+URL_COM_SENHA = r"postgres(?:ql)?(?:\+\w+)?://[^:/\s@\"']+:([^@\s\"']+)@"
+SENHAS_DE_EXEMPLO = {"postgres", "senha", "SENHA", "SUA_SENHA", "password", "PASSWORD"}  # e qualquer ${...} ou <...>
 # O .env em qualquer forma (.env, .ENV, .env.local, .env_prod, prod.env), menos o .env.example e o os.environ
 ARQUIVO_ENV = r"(?i)\.env(?![a-z])(?!\.example)"
 LIMITE_BYTES = 10 * 1024 * 1024  # REGRAS-IA.md, seção 2: nada acima de 10 MB
@@ -54,18 +54,22 @@ PERIGOSOS = [
     (GIT + r"(add|stage)\b" + RESTO + r"\s(-\w*f\w*|--force)(?![\w-])",
      "o add --force passa por cima do .gitignore (data/, .env)"),
     (r"pull\.rebase", "o pull.rebase faz todo git pull virar rebase"),
-    (GIT + r"commit\b" + RESTO + r"--no-verify", "o --no-verify pula a conferência do commit"),
-    (r"core\.hooksPath(?!\s+\.githooks\b)", "mudar o core.hooksPath desliga a conferência do commit"),
+    (GIT + r"commit\b" + RESTO + r"(--no-verify|\s-[a-zA-Z]*n[a-zA-Z]*(?![\w-]))", "o --no-verify (-n) pula a conferência do commit"),
+    (r"(?<!--get\s)core\.hooksPath(?!\s+\.githooks\b)", "mudar o core.hooksPath desliga a conferência do commit"),
 ]
 
-# Busca que lê o .env sem citar o nome dele (grep -r na pasta inteira, find -exec, dotenv, docker compose config)
+# Busca que lê o .env sem citar o nome dele (grep -r na pasta inteira, find -exec, dotenv, docker compose config).
+# O git grep fica de fora: ele só lê arquivos do Git (menos com --no-index).
 BUSCA_AMPLA = [
-    r"\b[ef]?grep\b" + RESTO + r"\s-\w*[rR]",
+    r"(?<!git\s)\b[ef]?grep\b" + RESTO + r"\s(-\w*[rR]|--recursive|-d\s*recurse)",
     r"\b(rg|ag|ack)\b",
     r"\bfind\b" + RESTO + r"-exec",
+    r"\bxargs\b" + RESTO + r"\b[ef]?grep\b",            # find . | xargs grep
+    r"\$\(\s*find\b",                                   # grep x $(find .)
+    r"--no-index",                                      # git grep --no-index lê o que o Git ignora
     r"dotenv_values|load_dotenv",
     r"docker[- ]compose\b" + RESTO + r"\bconfig\b",
-    r"(^|[\s/=])\.[\w.-]*\*",                          # glob que começa com ponto: cat .e*, ls .*
+    r"(^|[\s/=])\.[\w.-]*[*?\[]",                       # glob que começa com ponto: cat .e*, ls .*, cat .[!.]*
     r"\bprintenv\b",                                    # mostra as variáveis do ambiente, chave incluída
 ]
 
@@ -166,7 +170,7 @@ def problemas_no_texto(texto):
         problemas.append("uma chave do Google (AIza...)")
     for senha in re.findall(URL_COM_SENHA, texto):
         if senha not in SENHAS_DE_EXEMPLO and not senha.startswith(("$", "<")):
-            problemas.append("uma senha de banco num endereço postgresql://")
+            problemas.append("uma senha de banco num endereço postgresql:// (exemplo use postgres, senha ou ${VARIAVEL})")
             break
     return problemas
 
