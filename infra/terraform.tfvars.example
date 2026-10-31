@@ -1,0 +1,9 @@
+# Copie para terraform.tfvars (o .gitignore tira esse arquivo do Git) e tire o # só do que quiser mudar.
+# Sem o terraform.tfvars, valem os padrões do variables.tf.
+# A chave do Gemini não fica aqui: a tela lê o .env da raiz do repositório.
+
+# porta_tela  = 8501
+# porta_banco = 5432
+# senha_banco = "postgres"
+# ia_real     = false
+# dados       = ""
