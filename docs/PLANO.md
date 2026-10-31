@@ -20,8 +20,28 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em sex 30/10, 13h30.** Na `main`: PRs #1 a #16 e #19 a #27 (o #24 é a MG2, Docker do Miguel; o #25 registra a MG1; o #26 põe o
-`docker compose` nos guias; o #27 tira dos textos o "a `main` usa SQLite").
+**Em sáb 31/10, 16h.** Na `main`: PRs #1 a #16 e #19 a #28 (o #24 é a MG2, Docker do Miguel; o #28 põe os arquivos do professor
+em `docs/professor/`); o #29 (MG3, Terraform) entra com o CI verde.
+
+**PR #29 (Miguel, MG3, 31/10): o Terraform está na `main`, em `infra/`** (`requisitos_projeto.MD`, Aplicação: "Infraestrutura
+automatizada com Terraform"). Dentro de `infra/`, `terraform apply` constrói a imagem do `Dockerfile` e sobe a tela (`raiox-tela`)
+e o PostgreSQL (`raiox-banco`, `postgres:17`, com o `raiox_teste`), numa rede `raiox`, como o `docker-compose.yml`. Provider
+`kreuzwerker/docker` 4.6.0, travado no `infra/.terraform.lock.hcl`. Escolhas (`infra/main.tf`):
+- o volume do banco (`raiox-banco-dados`) não é recurso do Terraform: o `destroy` apaga os contêineres e mantém o banco;
+- a chave do Gemini não passa pelo Terraform: o `.env` é montado só leitura na tela (o código chama `load_dotenv()`), e a chave
+  não fica no `terraform.tfstate`. Resolve os itens "chave opcional" e "chave no tfstate" da nota de 30/10;
+- portas só em `127.0.0.1`; imagem nova só quando o código muda (`triggers`).
+
+Conferido no Linux do Miguel (Terraform 1.17.0), nas portas 8502 e 5433, com o compose ligado nas padrão: os 2 `healthy`,
+`curl localhost:8502/_stcore/health` → `ok`, a tela abre; `docker exec raiox-tela python -m pytest -q` → 87 passed, nenhum pulado;
+a imagem não tem `.env` nem `data/`, e `grep -c GOOGLE_API_KEY infra/terraform.tfstate` → 0; uma tabela de marca no banco e a
+`data/` sobreviveram ao `destroy` + `apply`; o 2º `terraform plan` → "No changes". CI novo, `.github/workflows/terraform.yml`:
+`terraform fmt` e `validate` em todo PR que mexe em `infra/` (não é check obrigatório da `main`). Local: 87 passed, nenhum pulado.
+IA pelo Terraform: o Miguel rodou com `-var ia_real=true` e viu "Texto escrito pelo Gemini." e os tokens com o custo em
+"Detalhes técnicos" (conferido por ele; o Claude não viu). **Não conferido:** as portas padrão (8501 e 5432; só muda o número); o Mac;
+carregar a CVM pelo `docker exec` (o comando está no topo do `infra/main.tf`, igual ao do compose).
+Com o compose ligado, o `terraform apply` dá `port is already allocated` (aconteceu em 31/10): um de cada vez, ou outras portas
+(`-var porta_tela=8502 -var porta_banco=5433`). Está no README e no `aprender/COMANDOS.md`, seção 9.
 
 > **Decisão de 30/10: o Terraform é obrigatório, e os arquivos do professor são a fonte da verdade** (PR #28).
 > O `requisitos_projeto.MD` do professor (29/10, repositório do curso; cópia em `docs/professor/`) pede, em "Aplicação",
@@ -29,7 +49,7 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 > que aceita "Terraform ou conteinerização", e tratavam o Terraform como cortável: errado. O R também pede backend e frontend,
 > banco de dados, os arquivos de prompts do vibecoding, README com as tecnologias e um documento com as etapas desenvolvidas.
 > O CLAUDE.md, o AGENTS.md, o REGRAS-IA.md e as 3 skills agora mandam ler os dois arquivos em toda sessão. O que ficou a
-> responder ao professor está no REQUISITOS ("Perguntas para o professor"); o que falta, nas linhas R9, R13, R14, D1b, D1c e D2.
+> responder ao professor está no REQUISITOS ("Perguntas para o professor"); o que falta, nas linhas R13, R14, D1b, D1c e D2.
 **O PostgreSQL está na `main`** (MA2: PR #21 do Marcos e PR #22). Com a `data/` real e o PostgreSQL local: 87 passed,
 nenhum pulado. O CI agora também roda os testes do banco (#22).
 
@@ -89,14 +109,8 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
   (eram 330, 99, 74 e 59). Os PNG de `docs/graficos/` ainda são de 28/10: refazer com `python -m raiox.segmentos` depois da MA3.
 - **Docker (Miguel, MG2):** feito no PR #24 (acima). Dos 7 ajustes de 29/10, os do Docker (1, 2, 3 e 6) entraram: a branch nova
   já parte da `main`, e o `.gitignore` com as linhas de cópia de chat não veio (o da `main` já tem as regras do Terraform).
-- **Terraform (Miguel, MG3, sáb 31/10–dom 01/11): obrigatório** (`requisitos_projeto.MD`, Aplicação). Continua só na branch
-  `docs-docker-e-terraform` (`terraform/`, sem mudança): na `main` não há nenhum `.tf` (`git ls-files | grep -c '\.tf$'` → 0).
-  Faltam os 3 ajustes de 29/10 e os 2 contêineres:
-  1. `terraform/main.tf`: montar a `data/` como volume (`volumes { host_path = "<caminho>/data", container_path = "/app/data" }`)
-     e passar `RAIOX_DADOS` e `RAIOX_IA_REAL` como no `docker-compose.yml`. Hoje, depois de `destroy` + `apply`, a `data/` some;
-  2. `terraform/variables.tf`: deixar a `google_api_key` opcional (hoje ela é pedida até para a demo sem IA);
-  3. README: avisar que a chave fica em texto puro no `terraform.tfstate` (o `.gitignore` já tira esse arquivo; não mandar para ninguém);
-  4. o contêiner do PostgreSQL, igual ao serviço `banco` do `docker-compose.yml`.
+- **Terraform (Miguel, MG3): feito no PR #29** (acima), em `infra/`. A branch antiga `docs-docker-e-terraform` (`terraform/`, de
+  27–28/10) ficou para trás: o Miguel decide se ela pode ser apagada.
 - **Tela (Miguel, MG4):** com `RAIOX_DADOS=real`, a tela já gera o raio-x de empresas reais, mas o aviso diz "empresas e números
   inventados", e se a API falha a tela para. Desde o #23 o erro da API chega em até uns 30 s ao `except` de
   `app/streamlit_app.py:89`; falta a MG4 chamar ali o `preparar_raio_x(..., usar_ia=False)` com um aviso, em vez do `st.stop()`.
@@ -108,23 +122,22 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
   Sobram as branches antigas `tratamento_dados` (Marcos) e `feat/metricas` (Náthally).
 
 **Caminho crítico** (o que trava os outros):
-1. **MG3, o Terraform na `main`** (Miguel, até dom 01/11): é obrigatório e hoje não está na `main`. Plano B: a dupla de
-   reserva da infra (Miguel ↔ Eduardo, seção 7) termina junto na seg 02/11.
-2. **MA3, os números certos** (Marcos): a Camil errada na demo é pior que nenhum raio-x.
-3. **MG4, a tela com dados reais** (Miguel, até ter 03/11): a busca e a consulta no PostgreSQL (hoje a tela usa `falsos/`,
+1. **MA3, os números certos** (Marcos): a Camil errada na demo é pior que nenhum raio-x.
+2. **MG4, a tela com dados reais** (Miguel, até ter 03/11): a busca e a consulta no PostgreSQL (hoje a tela usa `falsos/`,
    `app/streamlit_app.py:26`), o aviso certo e o modo sem IA automático, para a demo de ter 03/11.
-4. **Trabalho fora da `main`:** toda entrega sai de uma branch nova a partir da `main` (seção 2); senão, alguém tem de portar à mão.
+3. **Trabalho fora da `main`:** toda entrega sai de uma branch nova a partir da `main` (seção 2); senão, alguém tem de portar à mão.
 
 **Próximo passo de cada um:**
 - **Marcos:** MA3: a issue #17 e as diferenças de Magalu e RD Saúde (acima), o OK, ou não, no corte de R$ 10 mi, e os 3 itens
   do C1 e do C2 que sobraram (acima), com teste. Dizer o que fazer com `verificar_automatico.py`, `graficos.py` e o PDF (o `docs/Raio-X Comercial.pdf`
   ainda fala de `catalogo.db` e `sqlite3`: parece o plano de 21/10 impresso), e se a
   `tratamento_dados` pode ser apagada.
-- **Miguel:** mandar no grupo o print da tela rodando no Docker (MG1); MG3 (Terraform, obrigatório, acima) até dom 01/11;
-  para a IA no Docker, conferir o `GOOGLE_API_KEY` no `.env` (no `docker compose config` dele, em 30/10, chegou vazio; ninguém abriu o arquivo);
-  MG4 até ter 03/11. Na máquina dele, a `.venv` é de 23/10 (Python 3.12, sem o `sqlalchemy`): o `python -m pytest -q` local
-  quebra na coleta (4 erros de import). Até refazer a `.venv` com Python 3.14, os testes rodam no contêiner:
-  `docker compose run --rm tela python -m pytest -q`.
+- **Miguel:** mandar no grupo o print da tela rodando no Docker (MG1) e o aviso do #29 (Terraform; mexe em README, CLAUDE.md,
+  `aprender/` e acrescenta um CI); conferir o `GOOGLE_API_KEY` no `.env` (em 30/10 chegou vazio no `docker compose config`;
+  ninguém abriu o arquivo; pelo Terraform, a IA funcionou em 31/10); dizer se a `docs-docker-e-terraform` pode ser apagada;
+  MG4 até ter 03/11. A `.venv` dele foi refeita em 31/10 com o Python 3.14.10: o `python -m pytest -q` local roda (87 passed).
+- **Alguém com Mac (Eduardo?):** dentro de `infra/`, `terraform init` e `terraform apply` (se não achar o Docker, o
+  `DOCKER_HOST` do README) e dizer no grupo se subiu.
 - **Náthally:** subir o `revisao_manual.md` numa branch nova a partir da `main`, na pasta `avaliacao/`; conferir os 10 códigos
   em `avaliacao/casos_avaliacao.csv`; dizer se a `feat/metricas` pode ser apagada. Depois, NA3 (tempo manual e ROI); a NA4 já
   pode começar (o `resultados.csv` está na `main`). Para a v3 das regras (não trava nada): na ED7, 27 de 30 lacunas saíram
@@ -151,7 +164,6 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
 - data e horário da banca (Eduardo pergunta ao professor);
 - `scripts/dados.py` ou `raiox/dados.py`: ficar com um só (os dois existem; Marcos);
 - `verificar_automatico.py`, `yfinance` e `graficos.py`, cortados na seção 7 e de volta na `main` pelo #21 (Marcos e Eduardo);
-- pasta do Terraform: `infra/` (onde já está o `infra/banco/` do #24) ou `terraform/` (Miguel, na MG3; o Terraform em si não está em aberto: é obrigatório);
 - as 3 perguntas para o professor (REQUISITOS): backend e frontend, arquivos de prompts do vibecoding, base de conhecimento (Eduardo pergunta);
 - apagar `tratamento_dados` e `feat/metricas` (Marcos e Náthally);
 - corte de receita mínima de R$ 10 mi (Marcos, MA3; números do `avaliar_corte_receita.py` acima);
@@ -163,9 +175,9 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
 | parte | feito | falta |
 |---|---|---|
 | núcleo do produto: dados, ML, IA, validador, avaliação | ~88% | MA3 (Camil, Magalu, RD Saúde); `cd_cvm` int e só ativas no C1; tabela `indicadores` |
-| tela e infraestrutura | ~45% | MG3 (Terraform, obrigatório); MG4 (a tela usar o PostgreSQL, o aviso, o modo sem IA automático); MG5 (diagrama e README); MG6 e MG7 (vídeo); resposta do professor sobre backend e frontend |
+| tela e infraestrutura | ~60% (Claude, 31/10, depois da MG3) | MG4 (a tela usar o PostgreSQL, o aviso, o modo sem IA automático); MG5 (diagrama e README); MG6 e MG7 (vídeo); resposta do professor sobre backend e frontend |
 | entregáveis: BPMN, EDA, PDF, deck, vídeo, ensaios | ~10% | quase tudo, mas não depende de código novo |
-| **total** | **~49%** | com 10 de 26 dias usados (~38%): o núcleo está adiantado. Caiu um pouco porque o `requisitos_projeto.MD` (29/10) acrescentou itens: Terraform obrigatório, banco usado pela tela, documento das etapas, prompts do vibecoding |
+| **total** | **~53%** (Claude, 31/10) | com 11 de 26 dias usados (~42%): o núcleo está adiantado. Em 30/10 caiu um pouco porque o `requisitos_projeto.MD` (29/10) acrescentou itens: Terraform obrigatório, banco usado pela tela, documento das etapas, prompts do vibecoding |
 
 **Folga:** sobram 4 dias de reserva (12 a 15/11) antes da entrega de seg 16/11, e mais 2 até a banca.
 Regra: atraso come a folga; **nunca** se acrescenta escopo. Se a folga acabar, use a lista de cortes da seção 7.
@@ -215,8 +227,8 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | qua 28/10 | ✅ ED4 (segmentação consertada, PR #9) | MA2 (passou para 29–31/10) | MG1; começa o Docker | NA1 regras v2 |
 | qui 29/10 | ✅ ED3 e ED7 (adiantadas); portes NA1 e NA2 (PRs #10 e #11); teste do Docker e do Terraform | ✅ MA2: PR #18 fechado; PR #21 mesclado às 17h52 | MG2 Docker + PostgreSQL | ✅ NA1 e NA2 entregues |
 | sex 30/10 | ✅ conferência da MA2 e PR #22 (CI com PostgreSQL, CSV do C2); ensinar o Claude Code ao Miguel | MA3 | MG2 (`docker-compose.yml`), **prazo do PR** | NA3 tempo manual |
-| sáb 31/10 | revisões; ED8 começa; plano B da MA2 se precisar | **MA2 (prazo)**; MA3 | MG3 Terraform | NA3 tempo manual; marcar testes |
-| dom 01/11 | revisões | MA4 EDA | **MG3: prazo do Terraform na `main` (obrigatório)**; MG4 | NA3 |
+| sáb 31/10 | revisões; ED8 começa; plano B da MA2 se precisar | **MA2 (prazo)**; MA3 | ✅ MG3 Terraform (PR #29) | NA3 tempo manual; marcar testes |
+| dom 01/11 | revisões | MA4 EDA | ~~prazo da MG3~~ (entrou no sáb); MG4 | NA3 |
 | seg 02/11 (feriado) | reserva: se a MG3 não entrou, termina o Terraform com o Miguel | | reserva da MG3 | |
 | ter 03/11 | **demo ponta a ponta · tag `v0.1-demo`** | MA4 | MG4 tela com dados reais | NA3 testes com usuários |
 | qua 04/11 | ED8 justificativa + "Como usamos IA" | MA5 BPMN | MG5 arquitetura + README | NA4 revisão + métricas |
@@ -264,7 +276,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 |---|---|---|---|---|---|---|---|
 | MG1 | qua 28/10 | ✅ conferido em 30/10: PR e check `testes` obrigatórios, só merge commit, apagar branch após o merge; tela rodando no Docker (o print vai para o grupo) | configurar o GitHub (seção 2, "Proteção da `main`"); rodar a tela local | configurações | só leitura | as 3 configurações feitas; print da tela no grupo | — |
 | MG2 | qui 29–sex 30/10 | ✅ PR #24 (30/10): os 2 contêineres `healthy`, health `ok`, `carregar_dfp.py` no banco do contêiner, 87 passed no contêiner | `Dockerfile` + `.dockerignore` + `docker-compose.yml` (tela + PostgreSQL com volume do banco; `data/` como volume; chave e `DATABASE_URL` por variável) | `Dockerfile`, `.dockerignore`, `docker-compose.yml` | Plan | `docker compose up` sobe os 2; `curl localhost:8501/_stcore/health` → `ok`; `scripts/carregar_dfp.py` grava no PostgreSQL do contêiner | `miguel-docker` → PR (Eduardo) |
-| MG3 | sáb 31/10–dom 01/11 | 🟡 `apply`, `destroy` e `apply` funcionam (29/10), na `docs-docker-e-terraform`; faltam a `data/`, a chave opcional e o PostgreSQL (seção 0) | **Terraform na `main`, obrigatório** (`requisitos_projeto.MD`, Aplicação: "Infraestrutura automatizada com Terraform"): provider docker com os 2 contêineres (tela + PostgreSQL), a partir do `terraform/` da branch `docs-docker-e-terraform`. Prazo: dom 01/11; reserva: seg 02/11 com o Eduardo. Não pode ser cortado | `infra/` (ou `terraform/`) | Plan | `terraform apply` sobe a tela e o banco; `destroy` + `apply` mantém a `data/` e o banco | PR |
+| MG3 | sáb 31/10–dom 01/11 | ✅ PR #29 (31/10): `apply` sobe os 2 `healthy`; `destroy` + `apply` mantém o banco e a `data/`; 87 passed no contêiner; 2º `plan` sem mudanças. IA pelo Terraform vista pelo Miguel. Não conferidos: portas padrão, Mac (seção 0) | **Terraform na `main`, obrigatório** (`requisitos_projeto.MD`, Aplicação: "Infraestrutura automatizada com Terraform"): provider docker com os 2 contêineres (tela + PostgreSQL), a partir do `terraform/` da branch `docs-docker-e-terraform`. Prazo: dom 01/11; reserva: seg 02/11 com o Eduardo. Não pode ser cortado | `infra/` | Plan | `terraform apply` sobe a tela e o banco; `destroy` + `apply` mantém a `data/` e o banco | PR |
 | MG4 | dom 01–ter 03/11 | — | tela com dados reais e **com o banco** (R Aplicação: banco de dados): `RAIOX_DADOS` (`falsos`/`real`) no lugar do `USAR_DADOS_FALSOS`, e com `real` a busca e o `registrar_consulta` usam o PostgreSQL (`raiox/dados.py`); volta sozinha para o modo sem IA, com aviso; `registrar_consulta` dentro do `try`; `tests/test_tela.py` | `app/`, `.env.example`, `tests/` | Plan | 3 empresas reais geram raio-x no contêiner, e cada consulta aparece na tabela `consultas` | PR (Eduardo) |
 | MG5 | qua 04/11 | — | diagrama de arquitetura + README (tema, objetivo e tecnologias já estão; pré-requisitos com Python 3.14; rodar local, Docker e Terraform) | `docs/arquitetura.png`, `README.md` | Manual | um colega entende o fluxo lendo o README; o README cobre o que o R pede em "Documentação" | PR |
 | MG6 | qui 05/11 | — | roteiro de 6 min da demo + vídeo v0 | — | — | vídeo salvo em 2 lugares | — |
@@ -307,6 +319,7 @@ Para subir um arquivo:
 | `tests/test_ponta_a_ponta.py` | C2 real, raio-x sem IA de 3 setores, `cd_cvm` dos casos (todos preenchidos e na tabela real) | Eduardo | **não**: pula sem `data/`. Rodar local antes de `v0.1-demo`, `v1.0` e no teste do zero |
 | `tests/test_aprender.py` | o notebook `aprender/passo_a_passo.ipynb` roda inteiro e vai para o Git sem saídas | Eduardo | sim |
 | Docker | `curl localhost:8501/_stcore/health` → `ok`; os testes dentro do contêiner: `docker compose run --rm tela python -m pytest -q` (87 passed em 30/10) | Miguel | não (checklist da demo) |
+| Terraform | `terraform fmt -check` e `terraform validate` no CI (`.github/workflows/terraform.yml`, PRs que mexem em `infra/`); `apply`, `docker exec raiox-tela python -m pytest -q` (87 passed em 31/10) e `destroy` + `apply` na mão | Miguel | só o `fmt` e o `validate` |
 
 ---
 

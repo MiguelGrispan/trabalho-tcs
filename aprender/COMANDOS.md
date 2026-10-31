@@ -82,9 +82,11 @@ Com os dados falsos, as empresas vão de `90001` a `90030`.
 
 ---
 
-## 6. Docker ✅ (MG2, PR #24) e Terraform ⏳ (MG3, obrigatório) (Miguel)
+## 6. Docker ✅ (MG2, PR #24) e Terraform ✅ (MG3, obrigatório) (Miguel)
 
 O `docker-compose.yml` sobe 2 contêineres: a `tela` e o `banco` (PostgreSQL 17, o mesmo do CI). Conferido em 30/10 no Linux do Miguel.
+O Terraform (`infra/`) sobe os mesmos 2, com os nomes `raiox-tela` e `raiox-banco` e as mesmas portas: rode um de cada vez
+(`docker compose down` antes do `terraform apply`). Conferido em 31/10 no Linux do Miguel (Terraform 1.17.0), nas portas 8502 e 5433.
 
 | o que | onde | comando | o que deve aparecer |
 |---|---|---|---|
@@ -97,8 +99,10 @@ O `docker-compose.yml` sobe 2 contêineres: a `tela` e o `banco` (PostgreSQL 17,
 | ver o que a tela escreve | raiz | `docker compose logs -f tela` | as mensagens da tela (`Ctrl + C` sai) |
 | subir só o banco (para rodar o Python fora do Docker) | raiz | `docker compose up -d banco` | o PostgreSQL na porta 5432, já com o `raiox` e o `raiox_teste` |
 | desligar | raiz | `docker compose down` | os 2 param; o banco fica guardado no volume `banco-dados` |
-| subir com Terraform ⏳ (MG3) | `terraform/` (ou `infra/`, decisão da MG3) | `terraform init` e depois `terraform apply` | `Apply complete!` |
-| derrubar ⏳ (MG3) | a mesma pasta | `terraform destroy` | `Destroy complete!` |
+| subir com Terraform | `infra/` | `terraform init` (uma vez só) e depois `terraform apply` (responda `yes`) | `Apply complete! Resources: 5 added`; a tela em `http://localhost:8501` |
+| conferir que nada mudou | `infra/` | `terraform plan` | `No changes. Your infrastructure matches the configuration.` |
+| testes no contêiner do Terraform | qualquer pasta | `docker exec raiox-tela python -m pytest -q` | `87 passed` em 31/10, nenhum pulado |
+| derrubar o Terraform | `infra/` | `terraform destroy` (responda `yes`) | `Destroy complete! Resources: 5 destroyed.`; o banco (volume `raiox-banco-dados`) e a `data/` continuam |
 
 ---
 
@@ -139,6 +143,7 @@ eles fazem, ou para fazer à mão.
 | `Empresa X não está na tabela de indicadores` | o `cd_cvm` não existe nos dados que você tem (real × falso) | confira com `python -m raiox.segmentos` quais dados estão sendo usados |
 | a tabela tem 1 coluna só | o CSV está com `;` (a sua `data/` é anterior a 30/10) | rode de novo os dois scripts da seção 3 |
 | `port is already allocated` ao subir o `docker compose` | outro programa já usa a porta 5432 (outro PostgreSQL) ou a 8501 (outra tela) | pare o outro, ou suba o banco em outra porta: `PORTA_BANCO=5433 docker compose up -d` |
+| `port is already allocated` no `terraform apply` | o `docker compose` (ou outro programa) já usa a 5432 ou a 8501 | `docker compose down` na raiz e o `terraform apply` de novo, ou outras portas: `terraform apply -var porta_tela=8502 -var porta_banco=5433`. O contêiner que não ligou o Terraform troca sozinho (*tainted*) |
 | `Permission denied` em `data/` dentro do contêiner (Linux) | o contêiner roda com outro usuário | acrescente `--user "$(id -u):$(id -g)"` no `docker compose run` |
 | `402` ou "quota" ao chamar a IA | o crédito do Gemini acabou | avise o Eduardo; use o modo sem IA |
 | a tela abre sem as cores do projeto | você rodou da raiz, não de `app/` | `cd app` antes do `streamlit run` |

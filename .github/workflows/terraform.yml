@@ -1,0 +1,34 @@
+# Confere o Terraform (infra/) em todo pull request que mexe nele e em todo push na main que mexe nele.
+# Não sobe nada: confere a formatação (fmt) e se a configuração é válida (validate).
+# O terraform apply de verdade precisa do Docker de quem roda: fica na checklist da demo (PLANO, seção 4).
+name: terraform
+
+on:
+  pull_request:
+    paths:
+      - "infra/**"
+      - ".github/workflows/terraform.yml"
+  push:
+    branches: [main]
+    paths:
+      - "infra/**"
+      - ".github/workflows/terraform.yml"
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.17.0"   # a mesma do computador do Miguel, onde o apply foi testado
+      - name: Formatação (terraform fmt)
+        run: terraform fmt -check -diff
+      # readonly: falha se o provider baixado não for o do .terraform.lock.hcl
+      - name: Baixar o provider
+        run: terraform init -backend=false -lockfile=readonly
+      - name: Validar (terraform validate)
+        run: terraform validate
