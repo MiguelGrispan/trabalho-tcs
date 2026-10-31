@@ -7,6 +7,8 @@ O Claude Code chama este script em 3 momentos (`.claude/settings.json`) e manda 
     python3 guarda.py fim       Stop: código 2 impede o Claude de parar e devolve o erro para ele
 E o teste `tests/test_guarda.py` usa a mesma lista de proibidos para conferir o repositório inteiro no CI:
     python3 guarda.py conferir  código 1 se o Git tem dado, .env, chave ou arquivo grande
+E o hook nativo do Git (.githooks/pre-commit, ligado com git config core.hooksPath .githooks) chama, na hora do commit:
+    python3 guarda.py precommit código 1 cancela o commit; vê o stage e a branch de verdade, até fora do Claude Code
 
 Por que um script: uma lista de proibidos só, testada, para o hook e para o CI.
 Só biblioteca padrão: roda com o python3 do Mac ou do Linux, sem instalar nada.
@@ -29,25 +31,47 @@ RAIZ = Path(os.environ.get("CLAUDE_PROJECT_DIR") or Path(__file__).resolve().par
 
 # Chave de API do Google (Gemini): começa com AIza e tem 39 caracteres
 CHAVE_GOOGLE = r"AIza[0-9A-Za-z_-]{35}"
+# Senha num endereço de banco (postgresql://usuario:senha@...). As de exemplo e de teste local podem.
+URL_COM_SENHA = r"postgres(?:ql)?://[^:/\s@\"']+:([^@\s\"']+)@"
+SENHAS_DE_EXEMPLO = {"postgres", "senha", "SUA_SENHA"}
+# O .env em qualquer forma (.env, .ENV, .env.local, .env_prod, prod.env), menos o .env.example e o os.environ
+ARQUIVO_ENV = r"(?i)\.env(?![a-z])(?!\.example)"
 LIMITE_BYTES = 10 * 1024 * 1024  # REGRAS-IA.md, seção 2: nada acima de 10 MB
 
 # "git", com as opções que vêm antes do subcomando (git -C pasta, git -c x=y, git --no-pager), em qualquer ponto do texto
-GIT = r"""\bgit\b(?:\s+(?:-C\s+(?:"[^"]*"|'[^']*'|\S+)|-c\s+\S+|--[\w-]+(?:=\S+)?|-[a-zA-Z]+))*\s+"""
+GIT = r"""\bgit\b(?:\s+(?:-[cC]\s+(?:"[^"]*"|'[^']*'|\S+)|--[\w-]+(?:=\S+)?|-[a-zA-Z]+))*\s+"""
 RESTO = r"[^\n;&|]*"  # o resto do mesmo comando
 
 # Comandos que reescrevem a história ou apagam trabalho (CLAUDE.md, regra 8)
 PERIGOSOS = [
     (GIT + r"rebase\b", "o rebase reescreve a história"),
     (GIT + r"pull\b" + RESTO + r"\s(-r|--rebase)(?![\w-])", "o pull --rebase reescreve a história"),
-    (GIT + r"push\b" + RESTO + r"(\s(-\w*f\w*|--force(-with-lease)?)(?![\w-])|\s\+\S)",
-     "o push --force (ou +branch) pode apagar o trabalho de um colega"),
-    (GIT + r"reset\b" + RESTO + r"--hard\b", "o reset --hard apaga mudanças sem commit"),
+    (GIT + r"push\b" + RESTO + r"""(\s(-\w*f\w*|--force[\w-]*|--mirror|--delete|-d)(?![\w-])|\s['"]?[+:]\S)""",
+     "o push --force, +branch, --mirror ou --delete pode apagar o trabalho de um colega"),
+    (GIT + r"push\b" + RESTO + r"\s(\S+:)?main(?![\w-])", "push direto na main não: só por pull request (CLAUDE.md, regra 7)"),
+    (GIT + r"reset\b" + RESTO + r"--ha", "o reset --hard apaga mudanças sem commit"),
     (GIT + r"clean\b", "o git clean apaga arquivos fora do Git (com -x, a data/ e o .env)"),
-    (GIT + r"add\b" + RESTO + r"\s(-\w*f\w*|--force)(?![\w-])", "o add --force passa por cima do .gitignore (data/, .env)"),
+    (GIT + r"(add|stage)\b" + RESTO + r"\s(-\w*f\w*|--force)(?![\w-])",
+     "o add --force passa por cima do .gitignore (data/, .env)"),
+    (r"pull\.rebase", "o pull.rebase faz todo git pull virar rebase"),
+    (GIT + r"commit\b" + RESTO + r"--no-verify", "o --no-verify pula a conferência do commit"),
+    (r"core\.hooksPath(?!\s+\.githooks\b)", "mudar o core.hooksPath desliga a conferência do commit"),
+]
+
+# Busca que lê o .env sem citar o nome dele (grep -r na pasta inteira, find -exec, dotenv, docker compose config)
+BUSCA_AMPLA = [
+    r"\b[ef]?grep\b" + RESTO + r"\s-\w*[rR]",
+    r"\b(rg|ag|ack)\b",
+    r"\bfind\b" + RESTO + r"-exec",
+    r"dotenv_values|load_dotenv",
+    r"docker[- ]compose\b" + RESTO + r"\bconfig\b",
+    r"(^|[\s/=])\.[\w.-]*\*",                          # glob que começa com ponto: cat .e*, ls .*
+    r"\bprintenv\b",                                    # mostra as variáveis do ambiente, chave incluída
 ]
 
 # As próprias travas e o CI: mudam o computador e os PRs de todos
-TRAVAS = (".claude/settings.json", ".claude/hooks/", ".claude/agents/", ".github/workflows/", "tests/test_guarda.py")
+TRAVAS = (".claude/settings.json", ".claude/settings.local.json", ".claude/hooks/", ".claude/agents/", ".claude/skills/",
+          ".githooks/", ".github/workflows/", "tests/test_guarda.py", ".gitignore", "CLAUDE.md")
 ESCREVE = r"(>|\bsed\s+-i|\bperl\s+-p?i|\brm\b|\bmv\b|\bcp\b|\btee\b|\btruncate\b)"
 
 SAIDA_MENSAGEM = ("Se é só o texto de uma mensagem de commit ou PR, escreva a mensagem num arquivo fora do repositório "
@@ -97,8 +121,10 @@ def proibido(caminho):
         return "segredos do Streamlit"
     if re.search(r"\.(db|sqlite3?|zip|parquet)$", minusculo):
         return "banco ou arquivo de dados"
-    if re.search(r"\.tfstate(\.|$)|\.tfvars(\.json)?$", minusculo):
-        return "estado ou variáveis do Terraform (podem guardar senha)"
+    if re.search(r"\.tfstate(\.|$)|\.tfvars(\.json)?$|\.tfplan$", minusculo):
+        return "estado, plano ou variáveis do Terraform (podem guardar senha)"
+    if re.search(r"(^|/)(id_(rsa|ed25519|ecdsa)|credentials\.json)$|\.(pem|key|p12)$", minusculo):
+        return "chave privada ou credencial"
     arquivo = RAIZ / caminho
     if arquivo.is_file() and arquivo.stat().st_size > LIMITE_BYTES:
         return "arquivo acima de 10 MB"
@@ -133,9 +159,22 @@ def linhas_novas(diff):
     return [l for l in diff.splitlines() if l.startswith("+") and not re.match(r"\+\+\+ (a/|b/|/dev/null)", l)]
 
 
+def problemas_no_texto(texto):
+    """Chave do Google ou senha de banco de verdade num texto que vai para o Git."""
+    problemas = []
+    if re.search(CHAVE_GOOGLE, texto):
+        problemas.append("uma chave do Google (AIza...)")
+    for senha in re.findall(URL_COM_SENHA, texto):
+        if senha not in SENHAS_DE_EXEMPLO and not senha.startswith(("$", "<")):
+            problemas.append("uma senha de banco num endereço postgresql://")
+            break
+    return problemas
+
+
 def commit_levaria():
     """O que está no stage, mudado ou novo na pasta (fora do .gitignore). O hook roda ANTES do comando, então não
-    sabe o que um git add no mesmo comando vai pôr: confere tudo o que está solto. Na dúvida, bloqueia."""
+    sabe o que um git add no mesmo comando vai pôr: confere tudo o que está solto. Na dúvida, bloqueia.
+    A conferência exata é a do pre-commit do Git (precommit, abaixo), que roda na hora do commit."""
     arquivos = set(git("diff", "--cached", "--name-only", "--diff-filter=d").splitlines())
     arquivos |= set(git("diff", "--name-only", "--diff-filter=d").splitlines())
     novos = git("ls-files", "--others", "--exclude-standard").splitlines()
@@ -146,9 +185,23 @@ def commit_levaria():
         if arquivo.is_file() and arquivo.stat().st_size <= LIMITE_BYTES:
             texto += "\n" + arquivo.read_text(encoding="utf-8", errors="ignore")
     ruins = [f"{f} ({proibido(f)})" for f in sorted(arquivos) if proibido(f)]
-    if re.search(CHAVE_GOOGLE, texto):
-        ruins.append("uma chave do Google (AIza...) num arquivo mudado ou novo")
-    return ruins
+    return ruins + [f"{p} num arquivo mudado ou novo" for p in problemas_no_texto(texto)]
+
+
+def precommit():
+    """Hook nativo do Git (.githooks/pre-commit): roda NA HORA do commit, com o stage e a branch de verdade, e vale
+    também para commit feito fora do Claude Code (VS Code, terminal). Código diferente de 0 cancela o commit."""
+    if git("branch", "--show-current") == "main":
+        print("guarda.py: commit na main não. Crie uma branch pessoa-tarefa (CLAUDE.md, regra 8).", file=sys.stderr)
+        return 1
+    arquivos = git("diff", "--cached", "--name-only", "--diff-filter=d").splitlines()
+    ruins = [f"{f} ({proibido(f)})" for f in arquivos if proibido(f)]
+    ruins += problemas_no_texto("\n".join(linhas_novas(git("diff", "--cached"))))
+    if ruins:
+        print("guarda.py: o commit levaria " + "; ".join(ruins) + ". Tire do stage com git restore --staged <arquivo> "
+              "(REGRAS-IA.md, seção 2).", file=sys.stderr)
+        return 1
+    return 0
 
 
 def antes(dados):
@@ -158,9 +211,13 @@ def antes(dados):
     if ferramenta == "Bash":
         cmd = entrada.get("command", "")
         # 1. O .env (chave do Gemini) nunca passa pelo Claude; o .env.example pode
-        if re.search(r"\.env\b(?!\.example)", cmd):
+        if re.search(ARQUIVO_ENV, cmd):
             bloquear("Bloqueado: o .env guarda a chave do Gemini e não passa pelo Claude (CLAUDE.md, Cuidados). "
                      "Se precisar, a pessoa roda o comando no terminal dela. Não tente outro caminho. " + SAIDA_MENSAGEM)
+        # 1b. Busca que lê o .env sem citar o nome (grep -r ., find -exec, dotenv, docker compose config, cat .e*)
+        if any(re.search(padrao, cmd) for padrao in BUSCA_AMPLA):
+            bloquear("Bloqueado: esta busca pode ler o .env sem citar o nome dele (CLAUDE.md, Cuidados). Para procurar "
+                     "texto no código, use a ferramenta Grep (ela respeita o deny do .env) ou git grep (só arquivos do Git).")
         # 2. Git perigoso: a regra de permissão só compara o começo do comando; aqui lemos o comando inteiro
         for padrao, motivo in PERIGOSOS:
             if re.search(padrao, cmd):
@@ -170,7 +227,10 @@ def antes(dados):
             if git("branch", "--show-current") == "main":
                 bloquear("Bloqueado: você está na main. Rode /inicio-de-sessao para criar a branch pessoa-tarefa "
                          "(CLAUDE.md, regra 8).")
-            ruins = commit_levaria()
+            try:
+                ruins = commit_levaria()
+            except Exception as erro:  # aqui a dúvida bloqueia: um arquivo que não dá para ler pode ter a chave
+                bloquear(f"Bloqueado: não consegui conferir o que vai no commit ({erro!r}). Confira o git status.")
             if ruins:
                 bloquear("Bloqueado: o commit pode levar " + "; ".join(ruins) + ". Tire do stage com "
                          "git restore --staged <arquivo>, ponha no .gitignore o que é seu e confira o git status "
@@ -187,7 +247,7 @@ def antes(dados):
             perguntar("Isto chama o Gemini e gasta crédito (≈ US$ 0,0012 por raio-x). "
                       "Mais de 10 chamadas: avise o grupo antes (CLAUDE.md, Cuidados).")
 
-    if ferramenta in ("Edit", "Write", "NotebookEdit"):
+    if ferramenta in ("Edit", "MultiEdit", "Write", "NotebookEdit"):
         caminho = entrada.get("file_path") or entrada.get("notebook_path") or ""
         try:
             relativo = Path(caminho).resolve().relative_to(RAIZ).as_posix()
@@ -251,6 +311,9 @@ def inicio(dados):
     if pendentes:
         linhas.append(f"{len(pendentes)} arquivo(s) com mudança sem commit: "
                       + ", ".join(p[3:] for p in pendentes[:5]))
+    if git("config", "--get", "core.hooksPath") != ".githooks":
+        linhas.append("A conferência do commit pelo Git está desligada neste clone: rode git config core.hooksPath "
+                      ".githooks (o /inicio-de-sessao faz).")
     plano = RAIZ / "docs" / "PLANO.md"
     nota = re.search(r"\*\*Em ([^*]+)\*\*", plano.read_text(encoding="utf-8")) if plano.is_file() else None
     if nota:
@@ -262,6 +325,9 @@ def conferir():
     """Confere o repositório inteiro com a mesma lista do hook. Roda no CI pelo tests/test_guarda.py."""
     ruins = [f"{f}: {proibido(f)}" for f in git("ls-files").splitlines() if proibido(f)]
     ruins += [f"chave do Google em {linha.split(':')[0]}" for linha in git("grep", "-nE", CHAVE_GOOGLE).splitlines()]
+    # o git grep só entende a regex simples (ERE): acha os candidatos, e o Python decide se a senha é de verdade
+    candidatos = git("grep", "-nE", "postgres(ql)?://[^:/ @]+:[^@ ]+@").splitlines()
+    ruins += [f"senha de banco em {linha.split(':')[0]}" for linha in candidatos if problemas_no_texto(linha)]
     for ruim in ruins:
         print(ruim)
     return 1 if ruins else 0
@@ -271,6 +337,13 @@ if __name__ == "__main__":
     modo = sys.argv[1] if len(sys.argv) > 1 else ""
     if modo == "conferir":
         sys.exit(conferir())
+    if modo == "precommit":
+        RAIZ = Path.cwd().resolve()  # o Git roda o hook na raiz do repositório do commit
+        try:
+            sys.exit(precommit())
+        except Exception as erro:    # no commit, a dúvida cancela (falha fechada)
+            print(f"guarda.py (precommit): não consegui conferir o commit ({erro!r}).", file=sys.stderr)
+            sys.exit(1)
     dados = {} if sys.stdin.isatty() else json.loads(sys.stdin.read() or "{}")
     try:
         {"inicio": inicio, "antes": antes, "fim": fim}[modo](dados)

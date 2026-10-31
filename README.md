@@ -42,6 +42,7 @@ Os arquivos que dizem às IAs de programação como trabalhar neste projeto:
 | [.claude/skills/](.claude/skills/) | `/inicio-de-sessao`, `/fim-de-sessao` e `/explicar`: os passos que o Claude Code segue |
 | [.claude/settings.json](.claude/settings.json) e [.claude/hooks/guarda.py](.claude/hooks/guarda.py) | as travas: o que o Claude Code nunca faz (ler o `.env`, apagar trabalho no Git, commit com dado), o que ele pergunta antes (merge, Gemini, pasta de outro dono) e os testes no fim de cada resposta |
 | [.claude/agents/revisor.md](.claude/agents/revisor.md) | o revisor: um segundo Claude, que só lê e revisa o PR sem ter escrito o código |
+| [.githooks/pre-commit](.githooks/pre-commit) | a conferência do commit pelo próprio Git (ligue com `git config core.hooksPath .githooks`): vale também fora do Claude Code |
 | [.github/pull_request_template.md](.github/pull_request_template.md) | em todo PR: o que foi feito com IA e o que o autor conferiu |
 
 O prompt do produto (o que o Gemini recebe para escrever o raio-x) é outro: [avaliacao/regras_prompt.md](avaliacao/regras_prompt.md).

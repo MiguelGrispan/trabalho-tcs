@@ -23,6 +23,7 @@ PASTA = Path(__file__).resolve().parent.parent
 GUARDA = PASTA / ".claude" / "hooks" / "guarda.py"
 ENV = "." + "env"                      # escrito assim para o próprio hook não bloquear quem roda grep neste arquivo
 CHAVE_FALSA = "AIza" + "x" * 35        # parece uma chave do Google, mas não é
+URL_SENHA_FALSA = "postgresql://postgres:" + "Abc12345" + "@servidor:5432/raiox"   # montada em pedaços pelo mesmo motivo
 
 TEM_GIT = shutil.which("git") is not None
 precisa_git = pytest.mark.skipif(not TEM_GIT, reason="sem git (ex.: dentro do contêiner)")
@@ -84,11 +85,29 @@ def repo(tmp_path):
     f"echo '-m \"'; cat {ENV}; echo '\"'",                           # aspas que enganavam a 2ª versão
     f"git commit -m \"$(cat <<'EOF'\nmsg\nEOF\ncat {ENV}\nEOF\n)\"",  # heredoc que fecha antes do que parece
     f'git commit -m "explica o {ENV}"',                              # só texto? vai por arquivo (-F); ver abaixo
+    f"cat {ENV.upper()}",                                            # o disco do Mac não diferencia maiúscula
+    f"cat {ENV}_prod",
 ])
 def test_bloqueia_qualquer_comando_que_cite_o_env(comando):
     r = bash(comando)
     assert decisao(r) == "bloqueia"
     assert "-F <arquivo>" in r.stderr          # a mensagem de bloqueio ensina a saída certa
+
+
+@pytest.mark.parametrize("comando", [
+    'grep -rn "AIza" .',                       # "onde a chave é usada?": o grep na pasta inteira lê o .env (3ª revisão)
+    "grep -rn GOOGLE_API_KEY .",
+    "rg AIza",
+    "find . -name '.*' -exec cat {} +",
+    "cat .e*",
+    'python -c "from dotenv import dotenv_values; print(dotenv_values())"',
+    "docker compose config",                   # o compose mostra as variáveis já lidas do .env
+    "printenv",
+])
+def test_bloqueia_busca_que_le_o_env_sem_citar_o_nome(comando):
+    r = bash(comando)
+    assert decisao(r) == "bloqueia"
+    assert "ferramenta Grep" in r.stderr
 
 
 @pytest.mark.parametrize("comando", [
@@ -111,6 +130,21 @@ def test_bloqueia_qualquer_comando_que_cite_o_env(comando):
     "git clean -fdx",
     "git add -f data/contas.csv",
     "git add -fA",
+    "git config pull.rebase true",               # o que o próprio Git sugere quando o pull diverge
+    "git -c pull.rebase=true pull",
+    'git commit --no-verify -m "x"',              # pularia o pre-commit
+    "git -c core.hooksPath=/dev/null commit -m x",
+    "git config --unset core.hooksPath",
+    "git push origin main",                       # main só por PR (o GitHub também recusa)
+    "git push origin HEAD:main",
+    "git push --mirror origin",
+    "git push origin --delete miguel-tela",
+    "git push origin :miguel-tela",
+    "git push origin '+main'",
+    "git push --force-if-includes origin x",
+    "git stage -f data/contas.csv",
+    "git reset --har HEAD~1",                     # o Git aceita a opção abreviada
+    'git -c "a b=c" rebase main',
 ])
 def test_bloqueia_git_que_apaga_trabalho(comando):
     r = bash(comando)
@@ -146,6 +180,12 @@ def test_pergunta_antes_de_gastar_credito_do_gemini(comando):
     'python -c "from raiox.ia import validar_e_preencher"',   # importar não chama o Gemini
     "gh pr create --title 'Travas' --body-file /tmp/corpo.md",  # mensagem por arquivo: a saída certa
     "cat .claude/hooks/guarda.py",                              # ler as travas pode
+    "git grep -n AIza",                                         # git grep só lê arquivos do Git
+    "grep -n validar raiox/ia.py",                              # grep num arquivo pode
+    "find . -name '*.py'",
+    "git config core.hooksPath .githooks",                      # ligar o pre-commit pode
+    "git push origin v1.0",                                     # tag pode
+    "git push -u origin eduardo-main-fix",                      # "main" dentro do nome da branch pode
 ])
 def test_libera_o_trabalho_normal(comando):
     assert decisao(bash(comando)) == "libera"
@@ -173,9 +213,19 @@ def test_pergunta_antes_de_mudar_as_travas_pelo_terminal():
     ("eduardo", ".claude/agents/revisor.md", "ask"),
     ("eduardo", "tests/test_guarda.py", "ask"),
     ("miguel", ".github/workflows/testes.yml", "ask"),
+    ("eduardo", ".claude/settings.local.json", "ask"),      # aceita disableAllHooks: desligaria tudo
+    ("eduardo", ".githooks/pre-commit", "ask"),
+    ("eduardo", "CLAUDE.md", "ask"),                       # a tabela de donos e as travas moram nele
+    ("eduardo", ".gitignore", "ask"),                      # tirar o .env dali desligaria a proteção
+    ("eduardo", ".claude/skills/fim-de-sessao/SKILL.md", "ask"),
 ])
 def test_pergunta_antes_de_mexer_em_pasta_de_outro_dono(pessoa, arquivo, esperado):
     assert decisao(editar(arquivo, pessoa=pessoa)) == esperado
+
+
+def test_multiedit_tambem_passa_pela_guarda():
+    r = rodar("antes", {"tool_name": "MultiEdit", "tool_input": {"file_path": str(PASTA / "app" / "streamlit_app.py")}})
+    assert decisao(r) == "ask"
 
 
 def test_mensagem_diz_de_quem_e_a_pasta():
@@ -274,6 +324,91 @@ def test_libera_o_commit_que_tira_do_git_uma_chave_ou_um_dado(repo):
     assert decisao(bash('git commit -m "tira a chave e o dado"', raiz=repo)) == "libera"
 
 
+@precisa_git
+def test_commit_com_senha_de_banco_de_verdade_e_bloqueado(repo):
+    (repo / "config.py").write_text(f'URL = "{URL_SENHA_FALSA}"\n')
+    assert "senha de banco" in bash('git add config.py && git commit -m "x"', raiz=repo).stderr
+    (repo / "config.py").write_text('URL = "postgresql://postgres:postgres@localhost:5432/raiox"\n')  # a de teste local
+    assert decisao(bash('git add config.py && git commit -m "x"', raiz=repo)) == "libera"
+
+
+@precisa_git
+@pytest.mark.skipif(hasattr(os, "geteuid") and os.geteuid() == 0, reason="o root lê qualquer arquivo")
+def test_commit_que_nao_da_para_conferir_e_bloqueado(repo):
+    """Na dúvida, bloqueia: um arquivo novo que o hook não consegue ler pode ter a chave (3ª revisão)."""
+    segredo = repo / "segredo.py"
+    segredo.write_text(f'CHAVE = "{CHAVE_FALSA}"\n')
+    segredo.chmod(0)
+    try:
+        assert decisao(bash('git add -A && git commit -m "x"', raiz=repo)) == "bloqueia"
+    finally:
+        segredo.chmod(0o644)
+
+
+# ---------------------------------------------------------------- pre-commit do Git (.githooks/pre-commit)
+@pytest.fixture
+def repo_com_precommit(repo):
+    """O repositório de mentira com o pre-commit do time ligado, como o /inicio-de-sessao liga."""
+    git(repo, "config", "core.hooksPath", str(PASTA / ".githooks"))
+    return repo
+
+
+def commitar(raiz, *args):
+    """Commit de verdade, pelo Git (o pre-commit roda), como no terminal ou no VS Code."""
+    return subprocess.run(["git", "-C", str(raiz), "commit", "-q", *args], capture_output=True, text=True, env=GIT_ENV)
+
+
+def test_precommit_e_executavel():
+    assert os.access(PASTA / ".githooks" / "pre-commit", os.X_OK)
+
+
+@precisa_git
+def test_precommit_cancela_o_que_o_hook_do_claude_nao_ve(repo_com_precommit):
+    repo = repo_com_precommit
+    # o arquivo nasce e entra no stage no mesmo comando: só o Git, na hora do commit, vê
+    subprocess.run(f"echo 'K=\"{CHAVE_FALSA}\"' > cfg.py && git add -A", shell=True, cwd=repo, check=True)
+    r = commitar(repo, "-m", "x")
+    assert r.returncode != 0 and "chave do Google" in r.stderr
+    git(repo, "restore", "--staged", "cfg.py")
+    (repo / "cfg.py").unlink()
+
+    (repo / "data").mkdir()
+    (repo / "data" / "contas.csv").write_text("a\n")
+    git(repo, "add", "-f", "data/contas.csv")
+    r = commitar(repo, "-m", "x")
+    assert r.returncode != 0 and "data/contas.csv" in r.stderr
+    git(repo, "restore", "--staged", "data/contas.csv")
+
+    (repo / "novo.py").write_text("x = 1\n")
+    git(repo, "add", "novo.py")
+    assert commitar(repo, "-m", "limpo").returncode == 0
+
+
+@precisa_git
+def test_precommit_cancela_commit_na_main(repo_com_precommit):
+    repo = repo_com_precommit
+    git(repo, "switch", "-q", "main")
+    (repo / "novo.py").write_text("x = 1\n")
+    git(repo, "add", "novo.py")
+    r = commitar(repo, "-m", "x")
+    assert r.returncode != 0 and "main" in r.stderr
+
+
+@precisa_git
+def test_pre_merge_commit_cancela_merge_que_cria_commit_na_main(repo_com_precommit):
+    repo = repo_com_precommit
+    (repo / "a.py").write_text("a = 1\n")
+    git(repo, "add", "a.py")
+    git(repo, "commit", "-qm", "na branch")
+    git(repo, "switch", "-q", "main")
+    (repo / "b.py").write_text("b = 1\n")
+    git(repo, "add", "b.py")
+    git(repo, "-c", "core.hooksPath=/dev/null", "commit", "-qm", "na main, só para o teste divergir")
+    r = subprocess.run(["git", "-C", str(repo), "merge", "--no-ff", "-m", "merge", "eduardo-teste"],
+                       capture_output=True, text=True, env=GIT_ENV)
+    assert r.returncode != 0 and "main" in r.stderr
+
+
 # ---------------------------------------------------------------- fim da resposta (Stop)
 @precisa_git
 def test_stop_nao_roda_testes_sem_codigo_mudado(repo):
@@ -306,8 +441,11 @@ def test_inicio_diz_a_branch_e_a_data_do_plano(repo):
     saida = rodar("inicio", raiz=repo).stdout
     assert "Branch atual: eduardo-teste" in saida
     assert "seção 0 do PLANO foi escrita em" in saida
+    assert "core.hooksPath" in saida                   # avisa que o pre-commit do time está desligado neste clone
     git(repo, "switch", "-q", "main")
     assert "/inicio-de-sessao" in rodar("inicio", raiz=repo).stdout
+    git(repo, "config", "core.hooksPath", ".githooks")
+    assert "core.hooksPath" not in rodar("inicio", raiz=repo).stdout
 
 
 # ---------------------------------------------------------------- o repositório inteiro (roda no CI)
@@ -331,6 +469,11 @@ def test_conferir_acha_dado_e_chave_no_git(repo):
         "BASE.ZIP": "x",                   # maiúscula também
         "banco.sqlite": "x",
         "config.py": f'CHAVE = "{CHAVE_FALSA}"\n',
+        "banco.py": f'URL = "{URL_SENHA_FALSA}"\n',
+        "exemplo.py": 'URL = "postgresql://postgres:postgres@localhost:5432/raiox"\n',   # a de teste local pode
+        "plano.tfplan": "x",
+        "id_rsa": "x",
+        "credentials.json": "{}",
     }
     for nome, conteudo in arquivos.items():
         (repo / nome).write_text(conteudo)
@@ -338,8 +481,11 @@ def test_conferir_acha_dado_e_chave_no_git(repo):
     git(repo, "commit", "-qm", "erro de propósito")
     r = rodar("conferir", raiz=repo)
     assert r.returncode == 1
-    for esperado in [n for n in arquivos if n != "config.py"] + ["chave do Google em config.py"]:
+    for esperado in ["data/contas.csv", "data/relatório.csv", f"{ENV}.local", f"prod{ENV}", "BASE.ZIP", "banco.sqlite",
+                     "plano.tfplan", "id_rsa", "credentials.json",
+                     "chave do Google em config.py", "senha de banco em banco.py"]:
         assert esperado in r.stdout
+    assert "exemplo.py" not in r.stdout
 
 
 # ---------------------------------------------------------------- configuração
@@ -351,6 +497,7 @@ def test_settings_do_projeto_liga_a_guarda_e_as_travas():
     assert "Bash(gh *merge*)" in regras["ask"]             # a 2ª trava do merge, até no modo bypass
     comandos = {evento: grupo["hooks"][0]["command"] for evento, grupos in config["hooks"].items() for grupo in grupos}
     assert comandos.keys() == {"SessionStart", "PreToolUse", "Stop"}
+    assert "MultiEdit" in config["hooks"]["PreToolUse"][0]["matcher"]
     for evento, modo in [("SessionStart", "inicio"), ("PreToolUse", "antes"), ("Stop", "fim")]:
         assert comandos[evento].endswith(f'.claude/hooks/guarda.py" {modo}')
 

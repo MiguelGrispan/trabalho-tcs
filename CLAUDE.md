@@ -112,11 +112,14 @@ Caminhos: todo código que usa `data/` ou `docs/` aponta para a **raiz** do repo
 ## Travas automáticas
 Parte das regras não depende de lembrar: o `.claude/settings.json` e o `.claude/hooks/guarda.py` aplicam sozinhas
 (o porquê e o que fazer quando aparecem: `aprender/claude-code.md`; os testes: `tests/test_guarda.py`).
-- **Bloqueia:** ler ou mostrar o `.env`; `push --force`, `rebase`, `reset --hard`, `git clean`, `add --force`; commit na `main`;
-  commit com `data/`, `.env`, chave `AIza…`, `.db`, `.zip`, `.parquet`, estado do Terraform ou arquivo acima de 10 MB.
+- **Bloqueia:** ler ou mostrar o `.env`, inclusive por busca ampla (`grep -r`, `find -exec`, `printenv`); `push --force`, push na
+  `main`, `rebase`, `reset --hard`, `git clean`, `add --force`, `--no-verify`; commit na `main`; commit com `data/`, `.env`, chave
+  `AIza…`, senha de banco, `.db`, `.zip`, `.parquet`, Terraform, chave privada ou arquivo acima de 10 MB.
 - **Pergunta antes:** o merge do PR (depois do "pode" falado, a permissão é a segunda trava); ligar o Gemini; editar o `contratos.md`,
-  `docs/professor/`, a pasta de outro dono, o `.claude/settings.json`, `.claude/hooks/` ou `.github/workflows/`.
+  `docs/professor/`, a pasta de outro dono e as próprias travas (`.claude/`, `.githooks/`, `.github/workflows/`, `.gitignore`, este arquivo).
 - **No fim de cada resposta:** se um `.py` ou `.ipynb` mudou, roda o `pytest`; vermelho, você volta e conserta.
+- **Na hora do commit, pelo Git** (`.githooks/pre-commit`, ligado pelo `/inicio-de-sessao`): a mesma conferência, com o stage de verdade,
+  também para commit feito fora do Claude Code.
 - **No CI:** o `tests/test_guarda.py` confere o repositório inteiro, inclusive o que veio pelo navegador ou pelo Codex.
 
 Bloqueado? Diga à pessoa o motivo e o caminho certo. **Não contorne** (outro comando, um script Python, outro arquivo).

@@ -107,6 +107,8 @@ Algumas regras do `CLAUDE.md` não dependem de ele lembrar. O `.claude/settings.
 | "Bloqueado: o .env…" | a chave do Gemini nunca passa pelo Claude | se precisar, rode você mesmo no terminal. Era só o texto de uma mensagem de commit ou PR? Ele mesmo resolve: escreve num arquivo e usa `-F` / `--body-file` |
 | "Bloqueado: o push --force / rebase / reset --hard / git clean / add --force…" | apagam trabalho ou passam por cima do `.gitignore` | para trazer a `main`: `git merge main` |
 | "Bloqueado: você está na main" | commit só em branch `pessoa-tarefa` | `/inicio-de-sessao` |
+| "Bloqueado: esta busca pode ler o .env…" | `grep -r` na pasta inteira, `find -exec` ou `printenv` leem o `.env` sem citar o nome | ele mesmo troca pela ferramenta Grep ou por `git grep` |
+| "guarda.py: o commit levaria…" ou "commit na main não" (no terminal ou no VS Code) | a conferência do commit pelo Git (`.githooks/pre-commit`) | o mesmo da linha do commit, acima |
 | "Bloqueado: o commit pode levar data/… (ou chave, ou arquivo grande)" | REGRAS-IA.md, seção 2. O hook confere tudo o que está mudado ou solto na pasta, não só o que vai no commit | `git restore --staged <arquivo>`; arquivo seu que não vai para o Git: ponha no `.gitignore` |
 | pedido de permissão com "gasta crédito do Gemini" | o Gemini é pré-pago | aceite só se for de propósito |
 | pedido de permissão com "está na pasta de…" ou "contratos.md" | regras 1 e 2 do `CLAUDE.md` | aceite só se o dono deu o ok no grupo |
@@ -114,13 +116,17 @@ Algumas regras do `CLAUDE.md` não dependem de ele lembrar. O `.claude/settings.
 | pedido de permissão para `gh pr merge` | segunda trava, depois do seu "pode" | leia o resumo do `revisor` antes |
 | "Os testes falharam…", e ele continua trabalhando | ele mudou código e o `pytest` ficou vermelho | deixe ele consertar |
 
+**Ligue uma vez por clone** (o `/inicio-de-sessao` faz): `git config core.hooksPath .githooks`. É a conferência do commit
+pelo próprio Git: vale também quando você faz commit pelo terminal ou pelo VS Code, sem o Claude.
+
 **Configure uma vez:** o teste do fim de cada resposta precisa de um Python com o `pytest`. Com `.venv` na raiz, nada a fazer.
 Sem `.venv`, crie (ou abra) o `.claude/settings.local.json`, que é só seu e não vai para o Git, com o caminho do seu Python:
 `{"env": {"RAIOX_PYTHON": "~/bootcamp/bin/python"}}`.
 O hook descobre quem é você pelo nome no Git (`git config user.name`) e precisa que ele comece com o seu primeiro nome
 (`MiguelAlves` serve). Se não começar, ele vai perguntar em todo arquivo seu: acrescente `"RAIOX_PESSOA": "miguel"` (o seu nome) no mesmo `env`.
 
-**Os limites:** as travas só valem no Claude Code. Para o Codex e para quem sobe arquivo pelo navegador, quem confere é o CI
+**Os limites:** as travas do `.claude/` só valem no Claude Code; a do commit (`.githooks/`) vale para qualquer commit feito
+neste clone. Para quem sobe arquivo pelo navegador, quem confere é o CI
 (`tests/test_guarda.py` reprova dado, `.env`, chave e arquivo grande no Git). E nada impede um script Python de abrir o `.env`
 sozinho, nem um comando de terminal (`sed -i`, `>`) de escrever na pasta de outro dono sem a pergunta: por isso a regra
 "não contorne" está no `CLAUDE.md`.

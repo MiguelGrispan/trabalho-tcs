@@ -61,7 +61,8 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   `.env`, não apaga trabalho no Git nem faz commit na `main` ou com dado; pergunta antes do merge, do Gemini e de mexer em pasta
   de outro dono; roda os testes quando muda código. Um segundo Claude (o `revisor`) revisa os PRs sem ter escrito o código:
   na estreia, no próprio #30, achou um jeito de vazar a chave e outros furos que o autor deixou passar; na 2ª revisão, mostrou
-  que o conserto tinha aberto furos novos. Tudo corrigido no mesmo PR, com os casos dele virando testes.
+  que o conserto tinha aberto furos novos; na 3ª, levou a uma conferência do commit pelo próprio Git (`.githooks/pre-commit`),
+  que vale também fora do Claude Code. Tudo corrigido no mesmo PR, com os casos dele virando testes.
 
 ## Decisões (e por quê)
 
