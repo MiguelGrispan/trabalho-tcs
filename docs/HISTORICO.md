@@ -53,6 +53,10 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   **PR #28: os 2 arquivos do professor entram em `docs/professor/` e viram a fonte da verdade.** O `requisitos_projeto.MD` (29/10)
   exige o Terraform, que as notas (e o Claude, numa resposta ao Miguel) tratavam como cortável por causa do "ou" do guia de 07/10.
   CLAUDE.md, AGENTS.md, REGRAS-IA.md, as 3 skills, PLANO, REQUISITOS, README e `aprender/` passam a seguir os dois arquivos.
+- **31/10** · **MG3** (PR #29): **o Terraform entra na `main`**, em `infra/`. `terraform apply` sobe a tela e o PostgreSQL, como o
+  `docker compose`, e o `destroy` apaga os contêineres mas mantém o banco e a `data/` (testado com uma tabela de marca). A chave do
+  Gemini não passa pelo Terraform e não fica no `terraform.tfstate`. Um CI novo confere o Terraform em todo PR que mexe em `infra/`.
+  No teste da IA, o `apply` falhou com o compose ligado (as mesmas portas): virou aviso no README e nos "Erros comuns".
 
 ## Decisões (e por quê)
 
@@ -74,6 +78,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 30/10 | os arquivos do professor (`docs/professor/`) valem mais que qualquer nota; quando os dois diferem, vale o mais exigente; nada que esteja neles pode ser cortado | uma nota tinha virado "regra" (Terraform cortável) contra o `requisitos_projeto.MD`, e o Claude Code repetiu o erro |
 | 30/10 | **Terraform obrigatório** | `requisitos_projeto.MD`, Aplicação: "Infraestrutura automatizada com Terraform, podendo rodar localmente ou na nuvem" |
 | 30/10 | Docker com `docker compose` (tela + PostgreSQL); a `data/` entra como volume, nunca na imagem | um comando sobe tudo igual em qualquer máquina; a `data/` não vai para o Git nem para a imagem, e o banco fica guardado num volume |
+| 31/10 | Terraform em `infra/` com o provider Docker (local, sem nuvem); o volume do banco fica fora do Terraform; a chave chega pelo `.env` montado, não por variável | o R aceita "localmente"; o `destroy` não pode apagar o banco carregado; variável do Terraform fica em texto puro no `terraform.tfstate` |
 
 **Já cortado do escopo:** verificação com yfinance, receita em 3 anos, filtro de setor, RAG, nome dos grupos pelo LLM,
 exportar o raio-x, 20 casos (ficaram 10). A lista e a ordem dos próximos cortes estão no PLANO, seção 7.
