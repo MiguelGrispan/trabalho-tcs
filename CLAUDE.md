@@ -11,7 +11,8 @@ O que o projeto precisa ter vem de dois arquivos do professor (André Santos, re
 
 Mais as regras ditas em aula, anotadas em `docs/REQUISITOS.md` ("Regras do professor"), como o PostgreSQL.
 
-**Em toda sessão, antes de qualquer tarefa, leia os dois arquivos inteiros** (o PDF com a ferramenta Read). Eles valem mais que este
+**Em toda sessão, antes de qualquer tarefa, leia os dois arquivos inteiros.** O `requisitos_projeto.MD` já vem carregado sozinho,
+no fim deste arquivo (import); o PDF, leia com a ferramenta Read. Eles valem mais que este
 arquivo, o PLANO e o REQUISITOS. Quando os dois diferem, vale o mais exigente: o guia diz "Terraform ou conteinerização", mas o
 `requisitos_projeto.MD` exige "Infraestrutura automatizada com Terraform", então **o Terraform é obrigatório**.
 
@@ -54,8 +55,8 @@ O status de cada item, com a prova, fica no `docs/REQUISITOS.md`.
 | GenAI: prompt engineering, LangChain, API, com uma base de conhecimento para a IA usar | G §2; R Integração com IA de terceiro | `raiox/ia.py` (+ auditoria em `raiox/checagem.py`); a base são os dados da CVM | Eduardo |
 | Aplicação web com **backend e frontend** e interface funcional | R Aplicação; G §2 | `app/streamlit_app.py` (tela), `raiox/` (o que roda por trás) | Miguel |
 | **Infraestrutura automatizada com Terraform** (local ou nuvem): obrigatória | R Aplicação; G §2 e §6 | `infra/` (Terraform, MG3), `Dockerfile`, `docker-compose.yml` | Miguel |
-| Arquivos de prompts usados no vibecoding | R Aplicação | `CLAUDE.md`, `AGENTS.md`, `REGRAS-IA.md`, `.claude/skills/`, `.github/pull_request_template.md` | todos (coordena Eduardo) |
-| Boas práticas e agentic coding | G §2 | `tests/`, `contratos.md`, CI, pull requests | todos |
+| Arquivos de prompts usados no vibecoding | R Aplicação | `CLAUDE.md`, `AGENTS.md`, `REGRAS-IA.md`, `.claude/` (skills, settings, hooks, agents), `.github/pull_request_template.md` | todos (coordena Eduardo) |
+| Boas práticas e agentic coding | G §2 | `tests/`, `contratos.md`, CI, pull requests, travas do Claude Code (`.claude/settings.json`, `.claude/hooks/guarda.py`) | todos |
 | Governança e ética (viabilidade, limites, viés, confiabilidade, uso responsável) | G §2 | validador, texto de ética no PDF | Náthally, todos |
 
 **Regras do professor ditas em aula** (valem como os arquivos; ficam em `docs/REQUISITOS.md`, seção "Regras do professor"):
@@ -86,7 +87,8 @@ DevOps/Terraform") · protótipo funcional 20% · governança e ética 15% · co
 | `docs/professor/` | ninguém edita: são cópias dos arquivos do professor. Se ele publicar versão nova, troque o arquivo inteiro, avise o grupo e revise o CLAUDE.md e o REQUISITOS |
 
 Pastas comuns (avise o grupo antes de mexer): `tests/`, `falsos/` (dados falsos no formato dos contratos;
-os falsos chamam o código real sem IA), `docs/`, `aprender/` (guias e atalhos do Mac; nada ali é usado pelo código), `contratos.md`, `README.md`.
+os falsos chamam o código real sem IA), `docs/`, `aprender/` (guias e atalhos do Mac; nada ali é usado pelo código), `contratos.md`, `README.md`,
+`.claude/` e `.github/` (skills, travas e CI: rodam no computador e nos PRs de todos).
 `data/`: dados da CVM e arquivos gerados; só o `.gitkeep` vai para o Git.
 Caminhos: todo código que usa `data/` ou `docs/` aponta para a **raiz** do repositório (`Path(__file__).resolve().parent.parent`).
 
@@ -106,6 +108,17 @@ Caminhos: todo código que usa `data/` ou `docs/` aponta para a **raiz** do repo
    testes, atualiza a seção 0 do `docs/PLANO.md` (é por ela que a próxima sessão começa), o `docs/REQUISITOS.md` e o
    `docs/HISTORICO.md`, abre o PR, espera o CI e faz o merge. Para trazer a `main`, `git merge main`.
    Nunca `rebase`, `push --force` nem commit na `main`.
+
+## Travas automáticas
+Parte das regras não depende de lembrar: o `.claude/settings.json` e o `.claude/hooks/guarda.py` aplicam sozinhas
+(o porquê e o que fazer quando aparecem: `aprender/claude-code.md`; os testes: `tests/test_guarda.py`).
+- **Bloqueia:** ler ou mostrar o `.env`; `push --force`, `rebase`, `reset --hard`, `git clean`, `add --force`; commit na `main`;
+  commit com `data/`, `.env`, chave `AIza…`, `.db`, `.zip`, `.parquet`, estado do Terraform ou arquivo acima de 10 MB.
+- **Pergunta antes:** o merge do PR (a aprovação é o "pode"); ligar o Gemini; editar o `contratos.md`, `docs/professor/` ou a pasta de outro dono.
+- **No fim de cada resposta:** se um `.py` ou `.ipynb` mudou, roda o `pytest`; vermelho, você volta e conserta.
+- **No CI:** o `tests/test_guarda.py` confere o repositório inteiro, inclusive o que veio pelo navegador ou pelo Codex.
+
+Bloqueado? Diga à pessoa o motivo e o caminho certo. **Não contorne** (outro comando, um script Python, outro arquivo).
 
 ## Como responder ao time (iniciantes)
 - Português simples. Explique o porquê de cada mudança, não só o quê.
@@ -129,3 +142,6 @@ Lista completa, com o que deve aparecer: `aprender/COMANDOS.md`.
 - Siga o `REGRAS-IA.md` (regras do time para uso de IA).
 - Não leia, mostre nem envie o conteúdo de `.env` (chave do Gemini, plano pré-pago).
 - Toda chamada ao Gemini gasta crédito (≈ US$ 0,0012 por raio-x). Mais de 10 chamadas: avise o grupo antes.
+
+## Requisitos do professor (cópia de `docs/professor/requisitos_projeto.MD`, carregada sozinha)
+@docs/professor/requisitos_projeto.MD

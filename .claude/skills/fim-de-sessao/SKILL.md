@@ -25,6 +25,8 @@ Siga os passos **em ordem** e pare no primeiro que falhar.
 
 - Rode `git status` e mostre a lista.
 - **Pare** se aparecer `.env`, chave, qualquer coisa em `data/` (fora o `.gitkeep`), `.db`, `.zip` ou `.parquet`.
+  O hook confere de novo na hora do commit (`.claude/hooks/guarda.py`): se ele bloquear, mostre a mensagem, tire o arquivo
+  com `git restore --staged <arquivo>` e não contorne.
 - Veja se algum arquivo é de outro dono (tabela "Estrutura e donos" do CLAUDE.md) ou se o `contratos.md` mudou.
   Se sim, o dono precisa dar o ok **no grupo** (WhatsApp) antes do merge: escreva para a pessoa a mensagem pronta para ela mandar.
 
@@ -53,10 +55,12 @@ Siga os passos **em ordem** e pare no primeiro que falhar.
 - Espere o CI: `gh pr checks <número> --watch`. Se aparecer "no checks reported", o CI ainda não começou: espere uns
   segundos e rode de novo. **Só faça o merge depois de ver `pass`** (em 29/10 o PR #15 foi mesclado antes do CI começar).
   Vermelho: mostre o erro, conserte na mesma branch e espere de novo.
-- Revise o diff do PR você mesmo (`gh pr diff <número>`): procure dado ou chave, quebra da regra de ouro, mudança fora do
-  combinado e qualquer coisa que contradiga os arquivos do professor (`docs/professor/`). Diga em 3 linhas o que o PR muda e o risco que você vê.
+- Peça ao subagent `revisor` (`.claude/agents/revisor.md`) a revisão do PR `<número>` e mostre a resposta dele. Ele não viu a
+  sessão e não torce pelo código: enxerga o que quem escreveu deixa passar. Se ele disser **BLOQUEIA**, pare, conserte e peça
+  de novo. Depois, diga em 3 linhas o que o PR muda e o risco que sobrou.
 - Se mexeu em pasta de outro dono ou no `contratos.md`, confirme com a pessoa que o dono deu o ok no grupo.
-- Peça **um "pode"** à pessoa. Com o "pode": `gh pr merge <número> --merge --delete-branch`.
+- Rode `gh pr merge <número> --merge --delete-branch`. O Claude Code pede permissão antes (regra `ask` do `.claude/settings.json`,
+  que vale até no modo bypass): **a aprovação da pessoa é o "pode"**. Se ela recusar, pare.
 - Se o GitHub recusar o merge, mostre a mensagem inteira e pare: não tente contornar.
 - Depois do merge: `git switch main` e `git pull`.
 

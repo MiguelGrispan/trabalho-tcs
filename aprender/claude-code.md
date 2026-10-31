@@ -76,7 +76,8 @@ como `python -m pytest -q` e `git status`.
 
 **3. O crédito do Gemini (o do produto, não o do Claude).**
 - A assinatura do Claude Code **não** paga o Gemini. A chave do Gemini, no `.env`, é de um plano pré-pago do time.
-- O Claude Code só gasta crédito do Gemini se rodar o produto com IA: `RAIOX_IA_REAL=1`, `--com-ia` ou `usar_ia=True`.
+- O Claude Code só gasta crédito do Gemini se rodar o produto com IA: `RAIOX_IA_REAL=1`, `--com-ia`, `usar_ia=True` ou
+  `python -m raiox.ia` **sem** `--sem-ia` (o padrão desse script é com IA). Nos quatro casos ele pergunta antes (seção "Travas").
   Os testes nunca chamam o Gemini. Mais de 10 chamadas: avise o grupo antes.
 
 ## Terminar a sessão
@@ -87,14 +88,38 @@ Digite `/fim-de-sessao`. Ele faz, nesta ordem:
 3. atualiza a seção 0 do PLANO e o REQUISITOS;
 4. escreve de 1 a 3 linhas no `docs/HISTORICO.md`;
 5. faz o commit, o push e abre o PR;
-6. espera o CI e lê o diff;
-7. pede o seu "pode" e faz o merge.
+6. espera o CI e pede a revisão do diff ao `revisor`, um segundo Claude que só lê e não viu a sessão;
+7. roda o merge: o pedido de permissão que aparece **é** o seu "pode" (recusou, nada acontece).
 
 Ele pergunta o que você entendeu ou conferiu e escreve isso no PR (vale "ainda não li"; não vale inventar).
 Sem a skill, peça ao Claude: "siga o arquivo `.claude/skills/fim-de-sessao/SKILL.md`".
 
 Depois: `/clear` para a próxima tarefa, ou `/exit` para sair.
 Para voltar a uma conversa antiga: `claude --continue` (a última) ou `/resume` (escolher numa lista). Para tarefa nova, prefira uma sessão nova.
+
+## Travas: o que o Claude Code faz sozinho
+
+Algumas regras do `CLAUDE.md` não dependem de ele lembrar. O `.claude/settings.json` (de todos, vai para o Git) chama o
+`.claude/hooks/guarda.py` em 3 momentos: quando a sessão abre, antes de cada ação e quando ele vai dizer "terminei".
+
+| o que aparece | por quê | o que fazer |
+|---|---|---|
+| "Bloqueado: o .env…" | a chave do Gemini nunca passa pelo Claude | se precisar, rode você mesmo no terminal |
+| "Bloqueado: o push --force / rebase / reset --hard / git clean / add --force…" | apagam trabalho ou passam por cima do `.gitignore` | para trazer a `main`: `git merge main` |
+| "Bloqueado: você está na main" | commit só em branch `pessoa-tarefa` | `/inicio-de-sessao` |
+| "Bloqueado: o commit levaria data/… (ou chave, ou arquivo grande)" | REGRAS-IA.md, seção 2 | `git restore --staged <arquivo>` |
+| pedido de permissão com "gasta crédito do Gemini" | o Gemini é pré-pago | aceite só se for de propósito |
+| pedido de permissão com "está na pasta de…" ou "contratos.md" | regras 1 e 2 do `CLAUDE.md` | aceite só se o dono deu o ok no grupo |
+| pedido de permissão para `gh pr merge` | é o seu "pode" | leia o resumo do `revisor` antes |
+| "Os testes falharam…", e ele continua trabalhando | ele mudou código e o `pytest` ficou vermelho | deixe ele consertar |
+
+**Configure uma vez:** o teste do fim de cada resposta precisa de um Python com o `pytest`. Com `.venv` na raiz, nada a fazer.
+Sem `.venv`, crie (ou abra) o `.claude/settings.local.json`, que é só seu e não vai para o Git, com o caminho do seu Python:
+`{"env": {"RAIOX_PYTHON": "~/bootcamp/bin/python"}}`.
+
+**Os limites:** as travas só valem no Claude Code. Para o Codex e para quem sobe arquivo pelo navegador, quem confere é o CI
+(`tests/test_guarda.py` reprova dado, `.env`, chave e arquivo grande no Git). E nada impede um script Python de abrir o `.env`
+sozinho: por isso a regra "não contorne" está no `CLAUDE.md`.
 
 ## Nunca
 
@@ -111,5 +136,7 @@ Para voltar a uma conversa antiga: `claude --continue` (a última) ou `/resume` 
 | ele mexeu num arquivo que não devia | **Esc**, depois "desfaça a mudança em `arquivo`", e confira com `! git diff` |
 | não sei o que mudou | `! git status` e `! git diff` |
 | `/inicio-de-sessao`, `/fim-de-sessao` ou `/explicar` não aparece | a sua branch não tem a pasta `.claude/skills/`: `git switch main` e `git pull`, depois abra o `claude` de novo |
+| "guarda.py: este Python não tem pytest" | configure o `RAIOX_PYTHON` (seção "Travas") |
+| as travas não aparecem (nem o resumo da branch no começo) | abra o `claude` na **raiz** do projeto; dentro dele, `/hooks` lista as travas carregadas |
 | atingiu o limite de uso | commit, anote onde parou na seção 0 do PLANO e continue quando o limite voltar |
 | "command not found: claude" | o Claude Code não está instalado nesse terminal; veja a página de instalação do Claude Code ou peça ajuda ao Eduardo |

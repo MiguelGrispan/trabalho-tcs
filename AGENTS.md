@@ -14,6 +14,10 @@ Leia todos antes de alterar qualquer arquivo.
 
 ## Regras que não podem ser quebradas
 
+As travas automáticas do Claude Code (`.claude/settings.json` e `.claude/hooks/guarda.py`) **não rodam no Codex**: aqui, as
+regras abaixo dependem de você. O CI confere o resto para todos (`tests/test_guarda.py`: nada de `data/`, `.env`, chave nem
+arquivo acima de 10 MB no Git).
+
 - Nunca diga que algo exigido nos arquivos do professor é opcional ou pode ser cortado. Toda afirmação sobre o que o professor
   exige vem com o arquivo e o item. Se não está claro, diga que não sabe e anote a pergunta no `docs/REQUISITOS.md`.
 

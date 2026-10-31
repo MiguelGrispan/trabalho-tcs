@@ -31,6 +31,10 @@ __pycache__/
 *.tfstate.*
 *.tfvars
 
+# Claude Code: as configurações pessoais de cada um (o .claude/settings.json é do grupo e vai para o Git)
+.claude/settings.local.json
+CLAUDE.local.md
+
 # Sistema e editores
 .DS_Store
 .idea/
