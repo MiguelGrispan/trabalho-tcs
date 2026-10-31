@@ -69,7 +69,7 @@ BUSCA_AMPLA = [
     r"--no-index",                                      # git grep --no-index lê o que o Git ignora
     r"dotenv_values|load_dotenv",
     r"docker[- ]compose\b" + RESTO + r"\bconfig\b",
-    r"(^|[\s/=])\.[\w.-]*[*?\[]",                       # glob que começa com ponto: cat .e*, ls .*, cat .[!.]*
+    r"(^|[\s/=])\.[\w.-]*(\*|\?|\[[!^])",               # glob com ponto: cat .e*, ls .*, cat .[!.]* (o jq .campo[0] pode)
     r"\bprintenv\b",                                    # mostra as variáveis do ambiente, chave incluída
 ]
 

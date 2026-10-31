@@ -189,6 +189,8 @@ def test_pergunta_antes_de_gastar_credito_do_gemini(comando):
     "git grep -n AIza",                                         # git grep só lê arquivos do Git
     "git grep -rn AIza",
     "git config --get core.hooksPath",
+    "gh pr view 30 --json headRefOid,statusCheckRollup -q '{head: .headRefOid[0:7], c: [.statusCheckRollup[] | .name]}'",
+    "ls -la",
     "grep -n validar raiox/ia.py",                              # grep num arquivo pode
     "find . -name '*.py'",
     "git config core.hooksPath .githooks",                      # ligar o pre-commit pode
