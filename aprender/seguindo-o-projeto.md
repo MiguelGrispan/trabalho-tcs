@@ -94,12 +94,14 @@ número de frases, nome da empresa na entrada). Desde a ED3 não existe mais có
 **Prova:** `grep -n "def regras" -A 4 raiox/ia.py`; `python -m pytest -q -k prompt` (4 testes, um deles confere que o
 prompt começa com o texto do arquivo dela).
 
-### 8) Não existe empacotamento ✅ Docker no PR #24 (30/10); Terraform na MG3 (Miguel)
+### 8) Não existe empacotamento ✅ Docker no PR #24 (30/10); ✅ Terraform na MG3 (31/10, Miguel)
 Desde o #24, `docker compose up -d --build` sobe a tela e o PostgreSQL. Os três pontos do desenho estão lá: a pasta `data/`
 entra no contêiner montada de fora (ela não está no Git nem na imagem); a chave entra como variável, nunca no código nem na
 imagem; o contêiner roda a tela de dentro de `app/` (é onde o Streamlit acha o tema).
 **Prova:** `docker compose ps` mostra os 2 `healthy`; `grep -n "data/" .dockerignore`; `grep -n "cd app" Dockerfile`.
-O Terraform, **obrigatório** (`requisitos_projeto.MD`, Aplicação), continua só na branch `docs-docker-e-terraform` (MG3).
+O Terraform, **obrigatório** (`requisitos_projeto.MD`, Aplicação), está em `infra/` desde a MG3 (31/10): dentro da pasta,
+`terraform apply` sobe a tela e o PostgreSQL, e o `terraform destroy` mantém o banco e a `data/`.
+**Prova:** `git ls-files infra | grep '\.tf$'`; com os 2 de pé, `terraform plan` → `No changes`.
 
 ### 9) Como os dados chegam a quem não é o Marcos 🟡 combinado: zip da `data/` no Drive (PLANO, seção 5)
 `data/` não vai para o Git. Cada pessoa roda `python scripts/carregar_dfp.py` e `python scripts/indicadores.py`
@@ -123,7 +125,7 @@ O Terraform, **obrigatório** (`requisitos_projeto.MD`, Aplicação), continua s
 | `raiox/ia.py` | tela | `preparar_raio_x` (C3) | ✅ testado |
 | `raiox/ia.py` | `avaliacao/avaliar.py` | `preparar_raio_x` (C4) | ✅ `avaliar.py` na `main` desde o #6 |
 | regras da Náthally (`avaliacao/regras_prompt.md`) | `regras()` no `raiox/ia.py` | texto do prompt | ✅ o código lê o arquivo dela (item 7) |
-| tela + `data/` | Docker/Terraform | contêiner | ✅ Docker com `docker compose` (#24); Terraform na MG3 (item 8) |
+| tela + `data/` | Docker/Terraform | contêiner | ✅ Docker com `docker compose` (#24); ✅ Terraform em `infra/` (MG3, item 8) |
 
 ---
 

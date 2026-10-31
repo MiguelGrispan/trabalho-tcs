@@ -26,7 +26,7 @@ O que o projeto precisa ter vem dos arquivos do professor, em [docs/professor/](
 | IA generativa | Gemini (`gemini-3.1-flash-lite`) pela API, com LangChain (`langchain-core`, `langchain-google-genai`) e saída estruturada com Pydantic |
 | tela (aplicação web) | Streamlit 1.66 |
 | gráficos | Matplotlib 3.11 |
-| infraestrutura | Docker e Docker Compose (tela + PostgreSQL); Terraform (obrigatório; entra na `main` na sessão MG3) |
+| infraestrutura | Docker e Docker Compose (tela + PostgreSQL); Terraform 1.17 com o provider Docker (`kreuzwerker/docker` 4.6), em `infra/` |
 | testes e CI | pytest 9.1, GitHub Actions (com um PostgreSQL só para os testes) |
 | programação com IA (vibecoding) | Claude Code e Codex, guiados pelos arquivos de prompts listados abaixo |
 
@@ -82,7 +82,7 @@ avaliacao/      avaliação do raio-x (contrato C4) · Náthally e Eduardo
 tests/          testes automáticos (não chamam a API)
 falsos/         dados e módulos falsos no formato dos contratos, para ninguém esperar ninguém
 docs/           arquivos do professor (docs/professor/), plano, requisitos, gráficos (docs/graficos/) e documentos da entrega
-infra/          implantação: o script do banco do docker-compose.yml (infra/banco/); o Terraform (obrigatório) entra na MG3 · Miguel
+infra/          implantação: o Terraform (*.tf: sobe a tela e o banco) e o script do banco de testes (infra/banco/) · Miguel
 aprender/       só para quem está aprendendo: comandos, guias, notebook passo a passo, atalhos do Mac
 data/           dados da CVM e arquivos gerados: fica só no seu computador, não vai para o Git
 ```
@@ -106,6 +106,34 @@ docker compose down                 # desliga os 2; o banco continua guardado no
 - **IA ligada:** `RAIOX_IA_REAL=1 docker compose up -d`. A chave vem do `GOOGLE_API_KEY` do `.env`, que o Compose lê sozinho.
   A chave e a `data/` nunca entram na imagem (`.dockerignore`): a `data/` entra como volume.
 - **Porta 5432 ocupada** por outro PostgreSQL: `PORTA_BANCO=5433 docker compose up -d`.
+
+## Como rodar com Terraform (infraestrutura automatizada)
+
+O `requisitos_projeto.MD` do professor pede "Infraestrutura automatizada com Terraform". A pasta `infra/` descreve a mesma
+infraestrutura do `docker-compose.yml` (a tela, o PostgreSQL, a rede entre eles e as pastas montadas), e o Terraform cria tudo
+com um comando, no Docker do seu computador. Pré-requisitos: Docker e Terraform 1.5 ou mais novo (`terraform version`; no Mac,
+`brew install hashicorp/tap/terraform`). Dentro da pasta `infra/`:
+
+```bash
+terraform init       # uma vez só: baixa o provider do Docker (a versão do .terraform.lock.hcl)
+terraform apply      # mostra o plano, pede "yes", constrói a imagem e sobe os 2 → http://localhost:8501
+terraform plan       # com os 2 de pé: "No changes" (não há nada a refazer)
+docker exec raiox-tela python -m pytest -q   # os testes dentro do contêiner, com o banco de testes
+terraform destroy    # apaga os 2 contêineres e a rede; o banco e a data/ continuam
+```
+
+- **Um de cada vez:** o compose e o Terraform usam as portas 8501 e 5432. Rode `docker compose down` antes do `terraform apply`,
+  ou suba o Terraform em outras portas: `terraform apply -var porta_tela=8502 -var porta_banco=5433`.
+- **O que sobrevive ao `destroy`:** a `data/` (pasta do seu computador, montada na tela) e o banco (volume `raiox-banco-dados`,
+  que o Terraform não cria nem apaga). Apagar o banco de vez: `docker volume rm raiox-banco-dados`. O banco do compose e o do
+  Terraform são volumes diferentes: a CVM carregada num não aparece no outro (os comandos de carga estão no topo do `infra/main.tf`).
+- **IA ligada:** `terraform apply -var ia_real=true`. A chave não passa pelo Terraform: a tela lê o `.env` da raiz, montado só
+  leitura no contêiner. Assim ela não fica no `terraform.tfstate`, onde o Terraform guarda as variáveis em texto puro. Mesmo assim,
+  o `terraform.tfstate` fica fora do Git (`.gitignore`) e não se manda para ninguém.
+- **Outras escolhas** (portas, senha do banco, dados falsos): `infra/variables.tf`. Para fixá-las, copie o
+  `infra/terraform.tfvars.example` para `infra/terraform.tfvars`.
+- **Mac:** se o `apply` não achar o Docker, rode antes `export DOCKER_HOST=unix://$HOME/.docker/run/docker.sock`.
+- O CI confere o Terraform (`terraform fmt` e `terraform validate`) em todo PR que mexe em `infra/` (`.github/workflows/terraform.yml`).
 
 Sem Docker, siga a seção abaixo.
 

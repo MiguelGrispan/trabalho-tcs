@@ -82,9 +82,11 @@ Com os dados falsos, as empresas vão de `90001` a `90030`.
 
 ---
 
-## 6. Docker ✅ (MG2, PR #24) e Terraform ⏳ (MG3, obrigatório) (Miguel)
+## 6. Docker ✅ (MG2, PR #24) e Terraform ✅ (MG3, obrigatório) (Miguel)
 
 O `docker-compose.yml` sobe 2 contêineres: a `tela` e o `banco` (PostgreSQL 17, o mesmo do CI). Conferido em 30/10 no Linux do Miguel.
+O Terraform (`infra/`) sobe os mesmos 2, com os nomes `raiox-tela` e `raiox-banco` e as mesmas portas: rode um de cada vez
+(`docker compose down` antes do `terraform apply`). Conferido em 31/10 no Linux do Miguel (Terraform 1.17.0), nas portas 8502 e 5433.
 
 | o que | onde | comando | o que deve aparecer |
 |---|---|---|---|
@@ -97,8 +99,10 @@ O `docker-compose.yml` sobe 2 contêineres: a `tela` e o `banco` (PostgreSQL 17,
 | ver o que a tela escreve | raiz | `docker compose logs -f tela` | as mensagens da tela (`Ctrl + C` sai) |
 | subir só o banco (para rodar o Python fora do Docker) | raiz | `docker compose up -d banco` | o PostgreSQL na porta 5432, já com o `raiox` e o `raiox_teste` |
 | desligar | raiz | `docker compose down` | os 2 param; o banco fica guardado no volume `banco-dados` |
-| subir com Terraform ⏳ (MG3) | `terraform/` (ou `infra/`, decisão da MG3) | `terraform init` e depois `terraform apply` | `Apply complete!` |
-| derrubar ⏳ (MG3) | a mesma pasta | `terraform destroy` | `Destroy complete!` |
+| subir com Terraform | `infra/` | `terraform init` (uma vez só) e depois `terraform apply` (responda `yes`) | `Apply complete! Resources: 5 added`; a tela em `http://localhost:8501` |
+| conferir que nada mudou | `infra/` | `terraform plan` | `No changes. Your infrastructure matches the configuration.` |
+| testes no contêiner do Terraform | qualquer pasta | `docker exec raiox-tela python -m pytest -q` | `87 passed` em 31/10, nenhum pulado |
+| derrubar o Terraform | `infra/` | `terraform destroy` (responda `yes`) | `Destroy complete! Resources: 5 destroyed.`; o banco (volume `raiox-banco-dados`) e a `data/` continuam |
 
 ---
 

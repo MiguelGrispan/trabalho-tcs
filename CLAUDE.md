@@ -122,6 +122,8 @@ Lista completa, com o que deve aparecer: `aprender/COMANDOS.md`.
 - Docker (tela + PostgreSQL): `docker compose up -d --build` (tela em `http://localhost:8501`), `docker compose ps` (os 2 `healthy`),
   testes no contêiner com `docker compose run --rm tela python -m pytest -q`, e `docker compose down` para desligar.
   Os outros comandos estão no topo do `docker-compose.yml`.
+- Terraform (a mesma infraestrutura; obrigatório): dentro de `infra/`, `terraform init` (uma vez), `terraform apply` e
+  `terraform destroy` (o banco e a `data/` continuam). Usa as mesmas portas do compose: um de cada vez. Comandos no topo do `infra/main.tf`.
 
 ## Cuidados
 - Siga o `REGRAS-IA.md` (regras do time para uso de IA).
