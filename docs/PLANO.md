@@ -37,8 +37,8 @@ Conferido no Linux do Miguel (Terraform 1.17.0), nas portas 8502 e 5433, com o c
 a imagem não tem `.env` nem `data/`, e `grep -c GOOGLE_API_KEY infra/terraform.tfstate` → 0; uma tabela de marca no banco e a
 `data/` sobreviveram ao `destroy` + `apply`; o 2º `terraform plan` → "No changes". CI novo, `.github/workflows/terraform.yml`:
 `terraform fmt` e `validate` em todo PR que mexe em `infra/` (não é check obrigatório da `main`). Local: 87 passed, nenhum pulado.
-**Não conferido:** as portas padrão (8501 e 5432; só muda o número); a IA pelo Terraform (o Miguel rodou com `ia_real=true` e
-gerou um raio-x, mas ninguém conferiu se apareceu "Texto escrito pelo Gemini." e os tokens em "Detalhes técnicos"); o Mac;
+IA pelo Terraform: o Miguel rodou com `-var ia_real=true` e viu "Texto escrito pelo Gemini." e os tokens com o custo em
+"Detalhes técnicos" (conferido por ele; o Claude não viu). **Não conferido:** as portas padrão (8501 e 5432; só muda o número); o Mac;
 carregar a CVM pelo `docker exec` (o comando está no topo do `infra/main.tf`, igual ao do compose).
 Com o compose ligado, o `terraform apply` dá `port is already allocated` (aconteceu em 31/10): um de cada vez, ou outras portas
 (`-var porta_tela=8502 -var porta_banco=5433`). Está no README e no `aprender/COMANDOS.md`, seção 9.
@@ -134,7 +134,7 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
   `tratamento_dados` pode ser apagada.
 - **Miguel:** mandar no grupo o print da tela rodando no Docker (MG1) e o aviso do #29 (Terraform; mexe em README, CLAUDE.md,
   `aprender/` e acrescenta um CI); conferir o `GOOGLE_API_KEY` no `.env` (em 30/10 chegou vazio no `docker compose config`;
-  ninguém abriu o arquivo) e, com ele, a IA pelo Terraform (acima); dizer se a `docs-docker-e-terraform` pode ser apagada;
+  ninguém abriu o arquivo; pelo Terraform, a IA funcionou em 31/10); dizer se a `docs-docker-e-terraform` pode ser apagada;
   MG4 até ter 03/11. A `.venv` dele foi refeita em 31/10 com o Python 3.14.10: o `python -m pytest -q` local roda (87 passed).
 - **Alguém com Mac (Eduardo?):** dentro de `infra/`, `terraform init` e `terraform apply` (se não achar o Docker, o
   `DOCKER_HOST` do README) e dizer no grupo se subiu.
@@ -276,7 +276,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 |---|---|---|---|---|---|---|---|
 | MG1 | qua 28/10 | ✅ conferido em 30/10: PR e check `testes` obrigatórios, só merge commit, apagar branch após o merge; tela rodando no Docker (o print vai para o grupo) | configurar o GitHub (seção 2, "Proteção da `main`"); rodar a tela local | configurações | só leitura | as 3 configurações feitas; print da tela no grupo | — |
 | MG2 | qui 29–sex 30/10 | ✅ PR #24 (30/10): os 2 contêineres `healthy`, health `ok`, `carregar_dfp.py` no banco do contêiner, 87 passed no contêiner | `Dockerfile` + `.dockerignore` + `docker-compose.yml` (tela + PostgreSQL com volume do banco; `data/` como volume; chave e `DATABASE_URL` por variável) | `Dockerfile`, `.dockerignore`, `docker-compose.yml` | Plan | `docker compose up` sobe os 2; `curl localhost:8501/_stcore/health` → `ok`; `scripts/carregar_dfp.py` grava no PostgreSQL do contêiner | `miguel-docker` → PR (Eduardo) |
-| MG3 | sáb 31/10–dom 01/11 | ✅ PR #29 (31/10): `apply` sobe os 2 `healthy`; `destroy` + `apply` mantém o banco e a `data/`; 87 passed no contêiner; 2º `plan` sem mudanças. Não conferidos: portas padrão, IA pelo Terraform, Mac (seção 0) | **Terraform na `main`, obrigatório** (`requisitos_projeto.MD`, Aplicação: "Infraestrutura automatizada com Terraform"): provider docker com os 2 contêineres (tela + PostgreSQL), a partir do `terraform/` da branch `docs-docker-e-terraform`. Prazo: dom 01/11; reserva: seg 02/11 com o Eduardo. Não pode ser cortado | `infra/` | Plan | `terraform apply` sobe a tela e o banco; `destroy` + `apply` mantém a `data/` e o banco | PR |
+| MG3 | sáb 31/10–dom 01/11 | ✅ PR #29 (31/10): `apply` sobe os 2 `healthy`; `destroy` + `apply` mantém o banco e a `data/`; 87 passed no contêiner; 2º `plan` sem mudanças. IA pelo Terraform vista pelo Miguel. Não conferidos: portas padrão, Mac (seção 0) | **Terraform na `main`, obrigatório** (`requisitos_projeto.MD`, Aplicação: "Infraestrutura automatizada com Terraform"): provider docker com os 2 contêineres (tela + PostgreSQL), a partir do `terraform/` da branch `docs-docker-e-terraform`. Prazo: dom 01/11; reserva: seg 02/11 com o Eduardo. Não pode ser cortado | `infra/` | Plan | `terraform apply` sobe a tela e o banco; `destroy` + `apply` mantém a `data/` e o banco | PR |
 | MG4 | dom 01–ter 03/11 | — | tela com dados reais e **com o banco** (R Aplicação: banco de dados): `RAIOX_DADOS` (`falsos`/`real`) no lugar do `USAR_DADOS_FALSOS`, e com `real` a busca e o `registrar_consulta` usam o PostgreSQL (`raiox/dados.py`); volta sozinha para o modo sem IA, com aviso; `registrar_consulta` dentro do `try`; `tests/test_tela.py` | `app/`, `.env.example`, `tests/` | Plan | 3 empresas reais geram raio-x no contêiner, e cada consulta aparece na tabela `consultas` | PR (Eduardo) |
 | MG5 | qua 04/11 | — | diagrama de arquitetura + README (tema, objetivo e tecnologias já estão; pré-requisitos com Python 3.14; rodar local, Docker e Terraform) | `docs/arquitetura.png`, `README.md` | Manual | um colega entende o fluxo lendo o README; o README cobre o que o R pede em "Documentação" | PR |
 | MG6 | qui 05/11 | — | roteiro de 6 min da demo + vídeo v0 | — | — | vídeo salvo em 2 lugares | — |
