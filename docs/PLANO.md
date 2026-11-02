@@ -168,11 +168,17 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
   MG4 até ter 03/11. A `.venv` dele foi refeita em 31/10 com o Python 3.14.10: o `python -m pytest -q` local roda (87 passed).
 - **Alguém com Mac (Eduardo?):** dentro de `infra/`, `terraform init` e `terraform apply` (se não achar o Docker, o
   `DOCKER_HOST` do README) e dizer no grupo se subiu.
-- **Náthally:** subir o `revisao_manual.md` numa branch nova a partir da `main`, na pasta `avaliacao/`; conferir os 10 códigos
-  em `avaliacao/casos_avaliacao.csv`; dizer se a `feat/metricas` pode ser apagada. Depois, NA3 (tempo manual e ROI); a NA4 já
-  pode começar (o `resultados.csv` está na `main`). Para a v3 das regras (não trava nada): na ED7, 27 de 30 lacunas saíram
-  genéricas e só 21 de 40 perguntas citam o produto ou o objetivo; vale dar exemplos de lacuna boa (quem decide, orçamento,
-  fornecedor atual) e pedir o produto nas perguntas.
+- **Náthally** (desde 02/11, as tarefas dela separam obrigatório de sugestão: seção 3). **Obrigatório:**
+  1. até qui 05/11, o ROI mínimo (NA3);
+  2. o slide de métricas (NA4);
+  3. a ética e o deck (NA5 e NA6).
+
+  **Sugestões, se der tempo:**
+  - subir o `revisao_manual.md` (na `feat/metricas`) numa branch nova, em `avaliacao/`: ajuda a MA3 do Marcos;
+  - testes com usuários e a `revisao.csv`;
+  - regras v3: na ED7, 27 de 30 lacunas saíram genéricas e só 21 de 40 perguntas citam o produto ou o objetivo.
+
+  Também: dizer se a `feat/metricas` pode ser apagada.
 - **Eduardo, em ordem** (o Claude Code faz o Git):
   1. hoje: ensinar o Claude Code ao Miguel (travas no #30 e a nota explicando; falta conversar com ele); mandar ao grupo a mensagem geral (fluxo `/inicio-de-sessao` e `/fim-de-sessao`,
      regra do PostgreSQL, ajustes do Docker, resultado da ED7). Em 30/10, só a mensagem ao Marcos sobre o #22 está confirmada;
@@ -260,9 +266,9 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | sáb 31/10 | revisões; ED8 começa; plano B da MA2 se precisar | **MA2 (prazo)**; MA3 | ✅ MG3 Terraform (PR #29) | NA3 tempo manual; marcar testes |
 | dom 01/11 | revisões | MA4 EDA | ~~prazo da MG3~~ (entrou no sáb); MG4 | NA3 |
 | seg 02/11 (feriado) | ✅ ED12 na `main` (#30); ✅ ED8 adiantada (#31) | | reserva da MG3 | |
-| ter 03/11 | **demo ponta a ponta · tag `v0.1-demo`** | MA4 | MG4 tela com dados reais | NA3 testes com usuários |
-| qua 04/11 | ✅ ED8 (feita em 02/11) | MA5 BPMN | MG5 arquitetura + README | NA4 revisão + métricas |
-| qui 05/11 | só bugs | MA5 | MG6 vídeo v0 | NA3 (3 testes feitos) |
+| ter 03/11 | **demo ponta a ponta · tag `v0.1-demo`** | MA4 | MG4 tela com dados reais | NA3 ROI mínimo |
+| qua 04/11 | ✅ ED8 (feita em 02/11) | MA5 BPMN | MG5 arquitetura + README | NA4 slide de métricas |
+| qui 05/11 | só bugs | MA5 | MG6 vídeo v0 | NA3 (prazo do ROI mínimo) |
 | sex 06/11 | **ED9: código congelado · tag `v1.0`**; ED11 avaliação final | | | |
 | sáb 07/11 | ED10 teste do zero | MA6 PDF (rascunho) | MG7 vídeo final na `v1.0` | NA5 ética |
 | dom 08/11 | **todos mandam o conteúdo dos slides à Náthally** | | | NA5 deck |
@@ -320,14 +326,22 @@ Para subir um arquivo:
 2. Escolha "Create a new branch" (`nathally-tarefa`).
 3. Abra o PR. O Eduardo revisa com o Claude Code e faz o merge.
 
+**Obrigatório × sugestão (02/11):** a Náthally trabalha no ritmo dela.
+- **Obrigatório** é só o que os arquivos do professor pedem:
+  - o deck (`requisitos_projeto.MD`, Documentação: "Criar slides");
+  - a análise de ética (guia §2 e §6);
+  - na apresentação, o valor de negócio e as métricas de sucesso (guia §3; o valor de negócio pesa 20% na banca, guia §5).
+- **Sugestão** é todo o resto.
+- Ela pode usar IA (ChatGPT, Claude) para rascunhar texto e slides. Os números ela pede ao Eduardo, que confere com o Claude Code.
+
 | # | data | status | objetivo | altera | pronto quando |
 |---|---|---|---|---|---|
 | NA1 | qua 28–qui 29/10 | ✅ regras v2 (PR #11) | regras v2 alinhadas ao código | `avaliacao/regras_prompt.md` | PR aberto |
 | NA2 | sex 30/10 | ✅ códigos (PR #10); ela ainda confere | preencher o `cd_cvm` dos 10 casos (WEG = 5410) | `avaliacao/casos_avaliacao.csv` | `tests/test_ponta_a_ponta.py` passa (o Eduardo roda) |
-| NA3 | sáb 31/10–qui 05/11 | — | `tempo_manual.csv` (3 empresas), 3 testes com usuários (sem nome), conta do ROI | `avaliacao/` | 3 testes feitos; ROI com números medidos |
-| NA4 | qua 04/11 | — | `revisao.csv` sobre o `resultados.csv`; métricas | `avaliacao/revisao.csv`, `docs/produto/metricas.md` | % de comparações certas, % de perguntas ligadas ao produto, utilidade, custo, tempo |
-| NA5 | sáb 07–dom 08/11 | — | texto de governança e ética; deck com o tempo de cada parte | `docs/etica.md`, deck | o Marcos recebe a ética; todos os slides chegaram |
-| NA6 | seg 09–qua 11/11 | — | deck final; 2 ensaios cronometrados | deck | ensaio abaixo de 20 min |
+| NA3 | até qui 05/11 | — | **Obrigatório, versão mínima: o ROI.** Cronometrar 1 vez a montagem manual de um raio-x (1 empresa, pelo site de RI) e comparar com os ~2 s da ferramenta, com a conta do ganho em 3 linhas. *Sugestão:* 3 empresas no `tempo_manual.csv` e 3 testes com usuários (sem nome) | `docs/produto/` (ou `avaliacao/`) | 1 tempo medido e a conta do ROI |
+| NA4 | qua 04/11 | — | **Obrigatório: 1 slide de métricas** com os números do `avaliacao/resultados.csv` (10 casos, 0 trechos removidos, US$ 0,0012 por raio-x, 2,2 s), que o Eduardo tira com o Claude Code. *Sugestão:* `revisao.csv`, com a nota dela para cada raio-x | deck (e `avaliacao/revisao.csv`, se fizer) | o slide de métricas existe |
+| NA5 | sáb 07–dom 08/11 | — | **Obrigatório: o texto de governança e ética** (guia §2; §6: "análise de ética e segurança", no PDF): viabilidade, limites, viés, alucinação, segurança de dados e uso responsável. Base pronta: `docs/justificativa.md`, seção 5. Deck com o tempo de cada parte | `docs/etica.md`, deck | o Marcos recebe a ética; todos os slides chegaram |
+| NA6 | seg 09–qua 11/11 | — | **Obrigatório: o deck final** (`requisitos_projeto.MD`, Documentação; guia §6) e 2 ensaios cronometrados (guia §3: no máximo 20 min) | deck | ensaio abaixo de 20 min |
 
 ---
 
