@@ -29,8 +29,8 @@ Valem como os arquivos do professor. Quem ouvir uma regra nova em aula escreve a
    Se não contarem, o caminho mais curto seria uma API (ex.: FastAPI) entre a tela e `raiox/`: escopo novo, decidir com o grupo.
 2. Os "arquivos utilizados de prompts para o vibecoding" (R, Aplicação) são os arquivos de instrução que já usamos (R14), ou ele quer
    também os prompts digitados nas sessões?
-3. "Base de dados de conhecimento para a IA" (R, Integração com IA de terceiro): os dados da CVM no PostgreSQL, que o código passa ao
-   Gemini, contam? (O projeto também cumpre o caminho "Treinamento de Machine Learning", R5, e o R pede uma das duas abordagens.)
+3. "Base de dados de conhecimento para a IA" (R, Integração com IA de terceiro): a tabela de indicadores calculada da DFP da CVM (`data/indicadores.csv`),
+   que o código passa ao Gemini, conta? (O projeto também cumpre o caminho "Treinamento de Machine Learning", R5, e o R pede uma das duas abordagens.)
 
 ## Matriz
 

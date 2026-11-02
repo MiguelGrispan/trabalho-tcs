@@ -18,7 +18,7 @@ Número errado numa reunião de vendas destrói a confiança no produto. Por iss
 
 | quem | faz | por quê |
 |---|---|---|
-| código (Pandas, SQL) | calcula todos os números a partir da DFP da CVM | cálculo é determinístico e auditável: cada número tem conta e ano (`raiox/ia.py:36-44`, coluna "fonte") |
+| código (Pandas) | calcula todos os números a partir da DFP da CVM | cálculo é determinístico e auditável: cada número tem conta e ano (`raiox/ia.py:36-44`, coluna "fonte") |
 | ML (scikit-learn) | acha o grupo de empresas parecidas e as 5 mais próximas | não há rótulo de "empresa parecida": é aprendizado não supervisionado |
 | LLM (Gemini) | escreve o texto usando **marcadores** como `{margem_ebit}`, nunca o número | escrever é o que o LLM faz bem; copiar e arredondar número é onde ele erra |
 | validador (código) | apaga o texto que tem número fora de marcador e troca cada marcador pelo valor calculado | é a **regra de ouro**: o LLM nunca escreve números (`raiox/ia.py:230`, `:248`) |
@@ -37,7 +37,7 @@ Número errado numa reunião de vendas destrói a confiança no produto. Por iss
   - testa k de 3 a 8;
   - fica com a maior silhueta, **mas só entre os k em que o menor grupo tem pelo menos 5% das empresas**.
 - **Lição para a banca:** antes do ED4, a silhueta era 0,77 e parecia ótima, mas só separava 9 empresas extremas e juntava todas as
-  outras num grupo só (`docs/HISTORICO.md`, 28/10). Com a regra dos 5%, saem 4 grupos e silhueta 0,30. Com os dados de 30/10 (PR #22),
+  outras num grupo só (`docs/HISTORICO.md`, "O que aprendemos"; `raiox/segmentos.py:78`). Com a regra dos 5%, saem 4 grupos e silhueta 0,30. Com os dados de 30/10 (PR #22),
   0,29 e grupos de 327, 76, 59 e 102 empresas no treino (`docs/REQUISITOS.md`, R5).
   Silhueta menor, grupos úteis. Os gráficos de antes e depois são `docs/graficos/silhueta_antes_ed4.png` e `silhueta.png`
   (ainda da versão 0,30).
@@ -57,10 +57,11 @@ O código busca a linha exata da empresa pelo código CVM (`montar()`, `raiox/ia
 O Gemini **lê** esses valores para entender a empresa, mas **só pode escrever os marcadores**. Os números do texto final são colocados
 pelo código, e o validador apaga o que tiver número escrito pelo modelo.
 Isso é geração aumentada por recuperação, mas a recuperação é **estruturada** (pela chave da empresa), e não semântica (por embeddings).
-O PostgreSQL guarda a mesma base e serve à busca de empresas da tela (`raiox/dados.py`).
+O PostgreSQL guarda as contas da DFP (tabelas `contas` e `empresas`, `scripts/carregar_dfp.py:146,155`) e serve à busca de empresas
+(`raiox/dados.py`); a tela só passa a usá-lo na MG4 (hoje usa `falsos/`, `app/streamlit_app.py:26`).
 
 Se isso conta como a "base de dados de conhecimento" que o `requisitos_projeto.MD` pede, é a pergunta 3 ao professor, ainda sem
-resposta (`docs/REQUISITOS.md`). O projeto também cumpre o caminho "Treinamento de Machine Learning" (seção 2).
+resposta (`docs/REQUISITOS.md`). O projeto também segue o caminho "Treinamento de Machine Learning" (seção 2), que fica completo quando a EDA entrar (MA4, REQUISITOS R4).
 
 | opção | o que seria | por que não usamos |
 |---|---|---|
