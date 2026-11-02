@@ -20,8 +20,31 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em sáb 31/10, 16h.** Na `main`: PRs #1 a #16 e #19 a #28 (o #24 é a MG2, Docker do Miguel; o #28 põe os arquivos do professor
-em `docs/professor/`); o #29 (MG3, Terraform) entra com o CI verde.
+**Em sáb 31/10, 19h.** Na `main`: PRs #1 a #16 e #19 a #29 (o #24 é a MG2, Docker do Miguel; o #28 põe os arquivos do professor
+em `docs/professor/`; o #29 é a MG3, Terraform). O #30 (ED12, travas do Claude Code) espera o CI e o "pode".
+
+**PR #30 (Eduardo, ED12, 31/10): regras que eram só texto viraram travas** (`requisitos_projeto.MD`, Aplicação: "Arquivos utilizados
+de prompts para o vibecoding"; guia §2: "agentic coding"). `.claude/settings.json` (do grupo) bloqueia ler o `.env` e o Git que
+apaga trabalho e pede permissão para o merge (depois do "pode" falado: segunda trava) e para ligar o Gemini; os 3 hooks chamam o
+`.claude/hooks/guarda.py`: no começo da sessão (branch e data desta seção), antes de cada ação (bloqueia commit na `main` ou com
+dado, `.env`, chave ou arquivo acima de 10 MB; pergunta antes de mexer em pasta de outro dono, no `contratos.md`, em
+`docs/professor/` e nas próprias travas e no CI) e no fim de cada resposta (roda o `pytest` se mudou código). Subagent `revisor`
+(só lê) no passo 6 do `/fim-de-sessao`. O `requisitos_projeto.MD` entra no `CLAUDE.md` por import e carrega sozinho.
+**O `revisor` estreou no próprio #30 e revisou quatro vezes (a 4ª não bloqueou e testou o fluxo normal do time).** Na 1ª, achou furos que o autor deixou passar (`--body "$(cat …)"`
+publicaria a chave; `git add -A && git commit`, `git -C`, `pull --rebase`, `.env.local`, nome com acento e o atalho
+`rodar_tela_com_ia.command` escapavam). Na 2ª, mostrou que a correção tinha aberto furos novos: separar "texto de mensagem" de
+"comando" por regex deixava passar comando em linha nova, `bash -c` e aspas aninhadas. **Decisão:** o hook não tenta entender
+o shell; procura o perigo em qualquer ponto do comando e, na dúvida, bloqueia. Mensagem de commit ou PR que cita o `.env` ou um
+comando proibido vai por arquivo (`git commit -F`, `gh pr create --body-file`); o commit confere tudo o que está solto na pasta.
+Na 3ª, mostrou que `grep -rn AIza .` lê o `.env` sem citar o nome (agora bloqueado, com `find -exec`, `printenv` e `docker compose
+config`) e que o hook do Claude, rodando antes do comando, não vê o stage de verdade. **Conserto estrutural:** `.githooks/pre-commit`
+(e `pre-merge-commit`), a conferência do commit pelo próprio Git, que vale também fora do Claude Code; o `/inicio-de-sessao` liga com
+`git config core.hooksPath .githooks`. Também: senha de banco de verdade, chave privada, push na `main`, `--no-verify`.
+Conferido: 137 testes novos (`tests/test_guarda.py`, com os casos do revisor); o hook bloqueou comandos do Claude nesta sessão, no modo bypass; numa sessão
+nova (`claude -p`), o import e o resumo do começo apareceram. **Não conferido:** se o "ask" de um hook aparece no modo bypass (por
+isso merge e Gemini também são regra `ask` do settings, que vale em todo modo); o Linux; o `user.name` do Git do Marcos.
+Quem usa Claude Code: depois do merge, `git pull`, `git config core.hooksPath .githooks` e abra o `claude` de novo na raiz; sem `.venv`, ponha o `RAIOX_PYTHON` no seu
+`.claude/settings.local.json` (`aprender/claude-code.md`, "Travas").
 
 **PR #29 (Miguel, MG3, 31/10): o Terraform está na `main`, em `infra/`** (`requisitos_projeto.MD`, Aplicação: "Infraestrutura
 automatizada com Terraform"). Dentro de `infra/`, `terraform apply` constrói a imagem do `Dockerfile` e sobe a tela (`raiox-tela`)
@@ -144,7 +167,7 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
   genéricas e só 21 de 40 perguntas citam o produto ou o objetivo; vale dar exemplos de lacuna boa (quem decide, orçamento,
   fornecedor atual) e pedir o produto nas perguntas.
 - **Eduardo, em ordem** (o Claude Code faz o Git):
-  1. hoje: ensinar o Claude Code ao Miguel; mandar ao grupo a mensagem geral (fluxo `/inicio-de-sessao` e `/fim-de-sessao`,
+  1. hoje: ensinar o Claude Code ao Miguel (travas no #30 e a nota explicando; falta conversar com ele); mandar ao grupo a mensagem geral (fluxo `/inicio-de-sessao` e `/fim-de-sessao`,
      regra do PostgreSQL, ajustes do Docker, resultado da ED7). Em 30/10, só a mensagem ao Marcos sobre o #22 está confirmada;
   2. perguntar ao professor a data da banca, as 3 perguntas do REQUISITOS ("Perguntas para o professor": backend e frontend,
      arquivos de prompts, base de conhecimento) e se há outras regras além dos arquivos dele (anotar no REQUISITOS);
@@ -258,6 +281,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | ED9 | sex 06/11 | — | congelar | só bugs | Plan | CI verde + ponta a ponta verde | **tag `v1.0`** |
 | ED10 | sáb 07/11 | — | teste do zero em outra máquina, só com o README | consertos | Manual | rodou sem ajuda, ou cada falha virou PR | `v1.0.1` se precisar |
 | ED11 | sex 06/11 | — | avaliação final na `v1.0` (só se a IA mudou depois do ED7) + ensaio de defesa | `resultados.csv` | Plan | 10 perguntas da banca respondidas sem consulta | PR |
+| ED12 | sáb 31/10 | 🟡 PR #30 aberto (seção 0) | travas do Claude Code (R14 e guia §2, agentic coding): `.claude/settings.json`, `.claude/hooks/guarda.py`, subagent `revisor`, import do `requisitos_projeto.MD` | `.claude/`, `CLAUDE.md`, `AGENTS.md`, `README.md`, `aprender/claude-code.md`, `tests/test_guarda.py` | Plan | testes verdes; o hook bloqueia de verdade numa sessão | `eduardo-claude-config` |
 
 ### Marcos (Claude Code)
 
@@ -318,6 +342,7 @@ Para subir um arquivo:
 | `tests/test_tela.py` (MG4) | a tela com os falsos: busca, gerar, 6 métricas, sem erro | Miguel | sim |
 | `tests/test_ponta_a_ponta.py` | C2 real, raio-x sem IA de 3 setores, `cd_cvm` dos casos (todos preenchidos e na tabela real) | Eduardo | **não**: pula sem `data/`. Rodar local antes de `v0.1-demo`, `v1.0` e no teste do zero |
 | `tests/test_aprender.py` | o notebook `aprender/passo_a_passo.ipynb` roda inteiro e vai para o Git sem saídas | Eduardo | sim |
+| `tests/test_guarda.py` (#30, 137 testes) | as travas do Claude Code (`.claude/hooks/guarda.py`): o que bloqueia, o que pergunta e o que libera; o teste do fim de resposta; e o repositório inteiro sem `data/`, `.env`, chave nem arquivo acima de 10 MB (vale para os 4, inclusive upload pelo navegador) | Eduardo | sim (os de Git pulam no contêiner, que não tem `git`) |
 | Docker | `curl localhost:8501/_stcore/health` → `ok`; os testes dentro do contêiner: `docker compose run --rm tela python -m pytest -q` (87 passed em 30/10) | Miguel | não (checklist da demo) |
 | Terraform | `terraform fmt -check` e `terraform validate` no CI (`.github/workflows/terraform.yml`, PRs que mexem em `infra/`); `apply`, `docker exec raiox-tela python -m pytest -q` (87 passed em 31/10) e `destroy` + `apply` na mão | Miguel | só o `fmt` e o `validate` |
 
