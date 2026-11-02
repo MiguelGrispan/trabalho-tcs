@@ -78,9 +78,10 @@ branches sem história em comum. **Prova:** `git merge-base origin/main origin/t
 **Conserto:** depois que o PR `fundacao` entrar na `main`, cada um cria uma branch nova a partir dela e copia os
 seus arquivos para a pasta certa. Ninguém precisa apagar nada.
 
-### 5) A tela ainda usa os falsos ⬜ (Miguel)
-`app/streamlit_app.py` tem `USAR_DADOS_FALSOS = True`. Trocar para `False` quando os itens 1 a 3 estiverem prontos.
-**Prova:** `grep -n "USAR_DADOS_FALSOS =" app/streamlit_app.py`.
+### 5) A tela ainda usa os falsos ✅ (Miguel, MG4, 02/11)
+O `USAR_DADOS_FALSOS = True` fixo saiu. A tela segue a mesma regra do `raiox/segmentos.py`: com a `data/indicadores.csv`
+real, a busca e o registro da consulta usam o PostgreSQL (`raiox/dados.py`); com `RAIOX_DADOS=falsos`, os falsos.
+**Prova:** `grep -n "DADOS_FALSOS =" app/streamlit_app.py` mostra `usando_falsos()`, e `python -m pytest -q tests/test_tela.py` passa.
 
 ### 6) Um teste vai quebrar no dia em que os dados reais chegarem ✅ (Eduardo, PR #6)
 O teste do contrato C3 pede a empresa 90001, que só existe na tabela falsa. Desde o #6, o `tests/conftest.py` força a
@@ -183,7 +184,7 @@ Rode na pasta do repositório, com o ambiente ativado e depois de `git fetch ori
 | C | `git merge-base origin/main origin/tratamento_dados; echo $?` | só `1` (sem história em comum) |
 | D | o comando do item 1 da seção 2 | `colunas lidas: 1` |
 | E | `grep -n "RAIOX_DADOS" tests/conftest.py` | a linha que força a tabela falsa nos testes (item 6) |
-| F | `grep -n "USAR_DADOS_FALSOS =" app/streamlit_app.py` | `USAR_DADOS_FALSOS = True` |
+| F | `grep -n "DADOS_FALSOS =" app/streamlit_app.py` | desde 02/11 (MG4): `DADOS_FALSOS = usando_falsos()` (antes, `USAR_DADOS_FALSOS = True`) |
 | G | `git branch -r` | em 28/10: `origin/docs-docker-e-terraform` (Miguel) |
 | H | `ls avaliacao/` | `README.md`, `avaliar.py`, `casos_avaliacao.csv`, `conferencia.csv`, `regras_prompt.md` |
 
