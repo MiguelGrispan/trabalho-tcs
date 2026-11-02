@@ -132,7 +132,7 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
 - **Conferência manual da Náthally (29/10):** o `Semana_02/revisao_manual.md`, na `feat/metricas` (sem commit novo desde 29/10,
   16h38), tem os 6 indicadores das 10 empresas tirados do RI, com links. Contra a ED7, batem 7 de 10. Diferem: Camil (issue #17),
   Magalu (margem EBIT 5,0% × 5,81%) e RD Saúde (margem EBIT 6,2% × 5,27%, endividamento 70,9% × 62,4%, ativo R$ 25,2 bi × 20,6 bi;
-  suponho, sem conferir, que a fonte dela tire o arrendamento). Serve à MA3. Ela precisa subi-lo numa branch nova (seção 3).
+  suponho, sem conferir, que a fonte dela tire o arrendamento). Serve à MA3. Subi-lo numa branch nova é sugestão para ela (seção 3); o Marcos também pode pedir o arquivo direto.
 - **IA (Eduardo):** ED7 feita (PR #20); limite do Gemini (PR #23); ED8 no PR #31 (02/11). Próxima: ter 03/11, demo ponta a ponta e tag `v0.1-demo` (depende da MG4). Conferido em 30/10 com a `data/`
   real: o raio-x sem IA roda nas 595 empresas (0 erros, 0 removidos), e a busca do PostgreSQL devolve as mesmas 595.
   O K-means mudou um pouco com os dados do #22: silhueta 0,29 (era 0,30) e treino de 327, 76, 59 e 102 empresas
@@ -330,7 +330,8 @@ Para subir um arquivo:
 - **Obrigatório** é só o que os arquivos do professor pedem:
   - o deck (`requisitos_projeto.MD`, Documentação: "Criar slides");
   - a análise de ética (guia §2 e §6);
-  - na apresentação, o valor de negócio e as métricas de sucesso (guia §3; o valor de negócio pesa 20% na banca, guia §5).
+  - na apresentação, a viabilidade de negócio e as métricas de sucesso (guia §3). O valor de negócio pesa 20% na banca (guia §5),
+    e o guia §7 pede para "explicar claramente o retorno sobre o investimento (ROI) ou a redução do tempo operacional".
 - **Sugestão** é todo o resto.
 - Ela pode usar IA (ChatGPT, Claude) para rascunhar texto e slides. Os números ela pede ao Eduardo, que confere com o Claude Code.
 
@@ -338,10 +339,10 @@ Para subir um arquivo:
 |---|---|---|---|---|---|
 | NA1 | qua 28–qui 29/10 | ✅ regras v2 (PR #11) | regras v2 alinhadas ao código | `avaliacao/regras_prompt.md` | PR aberto |
 | NA2 | sex 30/10 | ✅ códigos (PR #10); ela ainda confere | preencher o `cd_cvm` dos 10 casos (WEG = 5410) | `avaliacao/casos_avaliacao.csv` | `tests/test_ponta_a_ponta.py` passa (o Eduardo roda) |
-| NA3 | até qui 05/11 | — | **Obrigatório, versão mínima: o ROI.** Cronometrar 1 vez a montagem manual de um raio-x (1 empresa, pelo site de RI) e comparar com os ~2 s da ferramenta, com a conta do ganho em 3 linhas. *Sugestão:* 3 empresas no `tempo_manual.csv` e 3 testes com usuários (sem nome) | `docs/produto/` (ou `avaliacao/`) | 1 tempo medido e a conta do ROI |
-| NA4 | qua 04/11 | — | **Obrigatório: 1 slide de métricas** com os números do `avaliacao/resultados.csv` (10 casos, 0 trechos removidos, US$ 0,0012 por raio-x, 2,2 s), que o Eduardo tira com o Claude Code. *Sugestão:* `revisao.csv`, com a nota dela para cada raio-x | deck (e `avaliacao/revisao.csv`, se fizer) | o slide de métricas existe |
-| NA5 | sáb 07–dom 08/11 | — | **Obrigatório: o texto de governança e ética** (guia §2; §6: "análise de ética e segurança", no PDF): viabilidade, limites, viés, alucinação, segurança de dados e uso responsável. Base pronta: `docs/justificativa.md`, seção 5. Deck com o tempo de cada parte | `docs/etica.md`, deck | o Marcos recebe a ética; todos os slides chegaram |
-| NA6 | seg 09–qua 11/11 | — | **Obrigatório: o deck final** (`requisitos_projeto.MD`, Documentação; guia §6) e 2 ensaios cronometrados (guia §3: no máximo 20 min) | deck | ensaio abaixo de 20 min |
+| NA3 | até qui 05/11 | — | **Obrigatório, versão mínima: o ROI.** Cronometrar 1 vez a montagem manual de um raio-x (1 empresa, pelo site de RI) e 1 vez com a ferramenta, contando digitar, ler e conferir (não só os ~2 s da API), com a conta do ganho em 3 linhas (guia §7: "ROI ou a redução do tempo operacional"). *Sugestão:* 3 empresas no `tempo_manual.csv` e 3 testes com usuários (sem nome) | `docs/produto/` (ou `avaliacao/`) | 1 tempo medido e a conta do ROI |
+| NA4 | qua 04/11 | — | **Obrigatório: 1 slide de métricas** com os números do `avaliacao/resultados.csv` (10 casos, 0 trechos removidos, US$ 0,0012 por raio-x, 2,2 s) e o acerto: **7 de 10 batem com o RI** na conferência manual dela de 29/10 (as 3 que diferem estão na MA3). Sem o acerto, o slide parece melhor que a realidade, que o Eduardo tira com o Claude Code. *Sugestão:* `revisao.csv`, com a nota dela para cada raio-x | deck (e `avaliacao/revisao.csv`, se fizer) | o slide de métricas existe |
+| NA5 | sáb 07–dom 08/11 | — | **Obrigatório: o texto de governança e ética** (guia §2; §6: "análise de ética e segurança", no PDF): viabilidade, limites, viés, confiabilidade, alucinação, segurança de dados e uso responsável. Base pronta: `docs/justificativa.md`, seção 5. Deck com o tempo de cada parte | `docs/etica.md`, deck | o Marcos recebe a ética; todos os slides chegaram |
+| NA6 | seg 09–qua 11/11 | — | **Obrigatório: o deck final** (`requisitos_projeto.MD`, Documentação; guia §6) e ensaios cronometrados (guia §3: no máximo 20 min; guia §7 pede o ensaio; o grupo marcou 2) | deck | ensaio abaixo de 20 min |
 
 ---
 
@@ -444,7 +445,7 @@ Para subir um arquivo:
 **Se faltar tempo, cortar nesta ordem** (só o que **não** está nos arquivos do professor; o Terraform, o BPMN com o Raio-X,
 o documento, o deck, o README e os prompts do vibecoding não podem ser cortados):
 1. BPMN "hoje" (o do processo com o Raio-X é obrigatório)
-2. testes com usuários de 3 para 2
+2. testes com usuários (já são sugestão desde 02/11, seção 3)
 3. ED11 (fica o resultado do ED7)
 
 ---

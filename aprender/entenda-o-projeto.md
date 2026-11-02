@@ -22,7 +22,7 @@ No Raio-X, o vendedor escolhe a empresa, diz **o que vende** e **o objetivo da r
 
 **Por que isso vale dinheiro (o ROI que a banca vai perguntar):**
 economia por mês = reuniões por mês × (minutos à mão − minutos com a ferramenta) × custo da hora do vendedor.
-Os minutos "à mão" e "com a ferramenta" estão sendo medidos pela Náthally (`avaliacao/tempo_manual.csv` e testes com vendedores).
+Os minutos "à mão" e "com a ferramenta" vêm da Náthally: o mínimo é 1 raio-x cronometrado de cada jeito (NA3, no `docs/PLANO.md`); a planilha com 3 empresas e os testes com vendedores são sugestão.
 
 ---
 
