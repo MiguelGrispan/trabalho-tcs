@@ -26,9 +26,9 @@ subiu nada** (`git for-each-ref --sort=-committerdate refs/remotes`): a MA3 e a 
 e a demo de ter 03/11 depende da MG4.
 
 **Resposta do professor à pergunta 1 (registrada em 02/11): o Streamlit vale como a aplicação**, desde que rode em 2 contêineres,
-um com a tela e a aplicação (Streamlit + `raiox/`) e outro com o banco (`docs/REQUISITOS.md`, "Regras do professor"). Não precisa
-de API separada. O `docker-compose.yml` (`tela` e `banco`) e o Terraform (`raiox-tela` e `raiox-banco`) já sobem os 2. **Falta a
-aplicação usar o contêiner do banco:** a tela ainda lê `falsos/` (`USAR_DADOS_FALSOS = True`, `app/streamlit_app.py:26`).
+um com a tela e a aplicação e outro com o banco (`docs/REQUISITOS.md`, "Regras do professor"). Dedução do grupo: "a aplicação" é o
+código de `raiox/`, e não precisa de API separada. O `docker-compose.yml` (`tela` e `banco`) e o Terraform (`raiox-tela` e `raiox-banco`) já sobem os 2. **Falta a
+aplicação usar o contêiner do banco:** a busca e o registro da consulta da tela ainda usam `falsos/` (`USAR_DADOS_FALSOS = True`, `app/streamlit_app.py:26`), e os números do raio-x vêm do `data/indicadores.csv`: nenhum caminho da tela usa o PostgreSQL.
 Por isso, a **MG4 vira o item mais crítico** do R13 (`requisitos_projeto.MD`, Aplicação: "Backend e Frontend" e "Banco de dados").
 
 **PR #30 (Eduardo, ED12): as travas estão na `main`** (`requisitos_projeto.MD`, Aplicação: "Arquivos utilizados de prompts para o
@@ -177,7 +177,7 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
   1. hoje: ensinar o Claude Code ao Miguel (travas no #30 e a nota explicando; falta conversar com ele); mandar ao grupo a mensagem geral (fluxo `/inicio-de-sessao` e `/fim-de-sessao`,
      regra do PostgreSQL, ajustes do Docker, resultado da ED7). Em 30/10, só a mensagem ao Marcos sobre o #22 está confirmada;
   2. perguntar ao professor a data da banca, as 2 perguntas que sobraram no REQUISITOS ("Perguntas para o professor": arquivos de
-     prompts e base de conhecimento; a de backend e frontend foi respondida) e se há outras regras além dos arquivos dele;
+     prompts e base de conhecimento; a de backend e frontend foi respondida) e se há outras regras além dos arquivos dele (anotar no REQUISITOS);
   3. ✅ ED8 (PR #31, 02/11): falta o Marcos ler a `docs/justificativa.md` (é o "pronto quando");
   4. ter 03/11: demo ponta a ponta com `docker compose` (tela + PostgreSQL + `data/` real) e tag `v0.1-demo`;
   5. no meio disso: `/explicar` nos pontos da seção 8.
@@ -394,7 +394,7 @@ Para subir um arquivo:
 | R10 Governança e ética | NA5, ED8, MG4 |
 | R11 ROI | NA1, NA3 |
 | R12 Métricas | NA2, ED5, ED7, NA4, ED11 |
-| R13 Backend, frontend e banco na aplicação | MG4 (+ pergunta ao professor, Eduardo) |
+| R13 Backend, frontend e banco na aplicação | MG4 (pergunta ao professor respondida em 02/11: Streamlit vale, em 2 contêineres) |
 | R14 Prompts do vibecoding | ED8 |
 | D1 Repositório | ED0, MA1, NA1, ED9 |
 | D1b README | MG5, ED8, ED10 |

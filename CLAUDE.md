@@ -59,12 +59,12 @@ O status de cada item, com a prova, fica no `docs/REQUISITOS.md`.
 | Boas práticas e agentic coding | G §2 | `tests/`, `contratos.md`, CI, pull requests, travas do Claude Code (`.claude/settings.json`, `.claude/hooks/guarda.py`) | todos |
 | Governança e ética (viabilidade, limites, viés, confiabilidade, uso responsável) | G §2 | validador, texto de ética no PDF | Náthally, todos |
 
-**Regras do professor ditas em aula** (valem como os arquivos; ficam em `docs/REQUISITOS.md`, seção "Regras do professor"):
+**Regras do professor ditas em aula ou ao Eduardo** (valem como os arquivos; ficam em `docs/REQUISITOS.md`, seção "Regras do professor"):
 - **O banco é PostgreSQL. SQLite não vale** (29/10). O `requisitos_projeto.MD` diz "banco de dados à sua escolha", mas em aula o
   professor fixou o PostgreSQL: vale o PostgreSQL. Nada novo com `sqlite3`; desde a MA2 (PRs #21 e #22) a `main` usa só o PostgreSQL.
   O endereço do banco (`DATABASE_URL`) tem senha: fica no `.env`, como a chave do Gemini.
 - **O Streamlit vale como backend e frontend, em 2 contêineres** (resposta à pergunta 1, registrada em 02/11): um com a tela e a
-  aplicação (Streamlit + `raiox/`) e outro com o PostgreSQL. Não crie API separada. O compose e o Terraform já sobem os 2; a tela
+  aplicação (Streamlit + `raiox/`) e outro com o PostgreSQL. Leitura do grupo: não precisa de API separada. O compose e o Terraform já sobem os 2; a tela
   precisa usar o banco de verdade (MG4).
 
 **Entregáveis (48 h antes da banca; G §6 e R "Composição do projeto"):**

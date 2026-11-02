@@ -23,11 +23,11 @@ Valem como os arquivos do professor. Quem ouvir uma regra nova em aula escreve a
 | **Infraestrutura automatizada com Terraform** é obrigatória (rodando local ou na nuvem); Docker sozinho não basta | qui 29/10 (R) | R, "Aplicação" | R9, D1c; MG3 deixa de ser cortável (PLANO, seções 3 e 7) |
 | Backend **e** frontend, banco de dados e arquivos de prompts do vibecoding na aplicação | qui 29/10 (R) | R, "Aplicação" | R13, R14 |
 | README sobre o tema, o objetivo e as **tecnologias**, com instruções para rodar; documento com as **etapas desenvolvidas**; BPMN da regra de negócio | qui 29/10 (R) | R, "Documentação" | R1, D1b, D2 |
-| **O Streamlit vale** como a aplicação (backend e frontend), desde que rode em **2 contêineres**: um com a tela e a aplicação (Streamlit + `raiox/`) e outro com o banco (PostgreSQL) | registrada em seg 02/11 | professor, ao Eduardo (resposta à pergunta 1) | R13: não precisa de API separada; o `docker-compose.yml` (`tela` e `banco`) e o Terraform (`raiox-tela` e `raiox-banco`, `infra/main.tf`) já sobem os 2; falta a tela usar o banco (MG4) |
+| **O Streamlit vale** como a aplicação (backend e frontend), desde que rode em **2 contêineres**: "um contêiner para ele e a aplicação e um para o SQL" | registrada em seg 02/11 | professor, ao Eduardo (resposta à pergunta 1, contada pelo Eduardo) | R13. Leitura do grupo: "a aplicação" é o código de `raiox/`, e então não precisa de API separada; o `docker-compose.yml` (`tela` e `banco`) e o Terraform (`raiox-tela` e `raiox-banco`, `infra/main.tf`) já sobem os 2; falta a tela usar o banco (MG4) |
 
 **Perguntas para o professor** (o Eduardo leva; ninguém decide sozinho):
 1. ✅ **Respondida (registrada em 02/11):** o Streamlit vale, com um contêiner para a tela e a aplicação e outro para o banco
-   (tabela "Regras do professor", acima). Não precisa de API separada.
+   (tabela "Regras do professor", acima). Dedução do grupo: não precisa de API separada.
 2. Os "arquivos utilizados de prompts para o vibecoding" (R, Aplicação) são os arquivos de instrução que já usamos (R14), ou ele quer
    também os prompts digitados nas sessões?
 3. "Base de dados de conhecimento para a IA" (R, Integração com IA de terceiro): a tabela de indicadores calculada da DFP da CVM (`data/indicadores.csv`),
