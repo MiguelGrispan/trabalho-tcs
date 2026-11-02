@@ -5,8 +5,8 @@ Atende: `guia_projeto_final.pdf` §6 ("Justificativa técnica das escolhas de mo
 e §7 ("motivos da escolha por RAG em relação ao Fine-tuning, e como configuraram as chains e a memória"); `requisitos_projeto.MD`,
 "Integração com IA de terceiro" ("base de dados de conhecimento para a IA utilizar"). Vai para o `documentacao.pdf` (MA6).
 
-> Rascunho de 02/11/2026: o Claude Code escreveu a partir do código, e cada afirmação tem o arquivo e a linha.
-> O Eduardo revisa e reescreve com as palavras dele antes do merge. "Pronto quando" (PLANO, ED8): o Marcos lê e entende.
+> Escrito em 02/11/2026 pelo Claude Code a partir do código; cada afirmação tem o arquivo e a linha, conferidos no mesmo dia.
+> Responsável: Eduardo. "Pronto quando" (PLANO, ED8): o Marcos lê e entende.
 
 ## 1. O problema decide a arquitetura
 
@@ -75,8 +75,8 @@ da DFP. Ficou fora do escopo (`docs/PLANO.md`, seção 7).
 - **Os valores nunca vão para o LLM** (`raiox/ia.py:109`): o Gemini recebe "acima" ou "abaixo", não o número.
 - **Validador:** barra algarismos de qualquer escrita (inclusive ½ e ²), números por extenso ("dez", "o dobro") e marcadores
   inventados (`raiox/ia.py:230-240`). Testes: `test_validador_*` e `test_regra_de_ouro_*` em `tests/test_raio_x.py`.
-- **Chave do Gemini e senha do banco** só no `.env`, que não vai para o Git (`.gitignore`). Na infraestrutura, o `.env` é montado só para
-  leitura e a chave não fica no estado do Terraform (`docs/PLANO.md`, seção 0, PR #29).
+- **Chave do Gemini e senha do banco** só no `.env`, que não vai para o Git (`.gitignore`). No Terraform, o `.env` é montado só para
+  leitura e a chave não passa por variável, então não fica no `terraform.tfstate` (`infra/main.tf:123-130`; conferido pelo Miguel no PR #29).
 - **Não é recomendação de investimento:** o aviso aparece na tela (`app/streamlit_app.py`).
 
 ## 6. Perguntas prováveis da banca (respostas curtas)
