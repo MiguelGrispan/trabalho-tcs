@@ -13,7 +13,8 @@ import pytest
 from sqlalchemy import create_engine, text
 from streamlit.testing.v1 import AppTest
 
-from raiox import banco, segmentos
+from falsos import falso_dados
+from raiox import banco, ia, segmentos
 from tests.banco_teste import TEST_DATABASE_URL, banco_disponivel
 
 TELA = Path(__file__).resolve().parent.parent / "app" / "streamlit_app.py"
@@ -60,6 +61,33 @@ def test_tela_gera_raio_x_com_dados_falsos():
     assert not at.exception and not at.error
     assert at.subheader[0].value == "ALFA NORTE S.A."
     assert len(at.metric) == 6                                   # os 6 indicadores
+
+
+def test_tela_volta_para_sem_ia_quando_a_ia_falha(monkeypatch):
+    chamadas = []
+
+    def ia_fora_do_ar(*args):                                    # no lugar do Gemini: nunca chama a API
+        chamadas.append(args)
+        raise RuntimeError("API fora do ar")
+    monkeypatch.setenv("RAIOX_IA_REAL", "1")
+    monkeypatch.setattr(ia, "gerar_llm", ia_fora_do_ar)
+
+    at = gerar(abrir())
+    assert len(chamadas) == 1                                    # tentou a IA uma vez
+    assert not at.exception and not at.error
+    assert at.subheader[0].value == "ALFA NORTE S.A."
+    assert "montado sem IA" in textos(at.warning)
+
+
+def test_tela_mostra_o_raio_x_mesmo_se_o_registro_falhar(monkeypatch):
+    def banco_caiu(registro):
+        raise ConnectionError("banco caiu")
+    monkeypatch.setattr(falso_dados, "registrar_consulta", banco_caiu)
+
+    at = gerar(abrir())
+    assert not at.exception and not at.error
+    assert at.subheader[0].value == "ALFA NORTE S.A."
+    assert "não foi registrada" in textos(at.warning)
 
 
 def test_tela_avisa_quando_o_banco_nao_responde(dados_reais, monkeypatch):

@@ -45,6 +45,17 @@ def md(texto: str) -> str:
     return str(texto).replace("$", "\\$")
 
 
+def gerar_raio_x(cd_cvm: int, produto: str, objetivo: str) -> tuple[dict, str | None]:
+    """Devolve (raio-x, aviso). Se a IA falhar, monta o texto sem IA: os números são os mesmos (plano B da demo)."""
+    if USAR_IA_REAL:
+        try:
+            return preparar_raio_x(cd_cvm, produto, objetivo, usar_ia=True), None
+        except Exception as erro:  # API fora do ar, limite de uso, chave errada...
+            aviso = f"A IA não respondeu agora ({erro}). O texto abaixo foi montado sem IA; os números são os mesmos."
+            return preparar_raio_x(cd_cvm, produto, objetivo, usar_ia=False), aviso
+    return preparar_raio_x(cd_cvm, produto, objetivo, usar_ia=False), None
+
+
 POSICAO = {"acima": "▲ acima do grupo", "abaixo": "▼ abaixo do grupo",
            "em linha": "● em linha com o grupo", "sem dado": "sem dado"}
 
@@ -96,22 +107,29 @@ if gerar:
     with st.spinner("Montando o raio-x..."):
         t0 = time.time()
         try:
-            rx = preparar_raio_x(cd_cvm, produto.strip(), objetivo.strip(), usar_ia=USAR_IA_REAL)
-        except Exception as erro:  # API fora do ar, limite de uso, empresa sem dados...
+            rx, aviso = gerar_raio_x(cd_cvm, produto.strip(), objetivo.strip())
+        except Exception as erro:  # mesmo sem IA não deu: empresa sem dados...
             st.error("Não foi possível gerar o raio-x agora. Tente de novo em um minuto. "
                      f"Se continuar, avise o grupo com este detalhe: {erro}")
             st.stop()
     st.session_state["rx"] = rx
+    st.session_state["aviso"] = aviso
     uso = rx.get("uso", {})
-    registrar_consulta({"cd_cvm": cd_cvm, "produto": produto.strip(), "objetivo": objetivo.strip(),
-                        "tempo_s": round(time.time() - t0, 1), "tokens_entrada": uso.get("tokens_entrada"),
-                        "tokens_saida": uso.get("tokens_saida"), "custo_usd": uso.get("custo_usd")})
+    # try separado: se o banco falhar aqui, o raio-x já está pronto e aparece do mesmo jeito
+    try:
+        registrar_consulta({"cd_cvm": cd_cvm, "produto": produto.strip(), "objetivo": objetivo.strip(),
+                            "tempo_s": round(time.time() - t0, 1), "tokens_entrada": uso.get("tokens_entrada"),
+                            "tokens_saida": uso.get("tokens_saida"), "custo_usd": uso.get("custo_usd")})
+    except Exception as erro:
+        st.warning(f"O raio-x está abaixo, mas a consulta não foi registrada no banco. Detalhe: {erro}")
 
 rx = st.session_state.get("rx")
 if not rx:
     st.info("Na barra à esquerda, escolha a empresa, diga o que você vende e o objetivo da reunião. "
             "Depois clique em **Gerar raio-x**.")
     st.stop()
+if st.session_state.get("aviso"):
+    st.warning(st.session_state["aviso"])
 
 # ------------------------------------------------------------------ resultado
 st.subheader(rx["empresa"])
