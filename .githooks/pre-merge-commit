@@ -1,0 +1,10 @@
+#!/bin/sh
+# Conferência do commit de merge pelo próprio Git (o mesmo pre-commit; o Git chama este no git merge): vale no terminal, no VS Code e no Claude Code.
+# Ligue uma vez por clone (o /inicio-de-sessao faz):  git config core.hooksPath .githooks
+# Cancela o commit na main e o que leva data/, .env, chave, senha ou arquivo acima de 10 MB.
+# As regras ficam num lugar só: .claude/hooks/guarda.py (modo precommit), testadas em tests/test_guarda.py.
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "pre-commit: sem python3 neste terminal; a conferência fica para o CI." >&2
+  exit 0
+fi
+exec python3 "$(dirname "$0")/../.claude/hooks/guarda.py" precommit

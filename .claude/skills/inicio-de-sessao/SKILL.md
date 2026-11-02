@@ -17,6 +17,8 @@ O time é iniciante em Git. Você faz o Git; a pessoa só diz qual tarefa vai fa
 - `git status`. Se houver mudança sem commit, **pare** e pergunte o que fazer com ela (guardar num commit, num `git stash` ou descartar).
   Nunca descarte sem a pessoa dizer.
 - `git switch main` e `git pull`.
+- `git config core.hooksPath .githooks`: liga a conferência do commit pelo próprio Git (`.githooks/pre-commit`), que vale também
+  fora do Claude Code. Vale só neste repositório; diga à pessoa em uma linha o que é.
 - `git switch -c pessoa-tarefa` (ex.: `marcos-postgres`). Hífen, não barra. Se a branch já existe, pergunte se é para continuar nela
   (`git switch pessoa-tarefa` e `git merge main`).
 - Nunca `rebase`, `push --force` nem commit na `main`.

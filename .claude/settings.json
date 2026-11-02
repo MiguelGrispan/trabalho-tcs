@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(python -m pytest *)",
+      "Bash(gh pr view *)",
+      "Bash(gh pr checks *)",
+      "Bash(gh pr diff *)",
+      "Bash(gh pr list *)"
+    ],
+    "ask": [
+      "Bash(gh *merge*)",
+      "Bash(*RAIOX_IA_REAL=*)",
+      "Bash(*--com-ia*)",
+      "Bash(*rodar_tela_com_ia*)"
+    ],
+    "deny": [
+      "Read(.env)",
+      "Edit(.env)",
+      "Read(.env.*)",
+      "Edit(.env.*)",
+      "Read(!.env.example)",
+      "Edit(!.env.example)",
+      "Bash(git pull --rebase *)",
+      "Bash(git pull -r *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git rebase *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean *)",
+      "Bash(git add -f *)",
+      "Bash(git add --force *)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guarda.py\" inicio"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Edit|MultiEdit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guarda.py\" antes"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guarda.py\" fim",
+            "timeout": 300
+          }
+        ]
+      }
+    ]
+  }
+}
