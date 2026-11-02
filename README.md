@@ -49,6 +49,25 @@ O prompt do produto (o que o Gemini recebe para escrever o raio-x) é outro: [av
 **Começando agora?** Abra a pasta [aprender/](aprender/README.md): comandos (o que rodar, em qual pasta), o projeto
 explicado para iniciantes e um notebook que segue uma empresa do começo ao fim. O plano e o que falta: [docs/PLANO.md](docs/PLANO.md).
 
+## Como usamos IA para programar
+
+O time é iniciante: três pessoas programam com o Claude Code (o Miguel começou com o Codex) e a Náthally não usa IA
+para código. A IA escreve muito do código; **quem responde por ele é a pessoa**. Para isso valer, todo trabalho segue o mesmo caminho:
+
+1. **Começo:** `/inicio-de-sessao` cria uma branch a partir da `main` e faz a IA ler os arquivos do professor e o estado do projeto
+   (`docs/PLANO.md`, seção 0) antes de mexer em qualquer coisa.
+2. **Durante:** a IA segue o [CLAUDE.md](CLAUDE.md) (donos de cada pasta, regra de ouro, contratos) e o [REGRAS-IA.md](REGRAS-IA.md)
+   (o que nunca vai para uma IA: chave, senha, dados pessoais). Toda afirmação sobre o código vem com arquivo e linha, ou com um comando que prova.
+3. **Fim:** `/fim-de-sessao` roda os testes, atualiza o PLANO, o REQUISITOS e o HISTORICO e abre o PR. O CI roda os testes de novo, e o merge
+   só acontece depois de um "pode" da pessoa.
+4. **No PR, duas linhas obrigatórias** ([modelo](.github/pull_request_template.md)): o que foi feito com IA e o que o autor entendeu ou conferiu.
+   Vale escrever "ainda não li"; o que não vale é inventar.
+5. **Na banca, cada um defende o seu código sem consulta:** a skill `/explicar` treina isso (ler, prever, rodar, explicar).
+
+O que aprendemos: a IA erra com confiança. Um exemplo é a silhueta de 0,77, que parecia ótima e escondia grupos inúteis (ED4).
+Por isso, nada entra na `main` sem teste, e a IA do produto (o Gemini) nunca escreve números: a justificativa está em
+[docs/justificativa.md](docs/justificativa.md).
+
 ## Fluxo
 
 ```
