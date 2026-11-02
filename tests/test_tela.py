@@ -32,6 +32,19 @@ def dados_reais(tmp_path, monkeypatch):
     monkeypatch.setattr(segmentos, "ARQ_SEGMENTOS", tmp_path / "segmentos.csv")
 
 
+@pytest.fixture
+def banco_vazio(dados_reais, monkeypatch):
+    """O banco de testes sem tabelas, e o código apontando para ele (como o tests/banco_teste.py)."""
+    if not banco_disponivel():
+        pytest.skip(f"PostgreSQL de testes indisponível ({TEST_DATABASE_URL})")
+    engine = create_engine(TEST_DATABASE_URL)
+    with engine.begin() as conn:
+        conn.execute(text("DROP TABLE IF EXISTS contas, empresas, consultas"))
+    monkeypatch.setattr(banco, "DATABASE_URL", TEST_DATABASE_URL)
+    yield engine
+    engine.dispose()
+
+
 def abrir():
     at = AppTest.from_file(str(TELA), default_timeout=60)   # a 1ª vez treina o K-means: passa dos 3 s padrão
     return at.run()
@@ -99,25 +112,37 @@ def test_tela_avisa_quando_o_banco_nao_responde(dados_reais, monkeypatch):
     assert "Não consegui falar com o banco" in textos(at.error)
 
 
-@pytest.mark.skipif(not banco_disponivel(), reason=f"PostgreSQL de testes indisponível ({TEST_DATABASE_URL})")
-def test_tela_busca_no_banco_e_registra_a_consulta(dados_reais, monkeypatch):
-    engine = create_engine(TEST_DATABASE_URL)
-    with engine.begin() as conn:
-        conn.execute(text("DROP TABLE IF EXISTS contas, empresas, consultas"))
+def test_tela_mostra_erro_quando_nem_o_modo_sem_ia_funciona(monkeypatch):
+    # uma empresa que a busca acha, mas que não está na tabela de indicadores: o raio-x falha com e sem IA
+    monkeypatch.setattr(falso_dados, "buscar_empresas",
+                        lambda texto: [{"cd_cvm": 12345, "nome": "SEM DADOS S.A.", "setor": "Outros"}])
+    at = gerar(abrir(), busca="sem dados")
+    assert not at.exception
+    assert "Não foi possível gerar o raio-x" in textos(at.error)
+    assert not at.subheader                                      # nenhum raio-x na tela
+
+
+def test_tela_avisa_quando_o_banco_esta_vazio(banco_vazio):
+    at = abrir()
+    at.text_input(key="busca").input("alfa").run()
+    assert not at.exception and not at.error
+    assert "O banco está vazio" in textos(at.warning)
+
+
+def test_tela_busca_no_banco_e_registra_a_consulta(banco_vazio):
+    with banco_vazio.begin() as conn:
         # o catálogo como sai do carregar_dfp.py, só com a empresa 90001 da tabela falsa
         pd.DataFrame([["90001", "ALFA NORTE S.A.", "Transporte e logística", "3.01", "Receita de Venda",
                        100.0, 2025, "DRE", "con"]],
                      columns=["cd_cvm", "nome", "setor", "cd_conta", "ds_conta", "valor", "ano", "demonstracao",
                               "origem"]).to_sql("contas", conn, index=False)
-    monkeypatch.setattr(banco, "DATABASE_URL", TEST_DATABASE_URL)
 
     at = gerar(abrir())
     assert not at.exception and not at.error
     assert at.subheader[0].value == "ALFA NORTE S.A."
 
-    with engine.begin() as conn:
+    with banco_vazio.begin() as conn:
         linhas = conn.execute(text("SELECT registro_json FROM consultas")).fetchall()
-    engine.dispose()
     assert len(linhas) == 1
     registro = json.loads(linhas[0][0])
     assert registro["cd_cvm"] == 90001                           # número, como pede o C1 (o banco devolve texto)

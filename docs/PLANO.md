@@ -35,8 +35,9 @@ professor mandou (HISTORICO, decisões). A MA3 e a MA4 (Marcos) ainda não têm 
 
 Conferido no `docker compose` (os 2 `healthy`): o raio-x sem IA de WEG, Embraer e Ambev pelo navegador, e as 3 linhas na `consultas`
 com `cd_cvm` número (`docker compose exec banco psql -U postgres -d raiox -c "SELECT registro_json FROM consultas"`).
-Testes novos em `tests/test_tela.py` (6, com o `AppTest` do Streamlit; nenhum chama o Gemini). Local, com o PostgreSQL ligado:
-230 passed, nenhum pulado; no contêiner: 210 passed e 20 pulados, todos do `tests/test_guarda.py`, que precisam do `git`.
+Testes novos em `tests/test_tela.py` (8, com o `AppTest` do Streamlit; nenhum chama o Gemini). Local, com o PostgreSQL ligado:
+232 passed, nenhum pulado; no contêiner (antes dos 2 últimos testes, pedidos pelo `revisor`): 210 passed e 20 pulados, todos do
+`tests/test_guarda.py`, que precisam do `git`.
 **Não conferido:** a volta para o modo sem IA com o Gemini de verdade; a tela nova pelo Terraform.
 **Para a demo de ter 03/11:** depois do merge, `docker compose up -d --build` (senão o contêiner roda a tela antiga); com IA, `RAIOX_IA_REAL=1`.
 
@@ -150,8 +151,8 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
   já parte da `main`, e o `.gitignore` com as linhas de cópia de chat não veio (o da `main` já tem as regras do Terraform).
 - **Terraform (Miguel, MG3): feito no PR #29** (acima), em `infra/`. A branch antiga `docs-docker-e-terraform` (27–28/10) foi
   comparada com a `main` em 02/11: o Dockerfile e o Terraform dela foram substituídos pela MG2 e pela MG3; só não vieram 5 linhas de
-  proteção do `.gitignore` (`crash.log`, `*.tfplan`, `*.tfvars.json`, `.aws/`, `.ssh/`), que hoje não fazem falta. O Miguel decidiu
-  apagá-la: a cópia local saiu; a do GitHub ele apaga pelo site (a trava barra `git push --delete`).
+  proteção do `.gitignore` (`crash.log`, `*.tfplan`, `*.tfvars.json`, `.aws/`, `.ssh/`), que hoje não fazem falta. O Miguel a
+  apagou (02/11; a do GitHub pelo site, porque a trava barra `git push --delete`): `git ls-remote --heads origin` não a mostra mais.
 - **Tela (Miguel, MG4): feita no PR #36** (acima).
 - **Produto (Náthally):** regras v2 (PR #11) e `cd_cvm` dos 10 casos (PR #10) na `main`. Ela ainda confere os 10 códigos.
 - **GitHub (Miguel, MG1): feito.** Conferido em 30/10, 11h35, pela API (`gh api repos/MiguelGrispan/trabalho-tcs/branches/main/protection`
@@ -171,8 +172,7 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
   `tratamento_dados` pode ser apagada.
 - **Miguel:** avisar o grupo da MG4 (mexeu em `tests/`, `.env.example` e `aprender/`, pastas comuns) e mandar o print da tela
   rodando no Docker (MG1); conferir o `GOOGLE_API_KEY` no `.env`, se a demo for com IA (em 30/10 chegou vazio no
-  `docker compose config`; ninguém abriu o arquivo; pelo Terraform, a IA funcionou em 31/10); apagar a `docs-docker-e-terraform`
-  no GitHub, pelo site; MG5 (diagrama e README) na qua 04/11.
+  `docker compose config`; ninguém abriu o arquivo; pelo Terraform, a IA funcionou em 31/10); MG5 (diagrama e README) na qua 04/11.
 - **Alguém com Mac (Eduardo?):** dentro de `infra/`, `terraform init` e `terraform apply` (se não achar o Docker, o
   `DOCKER_HOST` do README) e dizer no grupo se subiu.
 - **Náthally** (desde 02/11, as tarefas dela separam obrigatório de sugestão: seção 3). **Obrigatório:**
@@ -321,7 +321,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | MG1 | qua 28/10 | ✅ conferido em 30/10: PR e check `testes` obrigatórios, só merge commit, apagar branch após o merge; tela rodando no Docker (o print vai para o grupo) | configurar o GitHub (seção 2, "Proteção da `main`"); rodar a tela local | configurações | só leitura | as 3 configurações feitas; print da tela no grupo | — |
 | MG2 | qui 29–sex 30/10 | ✅ PR #24 (30/10): os 2 contêineres `healthy`, health `ok`, `carregar_dfp.py` no banco do contêiner, 87 passed no contêiner | `Dockerfile` + `.dockerignore` + `docker-compose.yml` (tela + PostgreSQL com volume do banco; `data/` como volume; chave e `DATABASE_URL` por variável) | `Dockerfile`, `.dockerignore`, `docker-compose.yml` | Plan | `docker compose up` sobe os 2; `curl localhost:8501/_stcore/health` → `ok`; `scripts/carregar_dfp.py` grava no PostgreSQL do contêiner | `miguel-docker` → PR (Eduardo) |
 | MG3 | sáb 31/10–dom 01/11 | ✅ PR #29 (31/10): `apply` sobe os 2 `healthy`; `destroy` + `apply` mantém o banco e a `data/`; 87 passed no contêiner; 2º `plan` sem mudanças. IA pelo Terraform vista pelo Miguel. Não conferidos: portas padrão, Mac (seção 0) | **Terraform na `main`, obrigatório** (`requisitos_projeto.MD`, Aplicação: "Infraestrutura automatizada com Terraform"): provider docker com os 2 contêineres (tela + PostgreSQL), a partir do `terraform/` da branch `docs-docker-e-terraform`. Prazo: dom 01/11; reserva: seg 02/11 com o Eduardo. Não pode ser cortado | `infra/` | Plan | `terraform apply` sobe a tela e o banco; `destroy` + `apply` mantém a `data/` e o banco | PR |
-| MG4 | dom 01–ter 03/11 | ✅ PR #36 (02/11): WEG, Embraer e Ambev geram o raio-x no contêiner, e as 3 consultas estão na `consultas`; 6 testes em `tests/test_tela.py`. Não conferidos: a volta para o modo sem IA com o Gemini de verdade e a tela pelo Terraform (seção 0) | tela com dados reais e **com o banco** (R Aplicação: banco de dados): `RAIOX_DADOS` (`falsos`/`real`) no lugar do `USAR_DADOS_FALSOS`, e com `real` a busca e o `registrar_consulta` usam o PostgreSQL (`raiox/dados.py`); volta sozinha para o modo sem IA, com aviso; `registrar_consulta` dentro do `try`; `tests/test_tela.py` | `app/`, `.env.example`, `tests/` | Plan | 3 empresas reais geram raio-x no contêiner, e cada consulta aparece na tabela `consultas` | PR (Eduardo) |
+| MG4 | dom 01–ter 03/11 | ✅ PR #36 (02/11): WEG, Embraer e Ambev geram o raio-x no contêiner, e as 3 consultas estão na `consultas`; 8 testes em `tests/test_tela.py`. Não conferidos: a volta para o modo sem IA com o Gemini de verdade e a tela pelo Terraform (seção 0) | tela com dados reais e **com o banco** (R Aplicação: banco de dados): `RAIOX_DADOS` (`falsos`/`real`) no lugar do `USAR_DADOS_FALSOS`, e com `real` a busca e o `registrar_consulta` usam o PostgreSQL (`raiox/dados.py`); volta sozinha para o modo sem IA, com aviso; `registrar_consulta` dentro do `try`; `tests/test_tela.py` | `app/`, `.env.example`, `tests/` | Plan | 3 empresas reais geram raio-x no contêiner, e cada consulta aparece na tabela `consultas` | PR (Eduardo) |
 | MG5 | qua 04/11 | — | diagrama de arquitetura + README (tema, objetivo e tecnologias já estão; pré-requisitos com Python 3.14; rodar local, Docker e Terraform) | `docs/arquitetura.png`, `README.md` | Manual | um colega entende o fluxo lendo o README; o README cobre o que o R pede em "Documentação" | PR |
 | MG6 | qui 05/11 | — | roteiro de 6 min da demo + vídeo v0 | — | — | vídeo salvo em 2 lugares | — |
 | MG7 | sáb 07/11 | — | vídeo final na `v1.0` | — | — | vídeo salvo em 2 lugares | — |
