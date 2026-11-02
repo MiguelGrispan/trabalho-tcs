@@ -5,11 +5,12 @@ Rodar (o tema em .streamlit/config.toml só vale rodando de dentro de app/):
     pip install -r requirements.txt
     cd app && streamlit run streamlit_app.py
 
-Hoje a tela usa arquivos FALSOS (pasta falsos/) com o mesmo formato dos contratos:
-  C1 · buscar_empresas, registrar_consulta  → raiox/dados.py do Marcos
+Contratos que a tela usa:
+  C1 · buscar_empresas, registrar_consulta  → raiox/dados.py do Marcos (PostgreSQL)
   C3 · preparar_raio_x                       → raiox/ia.py do Eduardo
-Quando o raiox/dados.py do Marcos estiver pronto, troque USAR_DADOS_FALSOS para False.
-Para usar a IA de verdade (raiox/ia.py do Eduardo), rode com RAIOX_IA_REAL=1 (o aprender/atalhos/rodar_tela_com_ia.command faz isso).
+Dados: com a data/indicadores.csv real, a busca e o registro de cada consulta usam o PostgreSQL (raiox/dados.py).
+Com RAIOX_DADOS=falsos, ou sem a data/, tudo vem dos arquivos FALSOS (pasta falsos/), com o mesmo formato.
+IA: com RAIOX_IA_REAL=1 o texto é escrito pelo Gemini (o aprender/atalhos/rodar_tela_com_ia.command faz isso).
 """
 import os
 import sys
@@ -22,21 +23,20 @@ import streamlit as st
 # A raiz do repositório entra no caminho do Python para achar raiox/ e falsos/ (o Streamlit só põe app/).
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-# Troque para False quando o raiox/dados.py do Marcos estiver pronto.
-USAR_DADOS_FALSOS = True
+from raiox.ia import preparar_raio_x  # noqa: E402
+from raiox.segmentos import usando_falsos  # noqa: E402
+
+# A mesma regra do raiox/segmentos.py: assim a busca e o raio-x olham sempre a mesma tabela.
+DADOS_FALSOS = usando_falsos()
 # IA de verdade (Gemini, gasta crédito) só quando a variável RAIOX_IA_REAL=1 estiver definida:
 # o rodar_tela_com_ia.command faz isso. Sem ela, o texto é montado sem IA.
 USAR_IA_REAL = os.getenv("RAIOX_IA_REAL") == "1"
 
-if USAR_DADOS_FALSOS:
+if DADOS_FALSOS:
     from falsos.falso_dados import buscar_empresas, registrar_consulta
 else:
+    from raiox.banco import catalogo_existe
     from raiox.dados import buscar_empresas, registrar_consulta
-
-if USAR_IA_REAL:
-    from raiox.ia import preparar_raio_x
-else:
-    from falsos.falso_ia import preparar_raio_x
 
 st.set_page_config(page_title="Raio-X Comercial", layout="wide")
 
@@ -52,18 +52,28 @@ POSICAO = {"acima": "▲ acima do grupo", "abaixo": "▼ abaixo do grupo",
 st.title("Raio-X Comercial")
 st.caption("Prepare a primeira reunião com uma companhia aberta: números da CVM, comparação com "
            "empresas parecidas e perguntas para a conversa.")
-if USAR_DADOS_FALSOS:
+if DADOS_FALSOS:
     st.warning("Versão de teste: empresas e números inventados.")
+else:
+    st.caption("Empresas e números da CVM (DFP), buscados no banco PostgreSQL.")
 st.caption("Texto escrito pelo Gemini." if USAR_IA_REAL else "Texto montado sem IA (modo de teste, sem custo).")
 
 # ------------------------------------------------------------------ entrada (barra lateral)
 with st.sidebar:
     st.header("1. Empresa")
     texto = st.text_input("Digite parte do nome", key="busca", placeholder="ex.: alfa")
-    opcoes = buscar_empresas(texto) if len(texto.strip()) >= 2 else []
+    opcoes = []
     escolha = None
-    if texto.strip() and not opcoes:
-        st.info("Nenhuma empresa encontrada com esse nome.")
+    if len(texto.strip()) >= 2:
+        try:
+            opcoes = buscar_empresas(texto)
+            if not opcoes and not DADOS_FALSOS and not catalogo_existe():
+                st.warning("O banco está vazio: carregue os dados da CVM (comandos no topo do docker-compose.yml).")
+            elif not opcoes:
+                st.info("Nenhuma empresa encontrada com esse nome.")
+        except Exception as erro:  # banco desligado, senha errada...
+            st.error("Não consegui falar com o banco de dados. Ele está ligado? "
+                     f"(`docker compose up -d banco`). Detalhe: {erro}")
     if opcoes:
         escolha = st.selectbox("Escolha a empresa", opcoes, index=None, placeholder="Selecione",
                                format_func=lambda e: f"{e['nome']} · {e['setor']}", key="empresa")
@@ -82,17 +92,18 @@ with st.sidebar:
 
 # ------------------------------------------------------------------ gerar
 if gerar:
+    cd_cvm = int(escolha["cd_cvm"])   # o banco devolve texto ("5410"); o contrato C1 pede número
     with st.spinner("Montando o raio-x..."):
         t0 = time.time()
         try:
-            rx = preparar_raio_x(escolha["cd_cvm"], produto.strip(), objetivo.strip())
+            rx = preparar_raio_x(cd_cvm, produto.strip(), objetivo.strip(), usar_ia=USAR_IA_REAL)
         except Exception as erro:  # API fora do ar, limite de uso, empresa sem dados...
             st.error("Não foi possível gerar o raio-x agora. Tente de novo em um minuto. "
                      f"Se continuar, avise o grupo com este detalhe: {erro}")
             st.stop()
     st.session_state["rx"] = rx
     uso = rx.get("uso", {})
-    registrar_consulta({"cd_cvm": escolha["cd_cvm"], "produto": produto.strip(), "objetivo": objetivo.strip(),
+    registrar_consulta({"cd_cvm": cd_cvm, "produto": produto.strip(), "objetivo": objetivo.strip(),
                         "tempo_s": round(time.time() - t0, 1), "tokens_entrada": uso.get("tokens_entrada"),
                         "tokens_saida": uso.get("tokens_saida"), "custo_usd": uso.get("custo_usd")})
 
