@@ -70,6 +70,9 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   validador resolve o risco principal (número errado). O README ganha "Como usamos IA para programar".
   **O professor responde à pergunta 1: o Streamlit vale como a aplicação**, com a tela e a aplicação num contêiner e o banco em outro.
   Para o grupo, isso quer dizer que não precisa de API separada. O compose e o Terraform já sobem os 2. Falta a tela usar o banco (MG4).
+- **02/11** · **MG4** (PR #36): a tela busca as empresas no PostgreSQL e grava cada consulta na tabela `consultas`; se o Gemini falhar,
+  volta sozinha para o modo sem IA. Conferido no Docker com WEG, Embraer e Ambev. O #34 (o guia do professor sem os exemplos, refeito
+  pelo grupo no Google Docs) foi desfeito pelo #35, e a branch antiga `docs-docker-e-terraform` foi apagada (a MG2 e a MG3 já a cobriam).
 
 ## Decisões (e por quê)
 
@@ -96,6 +99,8 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 31/10 | o hook não tenta entender o shell: procura o perigo em qualquer ponto do comando e, na dúvida, bloqueia; mensagem que cita o `.env` vai por arquivo (`-F`, `--body-file`) | separar "texto" de "comando" por regex abriu furos duas vezes (achados do `revisor`); um pouco de atrito com uma saída clara é melhor que um buraco |
 | 02/11 | sem RAG vetorial, sem fine-tuning, sem memória e sem agente no LangChain: uma chain fixa (prompt → Gemini com saída estruturada) e recuperação pela chave da empresa | os dados são números em tabela (busca por chave é exata; por semelhança, pode trazer a empresa errada); faltam exemplos para fine-tuning, e ele não impediria número errado; cada raio-x é independente e o caminho é sempre o mesmo |
 | 02/11 | a aplicação é o Streamlit, sem API separada: a tela e `raiox/` num contêiner, o PostgreSQL em outro | resposta do professor à pergunta 1 ("um contêiner para ele e a aplicação e um para o SQL"); "sem API" é a leitura do grupo; uma API nova (ex.: FastAPI) seria escopo novo a 2 semanas da entrega |
+| 02/11 | a tela escolhe entre falsos e banco pela mesma função do raio-x (`usando_falsos()`, `RAIOX_DADOS`), sem chave própria; se a IA falhar, cai sozinha no modo sem IA | com duas chaves, a busca podia vir do banco e o raio-x da tabela falsa, e nada bateria; a demo não pode parar porque a API caiu |
+| 02/11 | o guia do professor fica como ele mandou, com os exemplos (#34 desfeito pelo #35) | uma versão refeita pelo grupo deixa de ser a fonte da verdade, e tirar a seção 4 renumeraria as seguintes, quebrando 21 citações como "G §6" |
 | 02/11 | tarefas da Náthally: obrigatório é só o que os arquivos do professor pedem (deck, ética e, na apresentação, ROI e métricas); testes com usuários, `revisao.csv` e regras v3 viram sugestão | ela trabalha no ritmo dela e sem IA para código; o grupo concentra o tempo dela no que a banca avalia |
 
 **Já cortado do escopo:** verificação com yfinance, receita em 3 anos, filtro de setor, RAG, nome dos grupos pelo LLM,
