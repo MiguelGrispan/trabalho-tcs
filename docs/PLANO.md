@@ -20,31 +20,32 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em sáb 31/10, 19h.** Na `main`: PRs #1 a #16 e #19 a #29 (o #24 é a MG2, Docker do Miguel; o #28 põe os arquivos do professor
-em `docs/professor/`; o #29 é a MG3, Terraform). O #30 (ED12, travas do Claude Code) espera o CI e o "pode".
+**Em seg 02/11 (feriado), 10h40.** Na `main`: PRs #1 a #16 e #19 a #30 (o #29 é a MG3, Terraform; o #30, a ED12, travas do
+Claude Code, entrou hoje às 10h27 com o CI verde). O #31 (ED8, justificativa técnica) espera o CI. **Desde sáb 31/10 ninguém mais
+subiu nada** (`git for-each-ref --sort=-committerdate refs/remotes`): a MA3 e a MA4 (Marcos) e a MG4 (Miguel) ainda não têm branch,
+e a demo de ter 03/11 depende da MG4.
 
-**PR #30 (Eduardo, ED12, 31/10): regras que eram só texto viraram travas** (`requisitos_projeto.MD`, Aplicação: "Arquivos utilizados
-de prompts para o vibecoding"; guia §2: "agentic coding"). `.claude/settings.json` (do grupo) bloqueia ler o `.env` e o Git que
-apaga trabalho e pede permissão para o merge (depois do "pode" falado: segunda trava) e para ligar o Gemini; os 3 hooks chamam o
-`.claude/hooks/guarda.py`: no começo da sessão (branch e data desta seção), antes de cada ação (bloqueia commit na `main` ou com
-dado, `.env`, chave ou arquivo acima de 10 MB; pergunta antes de mexer em pasta de outro dono, no `contratos.md`, em
-`docs/professor/` e nas próprias travas e no CI) e no fim de cada resposta (roda o `pytest` se mudou código). Subagent `revisor`
-(só lê) no passo 6 do `/fim-de-sessao`. O `requisitos_projeto.MD` entra no `CLAUDE.md` por import e carrega sozinho.
-**O `revisor` estreou no próprio #30 e revisou quatro vezes (a 4ª não bloqueou e testou o fluxo normal do time).** Na 1ª, achou furos que o autor deixou passar (`--body "$(cat …)"`
-publicaria a chave; `git add -A && git commit`, `git -C`, `pull --rebase`, `.env.local`, nome com acento e o atalho
-`rodar_tela_com_ia.command` escapavam). Na 2ª, mostrou que a correção tinha aberto furos novos: separar "texto de mensagem" de
-"comando" por regex deixava passar comando em linha nova, `bash -c` e aspas aninhadas. **Decisão:** o hook não tenta entender
-o shell; procura o perigo em qualquer ponto do comando e, na dúvida, bloqueia. Mensagem de commit ou PR que cita o `.env` ou um
-comando proibido vai por arquivo (`git commit -F`, `gh pr create --body-file`); o commit confere tudo o que está solto na pasta.
-Na 3ª, mostrou que `grep -rn AIza .` lê o `.env` sem citar o nome (agora bloqueado, com `find -exec`, `printenv` e `docker compose
-config`) e que o hook do Claude, rodando antes do comando, não vê o stage de verdade. **Conserto estrutural:** `.githooks/pre-commit`
-(e `pre-merge-commit`), a conferência do commit pelo próprio Git, que vale também fora do Claude Code; o `/inicio-de-sessao` liga com
-`git config core.hooksPath .githooks`. Também: senha de banco de verdade, chave privada, push na `main`, `--no-verify`.
-Conferido: 137 testes novos (`tests/test_guarda.py`, com os casos do revisor); o hook bloqueou comandos do Claude nesta sessão, no modo bypass; numa sessão
-nova (`claude -p`), o import e o resumo do começo apareceram. **Não conferido:** se o "ask" de um hook aparece no modo bypass (por
-isso merge e Gemini também são regra `ask` do settings, que vale em todo modo); o Linux; o `user.name` do Git do Marcos.
-Quem usa Claude Code: depois do merge, `git pull`, `git config core.hooksPath .githooks` e abra o `claude` de novo na raiz; sem `.venv`, ponha o `RAIOX_PYTHON` no seu
-`.claude/settings.local.json` (`aprender/claude-code.md`, "Travas").
+**PR #30 (Eduardo, ED12): as travas estão na `main`** (`requisitos_projeto.MD`, Aplicação: "Arquivos utilizados de prompts para o
+vibecoding"; guia §2: "agentic coding"). São o `.claude/settings.json` (do grupo), os 3 hooks do `.claude/hooks/guarda.py` e a
+conferência do commit pelo próprio Git (`.githooks/pre-commit`). O que cada uma bloqueia ou pergunta está no CLAUDE.md, em "Travas
+automáticas". O subagent `revisor` (só lê) entra no passo 6 do `/fim-de-sessao`. No #30 ele revisou 4 vezes, e os achados viraram
+testes (`tests/test_guarda.py`). **Não conferido:** se o "ask" de um hook aparece no modo bypass (por isso o merge e o Gemini também
+são regra `ask` do settings); o Linux; o `user.name` do Git do Marcos.
+**Quem usa Claude Code (Marcos e Miguel), uma vez:** `git switch main`, `git pull`, `git config core.hooksPath .githooks` e abrir o
+`claude` de novo na raiz. Sem `.venv`, pôr o `RAIOX_PYTHON` no seu `.claude/settings.local.json` (`aprender/claude-code.md`, "Travas").
+
+**PR #31 (Eduardo, ED8, 02/11): justificativa técnica em `docs/justificativa.md`** (`guia_projeto_final.pdf` §6: "Justificativa
+técnica das escolhas de modelos/arquiteturas (ex.: RAG vs Fine-tuning)"; §7: "chains e a memória"). Explica:
+- por que nem RAG vetorial nem fine-tuning: a base de conhecimento é a tabela da CVM, buscada pela chave da empresa;
+- a chain de 2 passos, sem memória e sem agente, de propósito;
+- o K-means e a lição da silhueta 0,77;
+- a parte técnica da segurança;
+- 6 perguntas prováveis da banca, com resposta curta.
+
+Cada afirmação cita arquivo e linha, conferidos em 02/11 (ex.: `avaliacao/resultados.csv`: 10 casos, 0 removidos, US$ 0,0118, 2,2 s
+em média). O README ganhou a seção "Como usamos IA para programar" (R14). O texto vai para o `documentacao.pdf` (MA6). Escrito pelo
+Claude Code a pedido do Eduardo, e não por ele, como dizia a seção 3. **Falta o "pronto quando": o Marcos ler e entender.**
+Testes: 207 passed, 17 skipped (os do banco, com o PostgreSQL local desligado; o CI roda os 17).
 
 **PR #29 (Miguel, MG3, 31/10): o Terraform está na `main`, em `infra/`** (`requisitos_projeto.MD`, Aplicação: "Infraestrutura
 automatizada com Terraform"). Dentro de `infra/`, `terraform apply` constrói a imagem do `Dockerfile` e sobe a tela (`raiox-tela`)
@@ -126,7 +127,7 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
   16h38), tem os 6 indicadores das 10 empresas tirados do RI, com links. Contra a ED7, batem 7 de 10. Diferem: Camil (issue #17),
   Magalu (margem EBIT 5,0% × 5,81%) e RD Saúde (margem EBIT 6,2% × 5,27%, endividamento 70,9% × 62,4%, ativo R$ 25,2 bi × 20,6 bi;
   suponho, sem conferir, que a fonte dela tire o arrendamento). Serve à MA3. Ela precisa subi-lo numa branch nova (seção 3).
-- **IA (Eduardo):** ED7 feita (PR #20); limite do Gemini (PR #23). Próxima: ED8 (qua 04/11). Conferido em 30/10 com a `data/`
+- **IA (Eduardo):** ED7 feita (PR #20); limite do Gemini (PR #23); ED8 no PR #31 (02/11). Próxima: ter 03/11, demo ponta a ponta e tag `v0.1-demo` (depende da MG4). Conferido em 30/10 com a `data/`
   real: o raio-x sem IA roda nas 595 empresas (0 erros, 0 removidos), e a busca do PostgreSQL devolve as mesmas 595.
   O K-means mudou um pouco com os dados do #22: silhueta 0,29 (era 0,30) e treino de 327, 76, 59 e 102 empresas
   (eram 330, 99, 74 e 59). Os PNG de `docs/graficos/` ainda são de 28/10: refazer com `python -m raiox.segmentos` depois da MA3.
@@ -171,7 +172,7 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
      regra do PostgreSQL, ajustes do Docker, resultado da ED7). Em 30/10, só a mensagem ao Marcos sobre o #22 está confirmada;
   2. perguntar ao professor a data da banca, as 3 perguntas do REQUISITOS ("Perguntas para o professor": backend e frontend,
      arquivos de prompts, base de conhecimento) e se há outras regras além dos arquivos dele (anotar no REQUISITOS);
-  3. sáb 31/10: começar a ED8 (o #24, Docker, já entrou; quem tem o `raiox-postgres` na porta 5432: ver "PostgreSQL local", acima);
+  3. ✅ ED8 (PR #31, 02/11): falta o Marcos ler a `docs/justificativa.md` (é o "pronto quando");
   4. ter 03/11: demo ponta a ponta com `docker compose` (tela + PostgreSQL + `data/` real) e tag `v0.1-demo`;
   5. no meio disso: `/explicar` nos pontos da seção 8.
 
@@ -252,9 +253,9 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | sex 30/10 | ✅ conferência da MA2 e PR #22 (CI com PostgreSQL, CSV do C2); ensinar o Claude Code ao Miguel | MA3 | MG2 (`docker-compose.yml`), **prazo do PR** | NA3 tempo manual |
 | sáb 31/10 | revisões; ED8 começa; plano B da MA2 se precisar | **MA2 (prazo)**; MA3 | ✅ MG3 Terraform (PR #29) | NA3 tempo manual; marcar testes |
 | dom 01/11 | revisões | MA4 EDA | ~~prazo da MG3~~ (entrou no sáb); MG4 | NA3 |
-| seg 02/11 (feriado) | reserva: se a MG3 não entrou, termina o Terraform com o Miguel | | reserva da MG3 | |
+| seg 02/11 (feriado) | ✅ ED12 na `main` (#30); ✅ ED8 adiantada (#31) | | reserva da MG3 | |
 | ter 03/11 | **demo ponta a ponta · tag `v0.1-demo`** | MA4 | MG4 tela com dados reais | NA3 testes com usuários |
-| qua 04/11 | ED8 justificativa + "Como usamos IA" | MA5 BPMN | MG5 arquitetura + README | NA4 revisão + métricas |
+| qua 04/11 | ✅ ED8 (feita em 02/11) | MA5 BPMN | MG5 arquitetura + README | NA4 revisão + métricas |
 | qui 05/11 | só bugs | MA5 | MG6 vídeo v0 | NA3 (3 testes feitos) |
 | sex 06/11 | **ED9: código congelado · tag `v1.0`**; ED11 avaliação final | | | |
 | sáb 07/11 | ED10 teste do zero | MA6 PDF (rascunho) | MG7 vídeo final na `v1.0` | NA5 ética |
@@ -277,11 +278,11 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | ED5 | 27/10 | ✅ PR #6 | `avaliacao/avaliar.py` (C4) | `avaliacao/`, `tests/` | — | `python -m avaliacao.avaliar` grava o C4 | `eduardo-ia-testes` |
 | ED6 | 27/10 | ✅ PR #6 | teste ponta a ponta (pula sem `data/`) | `tests/test_ponta_a_ponta.py` | — | pula no CI; roda local com dados reais | `eduardo-ia-testes` |
 | ED7 | qui 29/10 | ✅ PR #20 | `python -m avaliacao.avaliar --com-ia` nos 10 casos (avisar o grupo) | `avaliacao/resultados.csv` | Manual | 10 linhas; custo anotado (feito: 10 linhas, 0 erros, 0 removidos, US$ 0,0118) | `eduardo-avaliacao-ia` |
-| ED8 | qua 04/11 | — | justificativa técnica para o PDF (inclui RAG × fine-tuning e por que os dados da CVM são a base de conhecimento da IA) + README "Como usamos IA para programar", ligado aos arquivos de prompts do vibecoding (REQUISITOS R14) | `docs/justificativa.md`, `README.md` | Manual (você escreve; a IA confere com arquivo e linha) | o Marcos lê e entende | PR |
+| ED8 | qua 04/11 | ✅ PR #31 (02/11; escrita pelo Claude Code a pedido do Eduardo; falta o Marcos ler) | justificativa técnica para o PDF (inclui RAG × fine-tuning e por que os dados da CVM são a base de conhecimento da IA) + README "Como usamos IA para programar", ligado aos arquivos de prompts do vibecoding (REQUISITOS R14) | `docs/justificativa.md`, `README.md` | Manual (você escreve; a IA confere com arquivo e linha) | o Marcos lê e entende | PR |
 | ED9 | sex 06/11 | — | congelar | só bugs | Plan | CI verde + ponta a ponta verde | **tag `v1.0`** |
 | ED10 | sáb 07/11 | — | teste do zero em outra máquina, só com o README | consertos | Manual | rodou sem ajuda, ou cada falha virou PR | `v1.0.1` se precisar |
 | ED11 | sex 06/11 | — | avaliação final na `v1.0` (só se a IA mudou depois do ED7) + ensaio de defesa | `resultados.csv` | Plan | 10 perguntas da banca respondidas sem consulta | PR |
-| ED12 | sáb 31/10 | 🟡 PR #30 aberto (seção 0) | travas do Claude Code (R14 e guia §2, agentic coding): `.claude/settings.json`, `.claude/hooks/guarda.py`, subagent `revisor`, import do `requisitos_projeto.MD` | `.claude/`, `CLAUDE.md`, `AGENTS.md`, `README.md`, `aprender/claude-code.md`, `tests/test_guarda.py` | Plan | testes verdes; o hook bloqueia de verdade numa sessão | `eduardo-claude-config` |
+| ED12 | sáb 31/10 | ✅ PR #30 (na `main` em 02/11) | travas do Claude Code (R14 e guia §2, agentic coding): `.claude/settings.json`, `.claude/hooks/guarda.py`, subagent `revisor`, import do `requisitos_projeto.MD` | `.claude/`, `CLAUDE.md`, `AGENTS.md`, `README.md`, `aprender/claude-code.md`, `tests/test_guarda.py` | Plan | testes verdes; o hook bloqueia de verdade numa sessão | `eduardo-claude-config` |
 
 ### Marcos (Claude Code)
 

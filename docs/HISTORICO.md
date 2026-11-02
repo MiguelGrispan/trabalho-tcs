@@ -64,6 +64,11 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   que o conserto tinha aberto furos novos; na 3ª, levou a uma conferência do commit pelo próprio Git (`.githooks/pre-commit`),
   que vale também fora do Claude Code. Tudo corrigido no mesmo PR, com os casos dele virando testes.
 
+### Semana 3 (02 a 08/11): fechar o código e escrever
+- **02/11** · O #30 (travas) entra na `main`. **ED8** (PR #31): a justificativa técnica (`docs/justificativa.md`) explica por que o
+  projeto não usa RAG vetorial nem fine-tuning: a base de conhecimento da IA é a tabela da CVM, buscada pela chave da empresa, e o
+  validador resolve o risco principal (número errado). O README ganha "Como usamos IA para programar".
+
 ## Decisões (e por quê)
 
 | data | decisão | por quê |
@@ -87,6 +92,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 31/10 | Terraform em `infra/` com o provider Docker (local, sem nuvem); o volume do banco fica fora do Terraform; a chave chega pelo `.env` montado, não por variável | o R aceita "localmente"; o `destroy` não pode apagar o banco carregado; variável do Terraform fica em texto puro no `terraform.tfstate` |
 | 31/10 | regra que custa caro quebrar e que uma máquina confere vira trava (permissão, hook ou CI), não só texto no `CLAUDE.md`; o resto continua instrução | texto o modelo tenta seguir e esquece em conversa longa; trava acontece sempre. A regra de ouro já era assim (validador + testes + CI) |
 | 31/10 | o hook não tenta entender o shell: procura o perigo em qualquer ponto do comando e, na dúvida, bloqueia; mensagem que cita o `.env` vai por arquivo (`-F`, `--body-file`) | separar "texto" de "comando" por regex abriu furos duas vezes (achados do `revisor`); um pouco de atrito com uma saída clara é melhor que um buraco |
+| 02/11 | sem RAG vetorial, sem fine-tuning, sem memória e sem agente no LangChain: uma chain fixa (prompt → Gemini com saída estruturada) e recuperação pela chave da empresa | os dados são números em tabela (busca por chave é exata; por semelhança, pode trazer a empresa errada); faltam exemplos para fine-tuning, e ele não impediria número errado; cada raio-x é independente e o caminho é sempre o mesmo |
 
 **Já cortado do escopo:** verificação com yfinance, receita em 3 anos, filtro de setor, RAG, nome dos grupos pelo LLM,
 exportar o raio-x, 20 casos (ficaram 10). A lista e a ordem dos próximos cortes estão no PLANO, seção 7.
