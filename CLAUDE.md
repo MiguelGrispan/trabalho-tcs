@@ -20,7 +20,7 @@ arquivo, o PLANO e o REQUISITOS. Quando os dois diferem, vale o mais exigente: o
 - Nunca diga que algo exigido nesses arquivos é opcional, extra, "já coberto por outra coisa" ou que pode ser cortado.
   Toda afirmação sobre o que o professor exige vem com o arquivo e o item (ex.: "`requisitos_projeto.MD`, Aplicação: Terraform").
 - Se uma nota (PLANO, REQUISITOS, guias de `aprender/`) contradiz os arquivos do professor, a nota está errada: avise a pessoa e corrija a nota.
-- Se o arquivo do professor não é claro (ex.: se o Streamlit conta como "Backend e Frontend"), diga que não sabe e anote a pergunta
+- Se o arquivo do professor não é claro (ex.: se a tabela de indicadores conta como "base de dados de conhecimento"), diga que não sabe e anote a pergunta
   em `docs/REQUISITOS.md` para o Eduardo levar ao professor. Não decida sozinho.
 - Cortar escopo (PLANO, seção 7) só vale para o que **não** está nos arquivos do professor.
 
@@ -59,10 +59,13 @@ O status de cada item, com a prova, fica no `docs/REQUISITOS.md`.
 | Boas práticas e agentic coding | G §2 | `tests/`, `contratos.md`, CI, pull requests, travas do Claude Code (`.claude/settings.json`, `.claude/hooks/guarda.py`) | todos |
 | Governança e ética (viabilidade, limites, viés, confiabilidade, uso responsável) | G §2 | validador, texto de ética no PDF | Náthally, todos |
 
-**Regras do professor ditas em aula** (valem como os arquivos; ficam em `docs/REQUISITOS.md`, seção "Regras do professor"):
+**Regras do professor ditas em aula ou ao Eduardo** (valem como os arquivos; ficam em `docs/REQUISITOS.md`, seção "Regras do professor"):
 - **O banco é PostgreSQL. SQLite não vale** (29/10). O `requisitos_projeto.MD` diz "banco de dados à sua escolha", mas em aula o
   professor fixou o PostgreSQL: vale o PostgreSQL. Nada novo com `sqlite3`; desde a MA2 (PRs #21 e #22) a `main` usa só o PostgreSQL.
   O endereço do banco (`DATABASE_URL`) tem senha: fica no `.env`, como a chave do Gemini.
+- **O Streamlit vale como backend e frontend, em 2 contêineres** (resposta à pergunta 1, registrada em 02/11): um com a tela e a
+  aplicação (Streamlit + `raiox/`) e outro com o PostgreSQL. Leitura do grupo: não precisa de API separada. O compose e o Terraform já sobem os 2; a tela
+  precisa usar o banco de verdade (MG4).
 
 **Entregáveis (48 h antes da banca; G §6 e R "Composição do projeto"):**
 (1) repositório Git organizado, com README em markdown sobre o tema, o objetivo e as tecnologias, com a arquitetura, os pré-requisitos

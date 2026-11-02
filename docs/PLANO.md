@@ -20,10 +20,16 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em seg 02/11 (feriado), 10h40.** Na `main`: PRs #1 a #16 e #19 a #30 (o #29 é a MG3, Terraform; o #30, a ED12, travas do
-Claude Code, entrou hoje às 10h27 com o CI verde). O #31 (ED8, justificativa técnica) espera o CI. **Desde sáb 31/10 ninguém mais
+**Em seg 02/11 (feriado), 10h45.** Na `main`: PRs #1 a #16 e #19 a #31 (o #29 é a MG3, Terraform; o #30, a ED12, travas do
+Claude Code, e o #31, a ED8, justificativa técnica, entraram hoje com o CI verde). **Desde sáb 31/10 ninguém mais
 subiu nada** (`git for-each-ref --sort=-committerdate refs/remotes`): a MA3 e a MA4 (Marcos) e a MG4 (Miguel) ainda não têm branch,
 e a demo de ter 03/11 depende da MG4.
+
+**Resposta do professor à pergunta 1 (registrada em 02/11): o Streamlit vale como a aplicação**, desde que rode em 2 contêineres,
+um com a tela e a aplicação e outro com o banco (`docs/REQUISITOS.md`, "Regras do professor"). Dedução do grupo: "a aplicação" é o
+código de `raiox/`, e não precisa de API separada. O `docker-compose.yml` (`tela` e `banco`) e o Terraform (`raiox-tela` e `raiox-banco`) já sobem os 2. **Falta a
+aplicação usar o contêiner do banco:** a busca e o registro da consulta da tela ainda usam `falsos/` (`USAR_DADOS_FALSOS = True`, `app/streamlit_app.py:26`), e os números do raio-x vêm do `data/indicadores.csv`: nenhum caminho da tela usa o PostgreSQL.
+Por isso, a **MG4 vira o item mais crítico** do R13 (`requisitos_projeto.MD`, Aplicação: "Backend e Frontend" e "Banco de dados").
 
 **PR #30 (Eduardo, ED12): as travas estão na `main`** (`requisitos_projeto.MD`, Aplicação: "Arquivos utilizados de prompts para o
 vibecoding"; guia §2: "agentic coding"). São o `.claude/settings.json` (do grupo), os 3 hooks do `.claude/hooks/guarda.py` e a
@@ -170,8 +176,8 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
 - **Eduardo, em ordem** (o Claude Code faz o Git):
   1. hoje: ensinar o Claude Code ao Miguel (travas no #30 e a nota explicando; falta conversar com ele); mandar ao grupo a mensagem geral (fluxo `/inicio-de-sessao` e `/fim-de-sessao`,
      regra do PostgreSQL, ajustes do Docker, resultado da ED7). Em 30/10, só a mensagem ao Marcos sobre o #22 está confirmada;
-  2. perguntar ao professor a data da banca, as 3 perguntas do REQUISITOS ("Perguntas para o professor": backend e frontend,
-     arquivos de prompts, base de conhecimento) e se há outras regras além dos arquivos dele (anotar no REQUISITOS);
+  2. perguntar ao professor a data da banca, as 2 perguntas que sobraram no REQUISITOS ("Perguntas para o professor": arquivos de
+     prompts e base de conhecimento; a de backend e frontend foi respondida) e se há outras regras além dos arquivos dele (anotar no REQUISITOS);
   3. ✅ ED8 (PR #31, 02/11): falta o Marcos ler a `docs/justificativa.md` (é o "pronto quando");
   4. ter 03/11: demo ponta a ponta com `docker compose` (tela + PostgreSQL + `data/` real) e tag `v0.1-demo`;
   5. no meio disso: `/explicar` nos pontos da seção 8.
@@ -188,7 +194,7 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
 - data e horário da banca (Eduardo pergunta ao professor);
 - `scripts/dados.py` ou `raiox/dados.py`: ficar com um só (os dois existem; Marcos);
 - `verificar_automatico.py`, `yfinance` e `graficos.py`, cortados na seção 7 e de volta na `main` pelo #21 (Marcos e Eduardo);
-- as 3 perguntas para o professor (REQUISITOS): backend e frontend, arquivos de prompts do vibecoding, base de conhecimento (Eduardo pergunta);
+- as 2 perguntas que sobraram para o professor (REQUISITOS): arquivos de prompts do vibecoding e base de conhecimento (Eduardo pergunta);
 - apagar `tratamento_dados` e `feat/metricas` (Marcos e Náthally);
 - corte de receita mínima de R$ 10 mi (Marcos, MA3; números do `avaliar_corte_receita.py` acima);
 - as 3 notas do código (`NOTAS_DO_CODIGO`, em `raiox/ia.py`) vão para a v3 das regras? (Náthally).
@@ -199,7 +205,7 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
 | parte | feito | falta |
 |---|---|---|
 | núcleo do produto: dados, ML, IA, validador, avaliação | ~88% | MA3 (Camil, Magalu, RD Saúde); `cd_cvm` int e só ativas no C1; tabela `indicadores` |
-| tela e infraestrutura | ~60% (Claude, 31/10, depois da MG3) | MG4 (a tela usar o PostgreSQL, o aviso, o modo sem IA automático); MG5 (diagrama e README); MG6 e MG7 (vídeo); resposta do professor sobre backend e frontend |
+| tela e infraestrutura | ~60% (Claude, 31/10, depois da MG3) | MG4 (a tela usar o PostgreSQL, o aviso, o modo sem IA automático); MG5 (diagrama e README); MG6 e MG7 (vídeo) |
 | entregáveis: BPMN, EDA, PDF, deck, vídeo, ensaios | ~10% | quase tudo, mas não depende de código novo |
 | **total** | **~53%** (Claude, 31/10) | com 11 de 26 dias usados (~42%): o núcleo está adiantado. Em 30/10 caiu um pouco porque o `requisitos_projeto.MD` (29/10) acrescentou itens: Terraform obrigatório, banco usado pela tela, documento das etapas, prompts do vibecoding |
 
@@ -388,7 +394,7 @@ Para subir um arquivo:
 | R10 Governança e ética | NA5, ED8, MG4 |
 | R11 ROI | NA1, NA3 |
 | R12 Métricas | NA2, ED5, ED7, NA4, ED11 |
-| R13 Backend, frontend e banco na aplicação | MG4 (+ pergunta ao professor, Eduardo) |
+| R13 Backend, frontend e banco na aplicação | MG4 (pergunta ao professor respondida em 02/11: Streamlit vale, em 2 contêineres) |
 | R14 Prompts do vibecoding | ED8 |
 | D1 Repositório | ED0, MA1, NA1, ED9 |
 | D1b README | MG5, ED8, ED10 |
