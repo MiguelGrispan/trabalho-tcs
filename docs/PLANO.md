@@ -20,7 +20,18 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em ter 03/11, ~9h30.** Na `main`: PRs #1 a #16 e #19 a #36, mais o PR desta nota (`eduardo-demo`, só documentos).
+**Em ter 03/11, ~11h.** Na `main`: PRs #1 a #16 e #19 a #37, mais o PR desta nota (`eduardo-etica`, só documentos).
+
+**Sessão de 03/11, ~11h (Eduardo, sem código do PLANO; apoio à NA5 e à MG4):**
+- **Gemini fora do ar, conferido (verifiquei):** `GOOGLE_API_KEY=chave-falsa-teste RAIOX_IA_REAL=1 docker compose up -d --build`, WEG pelo
+  navegador: a tela monta o texto sem IA, mostra o aviso e grava a consulta com custo 0 (linha 5 da `consultas`). Nenhum crédito gasto.
+  Dois problemas de aparência viraram issues do Miguel: **#38** (o aviso mostra o JSON inteiro do erro do Google) e **#39** (o topo diz
+  "Texto escrito pelo Gemini" quando o texto saiu sem IA). Sessão nova **MG4b** (seção 3), qua 04/11.
+- **`docs/etica.md`:** base técnica da ética (`guia_projeto_final.pdf` §2, §5 e §6): alucinação que o validador pega e a que não pega,
+  viés do K-means, confiabilidade (7 de 10 com o RI), uso responsável. Escrita pelo Claude Code a pedido do Eduardo, com arquivo e linha;
+  **a dona do texto final é a Náthally (NA5)**, que completa a viabilidade (ROI).
+- `docs/justificativa.md`: 2 frases velhas corrigidas (a tela usa o banco desde a MG4; a troca automática para o modo sem IA existe).
+- Testes: 232 passed, nenhum pulado (local, com o PostgreSQL ligado).
 **Tag `v0.1-demo`** no commit `9689db9` (merge do #36): `git rev-parse --short v0.1-demo^{}` → `9689db9`. Em 02/11 entraram o #30
 (travas), o #31 (justificativa), o #32 e o #33 (notas) e o #36 (MG4); o #34 trocou o guia do professor e o #35 o desfez (o guia fica
 como o professor mandou). A MA3 e a MA4 (Marcos) ainda não têm branch (`gh pr list` e `git branch -r`, 03/11).
@@ -168,7 +179,8 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
   comparada com a `main` em 02/11: o Dockerfile e o Terraform dela foram substituídos pela MG2 e pela MG3; só não vieram 5 linhas de
   proteção do `.gitignore` (`crash.log`, `*.tfplan`, `*.tfvars.json`, `.aws/`, `.ssh/`), que hoje não fazem falta. O Miguel a
   apagou (02/11; a do GitHub pelo site, porque a trava barra `git push --delete`): `git ls-remote --heads origin` não a mostra mais.
-- **Tela (Miguel, MG4): feita no PR #36** (acima).
+- **Tela (Miguel, MG4): feita no PR #36** (acima). Em 03/11 o Eduardo testou o Gemini fora do ar (chave inválida, WEG): a tela
+  cai no modo sem IA e grava a consulta com custo 0. Sobraram 2 problemas de aparência, issues **#38** e **#39**, para o Miguel (MG4b, qua 04/11).
 - **Produto (Náthally):** regras v2 (PR #11) e `cd_cvm` dos 10 casos (PR #10) na `main`. Ela ainda confere os 10 códigos.
 - **GitHub (Miguel, MG1): feito.** Conferido em 30/10, 11h35, pela API (`gh api repos/MiguelGrispan/trabalho-tcs/branches/main/protection`
   e `gh api repos/MiguelGrispan/trabalho-tcs`): a `main` exige PR (0 aprovações) e o check `testes`, inclusive para o admin
@@ -187,11 +199,11 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
   `tratamento_dados` pode ser apagada.
 - **Miguel:** avisar o grupo da MG4 (mexeu em `tests/`, `.env.example` e `aprender/`, pastas comuns) e mandar o print da tela
   rodando no Docker (MG1); conferir o `GOOGLE_API_KEY` no `.env`, se a demo for com IA (em 30/10 chegou vazio no
-  `docker compose config`; ninguém abriu o arquivo; pelo Terraform, a IA funcionou em 31/10); MG5 (diagrama e README) na qua 04/11.
+  `docker compose config`; ninguém abriu o arquivo; pelo Terraform, a IA funcionou em 31/10); MG4b (issues #38 e #39) e MG5 (diagrama e README) na qua 04/11.
 - **Náthally** (desde 02/11, as tarefas dela separam obrigatório de sugestão: seção 3). **Obrigatório:**
   1. até qui 05/11, o ROI mínimo (NA3);
   2. o slide de métricas (NA4);
-  3. a ética e o deck (NA5 e NA6).
+  3. a ética e o deck (NA5 e NA6). A base técnica da ética está em `docs/etica.md` (03/11): ela reescreve e completa a seção 6.
 
   **Sugestões, se der tempo:**
   - subir o `revisao_manual.md` (na `feat/metricas`) numa branch nova, em `avaliacao/`: ajuda a MA3 do Marcos;
@@ -287,7 +299,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | dom 01/11 | revisões | MA4 EDA | ~~prazo da MG3~~ (entrou no sáb); MG4 | NA3 |
 | seg 02/11 (feriado) | ✅ ED12 na `main` (#30); ✅ ED8 adiantada (#31) | | ✅ MG4 adiantada (#36) | |
 | ter 03/11 | ✅ **demo ponta a ponta · tag `v0.1-demo`** (compose e Terraform no Mac) | MA4 | ~~MG4~~ (feita em 02/11) | NA3 ROI mínimo |
-| qua 04/11 | ✅ ED8 (feita em 02/11) | MA5 BPMN | MG5 arquitetura + README | NA4 slide de métricas |
+| qua 04/11 | ✅ ED8 (feita em 02/11) | MA5 BPMN | **MG4b issues #38 e #39** (~30 min); MG5 arquitetura + README | NA4 slide de métricas |
 | qui 05/11 | só bugs | MA5 | MG6 vídeo v0 | NA3 (prazo do ROI mínimo) |
 | sex 06/11 | **ED9: código congelado · tag `v1.0`**; ED11 avaliação final | | | |
 | sáb 07/11 | ED10 teste do zero | MA6 PDF (rascunho) | MG7 vídeo final na `v1.0` | NA5 ética |
@@ -334,7 +346,8 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | MG1 | qua 28/10 | ✅ conferido em 30/10: PR e check `testes` obrigatórios, só merge commit, apagar branch após o merge; tela rodando no Docker (o print vai para o grupo) | configurar o GitHub (seção 2, "Proteção da `main`"); rodar a tela local | configurações | só leitura | as 3 configurações feitas; print da tela no grupo | — |
 | MG2 | qui 29–sex 30/10 | ✅ PR #24 (30/10): os 2 contêineres `healthy`, health `ok`, `carregar_dfp.py` no banco do contêiner, 87 passed no contêiner | `Dockerfile` + `.dockerignore` + `docker-compose.yml` (tela + PostgreSQL com volume do banco; `data/` como volume; chave e `DATABASE_URL` por variável) | `Dockerfile`, `.dockerignore`, `docker-compose.yml` | Plan | `docker compose up` sobe os 2; `curl localhost:8501/_stcore/health` → `ok`; `scripts/carregar_dfp.py` grava no PostgreSQL do contêiner | `miguel-docker` → PR (Eduardo) |
 | MG3 | sáb 31/10–dom 01/11 | ✅ PR #29 (31/10): `apply` sobe os 2 `healthy`; `destroy` + `apply` mantém o banco e a `data/`; 87 passed no contêiner; 2º `plan` sem mudanças. IA pelo Terraform vista pelo Miguel. Portas padrão e Mac conferidos pelo Eduardo em 03/11 (seção 0) | **Terraform na `main`, obrigatório** (`requisitos_projeto.MD`, Aplicação: "Infraestrutura automatizada com Terraform"): provider docker com os 2 contêineres (tela + PostgreSQL), a partir do `terraform/` da branch `docs-docker-e-terraform`. Prazo: dom 01/11; reserva: seg 02/11 com o Eduardo. Não pode ser cortado | `infra/` | Plan | `terraform apply` sobe a tela e o banco; `destroy` + `apply` mantém a `data/` e o banco | PR |
-| MG4 | dom 01–ter 03/11 | ✅ PR #36 (02/11): WEG, Embraer e Ambev geram o raio-x no contêiner, e as 3 consultas estão na `consultas`; 8 testes em `tests/test_tela.py`. Gemini de verdade conferido em 03/11 (WEG). Não conferida: a volta para o modo sem IA com o Gemini fora do ar (seção 0) | tela com dados reais e **com o banco** (R Aplicação: banco de dados): `RAIOX_DADOS` (`falsos`/`real`) no lugar do `USAR_DADOS_FALSOS`, e com `real` a busca e o `registrar_consulta` usam o PostgreSQL (`raiox/dados.py`); volta sozinha para o modo sem IA, com aviso; `registrar_consulta` dentro do `try`; `tests/test_tela.py` | `app/`, `.env.example`, `tests/` | Plan | 3 empresas reais geram raio-x no contêiner, e cada consulta aparece na tabela `consultas` | PR (Eduardo) |
+| MG4 | dom 01–ter 03/11 | ✅ PR #36 (02/11): WEG, Embraer e Ambev geram o raio-x no contêiner, e as 3 consultas estão na `consultas`; 8 testes em `tests/test_tela.py`. Gemini de verdade conferido em 03/11 (WEG). Volta para o modo sem IA com o Gemini fora do ar conferida em 03/11 (chave inválida, WEG): funciona; os 2 problemas de aparência viraram a MG4b | tela com dados reais e **com o banco** (R Aplicação: banco de dados): `RAIOX_DADOS` (`falsos`/`real`) no lugar do `USAR_DADOS_FALSOS`, e com `real` a busca e o `registrar_consulta` usam o PostgreSQL (`raiox/dados.py`); volta sozinha para o modo sem IA, com aviso; `registrar_consulta` dentro do `try`; `tests/test_tela.py` | `app/`, `.env.example`, `tests/` | Plan | 3 empresas reais geram raio-x no contêiner, e cada consulta aparece na tabela `consultas` | PR (Eduardo) |
+| MG4b | qua 04/11 | — | consertar as issues **#38** (o aviso de falha da IA mostra o JSON inteiro do Google) e **#39** (o topo diz "Texto escrito pelo Gemini" quando o texto foi montado sem IA), achadas pelo Eduardo em 03/11. Guia §5: interface amigável (20%) e transparência (15%) | `app/streamlit_app.py`, `tests/test_tela.py` | Manual | com `GOOGLE_API_KEY=chave-falsa-teste RAIOX_IA_REAL=1 docker compose up -d --build`, a WEG mostra um aviso curto e o topo não diz "escrito pelo Gemini"; teste novo para cada issue; antes do vídeo v0 (MG6) e do congelamento (sex 06/11) | PR que fecha #38 e #39 |
 | MG5 | qua 04/11 | — | diagrama de arquitetura + README (tema, objetivo e tecnologias já estão; pré-requisitos com Python 3.14; rodar local, Docker e Terraform) | `docs/arquitetura.png`, `README.md` | Manual | um colega entende o fluxo lendo o README; o README cobre o que o R pede em "Documentação" | PR |
 | MG6 | qui 05/11 | — | roteiro de 6 min da demo + vídeo v0 | — | — | vídeo salvo em 2 lugares | — |
 | MG7 | sáb 07/11 | — | vídeo final na `v1.0` | — | — | vídeo salvo em 2 lugares | — |
