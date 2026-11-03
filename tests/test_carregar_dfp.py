@@ -137,6 +137,8 @@ class PipelineCompletoTests(TesteComBanco):
             "dfp_cia_aberta_2023.zip": embrulhar_varios({
                 "dfp_cia_aberta_DRE_con_2023.csv": dre_con_2023,
             }),
+            # O arquivo a mais (último de ANOS + 1), para quem fecha fora de dezembro
+            "dfp_cia_aberta_2026.zip": embrulhar_varios({}),
         }
 
     def tearDown(self):
@@ -181,6 +183,29 @@ class PipelineCompletoTests(TesteComBanco):
         so_individual = contas.loc[contas["cd_cvm"].eq("3")]
         self.assertEqual(set(so_individual["origem"]), {"ind"})
         self.assertEqual(set(so_individual["setor"]), {"Não Informado"})
+
+    def test_main_usa_o_exercicio_de_quem_fecha_fora_de_dezembro(self):
+        """A Usina fecha a safra em março: o 2025 dela mora no arquivo de 2026. 🌾"""
+        # Caso real (Camil, issue #17): o exercício de mar/2025 a fev/2026
+        # só existe no arquivo da CVM de 2026
+        venda = "Receita de Venda de Bens e/ou Serviços"
+        dre_con_2026 = pd.DataFrame([
+            linha_dfp("000004", "Usina", "2026-03-31", "3.01", venda, "70"),
+            linha_dfp("000005", "Adiantada", "2026-09-30", "3.01", venda, "40"),  # já é o 2026 dela
+        ], columns=COLUNAS_DFP)
+        self.downloads["dfp_cia_aberta_2026.zip"] = embrulhar_varios({
+            "dfp_cia_aberta_DRE_con_2026.csv": dre_con_2026,
+        })
+
+        contas = self.rodar_main()
+
+        usina = contas.loc[contas["cd_cvm"].eq("4")]
+        self.assertEqual(usina["ano"].tolist(), [2025])
+        self.assertEqual(usina["valor"].tolist(), [70000])
+        # O exercício de 2026 fica de fora; se ficasse, seria o "último ano"
+        # da regra 6 e só a Adiantada sobraria
+        self.assertNotIn("5", set(contas["cd_cvm"]))
+        self.assertEqual(set(contas["cd_cvm"]), {"1", "3", "4"})
 
     def test_main_grava_catalogo_com_chave_unica(self):
         """O banco não aceita gêmeos: o índice único barra na entrada. 🚪"""

@@ -39,7 +39,20 @@ def transform_escala(value):
     raise ValueError(f"Escala monetária não reconhecida: {value}")
 
 
-def limpar_demo(df, demo, origem, ano):
+def ano_do_exercicio(fim_exercicio):
+    """Ano do exercício: o ano em que cai a maior parte dos meses dele.
+
+    A CVM guarda cada DFP no arquivo do ano em que o exercício termina,
+    mas nem toda empresa fecha em dezembro. A Camil fecha em fevereiro:
+    o "2025" dela vai de mar/2025 a fev/2026 (10 meses em 2025) e está no
+    arquivo de 2026 (issue #17). Fim de julho a dezembro conta no próprio
+    ano; fim de janeiro a junho, no ano anterior.
+    """
+    fim = pd.to_datetime(fim_exercicio)
+    return fim.dt.year.where(fim.dt.month >= 7, fim.dt.year - 1)
+
+
+def limpar_demo(df, demo, origem):
     """Limpa uma demonstração lida do arquivo anual da CVM (regras 2 a 4)."""
     # Regra 2: fica só o exercício do ano. Sem isso cada conta aparece
     # duas vezes (a CVM também manda o "PENÚLTIMO", do ano anterior)
@@ -74,8 +87,9 @@ def limpar_demo(df, demo, origem, ano):
     df["cd_conta"] = df["cd_conta"].str.strip()
     df["ds_conta"] = df["ds_conta"].str.strip()
 
-    # Regra 5 (parte 1): anota de onde veio cada linha
-    df["ano"] = ano
+    # Regra 5 (parte 1): anota de onde veio cada linha. O ano é o do
+    # exercício, e não o do arquivo da CVM (ano_do_exercicio, acima)
+    df["ano"] = ano_do_exercicio(df["DT_FIM_EXERC"])
     df["demonstracao"] = demo
     df["origem"] = origem
 

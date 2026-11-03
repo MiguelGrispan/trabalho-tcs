@@ -3,6 +3,7 @@ import unittest
 import pandas as pd
 
 from raiox.limpeza import (
+    ano_do_exercicio,
     codigo_cvm,
     corrigir_escala,
     encontrar_conflitos,
@@ -31,7 +32,7 @@ class LimpezaTests(unittest.TestCase):
         ])
 
         with self.assertRaisesRegex(ValueError, "Escala monetária"):
-            limpar_demo(dados, "DRE", "con", 2025)
+            limpar_demo(dados, "DRE", "con")
 
     def test_limpar_demo_mantem_valores_em_unidade(self):
         """Quem já informa em reais não leva multiplicação de brinde. 💵"""
@@ -42,7 +43,7 @@ class LimpezaTests(unittest.TestCase):
             "DT_FIM_EXERC", "CD_CONTA", "DS_CONTA", "VL_CONTA",
         ])
 
-        resultado = limpar_demo(dados, "DRE", "con", 2025)
+        resultado = limpar_demo(dados, "DRE", "con")
 
         self.assertAlmostEqual(resultado.iloc[0]["valor"], 1234.5)
 
@@ -204,6 +205,31 @@ class LimpezaTests(unittest.TestCase):
         self.assertEqual(resultado["cd_cvm"].tolist(), ["10456", "99991"])  # zeros à esquerda: demitidos
         self.assertEqual(resultado.iloc[0]["situacao"], "ATIVO")
         self.assertEqual(resultado.iloc[1]["setor"], "Não Informado")  # ninguém sabe mesmo
+
+    def test_ano_do_exercicio_e_o_ano_com_mais_meses(self):
+        """Ano fiscal não é ano de calendário: conta onde caem mais meses. 📅"""
+        fins = pd.Series([
+            "2025-12-31",  # janeiro a dezembro: o de sempre
+            "2026-02-28",  # Camil: mar/2025 a fev/2026, 10 meses em 2025 (issue #17)
+            "2026-03-31",  # usinas: abr/2025 a mar/2026
+            "2026-06-30",  # agro: jul/2025 a jun/2026, empate fica com o início
+            "2025-09-30",  # exercício de 9 meses, jan a set/2025
+        ])
+
+        self.assertEqual(ano_do_exercicio(fins).tolist(), [2025, 2025, 2025, 2025, 2025])
+
+    def test_limpar_demo_usa_o_ano_do_exercicio_e_nao_o_do_arquivo(self):
+        """A DFP da Camil de fev/2026 está no arquivo de 2026, mas é o 2025 dela. 🧾"""
+        dados = pd.DataFrame([
+            ["24228", "CAMIL ALIMENTOS S.A.", 1, "MIL", "ÚLTIMO", "2026-02-28", "3.01", "Receita", 11115003.0],
+        ], columns=[
+            "CD_CVM", "DENOM_CIA", "VERSAO", "ESCALA_MOEDA", "ORDEM_EXERC",
+            "DT_FIM_EXERC", "CD_CONTA", "DS_CONTA", "VL_CONTA",
+        ])
+
+        resultado = limpar_demo(dados, "DRE", "con")
+
+        self.assertEqual(resultado.iloc[0]["ano"], 2025)
 
 
 if __name__ == "__main__":
