@@ -58,12 +58,12 @@ print('colunas lidas:', len(pd.read_csv('/tmp/x.csv').columns))"   # mostra: col
 as duas linhas `to_csv(... sep=";", decimal=",")` do Marcos (e a `read_csv` correspondente no `indicadores.py`).
 Arquivo para abrir no Excel, se precisar, é um export separado.
 
-### 2) `cd_cvm` como texto 🟡 o `indicadores.csv` já sai com int (30/10); o `raiox/dados.py` ainda devolve texto (Marcos)
+### 2) `cd_cvm` como texto ✅ o `indicadores.csv` sai com int (30/10) e a busca também (PR #46, 03/11)
 O contrato diz que `cd_cvm` é número inteiro. O `carregar_dfp.py` e o `indicadores.py` leem como texto.
 O `raiox/dados.py` não converte mais com `str()` (desde o #4), mas devolve o que vem do banco. Já está anotado no `contratos.md` (C1 e C2).
 **Prova:** `grep -n '"cd_cvm": str' scripts/indicadores.py`.
 
-### 3) A busca de empresas pode oferecer empresa sem raio-x ⬜ (Marcos)
+### 3) A busca de empresas pode oferecer empresa sem raio-x ✅ resolvido no PR #46 (03/11): tabela `indicadores` e `JOIN`
 `buscar_empresas` procura na tabela `contas` do banco. Se a empresa não estiver no `indicadores.csv`, o vendedor
 escolhe e recebe o erro "Empresa X não está na tabela de indicadores". O contrato C1 pede
 "só companhias ativas e com indicadores", e a consulta não filtra nenhum dos dois.

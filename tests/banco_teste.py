@@ -34,7 +34,7 @@ class TesteComBanco(unittest.TestCase):
     def setUp(self):
         self.engine = create_engine(TEST_DATABASE_URL)
         with self.engine.begin() as conn:
-            conn.execute(text("DROP TABLE IF EXISTS contas, empresas, consultas"))
+            conn.execute(text("DROP TABLE IF EXISTS contas, empresas, consultas, indicadores"))
 
         apontar = patch.object(banco, "DATABASE_URL", TEST_DATABASE_URL)
         apontar.start()

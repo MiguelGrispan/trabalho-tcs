@@ -39,7 +39,7 @@ def banco_vazio(dados_reais, monkeypatch):
         pytest.skip(f"PostgreSQL de testes indisponível ({TEST_DATABASE_URL})")
     engine = create_engine(TEST_DATABASE_URL)
     with engine.begin() as conn:
-        conn.execute(text("DROP TABLE IF EXISTS contas, empresas, consultas"))
+        conn.execute(text("DROP TABLE IF EXISTS contas, empresas, consultas, indicadores"))
     monkeypatch.setattr(banco, "DATABASE_URL", TEST_DATABASE_URL)
     yield engine
     engine.dispose()
@@ -136,6 +136,9 @@ def test_tela_busca_no_banco_e_registra_a_consulta(banco_vazio):
                        100.0, 2025, "DRE", "con"]],
                      columns=["cd_cvm", "nome", "setor", "cd_conta", "ds_conta", "valor", "ano", "demonstracao",
                               "origem"]).to_sql("contas", conn, index=False)
+        pd.DataFrame([{"cd_cvm": "90001", "situacao": "ATIVO"}]).to_sql("empresas", conn, index=False)
+        pd.DataFrame([{"cd_cvm": 90001, "nome": "ALFA NORTE S.A.", "setor": "Transporte e logística"}]).to_sql(
+            "indicadores", conn, index=False)
 
     at = gerar(abrir())
     assert not at.exception and not at.error
@@ -145,5 +148,5 @@ def test_tela_busca_no_banco_e_registra_a_consulta(banco_vazio):
         linhas = conn.execute(text("SELECT registro_json FROM consultas")).fetchall()
     assert len(linhas) == 1
     registro = json.loads(linhas[0][0])
-    assert registro["cd_cvm"] == 90001                           # número, como pede o C1 (o banco devolve texto)
+    assert registro["cd_cvm"] == 90001                           # número, como pede o C1
     assert registro["produto"] == "software de gestão de frota"

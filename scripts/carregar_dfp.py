@@ -1,7 +1,8 @@
 """
 Passo 1 do projeto: baixar e limpar os dados da CVM.
 
-Baixa as DFP de 2023 a 2025 e o cadastro de empresas, aplica as regras
+Baixa as DFP dos exercícios de 2023 a 2025 (arquivos da CVM de 2023 a
+2026) e o cadastro de empresas, aplica as regras
 de limpeza de raiox/limpeza.py e salva tudo em data/contas.csv e no
 banco PostgreSQL (endereço em raiox/banco.py).
 """
@@ -33,6 +34,9 @@ from raiox.limpeza import (  # noqa: E402
     resolver_conflitos,
 )
 
+# Exercícios usados (o último é o "ano" do C2). O exercício de 2025 de quem
+# fecha o ano fora de dezembro (ex.: Camil, mar/2025 a fev/2026) está no
+# arquivo da CVM de 2026: por isso se baixa um arquivo a mais
 ANOS = [2023, 2024, 2025]
 DEMOS = ["DRE", "BPA", "BPP"]
 ORIGENS = ["con", "ind"]
@@ -41,9 +45,9 @@ BASE_URL = "https://dados.cvm.gov.br/dados/CIA_ABERTA"
 DATA_DIR = ROOT / "data"
 
 
-def ler_demo(z, demo, origem, ano):
+def ler_demo(z, demo, origem, ano_arquivo):
     """Lê uma demonstração do ZIP anual da CVM e aplica a limpeza."""
-    nome_arquivo = f"dfp_cia_aberta_{demo}_{origem}_{ano}.csv"
+    nome_arquivo = f"dfp_cia_aberta_{demo}_{origem}_{ano_arquivo}.csv"
 
     # Se o arquivo não está no zip, devolve uma tabela vazia
     if nome_arquivo not in z.namelist():
@@ -57,7 +61,7 @@ def ler_demo(z, demo, origem, ano):
         decimal=",",
         dtype={"CD_CVM": str, "CD_CONTA": str, "ESCALA_MOEDA": str},
     )
-    return limpar_demo(df, demo, origem, ano)
+    return limpar_demo(df, demo, origem)
 
 
 def baixar_com_retry(url):
@@ -87,14 +91,25 @@ def main():
 
     # Baixa um zip por ano e lê cada demonstração (DRE, BPA, BPP) con e ind
     partes = []
-    for ano in ANOS:
-        print(f"Baixando dados do ano {ano}...")
-        url = f"{BASE_URL}/DOC/DFP/DADOS/dfp_cia_aberta_{ano}.zip"
-        z = zipfile.ZipFile(io.BytesIO(baixar_com_retry(url)))
+    for ano_arquivo in ANOS + [ANOS[-1] + 1]:
+        print(f"Baixando dados do ano {ano_arquivo}...")
+        url = f"{BASE_URL}/DOC/DFP/DADOS/dfp_cia_aberta_{ano_arquivo}.zip"
+        try:
+            conteudo = baixar_com_retry(url)
+        except requests.exceptions.HTTPError as erro:
+            # O arquivo a mais só aparece quando a 1ª empresa que fecha fora de
+            # dezembro entrega a DFP: sem ele (404), segue só com os outros.
+            # Outro erro (CVM fora do ar) para, senão essas empresas sumiriam
+            nao_existe = erro.response is not None and erro.response.status_code == 404
+            if ano_arquivo in ANOS or not nao_existe:
+                raise
+            print(f"Aviso: a CVM ainda não tem o arquivo de {ano_arquivo}; seguindo sem ele.")
+            continue
+        z = zipfile.ZipFile(io.BytesIO(conteudo))
 
         for demo in DEMOS:
             for origem in ORIGENS:
-                parte = ler_demo(z, demo, origem, ano)
+                parte = ler_demo(z, demo, origem, ano_arquivo)
                 # Arquivo ausente no zip vem vazio e não entra na junção
                 if not parte.empty:
                     partes.append(parte)
@@ -104,6 +119,11 @@ def main():
 
     # Junta todos os pedaços numa tabela só
     contas = pd.concat(partes, ignore_index=True)
+
+    # Fica só com os exercícios de ANOS: o primeiro arquivo traz o exercício
+    # anterior de quem fecha fora de dezembro, e o arquivo a mais pode trazer
+    # um exercício de 2026, que viraria o "último ano" da regra 6
+    contas = contas[contas["ano"].isin(ANOS)]
 
     # Junção com a tabela empresas para trazer o setor
     contas = contas.merge(empresas[["cd_cvm", "setor"]], on="cd_cvm", how="left")

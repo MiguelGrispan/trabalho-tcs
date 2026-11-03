@@ -19,8 +19,6 @@ buscar_empresas(texto: str) -> list[dict]
 registrar_consulta(registro: dict) -> None   # grava uma linha na tabela consultas (PostgreSQL)
 ```
 
-> Pendente: o `raiox/dados.py` de hoje devolve `cd_cvm` como texto (`"99991"`). O contrato pede int.
-
 ## C2 · `data/indicadores.csv` (e tabela `indicadores` no PostgreSQL) · Marcos → Eduardo
 
 Gerado pelo `scripts/indicadores.py` a partir do `data/contas.csv` (`scripts/carregar_dfp.py`).
@@ -29,16 +27,14 @@ Uma linha por empresa. Valores em reais (já convertidos da escala MIL). Margens
 **Formato do arquivo:** CSV padrão, com separador vírgula, ponto decimal, UTF-8 e cabeçalho. É o que `pd.read_csv(caminho)` lê
 sem nenhum parâmetro. Vale também para o `data/contas.csv`, que o `raiox/checagem.py` lê.
 Se alguém precisar abrir no Excel brasileiro (`;` e vírgula decimal), gere um arquivo à parte; o `indicadores.csv` não muda.
-
-> Pendente: a tabela `indicadores` no PostgreSQL ainda não existe; hoje o C2 é só o CSV.
-> O formato padrão e o `cd_cvm` int já valem (PR do Eduardo de 30/10, com testes em `tests/test_dados.py`).
+A tabela `indicadores` do PostgreSQL tem as mesmas linhas e colunas (`publicar()` grava as duas; chave `cd_cvm`).
 
 | coluna | tipo | exemplo |
 |---|---|---|
 | cd_cvm | int | 99991 |
 | nome | texto | TRANSVALE LOGISTICA S.A. |
 | setor | texto | Transporte e logística |
-| ano | int | 2025 |
+| ano | int | 2025 (o do exercício: o ano com mais meses dele; Camil, mar/2025 a fev/2026 = 2025) |
 | receita | float | 2400000000.0 |
 | receita_2a_antes | float ou vazio | 2030000000.0 |
 | cresc_2a | float ou vazio | 0.18 |

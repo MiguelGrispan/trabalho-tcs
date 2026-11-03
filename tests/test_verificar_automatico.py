@@ -74,6 +74,8 @@ class ValidacaoAutomaticaTests(TesteComBanco):
             )
             """
         )
+        # O catálogo pronto tem as tabelas contas e indicadores (catalogo_existe, raiox/banco.py)
+        self.executar("CREATE TABLE indicadores (cd_cvm INTEGER)")
 
     def executar(self, sql, linhas=None):
         self.conn.execute(text(sql), linhas)

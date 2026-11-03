@@ -43,8 +43,8 @@ No Mac do Eduardo, o ambiente é `~/bootcamp`: `source ~/bootcamp/bin/activate`.
 | o que | onde | comando | o que deve aparecer |
 |---|---|---|---|
 | conferir se a CVM está no ar e quantas empresas têm receita | raiz | `python scripts/verificar_dfp.py` | contagens e nomes das contas |
-| baixar e limpar a DFP 2023–2025 ✅ | raiz | `python scripts/carregar_dfp.py` | uns 20 s; "contas.csv salvo com ... linhas" e "Banco de dados PostgreSQL atualizado" |
-| calcular os 6 indicadores ✅ | raiz | `python scripts/indicadores.py` | nada na tela; cria `data/indicadores.csv` (cerca de 595 empresas) |
+| baixar e limpar a DFP dos exercícios 2023–2025 (arquivos de 2023 a 2026) ✅ | raiz | `python scripts/carregar_dfp.py` | de 20 s a 2 min; "contas.csv salvo com ... linhas" e "Banco de dados PostgreSQL atualizado" |
+| calcular os 6 indicadores ✅ | raiz | `python scripts/indicadores.py` (com o PostgreSQL ligado) | nada na tela; cria `data/indicadores.csv` e a tabela `indicadores` no banco (595 empresas) |
 | checar a tabela com os dados falsos (5 erros plantados) ✅ | raiz | `python -m raiox.checagem --teste` | uma lista de alertas e "Salvo em anomalias.csv" |
 | checar a tabela real ✅ | raiz | `python -m raiox.checagem data/indicadores.csv data/contas.csv` | "595 empresas · ... · 0 erros" e "Salvo em anomalias.csv" |
 

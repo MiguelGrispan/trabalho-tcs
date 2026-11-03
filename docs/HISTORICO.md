@@ -82,6 +82,11 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   ela não existia (issue #42); a S2 dele explica 2 das 3 diferenças do "7 de 10"; a #17 (Camil) passa ao Marcos; um bug na tela
   aberta antes da carga da CVM (#43, Eduardo) e a tela aberta para a rede no compose (#44, Miguel). A seção 0 do PLANO cai de
   ~240 para ~90 linhas (a versão longa: `git show 9f85bc9:docs/PLANO.md`). Proposta: o Eduardo monta o PDF e o processo congela até a entrega.
+- **03/11** · **MA3** (PR #46, Marcos): o C1 e o C2 no PostgreSQL (busca só de ativas, `cd_cvm` número, tabela `indicadores`) e 5
+  empresas conferidas no RI (0,00%). **A Camil estava com o exercício anterior** (#17): a CVM arquiva a DFP pelo ano em que o exercício
+  termina, e o "2025" dela (mar/2025 a fev/2026) estava no arquivo de 2026, que não era baixado. Agora a receita (R$ 11,1 bi) e o crescimento
+  (−1,2%) batem com o RI e com a conferência manual da Náthally; mudaram as 9 empresas que fecham fora de dezembro.
+  No Windows, as travas leem o Git em cp1252 e bloqueavam commit e merge (#45, Eduardo).
 
 ## Decisões (e por quê)
 
@@ -112,6 +117,9 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 02/11 | o guia do professor fica como ele mandou, com os exemplos (#34 desfeito pelo #35) | uma versão refeita pelo grupo deixa de ser a fonte da verdade, e tirar a seção 4 renumeraria as seguintes, quebrando 21 citações como "G §6" |
 | 02/11 | tarefas da Náthally: obrigatório é só o que os arquivos do professor pedem (deck, ética e, na apresentação, ROI e métricas); testes com usuários, `revisao.csv` e regras v3 viram sugestão | ela trabalha no ritmo dela e sem IA para código; o grupo concentra o tempo dela no que a banca avalia |
 | 03/11 | erro achado na pasta de outro dono vira **issue no GitHub** para ele e uma sessão dele no PLANO; o ATENÇÃO do revisor é corrigido antes do merge (`/fim-de-sessao`, passo 6; `CLAUDE.md`, regra 1) | recado no chat se perde e ninguém cobra; a issue fica com dono, prova e prazo (primeiras: #38 e #39). No PR #40, o revisor achou uma frase falsa na ética que só foi corrigida porque o ATENÇÃO foi tratado |
+| 03/11 | o "ano" de cada número é o do exercício (o ano com mais meses dele), e não o do arquivo da CVM; baixa-se também o arquivo do ano seguinte (opção 3 da #17) | a Camil fecha em fevereiro e aparecia com o exercício anterior; o rótulo sozinho (opção 2) mudaria o C2 e o C3, e tirar a Camil da demo (opção 1) deixaria 8 empresas erradas sem aviso. Coube em 2 arquivos e 3 testes, sem mudar o formato do C2 |
+| 03/11 | corte de receita mínima de R$ 10 mi no K-means, confirmado pelo Marcos | abaixo dele, 52% das 31 empresas têm margem EBIT acima de 100% ou abaixo de −100%; acima, só 4% das 564 |
+| 03/11 | a conexão com o banco desiste em 5 s | sem limite, o psycopg espera 130 s, e a tela ficava parada antes do aviso de banco desligado (a demo não pode travar) |
 
 **Já cortado do escopo:** verificação com yfinance, receita em 3 anos, filtro de setor, RAG, nome dos grupos pelo LLM,
 exportar o raio-x, 20 casos (ficaram 10). A lista e a ordem dos próximos cortes estão no PLANO, seção 7.
