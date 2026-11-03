@@ -82,6 +82,10 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   ela não existia (issue #42); a S2 dele explica 2 das 3 diferenças do "7 de 10"; a #17 (Camil) passa ao Marcos; um bug na tela
   aberta antes da carga da CVM (#43, Eduardo) e a tela aberta para a rede no compose (#44, Miguel). A seção 0 do PLANO cai de
   ~240 para ~90 linhas (a versão longa: `git show 9f85bc9:docs/PLANO.md`). Proposta: o Eduardo monta o PDF e o processo congela até a entrega.
+- **03/11** · **MG4b** (PR #47, Miguel): a tela para de se contradizer quando a IA falha. O aviso tem uma frase (o erro do Google
+  vai para "Detalhes técnicos" e para o log), e o topo e o rodapé só dizem que a IA escreveu quando o Gemini respondeu (#38, #39).
+  O compose passa a abrir a tela só no próprio computador, como o Terraform (#44). A tela nova da MG4 também foi conferida pelo
+  Terraform, no Linux do Miguel.
 
 ## Decisões (e por quê)
 
@@ -112,6 +116,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 02/11 | o guia do professor fica como ele mandou, com os exemplos (#34 desfeito pelo #35) | uma versão refeita pelo grupo deixa de ser a fonte da verdade, e tirar a seção 4 renumeraria as seguintes, quebrando 21 citações como "G §6" |
 | 02/11 | tarefas da Náthally: obrigatório é só o que os arquivos do professor pedem (deck, ética e, na apresentação, ROI e métricas); testes com usuários, `revisao.csv` e regras v3 viram sugestão | ela trabalha no ritmo dela e sem IA para código; o grupo concentra o tempo dela no que a banca avalia |
 | 03/11 | erro achado na pasta de outro dono vira **issue no GitHub** para ele e uma sessão dele no PLANO; o ATENÇÃO do revisor é corrigido antes do merge (`/fim-de-sessao`, passo 6; `CLAUDE.md`, regra 1) | recado no chat se perde e ninguém cobra; a issue fica com dono, prova e prazo (primeiras: #38 e #39). No PR #40, o revisor achou uma frase falsa na ética que só foi corrigida porque o ATENÇÃO foi tratado |
+| 03/11 | a tela só abre no próprio computador (`127.0.0.1`), no compose como no Terraform; o erro técnico da IA vai para "Detalhes técnicos" e para o log, nunca para o aviso | com a IA ligada, qualquer um no mesmo Wi-Fi (o do SENAI, no dia da banca) abria a tela e gastava crédito; quem precisar abrir de outro aparelho muda a porta de propósito. Um JSON do Google no telão não diz nada ao vendedor, mas quem conserta precisa dele |
 
 **Já cortado do escopo:** verificação com yfinance, receita em 3 anos, filtro de setor, RAG, nome dos grupos pelo LLM,
 exportar o raio-x, 20 casos (ficaram 10). A lista e a ordem dos próximos cortes estão no PLANO, seção 7.
