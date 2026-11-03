@@ -135,7 +135,9 @@ sozinho, nem um comando de terminal (`sed -i`, `>`) de escrever na pasta de outr
 
 - Colar o conteúdo do `.env` ou qualquer chave na conversa.
 - Aceitar `git push --force`, `git rebase` ou commit direto na `main`, mesmo que ele sugira.
-- Aceitar mudança em pasta de outro dono sem combinar (a tabela de donos está no `CLAUDE.md`).
+- Aceitar mudança em pasta de outro dono sem combinar (a tabela de donos está no `CLAUDE.md`). Achou um erro lá? Peça
+  "abra uma issue para o dono e coloque no PLANO": o `/fim-de-sessao` faz (passo 6). Fique de olho nas issues com o seu nome:
+  `gh issue list --assignee @me`, ou a aba "Issues" do repositório no GitHub.
 - Subir algo que você não sabe explicar. Peça "explique o que você mudou e por quê", ou use `/explicar`.
 
 ## Problemas comuns
