@@ -77,7 +77,7 @@ Por isso, nada entra na `main` sem teste, e a IA do produto (o Gemini) nunca esc
 CVM (ZIPs da DFP 2023–2025 + cadastro)
    │  scripts/carregar_dfp.py      limpa contas, prefere consolidado      → data/contas.csv, PostgreSQL (contas, empresas)
    ▼
-scripts/indicadores.py             6 indicadores por empresa (C2)        → data/indicadores.csv
+scripts/indicadores.py             6 indicadores por empresa (C2)        → data/indicadores.csv, PostgreSQL (indicadores)
    │
    ▼
 raiox/checagem.py                  regras de sanidade; IA só aponta suspeitas, pessoa decide

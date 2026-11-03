@@ -7,6 +7,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pandas as pd
+import requests
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 
@@ -146,7 +147,10 @@ class PipelineCompletoTests(TesteComBanco):
 
     def rodar_main(self):
         def baixar_falso(url):
-            return self.downloads[url.rsplit("/", 1)[-1]]
+            nome = url.rsplit("/", 1)[-1]
+            if nome not in self.downloads:
+                raise requests.exceptions.HTTPError(f"404: {nome}")  # como a CVM sem o arquivo
+            return self.downloads[nome]
 
         with (
             patch.object(carregar_dfp, "DATA_DIR", self.data_dir),
@@ -206,6 +210,21 @@ class PipelineCompletoTests(TesteComBanco):
         # da regra 6 e só a Adiantada sobraria
         self.assertNotIn("5", set(contas["cd_cvm"]))
         self.assertEqual(set(contas["cd_cvm"]), {"1", "3", "4"})
+
+    def test_main_segue_sem_o_arquivo_do_ano_seguinte(self):
+        """Janeiro: a CVM ainda não abriu o arquivo do ano novo. Segue a vida com os outros. 🗂"""
+        del self.downloads["dfp_cia_aberta_2026.zip"]
+
+        contas = self.rodar_main()
+
+        self.assertEqual(set(contas["cd_cvm"]), {"1", "3"})
+
+    def test_main_para_se_falta_o_arquivo_de_um_dos_anos(self):
+        """Faltou um dos anos de verdade? Aí para, em vez de seguir com buraco. 🛑"""
+        del self.downloads["dfp_cia_aberta_2023.zip"]
+
+        with self.assertRaises(requests.exceptions.HTTPError):
+            self.rodar_main()
 
     def test_main_grava_catalogo_com_chave_unica(self):
         """O banco não aceita gêmeos: o índice único barra na entrada. 🚪"""

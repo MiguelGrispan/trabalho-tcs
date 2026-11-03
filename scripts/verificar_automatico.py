@@ -155,7 +155,8 @@ def main():
     print("Validação anual: CVM x Yahoo Finance")
     if not catalogo_existe():
         raise FileNotFoundError(
-            "Tabela contas não encontrada no PostgreSQL. Execute scripts/carregar_dfp.py primeiro."
+            "Tabelas contas e indicadores não encontradas no PostgreSQL. "
+            "Execute scripts/carregar_dfp.py e scripts/indicadores.py primeiro."
         )
 
     conn = conectar()

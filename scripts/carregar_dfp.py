@@ -94,7 +94,16 @@ def main():
     for ano_arquivo in ANOS + [ANOS[-1] + 1]:
         print(f"Baixando dados do ano {ano_arquivo}...")
         url = f"{BASE_URL}/DOC/DFP/DADOS/dfp_cia_aberta_{ano_arquivo}.zip"
-        z = zipfile.ZipFile(io.BytesIO(baixar_com_retry(url)))
+        try:
+            conteudo = baixar_com_retry(url)
+        except requests.exceptions.HTTPError:
+            # O arquivo a mais só aparece quando a 1ª empresa que fecha fora de
+            # dezembro entrega a DFP: sem ele, segue só com os outros
+            if ano_arquivo in ANOS:
+                raise
+            print(f"Aviso: a CVM ainda não tem o arquivo de {ano_arquivo}; seguindo sem ele.")
+            continue
+        z = zipfile.ZipFile(io.BytesIO(conteudo))
 
         for demo in DEMOS:
             for origem in ORIGENS:

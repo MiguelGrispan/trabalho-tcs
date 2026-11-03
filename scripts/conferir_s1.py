@@ -25,7 +25,7 @@ def formatar_reais(value):
 
 def main():
     if not catalogo_existe():
-        print("Banco de dados não encontrado.")
+        print("Catálogo não encontrado no PostgreSQL: rode scripts/carregar_dfp.py e scripts/indicadores.py.")
         return
 
     conn = conectar()

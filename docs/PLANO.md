@@ -30,7 +30,7 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 - **Demo ponta a ponta** no `docker compose` e no Terraform (Mac do Eduardo, 03/11), tag `v0.1-demo` (`9689db9`): busca no
   PostgreSQL, raio-x sem IA (Vale, Embraer, Ambev) e com o Gemini (WEG, US$ 0,0011), cada consulta gravada na `consultas`.
   Com o Gemini fora do ar (chave falsa), a tela cai no modo sem IA, avisa e grava a consulta com custo 0.
-- **Testes:** 238 passed, nenhum pulado (Windows do Marcos, com o PostgreSQL ligado e `PYTHONUTF8=1`, 03/11 ~12h, branch do #46).
+- **Testes:** 240 passed, nenhum pulado (Windows do Marcos, com o PostgreSQL ligado e `PYTHONUTF8=1`, 03/11 ~12h, branch do #46).
   Sem o `PYTHONUTF8`, 8 testes das travas falham no Windows: issue #45 (abaixo).
 - **Textos-base prontos:** `docs/justificativa.md` (ED8; falta o Marcos ler) e `docs/etica.md` (base da NA5).
 - No Mac, o Terraform só acha o Docker com `export DOCKER_HOST=unix://$HOME/.docker/run/docker.sock` (`README.md:158`).
@@ -77,7 +77,7 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 ### Próximo passo de cada um
 - **Marcos:** depois do merge do #46, o zip da `data/` no Drive com o link no grupo (fecha a MA3) → apagar a `tratamento_dados` pelo
   site do GitHub (o que só ela tem é código antigo: `src/` e CSV com `;`) → MA5 BPMN (qua–qui) → MA4 EDA. Um PR pequeno, com o ok do
-  Eduardo, tirando `verificar_automatico.py`, `yfinance` e `graficos.py` (cortados na seção 7). Ler a `docs/justificativa.md` (ED8).
+  Eduardo, tirando `verificar_automatico.py` e `yfinance` (cortados na seção 7; o `graficos.py` fica para a MA4, abaixo). Ler a `docs/justificativa.md` (ED8).
 - **Miguel:** MG4b = #38, #39 e #44 num PR só (qua 04/11) → MG5 diagrama e README (qua 04/11) → MG6 roteiro e vídeo v0 (qui 05/11).
   Avisar o grupo das mudanças da MG4 em pastas comuns (`tests/`, `.env.example`, `aprender/`).
 - **Náthally (obrigatório):** NA3 ROI mínimo (até qui 05/11) → NA4 slide de métricas (o "7 de 10" com a explicação da S2; a
@@ -94,9 +94,15 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
   Decidir antes do vídeo v0 (qui 05/11), para gravar na mesma máquina.
 - Data e horário da banca; perguntas 2 e 3 ao professor (Eduardo).
 - `scripts/dados.py` ou `raiox/dados.py` (ficar com um só; Marcos).
-- Decidido pelo Marcos em 03/11: `verificar_automatico.py`, `yfinance` e `graficos.py` saem num PR separado (falta o ok do Eduardo,
-  porque mexe em `tests/` e no `requirements.txt`); o `docs/Raio-X Comercial.pdf` fica até a MA6, porque o `raiox/limpeza.py` o cita
-  como a fonte das regras de limpeza (ele ainda fala de SQLite); a `tratamento_dados` será apagada.
+- Decidido pelo Marcos em 03/11:
+  - o `verificar_automatico.py` e o `yfinance` saem num PR separado (falta o ok do Eduardo, porque mexe em `tests/` e no
+    `requirements.txt`);
+  - o `scripts/graficos.py` **fica até a MA4**: são gráficos exploratórios em Matplotlib que podem virar a base do
+    `notebooks/eda.ipynb` (`guia_projeto_final.pdf` §2: "Visualização explicativa dos dados"; §1: EDA). Só o script pode sair;
+    a visualização é obrigatória;
+  - o `docs/Raio-X Comercial.pdf` fica até a MA6, porque o `raiox/limpeza.py` o cita como a fonte das regras de limpeza (ele ainda
+    fala de SQLite);
+  - a `tratamento_dados` será apagada.
 - Apagar a `feat/metricas` (Náthally; antes, subir o `revisao_manual.md`, se ela quiser).
 - As 3 notas do código (`NOTAS_DO_CODIGO`, em `raiox/ia.py`) vão para a v3 das regras? (Náthally).
 
@@ -107,6 +113,9 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
   das linhas; `test_obter_indicadores_deixa_ausente_indicador_de_conta_ausente` (`tests/test_dados.py`) não olha o `ativo_total`;
   `test_calcular_exporta_…` não tem receita de 2 anos antes igual a zero.
 - O C4 (`contratos.md`) diz que o `avaliacao/conferencia.csv` é da Náthally, mas quem escreve é o Marcos: corrigir com o ok dos dois.
+- Limite conhecido do ano do exercício (`raiox/limpeza.py`, `ano_do_exercicio`): quem muda a data de fechamento pode ter duas DFPs no
+  mesmo ano, e aí os valores divergentes ficam vazios (o `carregar_dfp.py` avisa "contas repetidas"). Nos dados de 03/11, nenhum valor
+  vazio a mais. Achado do `revisor` no #46; serve para a ética (limites).
 - A fonte do raio-x da Camil diz "DFP 2025" (o exercício 2025 dela), mas o arquivo da CVM é o de 2026: mostrar a data de fim do
   exercício seria a opção 2 da #17, que muda o C2 e o C3 (Eduardo e Miguel; não decidido).
 - PostgreSQL local: o do compose usa a porta 5432; quem ainda tem o `raiox-postgres` antigo (do `docker run` de 29/10) para um
@@ -269,7 +278,7 @@ Para subir um arquivo:
 | `tests/test_raio_x.py` | validador (regra de ouro), contrato C3, fonte, modo sem IA nas 30 empresas falsas, prompt (lê as regras da Náthally, chaves preservadas, só marcadores de indicador), texto sem IA na forma da v2, limite de tempo e de tentativas do Gemini, `RAIOX_DADOS`, segmentação (k = 3, 29 de 30; menor grupo ≥ 5%; empresas pequenas fora do treino; `segmentos.csv` refeito quando o código muda), gráficos, checador | Eduardo | sim |
 | `tests/test_avaliar.py` | `avaliar.py`: colunas do C4, casos válidos, caso com erro, formato do `casos_avaliacao.csv` (5 colunas, `cd_cvm` inteiro em todos) | Eduardo | sim |
 | `tests/test_limpeza.py`, `test_carregar_dfp.py`, `test_dados.py`, `test_banco.py`, `test_verificar_automatico.py` (PRs #4 e #21) | regras de limpeza, carga da DFP (rede simulada), catálogo e C1 em PostgreSQL (banco de teste separado: `tests/banco_teste.py`); o C2 (CSV padrão, `cd_cvm` int, mesma tabela no banco) em `test_publicar_grava_o_mesmo_c2_no_csv_e_no_banco` (#46; era `test_calcular_grava_csv_padrao_com_cd_cvm_inteiro`, do #22) | Marcos | sim: o CI sobe um PostgreSQL desde o #22 (sem ele, os testes do banco pulam; `-rs` mostra quais) |
-| C1 e C2 no banco, ano do exercício (MA3, PR #46) | `test_busca_exige_cadastro_ativo_e_indicadores`, `test_sem_a_tabela_indicadores_a_busca_volta_vazia`, `test_publicar_grava_o_mesmo_c2_no_csv_e_no_banco` (`tests/test_dados.py`); `test_ano_do_exercicio_e_o_ano_com_mais_meses` e `test_limpar_demo_usa_o_ano_do_exercicio_e_nao_o_do_arquivo` (`tests/test_limpeza.py`); `test_main_usa_o_exercicio_de_quem_fecha_fora_de_dezembro` (`tests/test_carregar_dfp.py`); `test_desiste_rapido_se_o_banco_nao_responde` (`tests/test_banco.py`) | Marcos | sim |
+| C1 e C2 no banco, ano do exercício (MA3, PR #46) | `test_busca_exige_cadastro_ativo_e_indicadores`, `test_sem_a_tabela_indicadores_a_busca_volta_vazia`, `test_publicar_grava_o_mesmo_c2_no_csv_e_no_banco` (`tests/test_dados.py`); `test_ano_do_exercicio_e_o_ano_com_mais_meses` e `test_limpar_demo_usa_o_ano_do_exercicio_e_nao_o_do_arquivo` (`tests/test_limpeza.py`); `test_main_usa_o_exercicio_de_quem_fecha_fora_de_dezembro`, `test_main_segue_sem_o_arquivo_do_ano_seguinte` e `test_main_para_se_falta_o_arquivo_de_um_dos_anos` (`tests/test_carregar_dfp.py`); `test_desiste_rapido_se_o_banco_nao_responde` (`tests/test_banco.py`) | Marcos | sim |
 | `tests/test_tela.py` (MG4) | a tela com os falsos: busca, gerar, 6 métricas, sem erro | Miguel | sim |
 | `tests/test_ponta_a_ponta.py` | C2 real, raio-x sem IA de 3 setores, `cd_cvm` dos casos (todos preenchidos e na tabela real) | Eduardo | **não**: pula sem `data/`. Rodar local antes de `v0.1-demo`, `v1.0` e no teste do zero |
 | `tests/test_aprender.py` | o notebook `aprender/passo_a_passo.ipynb` roda inteiro e vai para o Git sem saídas | Eduardo | sim |

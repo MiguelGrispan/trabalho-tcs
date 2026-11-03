@@ -47,6 +47,12 @@ def ano_do_exercicio(fim_exercicio):
     o "2025" dela vai de mar/2025 a fev/2026 (10 meses em 2025) e está no
     arquivo de 2026 (issue #17). Fim de julho a dezembro conta no próprio
     ano; fim de janeiro a junho, no ano anterior.
+
+    Limite conhecido: quem muda a data de fechamento pode ter duas DFPs no
+    mesmo ano (ex.: fim em 31/12/2024 e um exercício curto até 31/03/2025).
+    Aí os valores divergentes ficam vazios (resolver_conflitos) e o
+    carregar_dfp.py avisa "contas repetidas". Nos dados de 03/11, a regra
+    nova não deixou nenhum valor vazio a mais (11 antes e depois).
     """
     fim = pd.to_datetime(fim_exercicio)
     return fim.dt.year.where(fim.dt.month >= 7, fim.dt.year - 1)
