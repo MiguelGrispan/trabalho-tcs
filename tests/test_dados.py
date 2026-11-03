@@ -74,10 +74,12 @@ class CatalogoTests(TesteComBanco):
         self.executar("INSERT INTO empresas VALUES ('124', 'ATIVO')")
         self.assertEqual(dados.buscar_empresas(""), [])
 
-    def test_catalogo_antigo_orienta_a_publicar_os_indicadores(self):
+    def test_sem_a_tabela_indicadores_a_busca_volta_vazia(self):
+        # Catálogo de antes da MA3: a tela mostra "O banco está vazio" (com os
+        # comandos de carga), e não "o banco está desligado?" (issue #42)
         self.executar("DROP TABLE indicadores")
-        with self.assertRaisesRegex(RuntimeError, "scripts/indicadores.py"):
-            dados.buscar_empresas("Empresa")
+        self.assertFalse(dados.catalogo_existe())
+        self.assertEqual(dados.buscar_empresas("Empresa"), [])
 
     def test_registrar_consulta_persiste_o_payload_json(self):
         registro = {"cd_cvm": "123", "empresa": "Empresa A"}

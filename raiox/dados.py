@@ -2,13 +2,15 @@
 import json
 from datetime import datetime, timezone
 
-from sqlalchemy import inspect, text
+from sqlalchemy import text
 
 from raiox.banco import catalogo_existe, conectar
 
 
 def buscar_empresas(texto):
     """Busca até 20 companhias ativas com indicadores, ordenadas por nome."""
+    # Sem as tabelas contas e indicadores, volta vazia: a tela mostra
+    # "O banco está vazio", com os comandos para carregar os dados
     if not catalogo_existe():
         return []
 
@@ -28,8 +30,6 @@ def buscar_empresas(texto):
         LIMIT 20
     """
     with conectar() as conn:
-        if not inspect(conn).has_table("indicadores"):
-            raise RuntimeError("Execute python scripts/indicadores.py para publicar os indicadores no PostgreSQL.")
         linhas = conn.execute(text(consulta), {"termo": f"%{termo}%"}).fetchall()
 
     # Transforma cada linha do banco num dicionário

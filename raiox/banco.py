@@ -27,8 +27,9 @@ def conectar():
 
 
 def catalogo_existe():
-    """Diz se o carregar_dfp.py já criou a tabela contas no banco."""
+    """Diz se o carregar_dfp.py e o indicadores.py já criaram as tabelas contas e indicadores."""
     engine = create_engine(DATABASE_URL, connect_args={"connect_timeout": TEMPO_LIMITE_S})
-    existe = inspect(engine).has_table("contas")
+    tabelas = inspect(engine)
+    existe = tabelas.has_table("contas") and tabelas.has_table("indicadores")
     engine.dispose()
     return existe
