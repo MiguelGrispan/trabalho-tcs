@@ -58,7 +58,7 @@ O Gemini **lê** esses valores para entender a empresa, mas **só pode escrever 
 pelo código, e o validador apaga o que tiver número escrito pelo modelo.
 Isso é geração aumentada por recuperação, mas a recuperação é **estruturada** (pela chave da empresa), e não semântica (por embeddings).
 O PostgreSQL guarda as contas da DFP (tabelas `contas` e `empresas`, `scripts/carregar_dfp.py:146,155`) e serve à busca de empresas
-(`raiox/dados.py`); a tela só passa a usá-lo na MG4 (hoje usa `falsos/`, `app/streamlit_app.py:26`).
+(`raiox/dados.py`); a tela usa o banco desde a MG4 (PR #36, 02/11).
 
 Se isso conta como a "base de dados de conhecimento" que o `requisitos_projeto.MD` pede, é a pergunta 3 ao professor, ainda sem
 resposta (`docs/REQUISITOS.md`). O projeto também segue o caminho "Treinamento de Machine Learning" (seção 2), que fica completo quando a EDA entrar (MA4, REQUISITOS R4).
@@ -104,7 +104,7 @@ da DFP. Ficou fora do escopo (`docs/PLANO.md`, seção 7).
   não passa por variável, então não fica no `terraform.tfstate` (`infra/main.tf:123-130`; conferido pelo Miguel no PR #29).
   Ponto fraco: a senha do PostgreSQL local passa por variável (`var.senha_banco`, padrão `postgres`; `infra/main.tf:112-113`) e fica no
   `terraform.tfstate`. Ele não vai para o Git, e o banco só abre em `127.0.0.1`.
-- **Não é recomendação de investimento:** o aviso aparece na tela (`app/streamlit_app.py:158-159`).
+- **Não é recomendação de investimento:** o aviso aparece na tela (`app/streamlit_app.py:187-188`).
 
 ## 6. Perguntas prováveis da banca (respostas curtas)
 
@@ -115,4 +115,4 @@ da DFP. Ficou fora do escopo (`docs/PLANO.md`, seção 7).
 | Como vocês sabem que a IA não inventa número? | Ela pode ler os valores, mas só pode escrever marcadores. Os números do texto são colocados pelo código, e se ela escrever um dígito o validador apaga o trecho. Nos 10 casos reais, 0 trechos removidos. |
 | Por que a silhueta é só 0,29? | Porque a de 0,77 enganava: separava 9 extremas e juntava todo o resto. Preferimos grupos úteis a um número bonito. |
 | Qual a memória do agente? | Não há agente nem memória, de propósito: cada raio-x é independente e o caminho é fixo. |
-| E se a API do Gemini cair na demo? | Em uns 30 s a tela mostra o erro, em vez de travar (`app/streamlit_app.py:87-92`). Hoje, o plano B é abrir a tela sem `RAIOX_IA_REAL`: o modo sem IA gera o raio-x com os mesmos números e o mesmo validador. A troca automática é parte da MG4. |
+| E se a API do Gemini cair na demo? | A tela monta o texto sem IA, com os mesmos números e o mesmo validador, e mostra um aviso (`app/streamlit_app.py:49-55`, MG4). Conferido em 03/11 com uma chave inválida: WEG gerada sem IA e consulta gravada com custo 0. |
