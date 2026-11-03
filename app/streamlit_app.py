@@ -11,6 +11,7 @@ Contratos que a tela usa:
 Dados: com a data/indicadores.csv real, a busca e o registro de cada consulta usam o PostgreSQL (raiox/dados.py).
 Com RAIOX_DADOS=falsos, ou sem a data/, tudo vem dos arquivos FALSOS (pasta falsos/), com o mesmo formato.
 IA: com RAIOX_IA_REAL=1 o texto é escrito pelo Gemini (o aprender/atalhos/rodar_tela_com_ia.command faz isso).
+Se o Gemini não responder, a tela monta o texto sem IA, avisa em uma frase e guarda o erro em "Detalhes técnicos".
 """
 import os
 import sys
@@ -46,13 +47,14 @@ def md(texto: str) -> str:
 
 
 def gerar_raio_x(cd_cvm: int, produto: str, objetivo: str) -> tuple[dict, str | None]:
-    """Devolve (raio-x, aviso). Se a IA falhar, monta o texto sem IA: os números são os mesmos (plano B da demo)."""
+    """Devolve (raio-x, erro da IA). Se a IA falhar, monta o texto sem IA: os números são os mesmos (plano B da demo)."""
     if USAR_IA_REAL:
         try:
             return preparar_raio_x(cd_cvm, produto, objetivo, usar_ia=True), None
         except Exception as erro:  # API fora do ar, limite de uso, chave errada...
-            aviso = f"A IA não respondeu agora ({erro}). O texto abaixo foi montado sem IA; os números são os mesmos."
-            return preparar_raio_x(cd_cvm, produto, objetivo, usar_ia=False), aviso
+            # o erro técnico vai para o log (docker compose logs tela) e para "Detalhes técnicos", nunca para o aviso
+            print(f"A IA não respondeu; o texto foi montado sem IA. Erro: {erro}", file=sys.stderr)
+            return preparar_raio_x(cd_cvm, produto, objetivo, usar_ia=False), str(erro)
     return preparar_raio_x(cd_cvm, produto, objetivo, usar_ia=False), None
 
 
@@ -67,7 +69,8 @@ if DADOS_FALSOS:
     st.warning("Versão de teste: empresas e números inventados.")
 else:
     st.caption("Empresas e números da CVM (DFP), buscados no banco PostgreSQL.")
-st.caption("Texto escrito pelo Gemini." if USAR_IA_REAL else "Texto montado sem IA (modo de teste, sem custo).")
+# Quem escreveu o texto (Gemini ou sem IA) só se sabe depois de gerar: o espaço fica aqui e é preenchido mais abaixo.
+origem_do_texto = st.empty()
 
 # ------------------------------------------------------------------ entrada (barra lateral)
 with st.sidebar:
@@ -107,13 +110,13 @@ if gerar:
     with st.spinner("Montando o raio-x..."):
         t0 = time.time()
         try:
-            rx, aviso = gerar_raio_x(cd_cvm, produto.strip(), objetivo.strip())
+            rx, erro_ia = gerar_raio_x(cd_cvm, produto.strip(), objetivo.strip())
         except Exception as erro:  # mesmo sem IA não deu: empresa sem dados...
             st.error("Não foi possível gerar o raio-x agora. Tente de novo em um minuto. "
                      f"Se continuar, avise o grupo com este detalhe: {erro}")
             st.stop()
     st.session_state["rx"] = rx
-    st.session_state["aviso"] = aviso
+    st.session_state["erro_ia"] = erro_ia
     uso = rx.get("uso", {})
     # try separado: se o banco falhar aqui, o raio-x já está pronto e aparece do mesmo jeito
     try:
@@ -124,12 +127,24 @@ if gerar:
         st.warning(f"O raio-x está abaixo, mas a consulta não foi registrada no banco. Detalhe: {erro}")
 
 rx = st.session_state.get("rx")
+erro_ia = st.session_state.get("erro_ia")
+# Só diz "escrito pelo Gemini" quando ele respondeu de verdade nesta consulta (issue #39)
+texto_do_gemini = USAR_IA_REAL and not erro_ia
+if not USAR_IA_REAL:
+    origem_do_texto.caption("Texto montado sem IA (modo de teste, sem custo).")
+elif not rx:
+    origem_do_texto.caption("IA ligada: o texto será escrito pelo Gemini.")
+elif texto_do_gemini:
+    origem_do_texto.caption("Texto escrito pelo Gemini.")
+else:
+    origem_do_texto.caption("Texto montado sem IA: o Gemini não respondeu.")
 if not rx:
     st.info("Na barra à esquerda, escolha a empresa, diga o que você vende e o objetivo da reunião. "
             "Depois clique em **Gerar raio-x**.")
     st.stop()
-if st.session_state.get("aviso"):
-    st.warning(st.session_state["aviso"])
+if erro_ia:
+    # uma frase só (issue #38): o erro técnico do Google fica em "Detalhes técnicos", lá embaixo
+    st.warning("A IA não respondeu agora. O texto abaixo foi montado sem IA; os números são os mesmos.")
 
 # ------------------------------------------------------------------ resultado
 st.subheader(rx["empresa"])
@@ -183,6 +198,10 @@ with st.expander("Detalhes técnicos"):
         st.json(rx["removidos"])
     else:
         st.write("Nenhum trecho removido pelo validador.")
+    if erro_ia:
+        st.write("A IA não respondeu. O erro que ela devolveu:")
+        st.code(erro_ia, language=None, wrap_lines=True)
 
 st.caption("Confira antes de usar. Os números vêm das demonstrações entregues à CVM no último exercício; "
-           "o texto é escrito por IA, que não escreve números. Não é recomendação de investimento.")
+           + ("o texto é escrito por IA, que não escreve números. " if texto_do_gemini else "o texto foi montado sem IA. ")
+           + "Não é recomendação de investimento.")
