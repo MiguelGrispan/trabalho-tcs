@@ -4,3 +4,11 @@ cd_cvm,indicador,valor_sistema,valor_ri,diferenca_pct,fonte,observacoes
 5410,lucro_liquido,6775958000,6775958000,0.00,DFP 2025 WEG - DRE consolidada p.15 - ri.weg.net,conta 3.11 = Lucro líquido do exercício total (inclui R$ 399.739 mil de não controladores)
 5410,ativo_total,42645030000,42645030000,0.00,DFP 2025 WEG - Balanço consolidado p.13 - ri.weg.net,conta 1 = Total do ativo
 5410,patrimonio_liquido,18553364000,18553364000,0.00,DFP 2025 WEG - Balanço consolidado p.14 - ri.weg.net,conta 2.03 = Total do patrimônio líquido (inclui não controladores)
+24228,receita,12262939000,12262939000,0.00,https://api.mziq.com/mzfilemanager/v2/d/65f65acb-ad9a-44b1-a3d5-620b6199a637/e14d38e7-574f-a256-ab6e-51b6e63e5331?origin=2,DRE consolidada em 28/02/2025 (exercício 2024 da companhia); PDF p. 34
+22470,receita,38703387000,38703387000,0.00,https://ri.magazineluiza.com.br/Download.aspx?Arquivo=YqrYa01mpl0QgngFU8vtIQ==,DRE consolidada em 31/12/2025; PDF p. 13
+22470,ebit,1918683000,1918683000,0.00,https://ri.magazineluiza.com.br/Download.aspx?Arquivo=YqrYa01mpl0QgngFU8vtIQ==,"Lucro operacional antes do resultado financeiro; margem contábil de 4,96%; PDF p. 13"
+5258,receita,44250449000,44250449000,0.00,https://ri.rdsaude.com.br/Download.aspx?Arquivo=pvBQW9Dgna5MufaSF4UDNQ==,DFP 31/12/2025; notas explicativas; DRE consolidada
+4030,receita,44797946000,44797946000,0.00,https://api.mziq.com/mzfilemanager/v2/d/29633c00-23f7-4765-9594-926012179477/1c219ad6-0219-fac2-b719-8c882c026e03?origin=2,CSN; DRE consolidada em 31/12/2025; PDF p. 43
+5258,ebit,2743567000,2743567000,0.00,https://ri.rdsaude.com.br/Download.aspx?Arquivo=pvBQW9Dgna5MufaSF4UDNQ==,"Conta 3.05; margem sobre a receita consolidada de 6,20%"
+5258,ativo_total,25170475000,25170475000,0.00,https://ri.rdsaude.com.br/Download.aspx?Arquivo=wfRMyWSZ5liKyXUKquKv6w==,Coluna consolidada comparativa de 31/12/2025 no ITR de 30/06/2026
+5258,patrimonio_liquido,7335968000,7335968000,0.00,https://ri.rdsaude.com.br/Download.aspx?Arquivo=wfRMyWSZ5liKyXUKquKv6w==,Coluna consolidada comparativa de 31/12/2025; endividamento calculado como 1 - PL / ativo
