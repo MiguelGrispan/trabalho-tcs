@@ -107,6 +107,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 02/11 | a tela escolhe entre falsos e banco pela mesma função do raio-x (`usando_falsos()`, `RAIOX_DADOS`), sem chave própria; se a IA falhar, cai sozinha no modo sem IA | com duas chaves, a busca podia vir do banco e o raio-x da tabela falsa, e nada bateria; a demo não pode parar porque a API caiu |
 | 02/11 | o guia do professor fica como ele mandou, com os exemplos (#34 desfeito pelo #35) | uma versão refeita pelo grupo deixa de ser a fonte da verdade, e tirar a seção 4 renumeraria as seguintes, quebrando 21 citações como "G §6" |
 | 02/11 | tarefas da Náthally: obrigatório é só o que os arquivos do professor pedem (deck, ética e, na apresentação, ROI e métricas); testes com usuários, `revisao.csv` e regras v3 viram sugestão | ela trabalha no ritmo dela e sem IA para código; o grupo concentra o tempo dela no que a banca avalia |
+| 03/11 | erro achado na pasta de outro dono vira **issue no GitHub** para ele e uma sessão dele no PLANO; o ATENÇÃO do revisor é corrigido antes do merge (`/fim-de-sessao`, passo 6; `CLAUDE.md`, regra 1) | recado no chat se perde e ninguém cobra; a issue fica com dono, prova e prazo (primeiras: #38 e #39). No PR #40, o revisor achou uma frase falsa na ética que só foi corrigida porque o ATENÇÃO foi tratado |
 
 **Já cortado do escopo:** verificação com yfinance, receita em 3 anos, filtro de setor, RAG, nome dos grupos pelo LLM,
 exportar o raio-x, 20 casos (ficaram 10). A lista e a ordem dos próximos cortes estão no PLANO, seção 7.

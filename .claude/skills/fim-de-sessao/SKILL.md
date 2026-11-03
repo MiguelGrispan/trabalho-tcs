@@ -60,7 +60,17 @@ Siga os passos **em ordem** e pare no primeiro que falhar.
   Vermelho: mostre o erro, conserte na mesma branch e espere de novo.
 - Peça ao subagent `revisor` (`.claude/agents/revisor.md`) a revisão do PR `<número>` e mostre a resposta dele. Ele não viu a
   sessão e não torce pelo código: enxerga o que quem escreveu deixa passar. Se ele disser **BLOQUEIA**, pare, conserte e peça
-  de novo. Depois, diga em 3 linhas o que o PR muda e o risco que sobrou.
+  de novo. Os itens de **ATENÇÃO** nos arquivos deste PR: corrija na mesma branch antes do merge (commit "Achados do revisor"),
+  espere o CI de novo e diga à pessoa o que mudou; o que não der para corrigir agora vira issue (abaixo). Depois, diga em 3 linhas
+  o que o PR muda e o risco que sobrou.
+- **Erro achado fora do PR, na pasta de outro dono** (na sessão ou pelo revisor): não conserte lá (CLAUDE.md, regra 1). Abra uma
+  issue para o dono e escreva a sessão dele no PLANO (desde 03/11; ex.: issues #38 e #39 → MG4b do Miguel):
+  - `gh issue create --assignee <login> --label bug --body-file <arquivo>`, com o corpo escrito pela ferramenta Write fora do
+    repositório: o que acontece, onde (arquivo e linha), por que importa na banca (arquivo do professor e item), como reproduzir,
+    sugestão de conserto e prazo. Logins: Marcos `MarcosIurak`, Miguel `MiguelGrispan`, Náthally `Hawkie06`, Eduardo `Mindoim`;
+  - no `docs/PLANO.md`: uma linha nova na tabela da pessoa (seção 3, ex.: MG4b), com o número das issues e o "pronto quando",
+    a data no calendário e uma linha no "Próximo passo de cada um" (seção 0);
+  - entregue à pessoa a mensagem pronta para o dono, com os links das issues.
 - Se mexeu em pasta de outro dono ou no `contratos.md`, confirme com a pessoa que o dono deu o ok no grupo.
 - Peça **um "pode"** à pessoa. Com o "pode": `gh pr merge <número> --merge --delete-branch`. O Claude Code ainda pede
   permissão antes (regra `ask` do `.claude/settings.json`): é a segunda trava, para o merge nunca sair sem ela ver. Recusou, pare.

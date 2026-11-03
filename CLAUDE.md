@@ -97,6 +97,7 @@ Caminhos: todo código que usa `data/` ou `docs/` aponta para a **raiz** do repo
 
 ## Regras
 1. **Não mexa em pasta de outro dono.** Precisa de mudança lá? Peça ao dono ou combine antes no grupo.
+   Achou um erro lá? Vira **issue no GitHub para o dono** e uma sessão dele no `docs/PLANO.md` (como no `/fim-de-sessao`, passo 6).
 2. **Contrato antes de código.** Mudou um formato entre partes? Primeiro o `contratos.md`, avisando quem recebe; depois o código.
 3. **Testes antes de dizer "pronto".** Rode `python -m pytest -q` e mostre o resultado. Mudou a tela? Abra a tela também.
    Toda mudança de comportamento vem com teste novo ou atualizado no mesmo PR (lista dos testes: `docs/PLANO.md`, seção 4).

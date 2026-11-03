@@ -32,6 +32,9 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
   **a dona do texto final é a Náthally (NA5)**, que completa a viabilidade (ROI).
 - `docs/justificativa.md`: 2 frases velhas corrigidas (a tela usa o banco desde a MG4; a troca automática para o modo sem IA existe).
 - Testes: 232 passed, nenhum pulado (local, com o PostgreSQL ligado).
+- **Regra nova (PR `eduardo-regra-issues`):** erro na pasta de outro dono vira issue para ele + sessão no PLANO; o ATENÇÃO do
+  revisor é corrigido antes do merge (`.claude/skills/fim-de-sessao/SKILL.md`, passo 6; `CLAUDE.md`, regra 1). Cada um confere as
+  suas com `gh issue list --assignee @me`.
 
 **Tag `v0.1-demo`** no commit `9689db9` (merge do #36): `git rev-parse --short v0.1-demo^{}` → `9689db9`. Em 02/11 entraram o #30
 (travas), o #31 (justificativa), o #32 e o #33 (notas) e o #36 (MG4); o #34 trocou o guia do professor e o #35 o desfez (o guia fica
