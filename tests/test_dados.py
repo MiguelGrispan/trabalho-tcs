@@ -38,6 +38,11 @@ class CatalogoTests(TesteComBanco):
         contas["valor"] = contas["valor"].astype(float)
         with self.engine.begin() as conn:
             contas.to_sql("contas", conn, if_exists="append", index=False)
+            atuais = contas[(contas.ano == 2025) & (contas.cd_conta == "3.01")]
+            cadastro = atuais[["cd_cvm"]].assign(situacao="ATIVO")
+            cadastro.to_sql("empresas", conn, if_exists="append", index=False)
+            base = atuais[["cd_cvm", "nome", "setor"]].astype({"cd_cvm": int})
+            base.to_sql("indicadores", conn, if_exists="append", index=False)
 
     def executar(self, sql):
         with self.engine.begin() as conn:
@@ -47,7 +52,7 @@ class CatalogoTests(TesteComBanco):
         self.assertEqual(dados.buscar_empresas("%"), [])
 
         self.assertEqual(dados.buscar_empresas("empresa"), [
-            {"cd_cvm": "123", "nome": "Empresa A", "setor": "Tecnologia"}
+            {"cd_cvm": 123, "nome": "Empresa A", "setor": "Tecnologia"}
         ])
 
     def test_buscar_empresas_ordena_pelo_nome_e_limita_a_20(self):
@@ -63,6 +68,16 @@ class CatalogoTests(TesteComBanco):
         self.assertEqual(len(resultado), 20)
         self.assertEqual(nomes[0], "Empresa A")
         self.assertEqual(nomes, sorted(nomes, key=str.lower))
+
+    def test_busca_exige_cadastro_ativo_e_indicadores(self):
+        self.executar("UPDATE empresas SET situacao = 'CANCELADA'")
+        self.executar("INSERT INTO empresas VALUES ('124', 'ATIVO')")
+        self.assertEqual(dados.buscar_empresas(""), [])
+
+    def test_catalogo_antigo_orienta_a_publicar_os_indicadores(self):
+        self.executar("DROP TABLE indicadores")
+        with self.assertRaisesRegex(RuntimeError, "scripts/indicadores.py"):
+            dados.buscar_empresas("Empresa")
 
     def test_registrar_consulta_persiste_o_payload_json(self):
         registro = {"cd_cvm": "123", "empresa": "Empresa A"}
@@ -101,6 +116,32 @@ class CatalogoTests(TesteComBanco):
 
     def test_obter_indicadores_de_empresa_fora_do_catalogo(self):
         self.assertEqual(acesso.obter_indicadores("789"), {})
+
+    def test_publicar_grava_o_mesmo_c2_no_csv_e_no_banco(self):
+        """Contrato C2: o pd.read_csv lê sem nenhum parâmetro e o cd_cvm é número."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            data_dir = Path(temp_dir)
+            pd.DataFrame([
+                ["5410", "WEG S.A.", "Máquinas", "3.01", "Receita de Venda", 1234.5, 2025, "DRE", "con", 1],
+                ["5410", "WEG S.A.", "Máquinas", "3.01", "Receita de Venda", 1000.0, 2023, "DRE", "con", 1],
+            ], columns=[
+                "cd_cvm", "nome", "setor", "cd_conta", "ds_conta", "valor",
+                "ano", "demonstracao", "origem", "versao",
+            ]).to_csv(data_dir / "contas.csv", index=False)
+
+            with patch.object(indicadores, "DATA_DIR", data_dir):
+                indicadores.publicar()
+
+            # Com ";" ou vírgula decimal, viria uma coluna só ou a receita como texto
+            lido = pd.read_csv(data_dir / "indicadores.csv")
+            self.assertEqual(list(lido.columns), indicadores.COLUNAS_SAIDA)
+            self.assertTrue(pd.api.types.is_integer_dtype(lido["cd_cvm"]))
+            self.assertEqual(lido.loc[0, "cd_cvm"], 5410)
+            self.assertEqual(lido.loc[0, "receita"], 1234.5)
+            with self.engine.connect() as conn:
+                tabela = pd.read_sql(text("SELECT * FROM indicadores"), conn)
+            # Coluna toda vazia: o banco devolve None e o CSV, NaN. Com os mesmos tipos, viram iguais
+            pd.testing.assert_frame_equal(lido, tabela.astype(lido.dtypes.to_dict()))
 
     def test_sem_catalogo_devolve_vazio(self):
         self.executar("DROP TABLE contas")
@@ -153,29 +194,6 @@ class IndicadoresTests(unittest.TestCase):
             with patch.object(indicadores, "DATA_DIR", data_dir):
                 with self.assertRaises(ValueError):
                     indicadores.calcular()
-
-    def test_calcular_grava_csv_padrao_com_cd_cvm_inteiro(self):
-        """Contrato C2: o pd.read_csv lê sem nenhum parâmetro e o cd_cvm é número."""
-        with tempfile.TemporaryDirectory() as temp_dir:
-            data_dir = Path(temp_dir)
-            pd.DataFrame([
-                ["5410", "WEG S.A.", "Máquinas", "3.01", "Receita de Venda", 1234.5, 2025, "DRE", "con", 1],
-                ["5410", "WEG S.A.", "Máquinas", "3.01", "Receita de Venda", 1000.0, 2023, "DRE", "con", 1],
-            ], columns=[
-                "cd_cvm", "nome", "setor", "cd_conta", "ds_conta", "valor",
-                "ano", "demonstracao", "origem", "versao",
-            ]).to_csv(data_dir / "contas.csv", index=False)
-
-            with patch.object(indicadores, "DATA_DIR", data_dir):
-                indicadores.calcular()
-
-            # Com ";" ou vírgula decimal, viria uma coluna só ou a receita como texto
-            lido = pd.read_csv(data_dir / "indicadores.csv")
-            self.assertEqual(list(lido.columns), indicadores.COLUNAS_SAIDA)
-            self.assertTrue(pd.api.types.is_integer_dtype(lido["cd_cvm"]))
-            self.assertEqual(lido.loc[0, "cd_cvm"], 5410)
-            self.assertEqual(lido.loc[0, "receita"], 1234.5)
-
 
 if __name__ == "__main__":
     unittest.main()

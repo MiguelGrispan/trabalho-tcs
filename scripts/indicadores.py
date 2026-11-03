@@ -3,13 +3,20 @@ Passo 2 do projeto: calcular os 6 indicadores.
 
 Lê data/contas.csv (já limpo por carregar_dfp.py) e gera
 data/indicadores.csv no formato do contrato C2: uma linha por empresa,
-com os indicadores do último ano.
+com os indicadores do último ano. A execução do script publica a mesma
+tabela no PostgreSQL para a busca da aplicação.
 """
+import sys
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 import pandas as pd
+from sqlalchemy import text
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from raiox.banco import conectar  # noqa: E402
+
 DATA_DIR = ROOT / "data"
 
 COLUNAS_SAIDA = [
@@ -21,7 +28,8 @@ COLUNAS_SAIDA = [
 CONTAS = {"3.01": "receita", "3.05": "ebit", "3.11": "lucro", "1": "ativo", "2.03": "pl"}
 
 
-def calcular():
+def _ler_e_calcular():
+    """Calcula o C2 a partir das contas locais."""
     df = pd.read_csv(
         DATA_DIR / "contas.csv",
         dtype={"cd_cvm": str, "cd_conta": str},
@@ -39,7 +47,6 @@ def calcular():
     # Contrato C2: cd_cvm é número inteiro e o CSV é o padrão
     # (vírgula e ponto decimal), que o pd.read_csv lê sem nenhum parâmetro
     resultado["cd_cvm"] = resultado["cd_cvm"].astype(int)
-    resultado.to_csv(DATA_DIR / "indicadores.csv", index=False)
     return resultado
 
 
@@ -96,5 +103,27 @@ def montar_indicadores(df):
     return base.sort_values("nome")
 
 
+def calcular():
+    """Gera o CSV para os consumidores que usam apenas o arquivo."""
+    resultado = _ler_e_calcular()
+    resultado.to_csv(DATA_DIR / "indicadores.csv", index=False)
+    return resultado
+
+
+def publicar():
+    resultado = _ler_e_calcular()
+    # Só troca o CSV depois de gravar a tabela com sucesso.
+    with NamedTemporaryFile(dir=DATA_DIR, delete=False) as arquivo:
+        temporario = Path(arquivo.name)
+    try:
+        resultado.to_csv(temporario, index=False)
+        with conectar() as conn, conn.begin():
+            resultado.to_sql("indicadores", conn, if_exists="replace", index=False)
+            conn.execute(text("ALTER TABLE indicadores ADD PRIMARY KEY (cd_cvm)"))
+        temporario.replace(DATA_DIR / "indicadores.csv")
+    finally:
+        temporario.unlink(missing_ok=True)
+
+
 if __name__ == "__main__":
-    calcular()
+    publicar()
