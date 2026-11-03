@@ -20,10 +20,27 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em seg 02/11 (feriado), ~16h30.** Na `main`: PRs #1 a #16 e #19 a #36 (hoje entraram o #30, travas; o #31, justificativa
-técnica; o #32 e o #33, notas do Eduardo; o #36, a MG4). O #34 trocou o guia do professor por uma versão sem os exemplos, refeita
-pelo grupo, e o #35 o desfez: a `main` voltou a ter o guia original (`git diff --stat 9e1a974 c7869e3` → vazio). O guia fica como o
-professor mandou (HISTORICO, decisões). A MA3 e a MA4 (Marcos) ainda não têm branch.
+**Em ter 03/11, ~9h30.** Na `main`: PRs #1 a #16 e #19 a #36, mais o PR desta nota (`eduardo-demo`, só documentos).
+**Tag `v0.1-demo`** no commit `9689db9` (merge do #36): `git rev-parse --short v0.1-demo^{}` → `9689db9`. Em 02/11 entraram o #30
+(travas), o #31 (justificativa), o #32 e o #33 (notas) e o #36 (MG4); o #34 trocou o guia do professor e o #35 o desfez (o guia fica
+como o professor mandou). A MA3 e a MA4 (Marcos) ainda não têm branch (`gh pr list` e `git branch -r`, 03/11).
+
+**Demo ponta a ponta no Mac do Eduardo (03/11; conferido pelo Claude Code, a tela clicada pelo Eduardo):**
+- `docker compose up -d --build`: os 2 `healthy`. O banco do compose estava vazio; `docker compose run --rm --user "$(id -u):$(id -g)" tela python scripts/carregar_dfp.py`
+  gravou 2.567 empresas e 384.561 linhas de contas em ~30 s (os mesmos números de 30/10).
+- Sem IA: Vale (4170), Embraer (20087) e Ambev (23264) pela tela; as 3 linhas na `consultas` com `cd_cvm` número.
+  Com IA (`RAIOX_IA_REAL=1 docker compose up -d tela`): WEG (5410), 2,7 s, 2.262 + 378 tokens, US$ 0,0011
+  (`docker compose exec banco psql -U postgres -d raiox -c "SELECT registro_json FROM consultas"`). Resolve o "Não conferido" do #36 sobre o Gemini
+  de verdade só no caminho feliz; a volta para o modo sem IA com o Gemini fora do ar continua sem conferir.
+- **Terraform no Mac** (`requisitos_projeto.MD`, Aplicação: "Infraestrutura automatizada com Terraform"): Terraform 1.17.1 instalado
+  pelo Homebrew (`brew install hashicorp/tap/terraform`). Sem o `DOCKER_HOST`, o `apply` falha ("Cannot connect to the Docker daemon
+  at unix:///var/run/docker.sock"); com `export DOCKER_HOST=unix://$HOME/.docker/run/docker.sock` (`README.md:158`), sobe os 2 `healthy`
+  nas **portas padrão** (8501 e 5432) em 15 s, `curl localhost:8501/_stcore/health` → `ok`. Carga da CVM pelo `docker exec` (2.567 empresas);
+  `docker exec raiox-tela python -m pytest -q` → 212 passed, 20 pulados (os do `git`); `destroy` + `apply` → as 2.567 empresas continuam;
+  2º `terraform plan` → "No changes". A tela pelo Terraform não foi aberta no navegador (só o health).
+- Antes, o contêiner antigo `raiox-postgres` (do `docker run` de 29/10) ligava com o Docker e ocupava a 5432: foi parado e não liga mais
+  sozinho (`docker update --restart=no`); não foi apagado.
+- Testes local, com o PostgreSQL ligado: 232 passed, nenhum pulado.
 
 **PR #36 (Miguel, MG4, 02/11): a aplicação usa o contêiner do banco** (`requisitos_projeto.MD`, Aplicação: "Backend e Frontend" e
 "Banco de dados"; regra do professor de 02/11: 2 contêineres). Em `app/streamlit_app.py`:
@@ -38,8 +55,7 @@ com `cd_cvm` número (`docker compose exec banco psql -U postgres -d raiox -c "S
 Testes novos em `tests/test_tela.py` (8, com o `AppTest` do Streamlit; nenhum chama o Gemini). Local, com o PostgreSQL ligado:
 232 passed, nenhum pulado; no contêiner (antes dos 2 últimos testes, pedidos pelo `revisor`): 210 passed e 20 pulados, todos do
 `tests/test_guarda.py`, que precisam do `git`.
-**Não conferido:** a volta para o modo sem IA com o Gemini de verdade; a tela nova pelo Terraform.
-**Para a demo de ter 03/11:** depois do merge, `docker compose up -d --build` (senão o contêiner roda a tela antiga); com IA, `RAIOX_IA_REAL=1`.
+**Não conferido:** a volta para o modo sem IA com o Gemini fora do ar. A tela nova pelo Terraform subiu no Mac em 03/11 (acima), mas só o health foi visto.
 
 **PR #30 (Eduardo, ED12): as travas estão na `main`** (`requisitos_projeto.MD`, Aplicação: "Arquivos utilizados de prompts para o
 vibecoding"; guia §2: "agentic coding"). São o `.claude/settings.json` (do grupo), os 3 hooks do `.claude/hooks/guarda.py` e a
@@ -78,8 +94,7 @@ a imagem não tem `.env` nem `data/`, e `grep -c GOOGLE_API_KEY infra/terraform.
 `data/` sobreviveram ao `destroy` + `apply`; o 2º `terraform plan` → "No changes". CI novo, `.github/workflows/terraform.yml`:
 `terraform fmt` e `validate` em todo PR que mexe em `infra/` (não é check obrigatório da `main`). Local: 87 passed, nenhum pulado.
 IA pelo Terraform: o Miguel rodou com `-var ia_real=true` e viu "Texto escrito pelo Gemini." e os tokens com o custo em
-"Detalhes técnicos" (conferido por ele; o Claude não viu). **Não conferido:** as portas padrão (8501 e 5432; só muda o número); o Mac;
-carregar a CVM pelo `docker exec` (o comando está no topo do `infra/main.tf`, igual ao do compose).
+"Detalhes técnicos" (conferido por ele; o Claude não viu). As portas padrão, o Mac e a carga da CVM pelo `docker exec` foram conferidos pelo Eduardo em 03/11 (acima).
 Com o compose ligado, o `terraform apply` dá `port is already allocated` (aconteceu em 31/10): um de cada vez, ou outras portas
 (`-var porta_tela=8502 -var porta_banco=5433`). Está no README e no `aprender/COMANDOS.md`, seção 9.
 
@@ -143,7 +158,7 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
   16h38), tem os 6 indicadores das 10 empresas tirados do RI, com links. Contra a ED7, batem 7 de 10. Diferem: Camil (issue #17),
   Magalu (margem EBIT 5,0% × 5,81%) e RD Saúde (margem EBIT 6,2% × 5,27%, endividamento 70,9% × 62,4%, ativo R$ 25,2 bi × 20,6 bi;
   suponho, sem conferir, que a fonte dela tire o arrendamento). Serve à MA3. Subi-lo numa branch nova é sugestão para ela (seção 3); o Marcos também pode pedir o arquivo direto.
-- **IA (Eduardo):** ED7 feita (PR #20); limite do Gemini (PR #23); ED8 no PR #31 (02/11). Próxima: ter 03/11, demo ponta a ponta e tag `v0.1-demo` (a MG4 entrou no #36). Conferido em 30/10 com a `data/`
+- **IA (Eduardo):** ED7 feita (PR #20); limite do Gemini (PR #23); ED8 no PR #31 (02/11); demo ponta a ponta e tag `v0.1-demo` em 03/11 (acima). Próxima: sex 06/11, ED9 (`v1.0`) e ED11. Conferido em 30/10 com a `data/`
   real: o raio-x sem IA roda nas 595 empresas (0 erros, 0 removidos), e a busca do PostgreSQL devolve as mesmas 595.
   O K-means mudou um pouco com os dados do #22: silhueta 0,29 (era 0,30) e treino de 327, 76, 59 e 102 empresas
   (eram 330, 99, 74 e 59). Os PNG de `docs/graficos/` ainda são de 28/10: refazer com `python -m raiox.segmentos` depois da MA3.
@@ -173,8 +188,6 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
 - **Miguel:** avisar o grupo da MG4 (mexeu em `tests/`, `.env.example` e `aprender/`, pastas comuns) e mandar o print da tela
   rodando no Docker (MG1); conferir o `GOOGLE_API_KEY` no `.env`, se a demo for com IA (em 30/10 chegou vazio no
   `docker compose config`; ninguém abriu o arquivo; pelo Terraform, a IA funcionou em 31/10); MG5 (diagrama e README) na qua 04/11.
-- **Alguém com Mac (Eduardo?):** dentro de `infra/`, `terraform init` e `terraform apply` (se não achar o Docker, o
-  `DOCKER_HOST` do README) e dizer no grupo se subiu.
 - **Náthally** (desde 02/11, as tarefas dela separam obrigatório de sugestão: seção 3). **Obrigatório:**
   1. até qui 05/11, o ROI mínimo (NA3);
   2. o slide de métricas (NA4);
@@ -192,7 +205,7 @@ em 50 ms, o erro chegou em 0,4 s. Teste novo: `test_gemini_desiste_rapido_se_a_a
   2. perguntar ao professor a data da banca, as 2 perguntas que sobraram no REQUISITOS ("Perguntas para o professor": arquivos de
      prompts e base de conhecimento; a de backend e frontend foi respondida) e se há outras regras além dos arquivos dele (anotar no REQUISITOS);
   3. ✅ ED8 (PR #31, 02/11): falta o Marcos ler a `docs/justificativa.md` (é o "pronto quando");
-  4. ter 03/11: demo ponta a ponta com `docker compose up -d --build` (tela + PostgreSQL + `data/` real; a tela usa o banco desde o #36) e tag `v0.1-demo`;
+  4. ✅ ter 03/11: demo ponta a ponta (compose e Terraform no Mac) e tag `v0.1-demo` (acima). Mandar ao grupo que o Terraform subiu no Mac;
   5. no meio disso: `/explicar` nos pontos da seção 8.
 
 **Pendências pequenas:**
@@ -273,7 +286,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | sáb 31/10 | revisões; ED8 começa; plano B da MA2 se precisar | **MA2 (prazo)**; MA3 | ✅ MG3 Terraform (PR #29) | NA3 tempo manual; marcar testes |
 | dom 01/11 | revisões | MA4 EDA | ~~prazo da MG3~~ (entrou no sáb); MG4 | NA3 |
 | seg 02/11 (feriado) | ✅ ED12 na `main` (#30); ✅ ED8 adiantada (#31) | | ✅ MG4 adiantada (#36) | |
-| ter 03/11 | **demo ponta a ponta · tag `v0.1-demo`** | MA4 | ~~MG4~~ (feita em 02/11) | NA3 ROI mínimo |
+| ter 03/11 | ✅ **demo ponta a ponta · tag `v0.1-demo`** (compose e Terraform no Mac) | MA4 | ~~MG4~~ (feita em 02/11) | NA3 ROI mínimo |
 | qua 04/11 | ✅ ED8 (feita em 02/11) | MA5 BPMN | MG5 arquitetura + README | NA4 slide de métricas |
 | qui 05/11 | só bugs | MA5 | MG6 vídeo v0 | NA3 (prazo do ROI mínimo) |
 | sex 06/11 | **ED9: código congelado · tag `v1.0`**; ED11 avaliação final | | | |
@@ -320,8 +333,8 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 |---|---|---|---|---|---|---|---|
 | MG1 | qua 28/10 | ✅ conferido em 30/10: PR e check `testes` obrigatórios, só merge commit, apagar branch após o merge; tela rodando no Docker (o print vai para o grupo) | configurar o GitHub (seção 2, "Proteção da `main`"); rodar a tela local | configurações | só leitura | as 3 configurações feitas; print da tela no grupo | — |
 | MG2 | qui 29–sex 30/10 | ✅ PR #24 (30/10): os 2 contêineres `healthy`, health `ok`, `carregar_dfp.py` no banco do contêiner, 87 passed no contêiner | `Dockerfile` + `.dockerignore` + `docker-compose.yml` (tela + PostgreSQL com volume do banco; `data/` como volume; chave e `DATABASE_URL` por variável) | `Dockerfile`, `.dockerignore`, `docker-compose.yml` | Plan | `docker compose up` sobe os 2; `curl localhost:8501/_stcore/health` → `ok`; `scripts/carregar_dfp.py` grava no PostgreSQL do contêiner | `miguel-docker` → PR (Eduardo) |
-| MG3 | sáb 31/10–dom 01/11 | ✅ PR #29 (31/10): `apply` sobe os 2 `healthy`; `destroy` + `apply` mantém o banco e a `data/`; 87 passed no contêiner; 2º `plan` sem mudanças. IA pelo Terraform vista pelo Miguel. Não conferidos: portas padrão, Mac (seção 0) | **Terraform na `main`, obrigatório** (`requisitos_projeto.MD`, Aplicação: "Infraestrutura automatizada com Terraform"): provider docker com os 2 contêineres (tela + PostgreSQL), a partir do `terraform/` da branch `docs-docker-e-terraform`. Prazo: dom 01/11; reserva: seg 02/11 com o Eduardo. Não pode ser cortado | `infra/` | Plan | `terraform apply` sobe a tela e o banco; `destroy` + `apply` mantém a `data/` e o banco | PR |
-| MG4 | dom 01–ter 03/11 | ✅ PR #36 (02/11): WEG, Embraer e Ambev geram o raio-x no contêiner, e as 3 consultas estão na `consultas`; 8 testes em `tests/test_tela.py`. Não conferidos: a volta para o modo sem IA com o Gemini de verdade e a tela pelo Terraform (seção 0) | tela com dados reais e **com o banco** (R Aplicação: banco de dados): `RAIOX_DADOS` (`falsos`/`real`) no lugar do `USAR_DADOS_FALSOS`, e com `real` a busca e o `registrar_consulta` usam o PostgreSQL (`raiox/dados.py`); volta sozinha para o modo sem IA, com aviso; `registrar_consulta` dentro do `try`; `tests/test_tela.py` | `app/`, `.env.example`, `tests/` | Plan | 3 empresas reais geram raio-x no contêiner, e cada consulta aparece na tabela `consultas` | PR (Eduardo) |
+| MG3 | sáb 31/10–dom 01/11 | ✅ PR #29 (31/10): `apply` sobe os 2 `healthy`; `destroy` + `apply` mantém o banco e a `data/`; 87 passed no contêiner; 2º `plan` sem mudanças. IA pelo Terraform vista pelo Miguel. Portas padrão e Mac conferidos pelo Eduardo em 03/11 (seção 0) | **Terraform na `main`, obrigatório** (`requisitos_projeto.MD`, Aplicação: "Infraestrutura automatizada com Terraform"): provider docker com os 2 contêineres (tela + PostgreSQL), a partir do `terraform/` da branch `docs-docker-e-terraform`. Prazo: dom 01/11; reserva: seg 02/11 com o Eduardo. Não pode ser cortado | `infra/` | Plan | `terraform apply` sobe a tela e o banco; `destroy` + `apply` mantém a `data/` e o banco | PR |
+| MG4 | dom 01–ter 03/11 | ✅ PR #36 (02/11): WEG, Embraer e Ambev geram o raio-x no contêiner, e as 3 consultas estão na `consultas`; 8 testes em `tests/test_tela.py`. Gemini de verdade conferido em 03/11 (WEG). Não conferida: a volta para o modo sem IA com o Gemini fora do ar (seção 0) | tela com dados reais e **com o banco** (R Aplicação: banco de dados): `RAIOX_DADOS` (`falsos`/`real`) no lugar do `USAR_DADOS_FALSOS`, e com `real` a busca e o `registrar_consulta` usam o PostgreSQL (`raiox/dados.py`); volta sozinha para o modo sem IA, com aviso; `registrar_consulta` dentro do `try`; `tests/test_tela.py` | `app/`, `.env.example`, `tests/` | Plan | 3 empresas reais geram raio-x no contêiner, e cada consulta aparece na tabela `consultas` | PR (Eduardo) |
 | MG5 | qua 04/11 | — | diagrama de arquitetura + README (tema, objetivo e tecnologias já estão; pré-requisitos com Python 3.14; rodar local, Docker e Terraform) | `docs/arquitetura.png`, `README.md` | Manual | um colega entende o fluxo lendo o README; o README cobre o que o R pede em "Documentação" | PR |
 | MG6 | qui 05/11 | — | roteiro de 6 min da demo + vídeo v0 | — | — | vídeo salvo em 2 lugares | — |
 | MG7 | sáb 07/11 | — | vídeo final na `v1.0` | — | — | vídeo salvo em 2 lugares | — |
