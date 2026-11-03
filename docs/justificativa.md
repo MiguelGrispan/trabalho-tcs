@@ -104,7 +104,7 @@ da DFP. Ficou fora do escopo (`docs/PLANO.md`, seção 7).
   não passa por variável, então não fica no `terraform.tfstate` (`infra/main.tf:123-130`; conferido pelo Miguel no PR #29).
   Ponto fraco: a senha do PostgreSQL local passa por variável (`var.senha_banco`, padrão `postgres`; `infra/main.tf:112-113`) e fica no
   `terraform.tfstate`. Ele não vai para o Git, e o banco só abre em `127.0.0.1`.
-- **Não é recomendação de investimento:** o aviso aparece na tela (`app/streamlit_app.py:158-159`).
+- **Não é recomendação de investimento:** o aviso aparece na tela (`app/streamlit_app.py:187-188`).
 
 ## 6. Perguntas prováveis da banca (respostas curtas)
 
