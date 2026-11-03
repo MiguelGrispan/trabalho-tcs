@@ -142,7 +142,8 @@ Lista completa, com o que deve aparecer: `aprender/COMANDOS.md`.
 - Ambiente: `python -m venv .venv` e `pip install -r requirements.txt`. No Mac do Eduardo, sem `.venv`, use `~/bootcamp/bin/python`.
 - Testes: `python -m pytest -q` (não chamam a API).
 - Módulos: `python -m raiox.ia ... --sem-ia`, `python -m raiox.segmentos`, `python -m raiox.checagem --teste`.
-- Tela: `cd app && streamlit run streamlit_app.py`. `RAIOX_IA_REAL=1` liga o Gemini. Até o `raiox/dados.py` ficar pronto, a tela usa `falsos/`.
+- Tela: `cd app && streamlit run streamlit_app.py`. `RAIOX_IA_REAL=1` liga o Gemini. Com a `data/` real, a tela busca no PostgreSQL;
+  com `RAIOX_DADOS=falsos` (ou sem a `data/`), usa `falsos/`.
 - Docker (tela + PostgreSQL): `docker compose up -d --build` (tela em `http://localhost:8501`), `docker compose ps` (os 2 `healthy`),
   testes no contêiner com `docker compose run --rm tela python -m pytest -q`, e `docker compose down` para desligar.
   Os outros comandos estão no topo do `docker-compose.yml`.

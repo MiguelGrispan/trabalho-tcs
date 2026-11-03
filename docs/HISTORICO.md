@@ -78,6 +78,10 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   `destroy` + `apply`. No Mac, o Terraform só acha o Docker com o `DOCKER_HOST` (`README.md:158`).
 - **03/11** · O Eduardo testa a tela com o Gemini fora do ar (chave falsa): o plano B funciona; 2 problemas de aparência viram as
   issues #38 e #39 (Miguel, MG4b). Entra `docs/etica.md`, a base técnica da ética para a Náthally (PR `eduardo-etica`).
+- **03/11** · **Revisão geral** (Eduardo com o Claude Code): a MA3 do Marcos estava pronta numa branch sem PR, e a nota dizia que
+  ela não existia (issue #42); a S2 dele explica 2 das 3 diferenças do "7 de 10"; a #17 (Camil) passa ao Marcos; um bug na tela
+  aberta antes da carga da CVM (#43, Eduardo) e a tela aberta para a rede no compose (#44, Miguel). A seção 0 do PLANO cai de
+  ~240 para ~90 linhas (a versão longa: `git show 9f85bc9:docs/PLANO.md`). Proposta: o Eduardo monta o PDF e o processo congela até a entrega.
 
 ## Decisões (e por quê)
 
