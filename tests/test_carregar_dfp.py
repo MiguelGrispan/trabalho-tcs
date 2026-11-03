@@ -148,9 +148,12 @@ class PipelineCompletoTests(TesteComBanco):
     def rodar_main(self):
         def baixar_falso(url):
             nome = url.rsplit("/", 1)[-1]
-            if nome not in self.downloads:
-                raise requests.exceptions.HTTPError(f"404: {nome}")  # como a CVM sem o arquivo
-            return self.downloads[nome]
+            conteudo = self.downloads.get(nome, 404)  # como a CVM sem o arquivo
+            if isinstance(conteudo, int):
+                resposta = requests.Response()
+                resposta.status_code = conteudo
+                raise requests.exceptions.HTTPError(f"{conteudo}: {nome}", response=resposta)
+            return conteudo
 
         with (
             patch.object(carregar_dfp, "DATA_DIR", self.data_dir),
@@ -218,6 +221,13 @@ class PipelineCompletoTests(TesteComBanco):
         contas = self.rodar_main()
 
         self.assertEqual(set(contas["cd_cvm"]), {"1", "3"})
+
+    def test_main_para_se_a_cvm_falha_no_arquivo_do_ano_seguinte(self):
+        """Erro 500 não é "arquivo não existe": parar é melhor que perder a Camil calado. 🚧"""
+        self.downloads["dfp_cia_aberta_2026.zip"] = 500
+
+        with self.assertRaises(requests.exceptions.HTTPError):
+            self.rodar_main()
 
     def test_main_para_se_falta_o_arquivo_de_um_dos_anos(self):
         """Faltou um dos anos de verdade? Aí para, em vez de seguir com buraco. 🛑"""

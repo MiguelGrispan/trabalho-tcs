@@ -30,7 +30,7 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 - **Demo ponta a ponta** no `docker compose` e no Terraform (Mac do Eduardo, 03/11), tag `v0.1-demo` (`9689db9`): busca no
   PostgreSQL, raio-x sem IA (Vale, Embraer, Ambev) e com o Gemini (WEG, US$ 0,0011), cada consulta gravada na `consultas`.
   Com o Gemini fora do ar (chave falsa), a tela cai no modo sem IA, avisa e grava a consulta com custo 0.
-- **Testes:** 240 passed, nenhum pulado (Windows do Marcos, com o PostgreSQL ligado e `PYTHONUTF8=1`, 03/11 ~12h, branch do #46).
+- **Testes:** 241 passed, nenhum pulado (Windows do Marcos, com o PostgreSQL ligado e `PYTHONUTF8=1`, 03/11 ~12h, branch do #46).
   Sem o `PYTHONUTF8`, 8 testes das travas falham no Windows: issue #45 (abaixo).
 - **Textos-base prontos:** `docs/justificativa.md` (ED8; falta o Marcos ler) e `docs/etica.md` (base da NA5).
 - No Mac, o Terraform só acha o Docker com `export DOCKER_HOST=unix://$HOME/.docker/run/docker.sock` (`README.md:158`).

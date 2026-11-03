@@ -96,10 +96,12 @@ def main():
         url = f"{BASE_URL}/DOC/DFP/DADOS/dfp_cia_aberta_{ano_arquivo}.zip"
         try:
             conteudo = baixar_com_retry(url)
-        except requests.exceptions.HTTPError:
+        except requests.exceptions.HTTPError as erro:
             # O arquivo a mais só aparece quando a 1ª empresa que fecha fora de
-            # dezembro entrega a DFP: sem ele, segue só com os outros
-            if ano_arquivo in ANOS:
+            # dezembro entrega a DFP: sem ele (404), segue só com os outros.
+            # Outro erro (CVM fora do ar) para, senão essas empresas sumiriam
+            nao_existe = erro.response is not None and erro.response.status_code == 404
+            if ano_arquivo in ANOS or not nao_existe:
                 raise
             print(f"Aviso: a CVM ainda não tem o arquivo de {ano_arquivo}; seguindo sem ele.")
             continue
