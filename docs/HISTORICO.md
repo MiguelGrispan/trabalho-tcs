@@ -73,6 +73,9 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 - **02/11** · **MG4** (PR #36): a tela busca as empresas no PostgreSQL e grava cada consulta na tabela `consultas`; se o Gemini falhar,
   volta sozinha para o modo sem IA. Conferido no Docker com WEG, Embraer e Ambev. O #34 (o guia do professor sem os exemplos, refeito
   pelo grupo no Google Docs) foi desfeito pelo #35, e a branch antiga `docs-docker-e-terraform` foi apagada (a MG2 e a MG3 já a cobriam).
+- **03/11** · **Demo ponta a ponta no Mac do Eduardo** e tag `v0.1-demo` (no merge do #36): Vale, Embraer e Ambev sem IA e WEG com o
+  Gemini (US$ 0,0011), todas gravadas na `consultas`. O **Terraform** sobe pela 1ª vez num Mac, nas portas padrão, e o banco sobrevive ao
+  `destroy` + `apply`. No Mac, o Terraform só acha o Docker com o `DOCKER_HOST` (`README.md:158`).
 
 ## Decisões (e por quê)
 
