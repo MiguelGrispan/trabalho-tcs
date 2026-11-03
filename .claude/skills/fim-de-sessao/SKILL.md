@@ -34,6 +34,9 @@ Siga os passos **em ordem** e pare no primeiro que falhar.
 
 - **Antes de escrever, releia `docs/professor/requisitos_projeto.MD` e `docs/professor/guia_projeto_final.pdf`.** Nenhuma nota
   pode dizer que algo exigido ali é opcional, extra ou cortável; toda frase sobre o que o professor exige cita o arquivo e o item.
+- **Antes de reescrever a seção 0, confira o GitHub de novo** (a nota pode ter ficado velha durante a sessão): `git fetch --prune`,
+  `git branch -r --no-merged origin/main` e, para cada branch, `gh pr list --head <branch> --state all`. Branch com commit novo e
+  sem PR vira linha na seção 0 e issue para o dono (em 03/11, a MA3 ficou pronta numa branch sem PR, e a nota dizia que ela não existia).
 - **`docs/PLANO.md`, seção 0:** data e hora aproximada; o que mudou, com prova (arquivo, linha ou comando); os testes
   (quantos passaram e quantos foram pulados); o próximo passo. Apague o que ficou velho, em vez de só acrescentar.
 - **`docs/PLANO.md`, seção 3:** a coluna "status" da sessão (✅ feito, 🟡 em parte).
@@ -60,7 +63,21 @@ Siga os passos **em ordem** e pare no primeiro que falhar.
   Vermelho: mostre o erro, conserte na mesma branch e espere de novo.
 - Peça ao subagent `revisor` (`.claude/agents/revisor.md`) a revisão do PR `<número>` e mostre a resposta dele. Ele não viu a
   sessão e não torce pelo código: enxerga o que quem escreveu deixa passar. Se ele disser **BLOQUEIA**, pare, conserte e peça
-  de novo. Depois, diga em 3 linhas o que o PR muda e o risco que sobrou.
+  de novo. Os itens de **ATENÇÃO** nos arquivos deste PR: corrija na mesma branch antes do merge (commit "Achados do revisor"),
+  espere o CI de novo, peça ao `revisor` uma segunda olhada só nas correções e diga à pessoa o que mudou; o que não der para
+  corrigir agora vira issue (abaixo). Depois, diga em 3 linhas
+  o que o PR muda e o risco que sobrou.
+- **Erro achado fora do PR, na pasta de outro dono** (na sessão ou pelo revisor): não conserte lá (CLAUDE.md, regra 1). Abra uma
+  issue para o dono e escreva a sessão dele no PLANO (desde 03/11; ex.: issues #38 e #39 → MG4b do Miguel):
+  - `gh issue create --assignee <login> --label bug --body-file <arquivo>` (`--label documentation` se o erro é de texto). O título
+    vai na linha de comando: sem `.env` nem comando proibido nele. O corpo, escrito pela ferramenta Write fora do repositório, nunca
+    leva chave, senha nem dado pessoal (o repositório vai para o professor) e diz: o que acontece, onde (arquivo e linha), por que importa na banca (arquivo do professor e item), como reproduzir,
+    sugestão de conserto e prazo. Logins: Marcos `MarcosIurak`, Miguel `MiguelGrispan`, Náthally `Hawkie06`, Eduardo `Mindoim`;
+  - no `docs/PLANO.md`: uma linha nova na tabela da pessoa (seção 3, ex.: MG4b), com o número das issues e o "pronto quando",
+    a data no calendário e uma linha no "Próximo passo de cada um" (seção 0);
+  - entregue à pessoa a mensagem pronta para o dono, com os links das issues (a Náthally não usa terminal: ela vê pela aba
+    "Issues" do GitHub ou pela mensagem);
+  - mudou o PLANO depois do CI? É commit novo: espere o `pass` de novo antes do merge.
 - Se mexeu em pasta de outro dono ou no `contratos.md`, confirme com a pessoa que o dono deu o ok no grupo.
 - Peça **um "pode"** à pessoa. Com o "pode": `gh pr merge <número> --merge --delete-branch`. O Claude Code ainda pede
   permissão antes (regra `ask` do `.claude/settings.json`): é a segunda trava, para o merge nunca sair sem ela ver. Recusou, pare.

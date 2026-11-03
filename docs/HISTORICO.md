@@ -78,6 +78,10 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   `destroy` + `apply`. No Mac, o Terraform só acha o Docker com o `DOCKER_HOST` (`README.md:158`).
 - **03/11** · O Eduardo testa a tela com o Gemini fora do ar (chave falsa): o plano B funciona; 2 problemas de aparência viram as
   issues #38 e #39 (Miguel, MG4b). Entra `docs/etica.md`, a base técnica da ética para a Náthally (PR `eduardo-etica`).
+- **03/11** · **Revisão geral** (Eduardo com o Claude Code): a MA3 do Marcos estava pronta numa branch sem PR, e a nota dizia que
+  ela não existia (issue #42); a S2 dele explica 2 das 3 diferenças do "7 de 10"; a #17 (Camil) passa ao Marcos; um bug na tela
+  aberta antes da carga da CVM (#43, Eduardo) e a tela aberta para a rede no compose (#44, Miguel). A seção 0 do PLANO cai de
+  ~240 para ~90 linhas (a versão longa: `git show 9f85bc9:docs/PLANO.md`). Proposta: o Eduardo monta o PDF e o processo congela até a entrega.
 
 ## Decisões (e por quê)
 
@@ -107,6 +111,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 02/11 | a tela escolhe entre falsos e banco pela mesma função do raio-x (`usando_falsos()`, `RAIOX_DADOS`), sem chave própria; se a IA falhar, cai sozinha no modo sem IA | com duas chaves, a busca podia vir do banco e o raio-x da tabela falsa, e nada bateria; a demo não pode parar porque a API caiu |
 | 02/11 | o guia do professor fica como ele mandou, com os exemplos (#34 desfeito pelo #35) | uma versão refeita pelo grupo deixa de ser a fonte da verdade, e tirar a seção 4 renumeraria as seguintes, quebrando 21 citações como "G §6" |
 | 02/11 | tarefas da Náthally: obrigatório é só o que os arquivos do professor pedem (deck, ética e, na apresentação, ROI e métricas); testes com usuários, `revisao.csv` e regras v3 viram sugestão | ela trabalha no ritmo dela e sem IA para código; o grupo concentra o tempo dela no que a banca avalia |
+| 03/11 | erro achado na pasta de outro dono vira **issue no GitHub** para ele e uma sessão dele no PLANO; o ATENÇÃO do revisor é corrigido antes do merge (`/fim-de-sessao`, passo 6; `CLAUDE.md`, regra 1) | recado no chat se perde e ninguém cobra; a issue fica com dono, prova e prazo (primeiras: #38 e #39). No PR #40, o revisor achou uma frase falsa na ética que só foi corrigida porque o ATENÇÃO foi tratado |
 
 **Já cortado do escopo:** verificação com yfinance, receita em 3 anos, filtro de setor, RAG, nome dos grupos pelo LLM,
 exportar o raio-x, 20 casos (ficaram 10). A lista e a ordem dos próximos cortes estão no PLANO, seção 7.

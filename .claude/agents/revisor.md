@@ -24,5 +24,5 @@ Confira, nesta ordem, citando arquivo e linha do diff:
 
 Responda em até 15 linhas, em português simples, neste formato:
 - **BLOQUEIA:** o que impede o merge (ou "nada");
-- **ATENÇÃO:** o que vale ver, mas não impede;
+- **ATENÇÃO:** o que não impede sozinho, mas o autor corrige antes do merge se estiver nos arquivos do PR (o que não der vira issue);
 - **NÃO CONFERI:** o que você não conseguiu olhar.
