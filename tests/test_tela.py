@@ -169,6 +169,7 @@ def test_tela_avisa_quando_o_banco_nao_responde(dados_reais, monkeypatch):
     at.text_input(key="busca").input("alfa").run()
     assert not at.exception
     assert "Não consegui falar com o banco" in textos(at.error)
+    assert "terraform apply" in textos(at.error)                 # quem subiu pelo Terraform também sabe o que fazer
 
 
 def test_tela_mostra_erro_quando_nem_o_modo_sem_ia_funciona(monkeypatch):
@@ -186,6 +187,7 @@ def test_tela_avisa_quando_o_banco_esta_vazio(banco_vazio):
     at.text_input(key="busca").input("alfa").run()
     assert not at.exception and not at.error
     assert "O banco está vazio" in textos(at.warning)
+    assert "infra/main.tf" in textos(at.warning)                 # os comandos de carga de quem subiu pelo Terraform
 
 
 def test_tela_busca_no_banco_e_registra_a_consulta(banco_vazio):

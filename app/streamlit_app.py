@@ -82,12 +82,13 @@ with st.sidebar:
         try:
             opcoes = buscar_empresas(texto)
             if not opcoes and not DADOS_FALSOS and not catalogo_existe():
-                st.warning("O banco está vazio: carregue os dados da CVM (comandos no topo do docker-compose.yml).")
+                st.warning("O banco está vazio: carregue os dados da CVM (comandos no topo do docker-compose.yml, "
+                           "ou do infra/main.tf se você subiu pelo Terraform).")
             elif not opcoes:
                 st.info("Nenhuma empresa encontrada com esse nome.")
         except Exception as erro:  # banco desligado, senha errada...
-            st.error("Não consegui falar com o banco de dados. Ele está ligado? "
-                     f"(`docker compose up -d banco`). Detalhe: {erro}")
+            st.error("Não consegui falar com o banco de dados. Ele está ligado? (`docker compose up -d banco`, "
+                     f"ou `terraform apply` dentro de `infra/`). Detalhe: {erro}")
     if opcoes:
         escolha = st.selectbox("Escolha a empresa", opcoes, index=None, placeholder="Selecione",
                                format_func=lambda e: f"{e['nome']} · {e['setor']}", key="empresa")
