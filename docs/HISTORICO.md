@@ -99,6 +99,10 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 - **04/11** · **MA3b** (Marcos): conserto da #48. O `publicar()` libera o CSV para leitura (`0644`) antes de trocá-lo, com teste novo.
   Falta a conferência no Linux do Miguel. Na validação do dia, o `python -m raiox.segmentos` deu grupos de 330, 108, 91 e 66
   com os dados do #46 (os PNG de `docs/graficos/` continuam os de 28/10).
+- **04/11** · O #51 (MA3b) entrou na `main`, e a #48 foi fechada depois de o Miguel conferir no Linux: o CSV sai legível e a
+  Camil gera o raio-x sem o `chmod`. **MA5** (Marcos): o BPMN 2.0 do processo com o Raio-X (`docs/bpmn/`), desenhado pelo Claude
+  Code a partir do código, com as decisões "tem dados?" e "passou no validador?" (item por item); abre no bpmn-js sem avisos. O `revisor` achou que o
+  1º desenho dizia "frase por frase", e o código confere o resumo inteiro, cada pergunta e cada lacuna: corrigido no mesmo PR.
 
 ## Decisões (e por quê)
 
