@@ -120,6 +120,9 @@ def publicar():
         with conectar() as conn, conn.begin():
             resultado.to_sql("indicadores", conn, if_exists="replace", index=False)
             conn.execute(text("ALTER TABLE indicadores ADD PRIMARY KEY (cd_cvm)"))
+        # O temporário nasce só para o dono (0600); a tela no Docker roda com
+        # outro usuário e precisa ler o CSV (issue #48)
+        temporario.chmod(0o644)
         temporario.replace(DATA_DIR / "indicadores.csv")
     finally:
         temporario.unlink(missing_ok=True)

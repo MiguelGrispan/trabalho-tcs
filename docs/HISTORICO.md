@@ -96,6 +96,9 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   antigas por cima, e o `tests/test_tela.py` antigo junto do `raiox/dados.py` novo derrubou 1 teste. Conserto: `git merge --abort`
   (com o ok do Miguel) e o merge refeito do zero. Na recarga da CVM com o #46, a tela não gerava nenhum raio-x: o
   `indicadores.py` novo grava o CSV com permissão só do dono, e o contêiner não lê (issue #48, Marcos; contorno: `chmod 644`).
+- **04/11** · **MA3b** (Marcos): conserto da #48. O `publicar()` libera o CSV para leitura (`0644`) antes de trocá-lo, com teste novo.
+  Falta a conferência no Linux do Miguel. Na validação do dia, o `python -m raiox.segmentos` deu grupos de 330, 108, 91 e 66
+  com os dados do #46 (os PNG de `docs/graficos/` continuam os de 28/10).
 
 ## Decisões (e por quê)
 
