@@ -301,7 +301,7 @@ o modelo usa as 5.*
 silhueta 0,30 e grupos de 333, 65, 90 e 107 na legenda (todas as empresas); o texto acima usa os dados de 30/10.]
 
 ### 6.3 IA generativa: por que nem RAG vetorial nem fine-tuning
-**A base de conhecimento** da IA é a tabela de indicadores calculada da DFP da CVM. O código busca a linha exata da empresa pelo
+**A base de dados da IA** é a tabela de indicadores calculada da DFP da CVM. O código busca a linha exata da empresa pelo
 código CVM (`montar()`, `raiox/ia.py`) e entrega ao Gemini, para cada indicador, o nome, o valor da empresa, a mediana do grupo
 (já formatados, ex.: "R$ 12,3 bi") e a posição ("acima", "abaixo" ou "em linha"), calculada por código. O Gemini **lê** esses
 valores para entender a empresa, mas **só pode escrever os marcadores**. É geração aumentada por recuperação, com a recuperação
@@ -313,7 +313,7 @@ valores para entender a empresa, mas **só pode escrever os marcadores**. É ger
 | Fine-tuning | treinar o modelo com exemplos de raio-x bons | não temos centenas de exemplos rotulados; custa mais; os dados mudam todo ano; e treinar **não impede** o modelo de errar número, que é o risco principal |
 | **O que usamos** | prompt + saída estruturada (Pydantic) + validador | barato (≈ US$ 0,0012 por raio-x), reproduzível e conferível |
 
-Se essa tabela conta como a "base de dados de conhecimento" que o `requisitos_projeto.MD` pede (Integração com IA de terceiro) é uma
+Se a tabela de indicadores conta como a "base de dados de conhecimento" que o `requisitos_projeto.MD` pede (Integração com IA de terceiro) é uma
 pergunta ao professor, ainda sem resposta. O projeto também segue o caminho "Treinamento de Machine Learning" (seção 6.2), e o
 `requisitos_projeto.MD` pede uma das duas abordagens. [PENDENTE: resposta do professor à pergunta 3]
 

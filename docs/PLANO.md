@@ -69,10 +69,11 @@ A versão longa desta seção, até 03/11, ficou no Git: `git show 9f85bc9:docs/
   grupos de 327, 76, 59 e 102, 564 no treino); `avaliacao/resultados.csv` (10 casos, 0 removidos, US$ 0,0118, 2,19 s em média);
   `avaliacao/conferencia.csv` (13 linhas, todas 0,00%).
 - **Achados, marcados no PDF:** os 10 raio-x do `resultados.csv` são de 29/10, antes da correção da Camil (o dela usou receita de
-  R$ 12,3 bi; custo, tempo e removidos não mudam). Os PNG de `docs/graficos/` são de 28/10 (a legenda dos grupos diz 333, 65, 90 e 107).
+  R$ 12,3 bi; custo, tempo e removidos não devem mudar: suposição, não medida). Os PNG de `docs/graficos/` são de 28/10 (a legenda dos grupos diz 333, 65, 90 e 107).
 - **Gerar o PDF de novo:** `~/bootcamp/bin/python ~/projeto_final_tcs/gerar_pdf_documentacao.py ~/projeto_final_tcs/trabalho-tcs`
   (o script fica fora do repositório, no Mac do Eduardo: `mistune` converte o markdown e o Chrome salva em PDF). Sem o Mac dele,
-  qualquer um gera o PDF abrindo o `docs/documentacao.md` no VS Code ou no Obsidian e exportando para PDF (fica com outra aparência).
+  qualquer um gera o PDF abrindo o `docs/documentacao.md` no Obsidian e usando "Export to PDF" (fica com outra aparência; no VS Code,
+  só com uma extensão).
 - **Quando entrar na `main`:** o Marcos troca a citação do `raiox/limpeza.py:3-4` (hoje aponta para o `docs/Raio-X Comercial.pdf`,
   de 20/10, que ainda fala de SQLite) pela seção 3 do `docs/documentacao.pdf`, e o PDF velho sai (combinado com ele em 04/11).
 
@@ -207,7 +208,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | seg 02/11 (feriado) | ✅ ED12 na `main` (#30); ✅ ED8 adiantada (#31) | | ✅ MG4 adiantada (#36) | |
 | ter 03/11 | ✅ **demo ponta a ponta · tag `v0.1-demo`** (compose e Terraform no Mac); revisão geral (issues #42 a #44) | MA4 (atrasada); ✅ MA3: PR #46 (#42, #17) | ~~MG4~~ (feita em 02/11); ✅ MG4b adiantada (#47) | NA3 ROI mínimo |
 | qua 04/11 | 🟡 **MA6 rascunho 1** (PDF; merge quando o grupo liberar); **ED13: issue #43** (~30 min); ✅ ED8 (feita em 02/11) | ~~PR da MA3 e #17~~ (PR #46, 03/11); zip da `data/`; MA5 BPMN | ~~MG4b~~ (#47, merge em 04/11); recarga da CVM; MG5 arquitetura + README | NA4 slide de métricas |
-| qui 05/11 | só bugs; **ED14: issue #45** (travas no Windows) | **MA3b: issue #48** (~20 min); MA5 | MG6 vídeo v0 | NA3 (prazo do ROI mínimo) |
+| qui 05/11 | só bugs; **ED14: issue #45** (travas no Windows); ED15: issue #50, se der | **MA3b: issue #48** (~20 min); MA5 | MG6 vídeo v0 | NA3 (prazo do ROI mínimo) |
 | sex 06/11 | **ED9: código congelado · tag `v1.0`**; ED11 avaliação final | | | |
 | sáb 07/11 | ED10 teste do zero | revisar o rascunho do PDF (MA6) | MG7 vídeo final na `v1.0` | NA5 ética |
 | dom 08/11 | **todos mandam o conteúdo dos slides à Náthally** | | | NA5 deck |
