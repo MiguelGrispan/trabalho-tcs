@@ -1,4 +1,5 @@
 import json
+import stat
 import tempfile
 import unittest
 from pathlib import Path
@@ -144,6 +145,24 @@ class CatalogoTests(TesteComBanco):
                 tabela = pd.read_sql(text("SELECT * FROM indicadores"), conn)
             # Coluna toda vazia: o banco devolve None e o CSV, NaN. Com os mesmos tipos, viram iguais
             pd.testing.assert_frame_equal(lido, tabela.astype(lido.dtypes.to_dict()))
+
+    def test_publicar_deixa_o_csv_legivel_para_outros_usuarios(self):
+        """Issue #48: a tela no Docker roda com outro usuário e precisa ler o CSV.
+        No Windows passa sempre; quem confere de verdade é o CI, no Linux."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            data_dir = Path(temp_dir)
+            pd.DataFrame([
+                ["5410", "WEG S.A.", "Máquinas", "3.01", "Receita de Venda", 1234.5, 2025, "DRE", "con", 1],
+            ], columns=[
+                "cd_cvm", "nome", "setor", "cd_conta", "ds_conta", "valor",
+                "ano", "demonstracao", "origem", "versao",
+            ]).to_csv(data_dir / "contas.csv", index=False)
+
+            with patch.object(indicadores, "DATA_DIR", data_dir):
+                indicadores.publicar()
+
+            modo = stat.S_IMODE((data_dir / "indicadores.csv").stat().st_mode)
+            self.assertEqual(modo & 0o044, 0o044)
 
     def test_sem_catalogo_devolve_vazio(self):
         self.executar("DROP TABLE contas")
