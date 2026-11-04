@@ -55,7 +55,7 @@ services:
     volumes:
       - ./data:/app/data                                # a data/ não vai para o Git nem para a imagem
     ports:
-      - "8501:8501"
+      - "127.0.0.1:8501:8501"                           # só o seu computador abre a tela, como no Terraform
 
 volumes:
   banco-dados:
