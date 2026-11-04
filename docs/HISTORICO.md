@@ -103,6 +103,9 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   Camil gera o raio-x sem o `chmod`. **MA5** (Marcos): o BPMN 2.0 do processo com o Raio-X (`docs/bpmn/`), desenhado pelo Claude
   Code a partir do código, com as decisões "tem dados?" e "passou no validador?" (item por item); abre no bpmn-js sem avisos. O `revisor` achou que o
   1º desenho dizia "frase por frase", e o código confere o resumo inteiro, cada pergunta e cada lacuna: corrigido no mesmo PR.
+- **04/11** · **MA4** (Marcos): a EDA em `notebooks/eda.ipynb`, com 4 gráficos (nulos, distribuições, extremos, cobertura) e o
+  porquê de cada decisão de limpeza e do K-means; um teste roda o notebook inteiro no CI. A EDA achou um erro que a limpeza
+  deixava passar: a NTS tem 2023 cerca de 1.000 vezes menor e aparecia com crescimento de +107.154% (issue #53, MA4b).
 
 ## Decisões (e por quê)
 
@@ -137,6 +140,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 03/11 | corte de receita mínima de R$ 10 mi no K-means, confirmado pelo Marcos | abaixo dele, 52% das 31 empresas têm margem EBIT acima de 100% ou abaixo de −100%; acima, só 4% das 564 |
 | 03/11 | a conexão com o banco desiste em 5 s | sem limite, o psycopg espera 130 s, e a tela ficava parada antes do aviso de banco desligado (a demo não pode travar) |
 | 03/11 | a tela só abre no próprio computador (`127.0.0.1`), no compose como no Terraform; o erro técnico da IA vai para "Detalhes técnicos" e para o log, nunca para o aviso | com a IA ligada, qualquer um no mesmo Wi-Fi (o do SENAI, no dia da banca) abria a tela e gastava crédito; quem precisar abrir de outro aparelho muda a porta de propósito. Um JSON do Google no telão não diz nada ao vendedor, mas quem conserta precisa dele |
+| 04/11 | a EDA importa do código os limites da checagem e o corte do K-means, em vez de copiar os números; vai para o Git já rodada; com os dados falsos, roda sem gravar os PNG | o notebook nunca discorda do código; a banca vê os gráficos no GitHub sem rodar nada; o CI confere o "Run All" sem tocar nos gráficos dos dados reais |
 
 **Já cortado do escopo:** verificação com yfinance, receita em 3 anos, filtro de setor, RAG, nome dos grupos pelo LLM,
 exportar o raio-x, 20 casos (ficaram 10). A lista e a ordem dos próximos cortes estão no PLANO, seção 7.
