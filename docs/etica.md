@@ -54,11 +54,11 @@ traz a "base", o indicador que a motivou, visível na tela. **O que não resolve
 
 - **Dado de até um ano atrás:** a DFP é anual (`scripts/indicadores.py:60`, último ano disponível). Resultado do trimestre não entra.
 - **Acerto contra o RI: 7 de 10** na conferência manual da Náthally (29/10; o `revisao_manual.md` está na branch `feat/metricas`,
-  ainda não na `main`). As 3 diferenças foram explicadas na MA3 (PR #46, 03/11): a Camil era um erro nosso (ano fiscal de março a
-  fevereiro, issue #17), corrigido; em Magalu e RD Saúde, o sistema bate com o RI, e a diferença veio da fonte usada na conferência
-  manual (suposição do Marcos: não se sabe qual fonte ela usou). Depois da correção, o Marcos conferiu 13 valores de 5 empresas contra
+  ainda não na `main`). Na MA3 (PR #46, 03/11), 1 das 3 diferenças foi explicada e corrigida: a Camil era um erro nosso (ano fiscal de março a
+  fevereiro, issue #17), corrigido. Em Magalu e RD Saúde, o sistema bate com o RI, e a causa da diferença não foi confirmada (suposição do Marcos: a fonte
+  usada na conferência manual; não se sabe qual foi). Depois da correção, o Marcos conferiu 13 valores de 5 empresas contra
   o PDF do RI, todos com diferença de 0,00% (`avaliacao/conferencia.csv`). **Na banca, falar os dois: 7 de 10 na conferência manual,
-  com as 3 diferenças explicadas, e 13 de 13 na conferência do Marcos. Não dizer "100%" sem dizer de quê.**
+  com a Camil corrigida e 2 diferenças sem causa confirmada, e 13 de 13 na conferência do Marcos. Não dizer "100%" sem dizer de quê.**
 - **Fonte em cada número:** cada indicador mostra a conta da DFP de onde veio (coluna "fonte", `raiox/ia.py:36-44`), para o vendedor
   conferir.
 

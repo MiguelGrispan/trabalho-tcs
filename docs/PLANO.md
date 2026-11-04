@@ -60,7 +60,7 @@ A versão longa desta seção, até 03/11, ficou no Git: `git show 9f85bc9:docs/
 - No Mac, o Terraform só acha o Docker com `export DOCKER_HOST=unix://$HOME/.docker/run/docker.sock` (`README.md:158`).
 
 ### MA6 (Eduardo, 04/11): rascunho 1 do documento do projeto
-- **`docs/documentacao.md`** (o texto, que se edita) e **`docs/documentacao.pdf`** (13 páginas, gerado do markdown). Atende o
+- **`docs/documentacao.md`** (o texto, que se edita) e **`docs/documentacao.pdf`** (gerado do markdown). Atende o
   `requisitos_projeto.MD`, Documentação ("as etapas desenvolvidas durante o processo") e o guia §6, Documentação do Projeto (PDF):
   BPMN 2.0, justificativa técnica (RAG × fine-tuning) e análise de ética e segurança. Seções: problema, etapas (do HISTORICO), dados
   e limpeza (as 7 regras, conferidas no código de hoje), BPMN, arquitetura, justificativa (do `justificativa.md`), ética e segurança
@@ -71,7 +71,8 @@ A versão longa desta seção, até 03/11, ficou no Git: `git show 9f85bc9:docs/
 - **Achados, marcados no PDF:** os 10 raio-x do `resultados.csv` são de 29/10, antes da correção da Camil (o dela usou receita de
   R$ 12,3 bi; custo, tempo e removidos não mudam). Os PNG de `docs/graficos/` são de 28/10 (a legenda dos grupos diz 333, 65, 90 e 107).
 - **Gerar o PDF de novo:** `~/bootcamp/bin/python ~/projeto_final_tcs/gerar_pdf_documentacao.py ~/projeto_final_tcs/trabalho-tcs`
-  (o script fica fora do repositório, no Mac do Eduardo: `mistune` converte o markdown e o Chrome salva em PDF).
+  (o script fica fora do repositório, no Mac do Eduardo: `mistune` converte o markdown e o Chrome salva em PDF). Sem o Mac dele,
+  qualquer um gera o PDF abrindo o `docs/documentacao.md` no VS Code ou no Obsidian e exportando para PDF (fica com outra aparência).
 - **Quando entrar na `main`:** o Marcos troca a citação do `raiox/limpeza.py:3-4` (hoje aponta para o `docs/Raio-X Comercial.pdf`,
   de 20/10, que ainda fala de SQLite) pela seção 3 do `docs/documentacao.pdf`, e o PDF velho sai (combinado com ele em 04/11).
 
@@ -81,12 +82,14 @@ A versão longa desta seção, até 03/11, ficou no Git: `git show 9f85bc9:docs/
 - **#48** (Marcos, MA3b, achada pelo Miguel em 04/11): o `indicadores.py` novo grava a `data/indicadores.csv` como `-rw-------`, e a
   tela no contêiner não lê: todo raio-x falha com `Permission denied`. Contorno: `chmod 644 data/indicadores.csv` e
   `docker compose restart tela` depois de cada recarga.
+- **#50** (Eduardo, ED15, achada pelo `revisor` no #49): o validador deixa passar "dobrou", "triplicou" e "um quarto" (`POR_EXTENSO`,
+  `raiox/ia.py:221`). Nenhum caso nos 10 raio-x da avaliação; o limite já está na seção 7.2 do PDF.
 - As #38, #39 e #44 foram fechadas pelo #47 (MG4b).
 
 ### Caminho crítico (o que trava os outros)
 1. **A recarga dos dados com o #46.** Cada um roda de novo `python scripts/carregar_dfp.py` e `python scripts/indicadores.py` (os dois
    precisam do PostgreSQL ligado) e reinicia a tela (o cache da #43 guarda a tabela velha). Sem a tabela `indicadores`, a busca não
-   acha nada e a tela diz "O banco está vazio". **No Linux, até a #48 ser consertada:** depois da recarga, `chmod 644 data/indicadores.csv`,
+   acha nada e a tela diz "O banco está vazio" (o banco do compose do Miguel não tinha a tabela até a recarga de 04/11). **No Linux, até a #48 ser consertada:** depois da recarga, `chmod 644 data/indicadores.csv`,
    senão a tela não gera nenhum raio-x. Depois, o Eduardo refaz o `python -m raiox.segmentos`, os PNG e os números do K-means na
    seção 6 do PDF.
 2. **Os entregáveis.** O código está perto do fim; o que falta é documento: BPMN (MA5), EDA (MA4, atrasada), diagrama de arquitetura
@@ -102,10 +105,10 @@ A versão longa desta seção, até 03/11, ficou no Git: `git show 9f85bc9:docs/
   pelo site do GitHub. Um PR pequeno, com o ok do Eduardo, tirando `verificar_automatico.py` e `yfinance` (cortados na seção 7).
 - **Miguel:** ✅ MG4b (#47: #38, #39 e #44) → ✅ recarga da CVM no banco do compose (04/11, com o contorno da #48) → MG5 diagrama e
   README (o `docs/arquitetura.png` entra na seção 5 do PDF) → MG6 roteiro e vídeo v0 (qui 05/11), gravado no Mac do Eduardo.
-  Avisar o grupo das mudanças em pastas comuns: `tests/test_tela.py` (MG4b) e, da MG4, `.env.example` e `aprender/`.
+  Avisar o grupo das mudanças em pastas comuns: `tests/test_tela.py` (MG4b; juntou sem conflito com o do #46) e, da MG4, `.env.example` e `aprender/`.
 - **Náthally (obrigatório):** NA3 ROI mínimo (até qui 05/11; entra nas seções 1 e 7.7 do PDF) → NA4 slide de métricas (os números da
   seção 8 do PDF) → NA5 ética: reescrever a seção 7 do PDF a partir do `docs/etica.md` (sáb 07 a dom 08/11) → NA6 deck.
-- **Eduardo:** merge do PR da MA6 quando o grupo liberar → ED13 (#43) → ED14 (#45) → recarga e K-means refeito → ED9 tag `v1.0` e
+- **Eduardo:** merge do PR da MA6 (#49) quando o grupo liberar → ED13 (#43) → ED14 (#45) → ED15 (#50, se der antes do congelamento) → recarga e K-means refeito → ED9 tag `v1.0` e
   ED11 (sex 06/11) → ED10 teste do zero (sáb 07/11) → MA6 final (seg 09/11): encaixar BPMN, arquitetura, ética e ROI, conferir o
   Apêndice A na `v1.0` e tirar o Apêndice B. Perguntar ao professor a data da banca e as perguntas 2 e 3 do REQUISITOS; treinar a
   defesa com `/explicar` (seção 8).
@@ -125,7 +128,8 @@ A versão longa desta seção, até 03/11, ficou no Git: `git show 9f85bc9:docs/
   - as 3 notas do código (`NOTAS_DO_CODIGO`, em `raiox/ia.py`) vão para a v3 das regras? (Náthally).
 - **Decidido pelo Marcos em 03/11:** o `verificar_automatico.py` e o `yfinance` saem num PR separado (falta o ok do Eduardo, porque
   mexe em `tests/` e no `requirements.txt`); o `scripts/graficos.py` fica até a MA4 (pode virar a base do `notebooks/eda.ipynb`;
-  `guia_projeto_final.pdf` §2: "Visualização explicativa dos dados"); a `tratamento_dados` será apagada.
+  `guia_projeto_final.pdf` §2: "Visualização explicativa dos dados"; §1: EDA). Só o script pode sair; a visualização é obrigatória.
+  A `tratamento_dados` será apagada.
 
 ### Pendências pequenas (não travam)
 - Eduardo: `tests/test_aprender.py:19` exige exatamente "5 passed" no notebook.
@@ -232,6 +236,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | ED13 | qua 04/11 | — | consertar a **issue #43**: a tela aberta antes de carregar a CVM não acha a empresa (cache de `_base()`, `raiox/ia.py:51`). Guia §5: "funciona de ponta a ponta?" | `raiox/ia.py`, `tests/test_raio_x.py` | Manual | o passo a passo da #43 gera o raio-x da WEG; teste novo com essa ordem | PR que fecha #43 |
 | ED14 | qui 05/11 | — | consertar a **issue #45**: no Windows, o `guarda.py` lê a saída do Git em cp1252 (`.claude/hooks/guarda.py:89`), bloqueia commit e merge com `”` ou emoji no diff, e 8 testes das travas falham. Guia §2: "agentic coding" | `.claude/hooks/guarda.py`, `tests/test_guarda.py` | Manual | no Windows do Marcos, sem `PYTHONUTF8`: `python -m pytest -q tests/test_guarda.py` sem falhas e um commit com `”` no diff passa pela trava | PR que fecha #45 |
 | MA6 | qua 04–seg 09/11 | 🟡 rascunho 1 em 04/11 (branch `eduardo-documentacao`; o merge espera o ok do grupo). Passou do Marcos ao Eduardo em 04/11 | montar o documento do projeto: etapas desenvolvidas (R Documentação; base: `docs/HISTORICO.md`) + BPMN (MA5) + arquitetura (MG5) + justificativa (ED8) + ética e segurança (`docs/etica.md` e NA5) + métricas (`avaliacao/resultados.csv` e `conferencia.csv`) (G §6) | `docs/documentacao.md`, `docs/documentacao.pdf` | Manual (o Claude monta a partir das fontes; o Eduardo lê e confere) | o PDF tem as partes acima, sem [PENDENTE], e cada número bate com o arquivo de onde veio (Apêndice A) | PR (rascunho) e PR (final, seg 09/11) |
+| ED15 | qui 05/11 | — | consertar a **issue #50**: o validador deixa passar quantidade sem algarismo ("dobrou", "triplicou", "um quarto"; `POR_EXTENSO`, `raiox/ia.py:221`). Guia §5: risco de alucinação (15%). Só antes do congelamento (sex 06/11); se não der, fica como limite na seção 7.2 do PDF | `raiox/ia.py`, `tests/test_raio_x.py` | Manual | teste novo com as 3 frases barradas; o modo sem IA nas 30 empresas falsas sem nada removido | PR que fecha #50 |
 | ED12 | sáb 31/10 | ✅ PR #30 (na `main` em 02/11) | travas do Claude Code (R14 e guia §2, agentic coding): `.claude/settings.json`, `.claude/hooks/guarda.py`, subagent `revisor`, import do `requisitos_projeto.MD` | `.claude/`, `CLAUDE.md`, `AGENTS.md`, `README.md`, `aprender/claude-code.md`, `tests/test_guarda.py` | Plan | testes verdes; o hook bloqueia de verdade numa sessão | `eduardo-claude-config` |
 
 ### Marcos (Claude Code)
@@ -376,7 +381,8 @@ Para subir um arquivo:
 | qualquer dia | alguém fica indisponível | duplas de reserva: Marcos ↔ Eduardo (dados e PDF), Miguel ↔ Eduardo (infra), Náthally ↔ Marcos (deck) |
 
 **Já fora:**
-- `verificar_automatico.py` (yfinance) e `graficos.py`;
+- `verificar_automatico.py` (yfinance); o `scripts/graficos.py` fica até a MA4 (decisão do Marcos, 03/11: só o script pode sair, a
+  visualização é obrigatória);
 - receita em 3 anos;
 - filtro de setor;
 - RAG, nome dos grupos pelo LLM, exportar o raio-x, número de empregados;

@@ -3,7 +3,8 @@
 **Projeto final da trilha IA Aplicada (SENAI/TCS)** · Equipe: Marcos (dados), Eduardo (IA e gestão), Náthally (produto e métricas),
 Miguel (tela e infraestrutura) · Repositório: `MiguelGrispan/trabalho-tcs` (GitHub)
 
-**Versão:** rascunho 1, qua 04/11/2026 · Final prevista: seg 09/11/2026 · Entrega: seg 16/11/2026
+**Versão:** rascunho 1, qua 04/11/2026 · Final prevista: seg 09/11/2026 · Entrega: seg 16/11/2026, 48 h antes da banca, prevista
+para qua 18/11/2026 [PENDENTE: data e horário da banca a confirmar com o professor]
 
 > **Rascunho.** As partes marcadas com **[PENDENTE]** esperam um entregável de outra pessoa (BPMN, diagrama de arquitetura,
 > texto final de ética, ROI). A lista completa está no fim (Apêndice B) e sai da versão final.
@@ -21,6 +22,7 @@ Miguel (tela e infraestrutura) · Repositório: `MiguelGrispan/trabalho-tcs` (Gi
 | 7. Ética, governança e segurança | "análise de ética e segurança"; viabilidade, limitações, viés, confiabilidade e uso responsável | guia §2, §5 e §6 |
 | 8. Métricas | métricas de sucesso | guia §3 (bloco 5) |
 | 9. Como usamos IA para programar | agentic coding; arquivos de prompts do vibecoding | guia §2; `requisitos_projeto.MD`, Aplicação |
+| 10. Lições aprendidas | "lições aprendidas do trabalho em equipe" | guia §3 (bloco 6) |
 
 Os dois arquivos do professor estão no repositório, sem mudança, em `docs/professor/`.
 
@@ -43,7 +45,8 @@ e pensa em perguntas. Leva tempo, cada vendedor faz de um jeito e a comparação
 
 **A regra de ouro.** O texto é escrito por um LLM (Gemini, via LangChain), mas **o LLM nunca escreve números**. Ele usa
 marcadores como `{margem_ebit}`; um validador remove qualquer trecho com número fora de marcador; o código troca os marcadores
-pelos valores calculados da tabela. Número inventado num material de vendas é o pior erro possível, e esta regra o elimina por construção.
+pelos valores calculados da tabela. Número inventado num material de vendas é o pior erro possível: os valores mostrados vêm sempre da
+tabela, e o validador barra algarismos e os números por extenso que ele conhece (o que ele não pega está na seção 7.2).
 
 [PENDENTE: ROI · NA3, Náthally] *Tempo para montar um raio-x à mão (1 empresa, pelo site de RI) contra o tempo com a ferramenta,
 contando digitar, ler e conferir, e a conta do ganho em 3 linhas.*
@@ -89,7 +92,8 @@ O projeto durou 4 semanas (19/10 a 16/11/2026). O detalhe de cada passo está no
 - Código congelado e tag `v1.0` na sex 06/11; vídeo final gravado na `v1.0` no sáb 07/11. [PENDENTE: confirmar as datas reais no fim da semana]
 
 ### Semana 4 (09 a 16/11): entregar e ensaiar
-- Documento, deck e vídeo da demo prontos em qua 11/11; ensaios cronometrados; entrega em seg 16/11; banca em qua 18/11.
+- Documento, deck e vídeo da demo prontos em qua 11/11; ensaios cronometrados; entrega em seg 16/11; banca prevista para qua 18/11
+  (a confirmar).
 
 ### As decisões que mais mudaram o projeto
 
@@ -174,7 +178,8 @@ Se o banco estiver desligado, a conexão desiste em 5 s e a tela mostra o que fa
 
 [PENDENTE: BPMN · MA5, Marcos, até qui 05/11] *Imagem `docs/bpmn/` (`.png`), feita no bpmn.io.*
 
-O diagrama mostra o processo da regra de negócio com o Raio-X, com as raias **Vendedor**, **Sistema** e **LLM (API externa)**:
+*Proposta de texto, a conferir com o desenho do Marcos:* o diagrama mostra o processo da regra de negócio com o Raio-X, com as raias
+**Vendedor**, **Sistema** e **LLM (API externa)**:
 
 1. o vendedor busca a empresa e informa o produto e o objetivo;
 2. decisão **"a empresa tem dados?"**: se não, o sistema avisa e o processo acaba;
@@ -308,6 +313,10 @@ valores para entender a empresa, mas **só pode escrever os marcadores**. É ger
 | Fine-tuning | treinar o modelo com exemplos de raio-x bons | não temos centenas de exemplos rotulados; custa mais; os dados mudam todo ano; e treinar **não impede** o modelo de errar número, que é o risco principal |
 | **O que usamos** | prompt + saída estruturada (Pydantic) + validador | barato (≈ US$ 0,0012 por raio-x), reproduzível e conferível |
 
+Se essa tabela conta como a "base de dados de conhecimento" que o `requisitos_projeto.MD` pede (Integração com IA de terceiro) é uma
+pergunta ao professor, ainda sem resposta. O projeto também segue o caminho "Treinamento de Machine Learning" (seção 6.2), e o
+`requisitos_projeto.MD` pede uma das duas abordagens. [PENDENTE: resposta do professor à pergunta 3]
+
 **Quando o RAG passaria a valer:** se o raio-x tivesse de ler texto livre, como o release de resultados ou as notas explicativas da DFP.
 
 ### 6.4 Chain, memória e agentes no LangChain
@@ -345,7 +354,10 @@ O validador barra números, não ideias. Continuam possíveis:
 - **"acima" ou "abaixo" trocado na frase:** a posição é calculada por código, mas a palavra na frase é do LLM. O que protege: a regra
   do prompt e o cartão de cada indicador na tela, que mostra a posição calculada;
 - **lacuna genérica** ("quem decide a compra" serve para qualquer empresa);
-- **interpretação de setor:** o modelo pode associar a empresa a um negócio que ela não tem.
+- **interpretação de setor:** o modelo pode associar a empresa a um negócio que ela não tem;
+- **quantidade sem algarismo:** "a receita dobrou", "a margem triplicou" e "um quarto da receita" passam pelo validador (conferido
+  em 04/11 com `checar()`, `raiox/ia.py`): ele conhece "dez" e "o dobro", mas não "dobrou" nem "um quarto". Nos 10 raio-x da
+  avaliação, nenhum trecho assim apareceu, mas uma frase dessas pode ser falsa (issue #50).
 
 O que resolve, no fim, é a leitura humana. Por isso o raio-x é apoio, e não decisão (7.6).
 
@@ -355,8 +367,8 @@ O que resolve, no fim, é a leitura humana. Por isso o raio-x é apoio, e não d
   comparação é menos confiável.
 - **Extremos cortados só no modelo:** os números mostrados são os reais, mas uma empresa muito fora da curva fica num grupo que
   não a representa bem.
-- **Perfil financeiro, não setor:** as parecidas da WEG (máquinas) incluem Cemig e Copel (energia), Votorantim Cimentos e
-  Telefônica: empresas grandes, rentáveis e pouco endividadas, mas de outros setores. Isso serve para prospectar perfis
+- **Perfil financeiro, não setor:** com os dados de 30/10, as parecidas da WEG (máquinas) incluem Cemig e Copel (energia),
+  Votorantim Cimentos e Telefônica: empresas grandes, rentáveis e pouco endividadas, mas de outros setores. Isso serve para prospectar perfis
   parecidos, mas não são concorrentes.
 - **Silhueta 0,29:** os grupos se sobrepõem. É uma régua de comparação, não uma classificação exata.
 
@@ -419,8 +431,9 @@ Camil, CSN, Magazine Luiza, Petrobras, Embraer, Suzano, Raia Drogasil, Localiza,
 O custo é calculado com os tokens reais de cada chamada e o preço da página oficial do Google (US$ 0,25 por milhão de tokens de
 entrada e US$ 1,50 por milhão de saída, conferido em 20/10/2026).
 
-Os 10 raio-x foram gerados antes da correção do ano fiscal (PR #46): o da Camil usou o exercício anterior. O custo, o tempo e os
-trechos removidos não dependem disso. [PENDENTE: se a avaliação for refeita na `v1.0` (ED11), trocar os números]
+Os 10 raio-x foram gerados em 29/10, com os dados e os grupos daquele dia, antes da correção do ano fiscal (PR #46): o da Camil usou o
+exercício anterior, e o grupo de cada empresa pode ser diferente do de hoje (no arquivo, o grupo da Camil tem 333 empresas). O custo,
+o tempo e os trechos removidos não dependem disso (suposição: o texto muda pouco com outro grupo, mas isso não foi medido). [PENDENTE: se a avaliação for refeita na `v1.0` (ED11), trocar os números]
 
 ### 8.2 Conferência dos números contra o RI (`avaliacao/conferencia.csv`)
 
@@ -432,7 +445,8 @@ trechos removidos não dependem disso. [PENDENTE: se a avaliação for refeita n
 | RD Saúde | receita, EBIT, ativo total, patrimônio líquido | 0,00% |
 | CSN | receita | 0,00% |
 
-13 valores de 5 empresas, cada um com o documento do RI e a página de onde veio (coluna `fonte` do arquivo).
+13 valores de 5 empresas, cada um com o documento do RI de onde veio (coluna `fonte`); 9 deles trazem também a página. O ativo e o
+patrimônio líquido da RD Saúde vêm da coluna comparativa de 31/12/2025 do ITR de 30/06/2026.
 
 ### 8.3 Qualidade do código
 - Testes automáticos: 244 passando, nenhum pulado (04/11, Linux do Miguel, com o PostgreSQL de testes). Os testes não chamam a API.
@@ -484,10 +498,10 @@ recebe) é outro: `avaliacao/regras_prompt.md`.
 |---|---|---|
 | 595 empresas com indicadores | `data/indicadores.csv` (gerado, fora do Git) | `python -c "import pandas as pd; print(len(pd.read_csv('data/indicadores.csv')))"` |
 | 384.591 linhas de contas; carga em 1 min 48 s | carga do Marcos em 03/11 (`docs/REQUISITOS.md`, R2) | `python scripts/carregar_dfp.py` imprime o total |
-| k = 4; silhueta 0,29; grupos 327, 76, 59 e 102; 564 no treino | `segmentar()` com os dados de 30/10 | `python -m raiox.segmentos` |
+| k = 4; silhueta 0,29; grupos 327, 76, 59 e 102; 564 no treino | `segmentar()` com os dados de 30/10 | sem gravar nada: `python -c "import pandas as pd; from raiox import segmentos as s; df = pd.read_csv('data/indicadores.csv'); out, sil, k = s.segmentar(df); b = s.treino(df); print(k, round(sil[k], 3), out.set_index('cd_cvm').loc[b.cd_cvm, 'grupo'].value_counts().sort_index().tolist())"` → `4 0.293 [327, 76, 59, 102]`. O `python -m raiox.segmentos` mostra os grupos com todas as 595 empresas e grava de novo os PNG e o `data/segmentos.csv` |
 | 567 de 595 num grupo só; silhueta 0,77 antes | ED1 e ED4 (27 e 28/10), `docs/HISTORICO.md` | `docs/graficos/silhueta_antes_ed4.png` |
 | 31 empresas abaixo de R$ 10 mi (52%); 564 acima (4%) | `scripts/avaliar_corte_receita.py`, 03/11 | rodar o script |
-| receita da Camil: R$ 12,26 bi → R$ 11,12 bi; 9 empresas mudaram | PR #46 | `avaliacao/conferencia.csv`, linha da Camil |
+| receita da Camil: R$ 12,26 bi → R$ 11,12 bi; 9 empresas mudaram | PR #46 (`docs/PLANO.md`, seção 0) | 11,12 bi: `avaliacao/conferencia.csv`, linha da Camil; 12,26 bi (antes): `avaliacao/resultados.csv`, caso 1 (`valor_num` da receita, em R$ milhões) |
 | nenhum "erro" e 180 "atenção" em 98 empresas | `raiox/checagem.py`, 03/11 | `python -m raiox.checagem data/indicadores.csv data/contas.csv` |
 | 10 raio-x, 0 removidos, US$ 0,0118, US$ 0,0012, 2,2 s, tokens | `avaliacao/resultados.csv` | soma e média das colunas `n_removidos`, `custo_usd`, `tempo_s`, `tokens_*` |
 | US$ 0,25 e US$ 1,50 por milhão de tokens | `PRECO_US_POR_MILHAO`, `raiox/ia.py` | página oficial de preços do Google (20/10/2026) |
@@ -511,3 +525,6 @@ recebe) é outro: `avaliacao/regras_prompt.md`.
 | números do Apêndice A conferidos de novo na `v1.0` (recarga da CVM depois do #46) | Eduardo | seg 09/11 |
 | política de uso de dados do Google para a API paga (7.5) | Náthally ou Eduardo | seg 09/11 |
 | datas reais do congelamento e da `v1.0` (seção 2) | Eduardo | seg 09/11 |
+| data e horário da banca; resposta à pergunta 3 (seção 6.3) | professor (o Eduardo pergunta) | — |
+| issue #50 do validador ("dobrou", "triplicou", "um quarto"): se for consertada, atualizar a seção 7.2 | Eduardo (ED15) | antes da `v1.0`, se der |
+| conferir a seção 4 com o BPMN desenhado | Eduardo e Marcos | qui 05/11 |
