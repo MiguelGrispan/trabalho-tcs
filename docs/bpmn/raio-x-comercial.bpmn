@@ -11,7 +11,7 @@
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                   id="Definicoes_RaioX"
                   targetNamespace="https://github.com/MiguelGrispan/trabalho-tcs"
-                  exporter="Raio-X Comercial (escrito à mão, conferido no bpmn-js)"
+                  exporter="Claude Code (conferido no bpmn-js 17.11.1)"
                   exporterVersion="1">
 
   <bpmn:dataStore id="DataStore_Postgres" name="PostgreSQL" />
@@ -93,7 +93,7 @@
       <bpmn:outgoing>Fluxo_04</bpmn:outgoing>
       <bpmn:outgoing>Fluxo_05</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:task id="Tarefa_Aviso" name="Avisar: nenhuma empresa encontrada ou banco vazio">
+    <bpmn:task id="Tarefa_Aviso" name="Avisar: nenhuma empresa, banco vazio ou desligado">
       <bpmn:incoming>Fluxo_05</bpmn:incoming>
       <bpmn:outgoing>Fluxo_06</bpmn:outgoing>
     </bpmn:task>
@@ -102,7 +102,7 @@
     </bpmn:endEvent>
 
     <!-- Aplicação: indicadores e grupo (raiox/ia.py, montar; raiox/segmentos.py) -->
-    <bpmn:scriptTask id="Tarefa_Calcular" name="Montar os 6 indicadores e a posição contra o grupo (K-means)">
+    <bpmn:scriptTask id="Tarefa_Calcular" name="Montar os 6 indicadores e a posição contra o grupo já calculado">
       <bpmn:incoming>Fluxo_07</bpmn:incoming>
       <bpmn:outgoing>Fluxo_08</bpmn:outgoing>
       <bpmn:property id="Propriedade_Calcular" name="__targetRef_placeholder" />
@@ -137,13 +137,13 @@
       <bpmn:outgoing>Fluxo_14</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
-    <!-- Aplicação: validador, frase por frase (raiox/ia.py, validar_e_preencher) -->
+    <!-- Aplicação: validador, item por item: o resumo, cada pergunta e cada lacuna (raiox/ia.py, validar_e_preencher) -->
     <bpmn:exclusiveGateway id="Juncao_Laco">
       <bpmn:incoming>Fluxo_14</bpmn:incoming>
       <bpmn:incoming>Fluxo_21</bpmn:incoming>
       <bpmn:outgoing>Fluxo_15</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:scriptTask id="Tarefa_Conferir" name="Conferir a próxima frase do texto">
+    <bpmn:scriptTask id="Tarefa_Conferir" name="Conferir o próximo item: o resumo, cada pergunta, cada lacuna">
       <bpmn:incoming>Fluxo_15</bpmn:incoming>
       <bpmn:outgoing>Fluxo_16</bpmn:outgoing>
     </bpmn:scriptTask>
@@ -156,7 +156,7 @@
       <bpmn:incoming>Fluxo_17</bpmn:incoming>
       <bpmn:outgoing>Fluxo_19</bpmn:outgoing>
     </bpmn:scriptTask>
-    <bpmn:scriptTask id="Tarefa_Remover" name="Remover a frase e anotar o motivo">
+    <bpmn:scriptTask id="Tarefa_Remover" name="Remover o item e anotar o motivo">
       <bpmn:incoming>Fluxo_18</bpmn:incoming>
       <bpmn:outgoing>Fluxo_20</bpmn:outgoing>
     </bpmn:scriptTask>
@@ -165,14 +165,14 @@
       <bpmn:incoming>Fluxo_20</bpmn:incoming>
       <bpmn:outgoing>Fluxo_22</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:exclusiveGateway id="Decisao_MaisFrases" name="Tem mais frases?">
+    <bpmn:exclusiveGateway id="Decisao_MaisFrases" name="Tem mais itens?">
       <bpmn:incoming>Fluxo_22</bpmn:incoming>
       <bpmn:outgoing>Fluxo_21</bpmn:outgoing>
       <bpmn:outgoing>Fluxo_23</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
     <!-- Aplicação: registro e resultado (app/streamlit_app.py; raiox/dados.py, registrar_consulta) -->
-    <bpmn:serviceTask id="Tarefa_Registrar" name="Registrar a consulta">
+    <bpmn:serviceTask id="Tarefa_Registrar" name="Registrar a consulta (se falhar, só avisa)">
       <bpmn:incoming>Fluxo_23</bpmn:incoming>
       <bpmn:outgoing>Fluxo_24</bpmn:outgoing>
       <bpmn:dataOutputAssociation id="Gravacao_Consulta">
@@ -193,11 +193,11 @@
     </bpmn:textAnnotation>
     <bpmn:association id="Ligacao_Nota_Dados" sourceRef="Nota_Dados" targetRef="Banco_Busca" />
     <bpmn:textAnnotation id="Nota_Gemini">
-      <bpmn:text>O Gemini só pode escrever marcadores como {margem_ebit}, nunca números. Sem resposta no tempo limite, a tela segue sem IA e avisa.</bpmn:text>
+      <bpmn:text>O Gemini só pode escrever marcadores como {margem_ebit}, nunca números. Se ele falhar (tempo, erro da API ou formato errado), a tela segue sem IA e avisa.</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:association id="Ligacao_Nota_Gemini" sourceRef="Tarefa_Gemini" targetRef="Nota_Gemini" />
     <bpmn:textAnnotation id="Nota_Validador">
-      <bpmn:text>Regra de ouro: frase com algarismo ou número por extenso fora de um marcador sai do raio-x.</bpmn:text>
+      <bpmn:text>Regra de ouro: o nome da empresa, o produto e o setor voltam a ser marcadores; sai o item com algarismo, número por extenso da lista ou marcador desconhecido, e a pergunta sem indicador de base.</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:association id="Ligacao_Nota_Validador" sourceRef="Tarefa_Conferir" targetRef="Nota_Validador" />
 
@@ -327,7 +327,7 @@
         <dc:Bounds x="1100" y="290" width="130" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Nota_Validador_di" bpmnElement="Nota_Validador">
-        <dc:Bounds x="1090" y="440" width="190" height="70" />
+        <dc:Bounds x="1060" y="430" width="235" height="98" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Decisao_Validador_di" bpmnElement="Decisao_Validador" isMarkerVisible="true">
         <dc:Bounds x="1280" y="305" width="50" height="50" />
@@ -461,7 +461,7 @@
         <di:waypoint x="315" y="548" /><di:waypoint x="315" y="490" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Ligacao_Nota_Validador_di" bpmnElement="Ligacao_Nota_Validador">
-        <di:waypoint x="1165" y="370" /><di:waypoint x="1165" y="440" />
+        <di:waypoint x="1165" y="370" /><di:waypoint x="1165" y="430" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Ligacao_Nota_Gemini_di" bpmnElement="Ligacao_Nota_Gemini">
         <di:waypoint x="750" y="510" /><di:waypoint x="790" y="560" />

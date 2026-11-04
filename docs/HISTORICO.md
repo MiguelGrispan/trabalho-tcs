@@ -101,7 +101,8 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   com os dados do #46 (os PNG de `docs/graficos/` continuam os de 28/10).
 - **04/11** · O #51 (MA3b) entrou na `main`, e a #48 foi fechada depois de o Miguel conferir no Linux: o CSV sai legível e a
   Camil gera o raio-x sem o `chmod`. **MA5** (Marcos): o BPMN 2.0 do processo com o Raio-X (`docs/bpmn/`), desenhado pelo Claude
-  Code a partir do código, com as decisões "tem dados?" e "passou no validador?"; abre no bpmn-js sem avisos.
+  Code a partir do código, com as decisões "tem dados?" e "passou no validador?" (item por item); abre no bpmn-js sem avisos. O `revisor` achou que o
+  1º desenho dizia "frase por frase", e o código confere o resumo inteiro, cada pergunta e cada lacuna: corrigido no mesmo PR.
 
 ## Decisões (e por quê)
 
