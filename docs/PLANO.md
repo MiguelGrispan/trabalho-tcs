@@ -20,12 +20,12 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em ter 03/11, ~13h30** (fim da MG4b, Miguel com o Claude Code). Na `main`: PRs #1 a #16, #19 a #41 e o #47 desta nota (MG4b).
-Aberto: #46 (MA3, Marcos, desde 03/11, 13h21).
+**Em qua 04/11, ~8h30** (fim da MG4b, Miguel com o Claude Code; as notas da MA3, do Marcos, de 03/11 ~12h, continuam abaixo).
+Na `main`: PRs #1 a #16, #19 a #41, o #46 (MA3) e o #47 desta nota (MG4b).
 A versão longa desta seção, com o detalhe de cada PR até 03/11, ficou no Git: `git show 9f85bc9:docs/PLANO.md`.
 O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 
-**Faltam 3 dias para o código congelar (sex 06/11) e 13 para a entrega (seg 16/11).**
+**Faltam 2 dias para o código congelar (sex 06/11) e 12 para a entrega (seg 16/11).**
 
 ### O que já funciona (conferido)
 - **Demo ponta a ponta** no `docker compose` e no Terraform (Mac do Eduardo, 03/11), tag `v0.1-demo` (`9689db9`): busca no
@@ -41,20 +41,35 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 - **Terraform no Linux do Miguel (03/11 de manhã, Claude Code; anotado na MG4b, não refeito nela):** a tela nova da MG4 sobe pelo
   `infra/` e avisa do banco vazio. Com `contas` e `empresas` copiadas do banco do compose (`pg_dump`, sem baixar a CVM), gera a WEG
   (receita R$ 40,8 bi) e grava a consulta na `consultas` do `raiox-banco`; `docker exec raiox-tela python -m pytest -q tests/test_tela.py` → 8 passed.
-- **Testes:** 235 passed, nenhum pulado (local, com o PostgreSQL ligado e a `main` do #41 mesclada, 03/11 ~13h30). CI verde no #41.
+- **Testes:** 244 passed, nenhum pulado (Linux do Miguel, com o PostgreSQL ligado, a branch da MG4b com o #46 mesclado, 04/11).
+  No Windows do Marcos, 241 passed com `PYTHONUTF8=1` (03/11 ~12h, branch do #46); sem ele, 8 testes das travas falham: issue #45 (abaixo).
 - **Textos-base prontos:** `docs/justificativa.md` (ED8; falta o Marcos ler) e `docs/etica.md` (base da NA5).
 - No Mac, o Terraform só acha o Docker com `export DOCKER_HOST=unix://$HOME/.docker/run/docker.sock` (`README.md:158`).
 
-### Revisão de 03/11: o que estava errado nas notas e no GitHub
-- **A MA3 do Marcos estava pronta numa branch sem PR.** A `marcos-corrige-s1-s2` (enviada em 03/11, 10h42) resolve o C1 (só
-  ativas, `cd_cvm` número) e o C2 (tabela `indicadores` no PostgreSQL) e traz a S2 (5 empresas iguais ao RI). A nota anterior dizia
-  que a MA3 não tinha branch: foi escrita antes do push e não foi conferida de novo. Conferido numa cópia temporária: mescla com a
-  `main` sem conflito; 231 passed e 3 pulados (os de `tests/test_ponta_a_ponta.py`, sem `data/`). → **issue #42** (Marcos);
-  o PR #46 foi aberto em 03/11, 13h21.
-- **A S2 muda a explicação do "7 de 10".** Segundo a S2 do Marcos, os números do sistema para a Magalu (EBIT) e a RD Saúde (EBIT,
-  ativo e PL) são iguais aos da DFP (0,00%); a diferença da conferência manual parece vir da fonte usada nela (suposição: não abri o RI). Camil: o número é o da DFP de 28/02/2025; o
-  erro é o rótulo "2025" e a comparação com quem fecha em 12/2025 → **issue #17**, agora com o Marcos, com 3 opções.
-  Até decidir: **Camil fora da demo e do slide**.
+### MA3 (Marcos, 03/11): PR #46, que fecha as issues #42 e #17
+- **C1 e C2** (os 3 commits de 10h09 da branch `marcos-corrige-s1-s2`): a busca devolve só companhias ativas e com indicadores,
+  com o `cd_cvm` como número (`raiox/dados.py`); a tabela `indicadores` existe no PostgreSQL (`publicar()` em `scripts/indicadores.py`).
+  As 2 notas "Pendente" do `contratos.md` saíram. **S1:** `scripts/verificar_dfp.py` acha as mesmas 595 empresas.
+- **Camil (#17): a opção 3 da issue.** O "ano" passou a ser o do exercício, e não o do arquivo da CVM
+  (`ano_do_exercicio()`, `raiox/limpeza.py`), e o `scripts/carregar_dfp.py` baixa também o arquivo de 2026. O "2025" da Camil é
+  mar/2025 a fev/2026: receita de R$ 11,12 bi (era 12,26) e crescimento de −1,2% (era +20,2%), os números da conferência manual da Náthally.
+  Os outros 4 indicadores dela para a Camil não conferi. Mudam só as 9 empresas que fecham fora de dezembro (açúcar e etanol, agro, têxtil);
+  as 595 continuam (comparado com uma cópia do `indicadores.csv` de antes). O Eduardo chamava a opção 3 de "fora do escopo"; ela
+  coube em 2 arquivos e 3 testes, e o formato do C2 não muda. **A Camil pode voltar à demo e ao slide.**
+- **S2** (`avaliacao/conferencia.csv`): 13 linhas de 5 empresas (WEG, Camil, Magalu, RD Saúde, CSN), todas com diferença de 0,00% contra
+  o PDF do RI. A da Camil é a DFP de 28/02/2026 ("DFs 4T25 e 2025", PDF p. 27, conferida pelo Marcos). Magalu e RD Saúde: o sistema
+  bate com o RI (margem EBIT de 4,96% e 6,20%); a diferença da conferência manual vem da fonte usada nela (suposição: não sei qual ela usou).
+  `python -m raiox.checagem data/indicadores.csv data/contas.csv` → nenhum "erro", 180 "atenção" em 98 empresas.
+- **Corte de R$ 10 mi: ok do Marcos.** `scripts/avaliar_corte_receita.py` com os dados de hoje: abaixo, 31 empresas, 52% com
+  |margem EBIT| > 100%; acima, 564 e 4%.
+- **Banco desligado:** a conexão desiste em 5 s (`TEMPO_LIMITE_S`, `raiox/banco.py`). Sem limite, o psycopg espera 130 s (medido no
+  Windows), e a tela ficava parada antes do aviso. Sem a tabela `indicadores`, a tela agora diz "O banco está vazio" (com os comandos
+  de carga), e não "o banco está ligado?" (pedido da #42).
+- **Travas no Windows (issue #45, Eduardo):** o `guarda.py` lê o Git em cp1252 e bloqueia commit e merge com `”` ou emoji no diff. O
+  Marcos usa `PYTHONUTF8=1` no `.claude/settings.local.json` dele, que não vai para o Git: a conferência continua, só que lendo em UTF-8.
+
+### Revisão de 03/11 (Eduardo): o que estava errado nas notas e no GitHub
+- A MA3 estava pronta numa branch sem PR, e a nota dizia que ela não existia (issue #42; resolvida pelo #46, acima).
 - **Bug (Eduardo):** a tela aberta antes de carregar a CVM não acha a empresa até ser reiniciada (cache em `raiox/ia.py:51`).
   É exatamente o caminho do teste do zero (ED10) → **issue #43**, sessão ED13.
 - **Segurança (Miguel):** o compose abria a tela para a rede toda (`0.0.0.0:8501`); o Terraform já fechava em `127.0.0.1` →
@@ -63,23 +78,26 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 - O `/fim-de-sessao` passa a listar as branches sem PR antes de reescrever esta seção (passo 4), para não repetir o caso da MA3.
 
 ### Caminho crítico (o que trava os outros)
-1. **O PR da MA3 (#46, Marcos; issue #42): CI, revisor e merge até qua 04/11.** Sem ele, o C1 e o C2 congelam pela metade.
-   O #46 e o #47 mexem nos mesmos arquivos (`tests/test_tela.py`, PLANO, REQUISITOS e HISTORICO): quem fizer o merge por último
-   roda `git merge main` e junta as notas.
+1. **A recarga dos dados depois do #46 (MA3, na `main` desde 03/11).** Todos rodam de novo `python scripts/carregar_dfp.py` e
+   `python scripts/indicadores.py` (os dois precisam do PostgreSQL ligado) e reiniciam a tela (o cache da #43 guarda a tabela velha).
+   Sem a tabela `indicadores`, a busca não acha nada e a tela diz "O banco está vazio": em 04/11, o banco do compose do Miguel
+   ainda não tinha a tabela (`\dt`: só `consultas`, `contas` e `empresas`).
 2. **Os entregáveis.** O código está perto do fim; o que falta é documento: BPMN (MA5), EDA (MA4, atrasada), PDF (MA6),
    deck (NA5 e NA6) e vídeo (MG6 e MG7). Hoje, quase tudo isso está com o Marcos e a Náthally.
 3. **Proposta da revisão: congelar também o processo.** Até 16/11, nenhuma regra, trava ou guia novo para o time: só o que fecha
    uma linha do [REQUISITOS.md](REQUISITOS.md). Dos PRs de 02 e 03/11, a maioria foi de notas e regras; a banca avalia os entregáveis.
 
 ### Próximo passo de cada um
-- **Marcos:** #42: o PR #46 (CI, revisor e merge; qua 04/11) → decidir a #17 (qua 04/11) → MA5 BPMN (qua–qui) → MA4 EDA. Ler a `docs/justificativa.md` (ED8).
-- **Miguel:** ✅ MG4b (#47, 03/11) → MG5 diagrama e README (qua 04/11) → MG6 roteiro e vídeo v0 (qui 05/11).
-  Avisar o grupo das mudanças em pastas comuns: `tests/test_tela.py` (MG4b; o #46 do Marcos também mexe nele) e, da MG4,
-  `.env.example` e `aprender/`. Combinar com o Marcos a mensagem da tela quando falta a tabela `indicadores` (issue #42: hoje
-  cairia em "Não consegui falar com o banco de dados", com o banco ligado).
-- **Náthally (obrigatório):** NA3 ROI mínimo (até qui 05/11) → NA4 slide de métricas (o "7 de 10" com a explicação da S2, sem
-  a Camil) → NA5 ética (base: `docs/etica.md`) → NA6 deck. Sugestões, se der tempo: seção 3.
-- **Eduardo:** merge do #41 → ED13, a #43 (qua 04/11) → ED9 tag `v1.0` e ED11 (sex 06/11) → ED10 teste do zero (sáb 07/11).
+- **Marcos:** depois do merge do #46, o zip da `data/` no Drive com o link no grupo (fecha a MA3) → apagar a `tratamento_dados` pelo
+  site do GitHub (o que só ela tem é código antigo: `src/` e CSV com `;`) → MA5 BPMN (qua–qui) → MA4 EDA. Um PR pequeno, com o ok do
+  Eduardo, tirando `verificar_automatico.py` e `yfinance` (cortados na seção 7; o `graficos.py` fica para a MA4, abaixo). Ler a `docs/justificativa.md` (ED8).
+- **Miguel:** ✅ MG4b (#47: #38, #39 e #44) → recarregar a CVM no banco do compose (caminho crítico, item 1) → MG5 diagrama e
+  README (qua 04/11) → MG6 roteiro e vídeo v0 (qui 05/11). Avisar o grupo das mudanças em pastas comuns: `tests/test_tela.py`
+  (MG4b; juntou sem conflito com o do #46) e, da MG4, `.env.example` e `aprender/`.
+- **Náthally (obrigatório):** NA3 ROI mínimo (até qui 05/11) → NA4 slide de métricas (o "7 de 10" com a explicação da S2; a
+  Camil agora bate com a conferência dela em receita e crescimento, #46) → NA5 ética (base: `docs/etica.md`) → NA6 deck. Sugestões, se der tempo: seção 3.
+- **Eduardo:** ED13, a #43 (qua 04/11) → ED14, a #45 (travas no Windows, qui 05/11) → refazer `python -m raiox.segmentos` e os PNG
+  com os dados do #46 → ED9 tag `v1.0` e ED11 (sex 06/11) → ED10 teste do zero (sáb 07/11).
   Mandar ao grupo a mensagem da revisão; perguntar ao professor a data da banca e as perguntas 2 e 3 do REQUISITOS;
   treinar a defesa com `/explicar` (seção 8).
 
@@ -89,22 +107,32 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 - **Qual computador roda a demo na banca.** Conferidos: o Mac do Eduardo (compose, Terraform e Gemini, 03/11) e o Linux do Miguel
   (compose e Terraform com a tela nova, 03/11; o Gemini de verdade, só pelo Terraform em 31/10, visto pelo Miguel).
   Decidir antes do vídeo v0 (qui 05/11), para gravar na mesma máquina.
-- Camil: opção 1, 2 ou 3 da #17 (Marcos, qua 04/11).
 - Data e horário da banca; perguntas 2 e 3 ao professor (Eduardo).
-- Corte de receita mínima de R$ 10 mi: abaixo dele, 31 empresas, 52% com |margem EBIT| > 100% (`scripts/avaliar_corte_receita.py`,
-  30/10); falta o ok do Marcos.
-- `scripts/dados.py` ou `raiox/dados.py` (ficar com um só); `verificar_automatico.py`, `yfinance` e `graficos.py` (cortados na
-  seção 7, mas na `main` desde o #21); o `docs/Raio-X Comercial.pdf` ainda fala de SQLite (Marcos).
-- Apagar `tratamento_dados` (Marcos) e `feat/metricas` (Náthally; antes, subir o `revisao_manual.md`, se ela quiser).
+- `scripts/dados.py` ou `raiox/dados.py` (ficar com um só; Marcos).
+- Decidido pelo Marcos em 03/11:
+  - o `verificar_automatico.py` e o `yfinance` saem num PR separado (falta o ok do Eduardo, porque mexe em `tests/` e no
+    `requirements.txt`);
+  - o `scripts/graficos.py` **fica até a MA4**: são gráficos exploratórios em Matplotlib que podem virar a base do
+    `notebooks/eda.ipynb` (`guia_projeto_final.pdf` §2: "Visualização explicativa dos dados"; §1: EDA). Só o script pode sair;
+    a visualização é obrigatória;
+  - o `docs/Raio-X Comercial.pdf` fica até a MA6, porque o `raiox/limpeza.py` o cita como a fonte das regras de limpeza (ele ainda
+    fala de SQLite);
+  - a `tratamento_dados` será apagada.
+- Apagar a `feat/metricas` (Náthally; antes, subir o `revisao_manual.md`, se ela quiser).
 - As 3 notas do código (`NOTAS_DO_CODIGO`, em `raiox/ia.py`) vão para a v3 das regras? (Náthally).
 
 ### Pendências pequenas (não travam)
 - Eduardo: `tests/test_aprender.py:19` exige exatamente "5 passed" no notebook; refazer os gráficos e os números do K-means
-  (`python -m raiox.segmentos`) depois da #42: os PNG de `docs/graficos/` são de 28/10.
-- Marcos: 3 testes fracos: `tests/test_limpeza.py:147` passa só pela ordem das linhas; `tests/test_dados.py:83` não olha o
-  `ativo_total`; `test_calcular_exporta_…` não tem receita de 2 anos antes igual a zero.
+  (`python -m raiox.segmentos`) depois do #46: os PNG de `docs/graficos/` são de 28/10.
+- Marcos: 3 testes fracos: `test_resolver_conflitos_trata_valor_vazio_como_divergente` (`tests/test_limpeza.py`) passa só pela ordem
+  das linhas; `test_obter_indicadores_deixa_ausente_indicador_de_conta_ausente` (`tests/test_dados.py`) não olha o `ativo_total`;
+  `test_calcular_exporta_…` não tem receita de 2 anos antes igual a zero.
 - O C4 (`contratos.md`) diz que o `avaliacao/conferencia.csv` é da Náthally, mas quem escreve é o Marcos: corrigir com o ok dos dois.
-- Quem tem a `data/` anterior a 30/10: rodar de novo `python scripts/carregar_dfp.py` e `python scripts/indicadores.py`.
+- Limite conhecido do ano do exercício (`raiox/limpeza.py`, `ano_do_exercicio`): quem muda a data de fechamento pode ter duas DFPs no
+  mesmo ano, e aí os valores divergentes ficam vazios (o `carregar_dfp.py` avisa "contas repetidas"). Nos dados de 03/11, nenhum valor
+  vazio a mais. Achado do `revisor` no #46; serve para a ética (limites).
+- A fonte do raio-x da Camil diz "DFP 2025" (o exercício 2025 dela), mas o arquivo da CVM é o de 2026: mostrar a data de fim do
+  exercício seria a opção 2 da #17, que muda o C2 e o C3 (Eduardo e Miguel; não decidido).
 - PostgreSQL local: o do compose usa a porta 5432; quem ainda tem o `raiox-postgres` antigo (do `docker run` de 29/10) para um
   dos dois (`docker stop raiox-postgres`) ou usa `PORTA_BANCO=5433`.
 
@@ -112,8 +140,8 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 
 | parte | feito | falta | horas que faltam |
 |---|---|---|---|
-| núcleo: dados, ML, IA, validador, avaliação | ~90% | #42, #17, #43 | 3 a 5 h |
-| tela e infraestrutura | ~90% (depois da MG4b) | MG5 (diagrama e README) | 2 a 3 h |
+| núcleo: dados, ML, IA, validador, avaliação | ~94% (Claude, 03/11 ~12h, com o #46) | #43, #45; gráficos do K-means refeitos | 2 a 3 h |
+| tela e infraestrutura | ~90% (Claude, 04/11, depois da MG4b) | MG5 (diagrama e README); recarga da CVM com o #46 | 2 a 3 h |
 | entregáveis: BPMN, EDA, PDF, deck, vídeo, ensaios | ~15% (justificativa e ética prontas como base) | quase tudo | 25 a 35 h |
 | **total** | **~60%** | 14 de 27 dias usados (21/10 a 16/11): no ritmo, **se** os entregáveis começarem esta semana | **29 a 44 h**, para uns 40 a 80 h de capacidade do grupo até 16/11 |
 
@@ -168,9 +196,9 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | sáb 31/10 | revisões; ED8 começa; plano B da MA2 se precisar | **MA2 (prazo)**; MA3 | ✅ MG3 Terraform (PR #29) | NA3 tempo manual; marcar testes |
 | dom 01/11 | revisões | MA4 EDA | ~~prazo da MG3~~ (entrou no sáb); MG4 | NA3 |
 | seg 02/11 (feriado) | ✅ ED12 na `main` (#30); ✅ ED8 adiantada (#31) | | ✅ MG4 adiantada (#36) | |
-| ter 03/11 | ✅ **demo ponta a ponta · tag `v0.1-demo`** (compose e Terraform no Mac); revisão geral (issues #42 a #44) | MA4 (atrasada); MA3: PR #46 aberto (#42) | ~~MG4~~ (feita em 02/11); ✅ MG4b adiantada (#47) | NA3 ROI mínimo |
-| qua 04/11 | **ED13: issue #43** (~30 min); ✅ ED8 (feita em 02/11) | **merge do PR da MA3 (#46)**; decidir a #17; MA5 BPMN | ~~MG4b~~ (feita em 03/11, #47); MG5 arquitetura + README | NA4 slide de métricas |
-| qui 05/11 | só bugs | MA5 | MG6 vídeo v0 | NA3 (prazo do ROI mínimo) |
+| ter 03/11 | ✅ **demo ponta a ponta · tag `v0.1-demo`** (compose e Terraform no Mac); revisão geral (issues #42 a #44) | MA4 (atrasada); ✅ MA3: PR #46 (#42, #17) | ~~MG4~~ (feita em 02/11); ✅ MG4b adiantada (#47) | NA3 ROI mínimo |
+| qua 04/11 | **ED13: issue #43** (~30 min); ✅ ED8 (feita em 02/11) | ~~PR da MA3 e #17~~ (PR #46, 03/11); zip da `data/`; MA5 BPMN | ~~MG4b~~ (#47, merge em 04/11); recarga da CVM; MG5 arquitetura + README | NA4 slide de métricas |
+| qui 05/11 | só bugs; **ED14: issue #45** (travas no Windows) | MA5 | MG6 vídeo v0 | NA3 (prazo do ROI mínimo) |
 | sex 06/11 | **ED9: código congelado · tag `v1.0`**; ED11 avaliação final | | | |
 | sáb 07/11 | ED10 teste do zero | MA6 PDF (rascunho) | MG7 vídeo final na `v1.0` | NA5 ética |
 | dom 08/11 | **todos mandam o conteúdo dos slides à Náthally** | | | NA5 deck |
@@ -197,6 +225,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | ED10 | sáb 07/11 | — | teste do zero em outra máquina, só com o README | consertos | Manual | rodou sem ajuda, ou cada falha virou PR | `v1.0.1` se precisar |
 | ED11 | sex 06/11 | — | avaliação final na `v1.0` (só se a IA mudou depois do ED7) + ensaio de defesa | `resultados.csv` | Plan | 10 perguntas da banca respondidas sem consulta | PR |
 | ED13 | qua 04/11 | — | consertar a **issue #43**: a tela aberta antes de carregar a CVM não acha a empresa (cache de `_base()`, `raiox/ia.py:51`). Guia §5: "funciona de ponta a ponta?" | `raiox/ia.py`, `tests/test_raio_x.py` | Manual | o passo a passo da #43 gera o raio-x da WEG; teste novo com essa ordem | PR que fecha #43 |
+| ED14 | qui 05/11 | — | consertar a **issue #45**: no Windows, o `guarda.py` lê a saída do Git em cp1252 (`.claude/hooks/guarda.py:89`), bloqueia commit e merge com `”` ou emoji no diff, e 8 testes das travas falham. Guia §2: "agentic coding" | `.claude/hooks/guarda.py`, `tests/test_guarda.py` | Manual | no Windows do Marcos, sem `PYTHONUTF8`: `python -m pytest -q tests/test_guarda.py` sem falhas e um commit com `”` no diff passa pela trava | PR que fecha #45 |
 | ED12 | sáb 31/10 | ✅ PR #30 (na `main` em 02/11) | travas do Claude Code (R14 e guia §2, agentic coding): `.claude/settings.json`, `.claude/hooks/guarda.py`, subagent `revisor`, import do `requisitos_projeto.MD` | `.claude/`, `CLAUDE.md`, `AGENTS.md`, `README.md`, `aprender/claude-code.md`, `tests/test_guarda.py` | Plan | testes verdes; o hook bloqueia de verdade numa sessão | `eduardo-claude-config` |
 
 ### Marcos (Claude Code)
@@ -205,7 +234,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 |---|---|---|---|---|---|---|---|
 | MA1 | 27/10 | ✅ PR #4 | revisar o #4: o código é seu, só os imports mudaram; decidir sobre o `scripts/dados.py` | — | — | #4 aprovado | `marcos-porta-dados` |
 | MA2 | qui 29–sáb 31/10 | ✅ PR #21 (Marcos, 29/10) e PR #22 (Eduardo, 30/10, com o ok do Marcos): o "pronto quando" passa. Sobram para a MA3: `cd_cvm` int e só ativas no C1, tabela `indicadores` (seção 0) | **PostgreSQL na `main`** (regra do professor): trazer o `5508116` para a estrutura da `main` (sem `src/`), `DATABASE_URL` e `TEST_DATABASE_URL` no `.env.example`, serviço postgres no CI (`.github/workflows/testes.yml`) para os testes do banco não pularem; e o C1/C2: CSV padrão (sem `sep=";"` e sem `decimal=","` na **escrita**), `cd_cvm` int, tabela `indicadores` no banco, busca só com empresas ativas e com indicadores | `scripts/`, `raiox/dados.py`, `requirements.txt`, CI, `tests/` | Plan | CI verde **rodando** os testes do banco (não pulados); `python -m pytest -q tests/test_ponta_a_ponta.py` passa com os seus dados reais | `marcos-postgres` → PR (Eduardo + Miguel) |
-| MA3 | sex 30–sáb 31/10 (atrasada) | 🟡 03/11: branch `marcos-corrige-s1-s2` **sem PR** (issue #42): C1 (só ativas, `cd_cvm` número), tabela `indicadores` (C2) e S2 (5 empresas, 0,00%) feitos; mescla com a `main` sem conflito. Falta a #17 (Camil) | dados reais + checagem + 5 empresas conferidas no RI; zip da `data/` no Drive | `avaliacao/conferencia.csv`; consertos | Manual | diferença < 1%; nenhum "erro"; link no grupo | PR |
+| MA3 | sex 30–sáb 31/10 (atrasada) | 🟡 PR #46 (03/11): C1 e C2, S1, S2 (13 linhas, 0,00%), #17 (o ano do exercício: Camil = DFP de 28/02/2026), corte de R$ 10 mi ok, `checagem` sem "erro". Falta o zip da `data/` no Drive (link no grupo), depois do merge | dados reais + checagem + 5 empresas conferidas no RI; zip da `data/` no Drive | `avaliacao/conferencia.csv`; consertos | Manual | diferença < 1%; nenhum "erro"; link no grupo | PR |
 | MA4 | dom 01–ter 03/11 | — | EDA com 4 gráficos (nulos, distribuições, extremos, cobertura) | `notebooks/eda.ipynb`, `docs/graficos/` | Manual | "Restart & Run All" sem erro | PR |
 | MA5 | qua 04–qui 05/11 | — | BPMN 2.0 com o Raio-X (obrigatório) e o de hoje (se der tempo), no bpmn.io | `docs/bpmn/` | Plan (o Claude só revisa) | abre no bpmn.io; decisões "tem dados?" e "passou no validador?" | PR |
 | MA6 | sáb 07–seg 09/11 | — | montar o `documentacao.pdf` | `docs/documentacao.pdf` | fora do Claude | etapas desenvolvidas no processo (R Documentação; a base é o `docs/HISTORICO.md`) + BPMN + justificativa + ética + arquitetura | PR |
@@ -263,8 +292,8 @@ Para subir um arquivo:
 | `tests/conftest.py` | todo teste usa a tabela falsa (`RAIOX_DADOS=falsos`) e nada grava em `data/` | Eduardo | sim |
 | `tests/test_raio_x.py` | validador (regra de ouro), contrato C3, fonte, modo sem IA nas 30 empresas falsas, prompt (lê as regras da Náthally, chaves preservadas, só marcadores de indicador), texto sem IA na forma da v2, limite de tempo e de tentativas do Gemini, `RAIOX_DADOS`, segmentação (k = 3, 29 de 30; menor grupo ≥ 5%; empresas pequenas fora do treino; `segmentos.csv` refeito quando o código muda), gráficos, checador | Eduardo | sim |
 | `tests/test_avaliar.py` | `avaliar.py`: colunas do C4, casos válidos, caso com erro, formato do `casos_avaliacao.csv` (5 colunas, `cd_cvm` inteiro em todos) | Eduardo | sim |
-| `tests/test_limpeza.py`, `test_carregar_dfp.py`, `test_dados.py`, `test_banco.py`, `test_verificar_automatico.py` (PRs #4 e #21) | regras de limpeza, carga da DFP (rede simulada), catálogo e C1 em PostgreSQL (banco de teste separado: `tests/banco_teste.py`); o C2 (CSV padrão, `cd_cvm` int) em `test_calcular_grava_csv_padrao_com_cd_cvm_inteiro` (#22) | Marcos | sim: o CI sobe um PostgreSQL desde o #22 (sem ele, os testes do banco pulam; `-rs` mostra quais) |
-| C1 na busca (MA3) | `cd_cvm` int e só companhias ativas | Marcos | na branch `marcos-corrige-s1-s2` (`tests/test_dados.py`), sem PR: issue #42 |
+| `tests/test_limpeza.py`, `test_carregar_dfp.py`, `test_dados.py`, `test_banco.py`, `test_verificar_automatico.py` (PRs #4 e #21) | regras de limpeza, carga da DFP (rede simulada), catálogo e C1 em PostgreSQL (banco de teste separado: `tests/banco_teste.py`); o C2 (CSV padrão, `cd_cvm` int, mesma tabela no banco) em `test_publicar_grava_o_mesmo_c2_no_csv_e_no_banco` (#46; era `test_calcular_grava_csv_padrao_com_cd_cvm_inteiro`, do #22) | Marcos | sim: o CI sobe um PostgreSQL desde o #22 (sem ele, os testes do banco pulam; `-rs` mostra quais) |
+| C1 e C2 no banco, ano do exercício (MA3, PR #46) | `test_busca_exige_cadastro_ativo_e_indicadores`, `test_sem_a_tabela_indicadores_a_busca_volta_vazia`, `test_publicar_grava_o_mesmo_c2_no_csv_e_no_banco` (`tests/test_dados.py`); `test_ano_do_exercicio_e_o_ano_com_mais_meses` e `test_limpar_demo_usa_o_ano_do_exercicio_e_nao_o_do_arquivo` (`tests/test_limpeza.py`); `test_main_usa_o_exercicio_de_quem_fecha_fora_de_dezembro`, `test_main_segue_sem_o_arquivo_do_ano_seguinte` e `test_main_para_se_falta_o_arquivo_de_um_dos_anos` (`tests/test_carregar_dfp.py`); `test_desiste_rapido_se_o_banco_nao_responde` (`tests/test_banco.py`) | Marcos | sim |
 | `tests/test_tela.py` (MG4, MG4b) | a tela com os falsos: busca, gerar, 6 métricas, sem erro; com a IA fora do ar, aviso de uma frase (o erro em "Detalhes técnicos" e no log) e o topo e o rodapé sem "escrito pelo Gemini"; os avisos do banco com os comandos do Terraform | Miguel | sim |
 | `tests/test_ponta_a_ponta.py` | C2 real, raio-x sem IA de 3 setores, `cd_cvm` dos casos (todos preenchidos e na tabela real) | Eduardo | **não**: pula sem `data/`. Rodar local antes de `v0.1-demo`, `v1.0` e no teste do zero |
 | `tests/test_aprender.py` | o notebook `aprender/passo_a_passo.ipynb` roda inteiro e vai para o Git sem saídas | Eduardo | sim |

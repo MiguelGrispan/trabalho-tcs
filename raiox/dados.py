@@ -8,12 +8,9 @@ from raiox.banco import catalogo_existe, conectar
 
 
 def buscar_empresas(texto):
-    """Busca empresas pelo nome: até 20, ordenadas pelo nome.
-
-    O catálogo já vem limpo de carregar_dfp.py: só tem empresas com receita
-    de venda positiva e uma linha por conta, então a conta 3.01 do último
-    ano dá uma linha por empresa.
-    """
+    """Busca até 20 companhias ativas com indicadores, ordenadas por nome."""
+    # Sem as tabelas contas e indicadores, volta vazia: a tela mostra
+    # "O banco está vazio", com os comandos para carregar os dados
     if not catalogo_existe():
         return []
 
@@ -24,17 +21,16 @@ def buscar_empresas(texto):
 
     # ILIKE é o LIKE do PostgreSQL que ignora maiúsculas e minúsculas
     consulta = """
-        SELECT cd_cvm, nome, setor
-        FROM contas
-        WHERE ano = (SELECT MAX(ano) FROM contas)
-          AND cd_conta = '3.01'
-          AND nome ILIKE :termo ESCAPE '\\'
-        ORDER BY LOWER(nome)
+        SELECT i.cd_cvm, i.nome, i.setor
+        FROM indicadores AS i
+        JOIN empresas AS e ON e.cd_cvm = CAST(i.cd_cvm AS TEXT)
+        WHERE e.situacao = 'ATIVO'
+          AND i.nome ILIKE :termo ESCAPE '\\'
+        ORDER BY LOWER(i.nome), i.cd_cvm
         LIMIT 20
     """
-    conn = conectar()
-    linhas = conn.execute(text(consulta), {"termo": f"%{termo}%"}).fetchall()
-    conn.close()
+    with conectar() as conn:
+        linhas = conn.execute(text(consulta), {"termo": f"%{termo}%"}).fetchall()
 
     # Transforma cada linha do banco num dicionário
     empresas = []

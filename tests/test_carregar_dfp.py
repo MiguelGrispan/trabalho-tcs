@@ -7,6 +7,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pandas as pd
+import requests
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 
@@ -137,6 +138,8 @@ class PipelineCompletoTests(TesteComBanco):
             "dfp_cia_aberta_2023.zip": embrulhar_varios({
                 "dfp_cia_aberta_DRE_con_2023.csv": dre_con_2023,
             }),
+            # O arquivo a mais (último de ANOS + 1), para quem fecha fora de dezembro
+            "dfp_cia_aberta_2026.zip": embrulhar_varios({}),
         }
 
     def tearDown(self):
@@ -144,7 +147,13 @@ class PipelineCompletoTests(TesteComBanco):
 
     def rodar_main(self):
         def baixar_falso(url):
-            return self.downloads[url.rsplit("/", 1)[-1]]
+            nome = url.rsplit("/", 1)[-1]
+            conteudo = self.downloads.get(nome, 404)  # como a CVM sem o arquivo
+            if isinstance(conteudo, int):
+                resposta = requests.Response()
+                resposta.status_code = conteudo
+                raise requests.exceptions.HTTPError(f"{conteudo}: {nome}", response=resposta)
+            return conteudo
 
         with (
             patch.object(carregar_dfp, "DATA_DIR", self.data_dir),
@@ -181,6 +190,51 @@ class PipelineCompletoTests(TesteComBanco):
         so_individual = contas.loc[contas["cd_cvm"].eq("3")]
         self.assertEqual(set(so_individual["origem"]), {"ind"})
         self.assertEqual(set(so_individual["setor"]), {"Não Informado"})
+
+    def test_main_usa_o_exercicio_de_quem_fecha_fora_de_dezembro(self):
+        """A Usina fecha a safra em março: o 2025 dela mora no arquivo de 2026. 🌾"""
+        # Caso real (Camil, issue #17): o exercício de mar/2025 a fev/2026
+        # só existe no arquivo da CVM de 2026
+        venda = "Receita de Venda de Bens e/ou Serviços"
+        dre_con_2026 = pd.DataFrame([
+            linha_dfp("000004", "Usina", "2026-03-31", "3.01", venda, "70"),
+            linha_dfp("000005", "Adiantada", "2026-09-30", "3.01", venda, "40"),  # já é o 2026 dela
+        ], columns=COLUNAS_DFP)
+        self.downloads["dfp_cia_aberta_2026.zip"] = embrulhar_varios({
+            "dfp_cia_aberta_DRE_con_2026.csv": dre_con_2026,
+        })
+
+        contas = self.rodar_main()
+
+        usina = contas.loc[contas["cd_cvm"].eq("4")]
+        self.assertEqual(usina["ano"].tolist(), [2025])
+        self.assertEqual(usina["valor"].tolist(), [70000])
+        # O exercício de 2026 fica de fora; se ficasse, seria o "último ano"
+        # da regra 6 e só a Adiantada sobraria
+        self.assertNotIn("5", set(contas["cd_cvm"]))
+        self.assertEqual(set(contas["cd_cvm"]), {"1", "3", "4"})
+
+    def test_main_segue_sem_o_arquivo_do_ano_seguinte(self):
+        """Janeiro: a CVM ainda não abriu o arquivo do ano novo. Segue a vida com os outros. 🗂"""
+        del self.downloads["dfp_cia_aberta_2026.zip"]
+
+        contas = self.rodar_main()
+
+        self.assertEqual(set(contas["cd_cvm"]), {"1", "3"})
+
+    def test_main_para_se_a_cvm_falha_no_arquivo_do_ano_seguinte(self):
+        """Erro 500 não é "arquivo não existe": parar é melhor que perder a Camil calado. 🚧"""
+        self.downloads["dfp_cia_aberta_2026.zip"] = 500
+
+        with self.assertRaises(requests.exceptions.HTTPError):
+            self.rodar_main()
+
+    def test_main_para_se_falta_o_arquivo_de_um_dos_anos(self):
+        """Faltou um dos anos de verdade? Aí para, em vez de seguir com buraco. 🛑"""
+        del self.downloads["dfp_cia_aberta_2023.zip"]
+
+        with self.assertRaises(requests.exceptions.HTTPError):
+            self.rodar_main()
 
     def test_main_grava_catalogo_com_chave_unica(self):
         """O banco não aceita gêmeos: o índice único barra na entrada. 🚪"""
