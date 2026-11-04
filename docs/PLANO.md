@@ -20,7 +20,11 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em ter 03/11, ~12h** (fim da MA3, Marcos com o Claude Code). Na `main`: PRs #1 a #16 e #19 a #41. Aberto: #46 (MA3).
+**Em qua 04/11** (conferência do Marcos com o Claude Code; o texto abaixo é de ter 03/11, ~12h, fim da MA3, com as
+correções de 04/11). Na `main`: PRs #1 a #16, #19 a #41 e #46 (MA3, mesclado em 03/11 às 16h21; fechou as issues #17 e #42).
+Aberto: **#47 (MG4b, Miguel)**, com o CI verde mas **em conflito com a `main`** (mexe no PLANO, no REQUISITOS e no HISTORICO,
+que o #46 também mudou): falta o `git merge main` na branch `miguel-aviso-ia`. Issues abertas: #38, #39, #43, #44 e #45.
+Testes em 04/11: 241 passed, nenhum pulado (Windows do Marcos, PostgreSQL ligado, `PYTHONUTF8=1`).
 A versão longa desta seção, com o detalhe de cada PR até 03/11, ficou no Git: `git show 9f85bc9:docs/PLANO.md`.
 O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 
@@ -35,7 +39,7 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 - **Textos-base prontos:** `docs/justificativa.md` (ED8; falta o Marcos ler) e `docs/etica.md` (base da NA5).
 - No Mac, o Terraform só acha o Docker com `export DOCKER_HOST=unix://$HOME/.docker/run/docker.sock` (`README.md:158`).
 
-### MA3 (Marcos, 03/11): PR #46, que fecha as issues #42 e #17
+### MA3 (Marcos, 03/11): PR #46, que fechou as issues #42 e #17 (mesclado em 03/11)
 - **C1 e C2** (os 3 commits de 10h09 da branch `marcos-corrige-s1-s2`): a busca devolve só companhias ativas e com indicadores,
   com o `cd_cvm` como número (`raiox/dados.py`); a tabela `indicadores` existe no PostgreSQL (`publicar()` em `scripts/indicadores.py`).
   As 2 notas "Pendente" do `contratos.md` saíram. **S1:** `scripts/verificar_dfp.py` acha as mesmas 595 empresas.
@@ -67,7 +71,7 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 - O `/fim-de-sessao` passa a listar as branches sem PR antes de reescrever esta seção (passo 4), para não repetir o caso da MA3.
 
 ### Caminho crítico (o que trava os outros)
-1. **O merge do #46 (MA3) e a recarga dos dados.** Depois dele, todos rodam de novo `python scripts/carregar_dfp.py` e
+1. **A recarga dos dados depois do #46 (MA3, já mesclado).** Todos rodam de novo `python scripts/carregar_dfp.py` e
    `python scripts/indicadores.py` (os dois precisam do PostgreSQL ligado) e reiniciam a tela (o cache da #43 guarda a tabela velha).
 2. **Os entregáveis.** O código está perto do fim; o que falta é documento: BPMN (MA5), EDA (MA4, atrasada), PDF (MA6),
    deck (NA5 e NA6) e vídeo (MG6 e MG7). Hoje, quase tudo isso está com o Marcos e a Náthally.
@@ -75,23 +79,28 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
    uma linha do [REQUISITOS.md](REQUISITOS.md). Dos PRs de 02 e 03/11, a maioria foi de notas e regras; a banca avalia os entregáveis.
 
 ### Próximo passo de cada um
-- **Marcos:** depois do merge do #46, o zip da `data/` no Drive com o link no grupo (fecha a MA3) → apagar a `tratamento_dados` pelo
-  site do GitHub (o que só ela tem é código antigo: `src/` e CSV com `;`) → MA5 BPMN (qua–qui) → MA4 EDA. Um PR pequeno, com o ok do
+- **Marcos:** ~~o zip da `data/` no Drive com o link no grupo~~ (feito: no Drive, com o link no grupo; fecha a MA3) →
+  ~~apagar a `tratamento_dados`~~ (feito: em 04/11 ela não aparece em `git branch -r`) → MA5 BPMN (qua–qui) → MA4 EDA (atrasada)
+  → revisar o rascunho do MA6 do Eduardo (sáb 07/11) → trocar a citação do `raiox/limpeza.py` para a seção "Dados e limpeza" do
+  `docs/documentacao.md` e tirar o `docs/Raio-X Comercial.pdf` (depois do MA6). Um PR pequeno, com o ok do
   Eduardo, tirando `verificar_automatico.py` e `yfinance` (cortados na seção 7; o `graficos.py` fica para a MA4, abaixo). Ler a `docs/justificativa.md` (ED8).
-- **Miguel:** MG4b = #38, #39 e #44 num PR só (qua 04/11) → MG5 diagrama e README (qua 04/11) → MG6 roteiro e vídeo v0 (qui 05/11).
+- **Miguel:** MG4b = #38, #39 e #44 no PR #47 (aberto em 03/11; resolver o conflito com a `main` e fazer o merge) → MG5 diagrama e README (qua 04/11) → MG6 roteiro e vídeo v0 (qui 05/11), gravado no Mac do Eduardo (o computador da banca).
   Avisar o grupo das mudanças da MG4 em pastas comuns (`tests/`, `.env.example`, `aprender/`).
 - **Náthally (obrigatório):** NA3 ROI mínimo (até qui 05/11) → NA4 slide de métricas (o "7 de 10" com a explicação da S2; a
   Camil agora bate com a conferência dela em receita e crescimento, #46) → NA5 ética (base: `docs/etica.md`) → NA6 deck. Sugestões, se der tempo: seção 3.
 - **Eduardo:** ED13, a #43 (qua 04/11) → ED14, a #45 (travas no Windows, qui 05/11) → refazer `python -m raiox.segmentos` e os PNG
-  com os dados do #46 → ED9 tag `v1.0` e ED11 (sex 06/11) → ED10 teste do zero (sáb 07/11).
+  com os dados do #46 → ED9 tag `v1.0` e ED11 (sex 06/11) → ED10 teste do zero (sáb 07/11) → **MA6** (agora dele): rascunho do
+  `docs/documentacao.md` no sáb 07/11 para o Marcos revisar; final e PDF na seg 09/11.
   Mandar ao grupo a mensagem da revisão; perguntar ao professor a data da banca e as perguntas 2 e 3 do REQUISITOS;
   treinar a defesa com `/explicar` (seção 8).
 
 ### Decisões em aberto
-- **Rebalancear (proposta da revisão):** o Eduardo monta o PDF (MA6), porque escreveu a base (justificativa, ética, HISTORICO)
-  e tem as sessões mais leves até 16/11; o Marcos fica com MA3, MA5 e MA4. Decidir no grupo até qua 04/11.
-- **Qual computador roda a demo na banca.** Só o Mac do Eduardo foi conferido com compose, Terraform e Gemini (03/11).
-  Decidir antes do vídeo v0 (qui 05/11), para gravar na mesma máquina.
+- Decidido no grupo em qua 04/11 (Marcos e Eduardo):
+  - **o MA6 passa para o Eduardo.** Ele escreve em `docs/documentacao.md` e gera o PDF a partir dele (o PR tem diff e os números
+    podem ser conferidos). O documento terá uma seção "Dados e limpeza" com as regras atualizadas. O Marcos continua lendo a
+    `docs/justificativa.md` e revisa o rascunho no sáb 07/11. O Marcos fica com MA3, MA5 e MA4;
+  - **a demo na banca roda no Mac do Eduardo**, o único conferido com compose, Terraform e Gemini (03/11). Os vídeos v0 (MG6) e
+    final (MG7) são gravados nele também.
 - Data e horário da banca; perguntas 2 e 3 ao professor (Eduardo).
 - `scripts/dados.py` ou `raiox/dados.py` (ficar com um só; Marcos).
 - Decidido pelo Marcos em 03/11:
@@ -101,8 +110,9 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
     `notebooks/eda.ipynb` (`guia_projeto_final.pdf` §2: "Visualização explicativa dos dados"; §1: EDA). Só o script pode sair;
     a visualização é obrigatória;
   - o `docs/Raio-X Comercial.pdf` fica até a MA6, porque o `raiox/limpeza.py` o cita como a fonte das regras de limpeza (ele ainda
-    fala de SQLite);
-  - a `tratamento_dados` será apagada.
+    fala de SQLite). Quando o `docs/documentacao.md` entrar, com a seção "Dados e limpeza" (04/11), o Marcos troca a citação do
+    `limpeza.py` para ela e o PDF velho sai;
+  - a `tratamento_dados` será apagada (feito: em 04/11 ela não aparece em `git branch -r`).
 - Apagar a `feat/metricas` (Náthally; antes, subir o `revisao_manual.md`, se ela quiser).
 - As 3 notas do código (`NOTAS_DO_CODIGO`, em `raiox/ia.py`) vão para a v3 das regras? (Náthally).
 
@@ -185,9 +195,9 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | qua 04/11 | **ED13: issue #43** (~30 min); ✅ ED8 (feita em 02/11) | ~~PR da MA3 e #17~~ (PR #46, 03/11); zip da `data/`; MA5 BPMN | **MG4b: issues #38, #39 e #44** (~45 min); MG5 arquitetura + README | NA4 slide de métricas |
 | qui 05/11 | só bugs; **ED14: issue #45** (travas no Windows) | MA5 | MG6 vídeo v0 | NA3 (prazo do ROI mínimo) |
 | sex 06/11 | **ED9: código congelado · tag `v1.0`**; ED11 avaliação final | | | |
-| sáb 07/11 | ED10 teste do zero | MA6 PDF (rascunho) | MG7 vídeo final na `v1.0` | NA5 ética |
+| sáb 07/11 | ED10 teste do zero; MA6 rascunho (`docs/documentacao.md`) | revisar o rascunho do MA6 | MG7 vídeo final na `v1.0` (no Mac do Eduardo) | NA5 ética |
 | dom 08/11 | **todos mandam o conteúdo dos slides à Náthally** | | | NA5 deck |
-| seg 09/11 | | MA6 PDF final | | NA6 deck final |
+| seg 09/11 | MA6 final (o `.md` e o PDF gerado dele) | trocar a citação do `raiox/limpeza.py`; o PDF velho sai | | NA6 deck final |
 | ter 10/11 | **ensaio 1 (20 min, todos)** | | | |
 | qua 11/11 | **ensaio 2; tudo pronto para entregar** | | | |
 | 12–15/11 | reserva (e prontos, se a banca vier antes) | | | |
@@ -219,10 +229,10 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 |---|---|---|---|---|---|---|---|
 | MA1 | 27/10 | ✅ PR #4 | revisar o #4: o código é seu, só os imports mudaram; decidir sobre o `scripts/dados.py` | — | — | #4 aprovado | `marcos-porta-dados` |
 | MA2 | qui 29–sáb 31/10 | ✅ PR #21 (Marcos, 29/10) e PR #22 (Eduardo, 30/10, com o ok do Marcos): o "pronto quando" passa. Sobram para a MA3: `cd_cvm` int e só ativas no C1, tabela `indicadores` (seção 0) | **PostgreSQL na `main`** (regra do professor): trazer o `5508116` para a estrutura da `main` (sem `src/`), `DATABASE_URL` e `TEST_DATABASE_URL` no `.env.example`, serviço postgres no CI (`.github/workflows/testes.yml`) para os testes do banco não pularem; e o C1/C2: CSV padrão (sem `sep=";"` e sem `decimal=","` na **escrita**), `cd_cvm` int, tabela `indicadores` no banco, busca só com empresas ativas e com indicadores | `scripts/`, `raiox/dados.py`, `requirements.txt`, CI, `tests/` | Plan | CI verde **rodando** os testes do banco (não pulados); `python -m pytest -q tests/test_ponta_a_ponta.py` passa com os seus dados reais | `marcos-postgres` → PR (Eduardo + Miguel) |
-| MA3 | sex 30–sáb 31/10 (atrasada) | 🟡 PR #46 (03/11): C1 e C2, S1, S2 (13 linhas, 0,00%), #17 (o ano do exercício: Camil = DFP de 28/02/2026), corte de R$ 10 mi ok, `checagem` sem "erro". Falta o zip da `data/` no Drive (link no grupo), depois do merge | dados reais + checagem + 5 empresas conferidas no RI; zip da `data/` no Drive | `avaliacao/conferencia.csv`; consertos | Manual | diferença < 1%; nenhum "erro"; link no grupo | PR |
+| MA3 | sex 30–sáb 31/10 (atrasada) | ✅ PR #46 (mesclado em 03/11): C1 e C2, S1, S2 (13 linhas, 0,00%), #17 (o ano do exercício: Camil = DFP de 28/02/2026), corte de R$ 10 mi ok, `checagem` sem "erro". Zip da `data/` no Drive, com o link no grupo (04/11) | dados reais + checagem + 5 empresas conferidas no RI; zip da `data/` no Drive | `avaliacao/conferencia.csv`; consertos | Manual | diferença < 1%; nenhum "erro"; link no grupo | PR |
 | MA4 | dom 01–ter 03/11 | — | EDA com 4 gráficos (nulos, distribuições, extremos, cobertura) | `notebooks/eda.ipynb`, `docs/graficos/` | Manual | "Restart & Run All" sem erro | PR |
 | MA5 | qua 04–qui 05/11 | — | BPMN 2.0 com o Raio-X (obrigatório) e o de hoje (se der tempo), no bpmn.io | `docs/bpmn/` | Plan (o Claude só revisa) | abre no bpmn.io; decisões "tem dados?" e "passou no validador?" | PR |
-| MA6 | sáb 07–seg 09/11 | — | montar o `documentacao.pdf` | `docs/documentacao.pdf` | fora do Claude | etapas desenvolvidas no processo (R Documentação; a base é o `docs/HISTORICO.md`) + BPMN + justificativa + ética + arquitetura | PR |
+| MA6 | sáb 07–seg 09/11 | ➡️ com o **Eduardo** (decidido em 04/11); o Marcos revisa o rascunho no sáb 07/11 | montar o documento do projeto, escrito em markdown e gerado em PDF (o R aceita markdown; o G §6 pede PDF: vão os dois) | `docs/documentacao.md`, `docs/documentacao.pdf` | Manual | etapas desenvolvidas no processo (R Documentação; a base é o `docs/HISTORICO.md`) + BPMN + justificativa + ética + arquitetura + seção "Dados e limpeza" (as regras do `raiox/limpeza.py`, no lugar do `docs/Raio-X Comercial.pdf`); o Marcos revisou | PR (Eduardo) |
 
 ### Miguel (Claude Code)
 
@@ -232,7 +242,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | MG2 | qui 29–sex 30/10 | ✅ PR #24 (30/10): os 2 contêineres `healthy`, health `ok`, `carregar_dfp.py` no banco do contêiner, 87 passed no contêiner | `Dockerfile` + `.dockerignore` + `docker-compose.yml` (tela + PostgreSQL com volume do banco; `data/` como volume; chave e `DATABASE_URL` por variável) | `Dockerfile`, `.dockerignore`, `docker-compose.yml` | Plan | `docker compose up` sobe os 2; `curl localhost:8501/_stcore/health` → `ok`; `scripts/carregar_dfp.py` grava no PostgreSQL do contêiner | `miguel-docker` → PR (Eduardo) |
 | MG3 | sáb 31/10–dom 01/11 | ✅ PR #29 (31/10): `apply` sobe os 2 `healthy`; `destroy` + `apply` mantém o banco e a `data/`; 87 passed no contêiner; 2º `plan` sem mudanças. IA pelo Terraform vista pelo Miguel. Portas padrão e Mac conferidos pelo Eduardo em 03/11 (seção 0) | **Terraform na `main`, obrigatório** (`requisitos_projeto.MD`, Aplicação: "Infraestrutura automatizada com Terraform"): provider docker com os 2 contêineres (tela + PostgreSQL), a partir do `terraform/` da branch `docs-docker-e-terraform`. Prazo: dom 01/11; reserva: seg 02/11 com o Eduardo. Não pode ser cortado | `infra/` | Plan | `terraform apply` sobe a tela e o banco; `destroy` + `apply` mantém a `data/` e o banco | PR |
 | MG4 | dom 01–ter 03/11 | ✅ PR #36 (02/11): WEG, Embraer e Ambev geram o raio-x no contêiner, e as 3 consultas estão na `consultas`; 8 testes em `tests/test_tela.py`. Gemini de verdade conferido em 03/11 (WEG). Volta para o modo sem IA com o Gemini fora do ar conferida em 03/11 (chave inválida, WEG): funciona; os 2 problemas de aparência viraram a MG4b | tela com dados reais e **com o banco** (R Aplicação: banco de dados): `RAIOX_DADOS` (`falsos`/`real`) no lugar do `USAR_DADOS_FALSOS`, e com `real` a busca e o `registrar_consulta` usam o PostgreSQL (`raiox/dados.py`); volta sozinha para o modo sem IA, com aviso; `registrar_consulta` dentro do `try`; `tests/test_tela.py` | `app/`, `.env.example`, `tests/` | Plan | 3 empresas reais geram raio-x no contêiner, e cada consulta aparece na tabela `consultas` | PR (Eduardo) |
-| MG4b | qua 04/11 | — | consertar as issues **#38** (o aviso de falha da IA mostra o JSON inteiro do Google), **#39** (o topo diz "Texto escrito pelo Gemini" quando o texto foi montado sem IA) e **#44** (o compose abre a tela para a rede toda: `127.0.0.1:8501:8501`, como o Terraform), achadas pelo Eduardo em 03/11. Guia §5: "a interface é amigável ao usuário?" (protótipo, 20%) | `app/streamlit_app.py`, `tests/test_tela.py`, `docker-compose.yml` | Manual | com `GOOGLE_API_KEY=chave-falsa-teste RAIOX_IA_REAL=1 docker compose up -d --build`, a WEG mostra um aviso curto e o topo não diz "escrito pelo Gemini"; teste novo para cada issue; `docker ps` mostra `127.0.0.1:8501`; antes do vídeo v0 (MG6) e do congelamento (sex 06/11) | PR que fecha #38, #39 e #44 |
+| MG4b | qua 04/11 | 🟡 PR #47 aberto (03/11): CI verde, em conflito com a `main` | consertar as issues **#38** (o aviso de falha da IA mostra o JSON inteiro do Google), **#39** (o topo diz "Texto escrito pelo Gemini" quando o texto foi montado sem IA) e **#44** (o compose abre a tela para a rede toda: `127.0.0.1:8501:8501`, como o Terraform), achadas pelo Eduardo em 03/11. Guia §5: "a interface é amigável ao usuário?" (protótipo, 20%) | `app/streamlit_app.py`, `tests/test_tela.py`, `docker-compose.yml` | Manual | com `GOOGLE_API_KEY=chave-falsa-teste RAIOX_IA_REAL=1 docker compose up -d --build`, a WEG mostra um aviso curto e o topo não diz "escrito pelo Gemini"; teste novo para cada issue; `docker ps` mostra `127.0.0.1:8501`; antes do vídeo v0 (MG6) e do congelamento (sex 06/11) | PR que fecha #38, #39 e #44 |
 | MG5 | qua 04/11 | — | diagrama de arquitetura + README (tema, objetivo e tecnologias já estão; pré-requisitos com Python 3.14; rodar local, Docker e Terraform) | `docs/arquitetura.png`, `README.md` | Manual | um colega entende o fluxo lendo o README; o README cobre o que o R pede em "Documentação" | PR |
 | MG6 | qui 05/11 | — | roteiro de 6 min da demo + vídeo v0 | — | — | vídeo salvo em 2 lugares | — |
 | MG7 | sáb 07/11 | — | vídeo final na `v1.0` | — | — | vídeo salvo em 2 lugares | — |
@@ -350,7 +360,7 @@ Para subir um arquivo:
 | dia da banca | a API falha ou o crédito acaba (erro 402) | a tela volta sozinha para o modo sem IA, com aviso (MG4); vídeo; saldo conferido em 08/11 |
 | qualquer dia | a banca é **antes** | o código já congela em 06/11 e os entregáveis ficam prontos em 11/11 |
 | sex 06/11 | o PR da MA3 (#42) não entra antes do congelamento | a demo usa a busca da `main`, que já funciona; o C1 e o C2 ficam pela metade, e a ética diz isso |
-| qualquer dia | uma pessoa com sessões demais (hoje: o Marcos, com MA3, MA4, MA5 e MA6) | o Eduardo monta o PDF (MA6; decisão em aberto, seção 0) |
+| qualquer dia | uma pessoa com sessões demais (era o Marcos, com MA3, MA4, MA5 e MA6) | feito em 04/11: o Eduardo monta o documento (MA6) e o Marcos revisa |
 | qualquer dia | alguém fica indisponível | duplas de reserva: Marcos ↔ Eduardo (dados), Miguel ↔ Eduardo (infra), Náthally ↔ Marcos (deck e PDF) |
 
 **Já fora:**
