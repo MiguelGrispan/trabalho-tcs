@@ -63,6 +63,33 @@ def textos(elementos):
     return " ".join(str(e.value) for e in elementos)
 
 
+def detalhes_tecnicos(at):
+    """Tudo o que está escrito dentro do "Detalhes técnicos" (fechado na tela, mas está lá)."""
+    bloco = next(e for e in at.expander if e.label == "Detalhes técnicos")
+    return " ".join(textos(getattr(bloco, tipo)) for tipo in ("markdown", "text", "code", "caption"))
+
+
+# O erro que o Google devolve com a chave errada (encurtado do que a tela mostrou em 03/11, issue #38).
+ERRO_DO_GOOGLE = ("Error calling model 'gemini-3.1-flash-lite' (INVALID_ARGUMENT): 400 INVALID_ARGUMENT. "
+                  "{'error': {'code': 400, 'message': 'API key not valid. Please pass a valid API key.', "
+                  "'status': 'INVALID_ARGUMENT', 'details': [{'reason': 'API_KEY_INVALID'}]}}")
+
+
+def ligar_ia(monkeypatch, gemini):
+    """Liga a IA (RAIOX_IA_REAL=1), mas põe a função dada no lugar do Gemini: nunca chama a API."""
+    monkeypatch.setenv("RAIOX_IA_REAL", "1")
+    monkeypatch.setattr(ia, "gerar_llm", gemini)
+
+
+def gemini_com_chave_errada(*args):
+    raise RuntimeError(ERRO_DO_GOOGLE)
+
+
+def gemini_que_responde(entrada, marcadores):
+    # responde com o texto do modo sem IA, mas com tokens e custo, como uma resposta de verdade
+    return ia.texto_sem_ia(entrada), {"tokens_entrada": 2262, "tokens_saida": 378, "custo_usd": 0.0011}
+
+
 def test_tela_abre_com_dados_falsos_e_avisa():
     at = abrir()
     assert not at.exception
@@ -74,6 +101,7 @@ def test_tela_gera_raio_x_com_dados_falsos():
     assert not at.exception and not at.error
     assert at.subheader[0].value == "ALFA NORTE S.A."
     assert len(at.metric) == 6                                   # os 6 indicadores
+    assert "escrito por IA" not in textos(at.caption)            # sem IA, o rodapé não diz que a IA escreveu (#39)
 
 
 def test_tela_volta_para_sem_ia_quando_a_ia_falha(monkeypatch):
@@ -90,6 +118,39 @@ def test_tela_volta_para_sem_ia_quando_a_ia_falha(monkeypatch):
     assert not at.exception and not at.error
     assert at.subheader[0].value == "ALFA NORTE S.A."
     assert "montado sem IA" in textos(at.warning)
+
+
+def test_tela_avisa_a_falha_da_ia_sem_o_erro_tecnico(monkeypatch, capsys):       # issue #38
+    ligar_ia(monkeypatch, gemini_com_chave_errada)
+    at = gerar(abrir())
+    assert not at.exception and not at.error
+    aviso = textos(at.warning)
+    assert "montado sem IA" in aviso
+    assert "INVALID_ARGUMENT" not in aviso and "{" not in aviso  # o JSON do Google não vai para o telão
+    assert "API_KEY_INVALID" in detalhes_tecnicos(at)           # mas não se perde: fica nos detalhes técnicos
+    assert "API_KEY_INVALID" in capsys.readouterr().err         # e no log (docker compose logs tela)
+
+
+def test_tela_nao_diz_que_o_texto_e_da_ia_quando_ela_falha(monkeypatch):          # issue #39
+    ligar_ia(monkeypatch, gemini_com_chave_errada)
+    at = gerar(abrir())
+    legendas = textos(at.caption)                                # o topo e o rodapé são legendas (st.caption)
+    assert "escrito pelo Gemini" not in legendas
+    assert "escrito por IA" not in legendas
+    assert "Texto montado sem IA: o Gemini não respondeu." in legendas   # o topo (o rodapé sozinho não basta)
+
+
+def test_tela_diz_que_o_texto_e_do_gemini_quando_ele_responde(monkeypatch):       # issue #39, o outro lado
+    ligar_ia(monkeypatch, gemini_que_responde)
+    at = abrir()
+    assert "IA ligada: o texto será escrito pelo Gemini." in textos(at.caption)   # antes de gerar, só o modo
+    at = gerar(at)
+    assert not at.exception and not at.error
+    assert "não respondeu" not in textos(at.warning)
+    legendas = textos(at.caption)
+    assert "escrito pelo Gemini" in legendas
+    assert "escrito por IA" in legendas                          # o rodapé
+    assert "montado sem IA" not in legendas
 
 
 def test_tela_mostra_o_raio_x_mesmo_se_o_registro_falhar(monkeypatch):
@@ -110,6 +171,7 @@ def test_tela_avisa_quando_o_banco_nao_responde(dados_reais, monkeypatch):
     at.text_input(key="busca").input("alfa").run()
     assert not at.exception
     assert "Não consegui falar com o banco" in textos(at.error)
+    assert "terraform apply" in textos(at.error)                 # quem subiu pelo Terraform também sabe o que fazer
 
 
 def test_tela_mostra_erro_quando_nem_o_modo_sem_ia_funciona(monkeypatch):
@@ -120,6 +182,7 @@ def test_tela_mostra_erro_quando_nem_o_modo_sem_ia_funciona(monkeypatch):
     assert not at.exception
     assert "Não foi possível gerar o raio-x" in textos(at.error)
     assert not at.subheader                                      # nenhum raio-x na tela
+    assert "Texto montado sem IA" in textos(at.caption)          # a legenda do topo não some no erro (revisor, #47)
 
 
 def test_tela_avisa_quando_o_banco_esta_vazio(banco_vazio):
@@ -127,6 +190,7 @@ def test_tela_avisa_quando_o_banco_esta_vazio(banco_vazio):
     at.text_input(key="busca").input("alfa").run()
     assert not at.exception and not at.error
     assert "O banco está vazio" in textos(at.warning)
+    assert "infra/main.tf" in textos(at.warning)                 # os comandos de carga de quem subiu pelo Terraform
 
 
 def test_tela_busca_no_banco_e_registra_a_consulta(banco_vazio):
