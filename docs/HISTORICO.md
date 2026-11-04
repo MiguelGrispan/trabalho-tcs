@@ -94,7 +94,8 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 - **04/11** · O 1º fechamento da MG4b parou no meio do `git merge main` (o #46 tinha entrado), e a conversa foi voltada no Claude
   Code. Voltar a conversa restaura os arquivos que o Claude editou, mas não desfaz o Git: o merge ficou pela metade, com cópias
   antigas por cima, e o `tests/test_tela.py` antigo junto do `raiox/dados.py` novo derrubou 1 teste. Conserto: `git merge --abort`
-  (com o ok do Miguel) e o merge refeito do zero.
+  (com o ok do Miguel) e o merge refeito do zero. Na recarga da CVM com o #46, a tela não gerava nenhum raio-x: o
+  `indicadores.py` novo grava o CSV com permissão só do dono, e o contêiner não lê (issue #48, Marcos; contorno: `chmod 644`).
 
 ## Decisões (e por quê)
 

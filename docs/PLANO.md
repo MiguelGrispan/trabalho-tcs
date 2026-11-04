@@ -41,6 +41,12 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 - **Terraform no Linux do Miguel (03/11 de manhã, Claude Code; anotado na MG4b, não refeito nela):** a tela nova da MG4 sobe pelo
   `infra/` e avisa do banco vazio. Com `contas` e `empresas` copiadas do banco do compose (`pg_dump`, sem baixar a CVM), gera a WEG
   (receita R$ 40,8 bi) e grava a consulta na `consultas` do `raiox-banco`; `docker exec raiox-tela python -m pytest -q tests/test_tela.py` → 8 passed.
+- **Recarga da CVM com o #46 no Linux do Miguel (04/11, branch da MG4b com a `main` mesclada):** `carregar_dfp.py` (2.567 empresas,
+  660 ativas, 384.591 linhas, ~1 min 30 s com o download) e `indicadores.py` (595 linhas na tabela `indicadores`). Camil (24228):
+  receita R$ 11,12 bi e crescimento −1,2%, no banco e na tela, e a consulta gravada na `consultas` com `cd_cvm` número.
+  **Achado: issue #48 (Marcos)**: o `indicadores.py` novo grava a `data/indicadores.csv` como `-rw-------`, e a tela (`appuser` no
+  contêiner) não lê: todo raio-x falha com `Permission denied`. Contorno até o conserto: `chmod 644 data/indicadores.csv` e
+  `docker compose restart tela` depois de cada recarga.
 - **Testes:** 244 passed, nenhum pulado (Linux do Miguel, com o PostgreSQL ligado, a branch da MG4b com o #46 mesclado, 04/11).
   No Windows do Marcos, 241 passed com `PYTHONUTF8=1` (03/11 ~12h, branch do #46); sem ele, 8 testes das travas falham: issue #45 (abaixo).
 - **Textos-base prontos:** `docs/justificativa.md` (ED8; falta o Marcos ler) e `docs/etica.md` (base da NA5).
@@ -80,18 +86,20 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 ### Caminho crítico (o que trava os outros)
 1. **A recarga dos dados depois do #46 (MA3, na `main` desde 03/11).** Todos rodam de novo `python scripts/carregar_dfp.py` e
    `python scripts/indicadores.py` (os dois precisam do PostgreSQL ligado) e reiniciam a tela (o cache da #43 guarda a tabela velha).
-   Sem a tabela `indicadores`, a busca não acha nada e a tela diz "O banco está vazio": em 04/11, o banco do compose do Miguel
-   ainda não tinha a tabela (`\dt`: só `consultas`, `contas` e `empresas`).
+   Sem a tabela `indicadores`, a busca não acha nada e a tela diz "O banco está vazio" (o banco do compose do Miguel não tinha a
+   tabela até a recarga de 04/11). **No Linux, até a #48 ser consertada:** depois da recarga, `chmod 644 data/indicadores.csv`,
+   senão a tela não gera nenhum raio-x.
 2. **Os entregáveis.** O código está perto do fim; o que falta é documento: BPMN (MA5), EDA (MA4, atrasada), PDF (MA6),
    deck (NA5 e NA6) e vídeo (MG6 e MG7). Hoje, quase tudo isso está com o Marcos e a Náthally.
 3. **Proposta da revisão: congelar também o processo.** Até 16/11, nenhuma regra, trava ou guia novo para o time: só o que fecha
    uma linha do [REQUISITOS.md](REQUISITOS.md). Dos PRs de 02 e 03/11, a maioria foi de notas e regras; a banca avalia os entregáveis.
 
 ### Próximo passo de cada um
-- **Marcos:** depois do merge do #46, o zip da `data/` no Drive com o link no grupo (fecha a MA3) → apagar a `tratamento_dados` pelo
+- **Marcos:** **MA3b, a #48** (permissão da `indicadores.csv`; qui 05/11, antes do vídeo v0) → o zip da `data/` no Drive com o
+  link no grupo (fecha a MA3) → apagar a `tratamento_dados` pelo
   site do GitHub (o que só ela tem é código antigo: `src/` e CSV com `;`) → MA5 BPMN (qua–qui) → MA4 EDA. Um PR pequeno, com o ok do
   Eduardo, tirando `verificar_automatico.py` e `yfinance` (cortados na seção 7; o `graficos.py` fica para a MA4, abaixo). Ler a `docs/justificativa.md` (ED8).
-- **Miguel:** ✅ MG4b (#47: #38, #39 e #44) → recarregar a CVM no banco do compose (caminho crítico, item 1) → MG5 diagrama e
+- **Miguel:** ✅ MG4b (#47: #38, #39 e #44) → ✅ recarga da CVM no banco do compose (04/11, com o contorno da #48) → MG5 diagrama e
   README (qua 04/11) → MG6 roteiro e vídeo v0 (qui 05/11). Avisar o grupo das mudanças em pastas comuns: `tests/test_tela.py`
   (MG4b; juntou sem conflito com o do #46) e, da MG4, `.env.example` e `aprender/`.
 - **Náthally (obrigatório):** NA3 ROI mínimo (até qui 05/11) → NA4 slide de métricas (o "7 de 10" com a explicação da S2; a
@@ -198,7 +206,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | seg 02/11 (feriado) | ✅ ED12 na `main` (#30); ✅ ED8 adiantada (#31) | | ✅ MG4 adiantada (#36) | |
 | ter 03/11 | ✅ **demo ponta a ponta · tag `v0.1-demo`** (compose e Terraform no Mac); revisão geral (issues #42 a #44) | MA4 (atrasada); ✅ MA3: PR #46 (#42, #17) | ~~MG4~~ (feita em 02/11); ✅ MG4b adiantada (#47) | NA3 ROI mínimo |
 | qua 04/11 | **ED13: issue #43** (~30 min); ✅ ED8 (feita em 02/11) | ~~PR da MA3 e #17~~ (PR #46, 03/11); zip da `data/`; MA5 BPMN | ~~MG4b~~ (#47, merge em 04/11); recarga da CVM; MG5 arquitetura + README | NA4 slide de métricas |
-| qui 05/11 | só bugs; **ED14: issue #45** (travas no Windows) | MA5 | MG6 vídeo v0 | NA3 (prazo do ROI mínimo) |
+| qui 05/11 | só bugs; **ED14: issue #45** (travas no Windows) | **MA3b: issue #48** (~20 min); MA5 | MG6 vídeo v0 | NA3 (prazo do ROI mínimo) |
 | sex 06/11 | **ED9: código congelado · tag `v1.0`**; ED11 avaliação final | | | |
 | sáb 07/11 | ED10 teste do zero | MA6 PDF (rascunho) | MG7 vídeo final na `v1.0` | NA5 ética |
 | dom 08/11 | **todos mandam o conteúdo dos slides à Náthally** | | | NA5 deck |
@@ -235,6 +243,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | MA1 | 27/10 | ✅ PR #4 | revisar o #4: o código é seu, só os imports mudaram; decidir sobre o `scripts/dados.py` | — | — | #4 aprovado | `marcos-porta-dados` |
 | MA2 | qui 29–sáb 31/10 | ✅ PR #21 (Marcos, 29/10) e PR #22 (Eduardo, 30/10, com o ok do Marcos): o "pronto quando" passa. Sobram para a MA3: `cd_cvm` int e só ativas no C1, tabela `indicadores` (seção 0) | **PostgreSQL na `main`** (regra do professor): trazer o `5508116` para a estrutura da `main` (sem `src/`), `DATABASE_URL` e `TEST_DATABASE_URL` no `.env.example`, serviço postgres no CI (`.github/workflows/testes.yml`) para os testes do banco não pularem; e o C1/C2: CSV padrão (sem `sep=";"` e sem `decimal=","` na **escrita**), `cd_cvm` int, tabela `indicadores` no banco, busca só com empresas ativas e com indicadores | `scripts/`, `raiox/dados.py`, `requirements.txt`, CI, `tests/` | Plan | CI verde **rodando** os testes do banco (não pulados); `python -m pytest -q tests/test_ponta_a_ponta.py` passa com os seus dados reais | `marcos-postgres` → PR (Eduardo + Miguel) |
 | MA3 | sex 30–sáb 31/10 (atrasada) | 🟡 PR #46 (03/11): C1 e C2, S1, S2 (13 linhas, 0,00%), #17 (o ano do exercício: Camil = DFP de 28/02/2026), corte de R$ 10 mi ok, `checagem` sem "erro". Falta o zip da `data/` no Drive (link no grupo), depois do merge | dados reais + checagem + 5 empresas conferidas no RI; zip da `data/` no Drive | `avaliacao/conferencia.csv`; consertos | Manual | diferença < 1%; nenhum "erro"; link no grupo | PR |
+| MA3b | qui 05/11 | — | consertar a **issue #48**, achada pelo Miguel em 04/11: o `publicar()` grava a `data/indicadores.csv` com permissão só do dono (`NamedTemporaryFile`), e no Docker do Linux a tela não lê o arquivo (todo raio-x falha). Guia §5: "A aplicação funciona de ponta a ponta na demonstração?" (20%) | `scripts/indicadores.py`, `tests/test_dados.py` | Manual | depois de `docker compose run --rm --user "$(id -u):$(id -g)" tela python scripts/indicadores.py`, `ls -la data/indicadores.csv` → `-rw-r--r--` e a tela gera o raio-x sem o `chmod`; teste novo da permissão; antes do vídeo v0 (MG6) | PR que fecha #48 |
 | MA4 | dom 01–ter 03/11 | — | EDA com 4 gráficos (nulos, distribuições, extremos, cobertura) | `notebooks/eda.ipynb`, `docs/graficos/` | Manual | "Restart & Run All" sem erro | PR |
 | MA5 | qua 04–qui 05/11 | — | BPMN 2.0 com o Raio-X (obrigatório) e o de hoje (se der tempo), no bpmn.io | `docs/bpmn/` | Plan (o Claude só revisa) | abre no bpmn.io; decisões "tem dados?" e "passou no validador?" | PR |
 | MA6 | sáb 07–seg 09/11 | — | montar o `documentacao.pdf` | `docs/documentacao.pdf` | fora do Claude | etapas desenvolvidas no processo (R Documentação; a base é o `docs/HISTORICO.md`) + BPMN + justificativa + ética + arquitetura | PR |
