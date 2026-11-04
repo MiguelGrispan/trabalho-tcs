@@ -107,7 +107,7 @@ with st.sidebar:
 
 # ------------------------------------------------------------------ gerar
 if gerar:
-    cd_cvm = int(escolha["cd_cvm"])   # o banco devolve texto ("5410"); o contrato C1 pede número
+    cd_cvm = int(escolha["cd_cvm"])   # o contrato C1 pede número; desde o #46 o banco já devolve int, o int() fica por garantia
     with st.spinner("Montando o raio-x..."):
         t0 = time.time()
         try:
