@@ -87,6 +87,10 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   termina, e o "2025" dela (mar/2025 a fev/2026) estava no arquivo de 2026, que não era baixado. Agora a receita (R$ 11,1 bi) e o crescimento
   (−1,2%) batem com o RI e com a conferência manual da Náthally; mudaram as 9 empresas que fecham fora de dezembro.
   No Windows, as travas leem o Git em cp1252 e bloqueavam commit e merge (#45, Eduardo).
+- **04/11** · O grupo decide (mensagem do Marcos): a demo da banca roda no Mac do Eduardo, onde o Miguel grava os vídeos, e o
+  documento do projeto (MA6) passa ao Eduardo; o Marcos fica com o BPMN e a EDA. **MA6, rascunho 1** (Eduardo com o Claude Code):
+  `docs/documentacao.md` e o PDF gerado dele, com as etapas, a limpeza, a justificativa, a ética, as métricas e a fonte de cada número;
+  BPMN, arquitetura, ética final e ROI entram quando chegarem. Achado: os 10 raio-x da avaliação são de antes da correção da Camil.
 
 ## Decisões (e por quê)
 
@@ -120,6 +124,9 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 03/11 | o "ano" de cada número é o do exercício (o ano com mais meses dele), e não o do arquivo da CVM; baixa-se também o arquivo do ano seguinte (opção 3 da #17) | a Camil fecha em fevereiro e aparecia com o exercício anterior; o rótulo sozinho (opção 2) mudaria o C2 e o C3, e tirar a Camil da demo (opção 1) deixaria 8 empresas erradas sem aviso. Coube em 2 arquivos e 3 testes, sem mudar o formato do C2 |
 | 03/11 | corte de receita mínima de R$ 10 mi no K-means, confirmado pelo Marcos | abaixo dele, 52% das 31 empresas têm margem EBIT acima de 100% ou abaixo de −100%; acima, só 4% das 564 |
 | 03/11 | a conexão com o banco desiste em 5 s | sem limite, o psycopg espera 130 s, e a tela ficava parada antes do aviso de banco desligado (a demo não pode travar) |
+| 04/11 | a demo da banca roda no Mac do Eduardo, e o Miguel grava nele os vídeos v0 e final | é o único computador conferido com o compose, o Terraform e o Gemini (03/11); a banca vê o mesmo que o vídeo |
+| 04/11 | o documento do projeto (MA6) passa ao Eduardo | o Marcos tinha 4 sessões (MA3 a MA6); o Eduardo escreveu a base (justificativa, ética, HISTORICO) |
+| 04/11 | o documento é escrito em markdown (`docs/documentacao.md`) e o PDF é gerado dele | o PR mostra o que mudou, cada número tem a fonte ao lado (Apêndice A) e corrigir leva um minuto; o guia §6 pede PDF, o `requisitos_projeto.MD` aceita markdown: vale o mais exigente |
 
 **Já cortado do escopo:** verificação com yfinance, receita em 3 anos, filtro de setor, RAG, nome dos grupos pelo LLM,
 exportar o raio-x, 20 casos (ficaram 10). A lista e a ordem dos próximos cortes estão no PLANO, seção 7.

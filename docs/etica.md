@@ -36,7 +36,7 @@ traz a "base", o indicador que a motivou, visível na tela. **O que não resolve
 - **Só companhias abertas:** a base é a DFP da CVM. Empresa de capital fechado, pequena ou média, não aparece. A ferramenta
   serve para vender a grandes contas, não para qualquer cliente.
 - **Treino só com receita a partir de R$ 10 mi** (`RECEITA_MINIMA`, `raiox/segmentos.py:35`): abaixo disso, 31 empresas, 52% com
-  margem EBIT acima de 100% em valor absoluto (holdings, sem operação), segundo o `scripts/avaliar_corte_receita.py` (rodado em 30/10; `docs/PLANO.md`, seção 0). Essas empresas
+  margem EBIT acima de 100% em valor absoluto (holdings, sem operação), segundo o `scripts/avaliar_corte_receita.py` (rodado pelo Marcos em 03/11, com os dados do PR #46; `docs/REQUISITOS.md`, R5). Essas empresas
   **recebem um grupo mesmo assim**, o mais próximo, sem terem ajudado a formá-lo (`segmentar()`, `raiox/segmentos.py:83-95`).
   Para elas, a comparação com o grupo é menos confiável. E elas também entram na mediana e no tamanho do grupo mostrados na tela
   (ex.: o grupo da WEG tem 330 empresas na tela, mais que no treino).
@@ -54,8 +54,11 @@ traz a "base", o indicador que a motivou, visível na tela. **O que não resolve
 
 - **Dado de até um ano atrás:** a DFP é anual (`scripts/indicadores.py:60`, último ano disponível). Resultado do trimestre não entra.
 - **Acerto contra o RI: 7 de 10** na conferência manual da Náthally (29/10; o `revisao_manual.md` está na branch `feat/metricas`,
-  ainda não na `main`). As 3 diferenças: Camil (ano fiscal de março a fevereiro, issue #17), Magalu (margem EBIT) e RD Saúde
-  (margem EBIT, endividamento e ativo; o motivo ainda não foi conferido). Estão na MA3 (Marcos). **Na banca, falar 7 de 10, não "100%".**
+  ainda não na `main`). As 3 diferenças foram explicadas na MA3 (PR #46, 03/11): a Camil era um erro nosso (ano fiscal de março a
+  fevereiro, issue #17), corrigido; em Magalu e RD Saúde, o sistema bate com o RI, e a diferença veio da fonte usada na conferência
+  manual (suposição do Marcos: não se sabe qual fonte ela usou). Depois da correção, o Marcos conferiu 13 valores de 5 empresas contra
+  o PDF do RI, todos com diferença de 0,00% (`avaliacao/conferencia.csv`). **Na banca, falar os dois: 7 de 10 na conferência manual,
+  com as 3 diferenças explicadas, e 13 de 13 na conferência do Marcos. Não dizer "100%" sem dizer de quê.**
 - **Fonte em cada número:** cada indicador mostra a conta da DFP de onde veio (coluna "fonte", `raiox/ia.py:36-44`), para o vendedor
   conferir.
 
