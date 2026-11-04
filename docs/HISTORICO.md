@@ -105,7 +105,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   1º desenho dizia "frase por frase", e o código confere o resumo inteiro, cada pergunta e cada lacuna: corrigido no mesmo PR.
 - **04/11** · **MA4** (Marcos): a EDA em `notebooks/eda.ipynb`, com 4 gráficos (nulos, distribuições, extremos, cobertura) e o
   porquê de cada decisão de limpeza e do K-means; um teste roda o notebook inteiro no CI. A EDA achou um erro que a limpeza
-  deixava passar: a NTS tem 2023 cerca de 1.000 vezes menor e aparecia com crescimento de +107.154% (issue #53, MA4b).
+  deixava passar: a NTS tem 2023 de 1.000 a 2.000 vezes menor e aparecia com crescimento de +107.154% (issue #53, MA4b).
 
 ## Decisões (e por quê)
 

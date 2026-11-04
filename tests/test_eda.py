@@ -15,7 +15,9 @@ PNGS = ["eda_1_nulos.png", "eda_2_distribuicoes.png", "eda_3_extremos.png", "eda
 
 def test_notebook_eda_roda_inteiro_com_os_dados_falsos(monkeypatch):
     monkeypatch.setenv("RAIOX_DADOS", "falsos")       # o kernel do notebook herda as variáveis do pytest
-    antes = {p: (RAIZ / "docs" / "graficos" / p).stat().st_mtime for p in PNGS if (RAIZ / "docs" / "graficos" / p).exists()}
+    pasta = RAIZ / "docs" / "graficos"
+    arquivos_antes = set(pasta.iterdir())
+    antes = {p: (pasta / p).stat().st_mtime for p in PNGS if (pasta / p).exists()}
 
     nb = nbformat.read(NOTEBOOK, as_version=4)       # lido na memória: o arquivo do Git não muda
     NotebookClient(nb, timeout=180, kernel_name="python3",
@@ -25,8 +27,9 @@ def test_notebook_eda_roda_inteiro_com_os_dados_falsos(monkeypatch):
     assert "usando dados falsos? True" in saidas
     assert saidas.count("não foi gravado") == len(PNGS)  # os 4 gráficos foram feitos, nenhum gravado
     assert "- Base:" in saidas and "- Cobertura:" in saidas  # chegou ao resumo, a última célula de código
-    depois = {p: (RAIZ / "docs" / "graficos" / p).stat().st_mtime for p in antes}
+    depois = {p: (pasta / p).stat().st_mtime for p in antes}
     assert depois == antes                                # os PNG dos dados reais continuam os mesmos
+    assert set(pasta.iterdir()) == arquivos_antes         # e nenhum arquivo novo apareceu em docs/graficos/
 
 
 def test_notebook_eda_vai_para_o_git_com_os_graficos():
