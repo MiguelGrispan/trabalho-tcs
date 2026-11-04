@@ -20,11 +20,12 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em qua 04/11, ~10h30** (fim da MA3b, Marcos com o Claude Code; as notas da MG4b, do Miguel, de 04/11 ~8h30, e da MA3, de
-03/11, continuam abaixo). Na `main`: PRs #1 a #16, #19 a #41, o #46 (MA3, fechou #17 e #42) e o #47 (MG4b, fechou #38, #39 e
-#44). **Aberto:** o PR da MA3b (branch `marcos-ajustes-ma3`, fecha #48) e o #49 (Eduardo, rascunho do MA6).
-Issues abertas: #43, #45 e #50 (Eduardo; a #50 é nova: o validador deixa passar "dobrou", "triplicou", "um quarto").
-Testes na branch da MA3b: 245 passed, nenhum pulado (Windows do Marcos, PostgreSQL ligado, 04/11).
+**Em qua 04/11, ~14h** (fim da MA5, Marcos com o Claude Code; as notas da MG4b, do Miguel, de 04/11 ~8h30, e da MA3, de
+03/11, continuam abaixo). Na `main`: PRs #1 a #16, #19 a #41, o #46 (MA3, fechou #17 e #42), o #47 (MG4b, fechou #38, #39 e
+#44) e o #51 (MA3b, merge às 13h34; a #48 foi fechada à mão, depois da conferência do Miguel no Linux).
+**Aberto:** o PR da MA5 (branch `marcos-bpmn`) e o #49 (Eduardo, rascunho do MA6).
+Issues abertas: #43, #45 e #50 (Eduardo; a #50: o validador deixa passar "dobrou", "triplicou", "um quarto").
+Testes na branch da MA5: 245 passed, nenhum pulado (Windows do Marcos, PostgreSQL ligado, 04/11).
 A versão longa desta seção, com o detalhe de cada PR até 03/11, ficou no Git: `git show 9f85bc9:docs/PLANO.md`.
 O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 
@@ -49,10 +50,17 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
   receita R$ 11,12 bi e crescimento −1,2%, no banco e na tela, e a consulta gravada na `consultas` com `cd_cvm` número.
   **Achado: issue #48 (Marcos)**: o `indicadores.py` novo gravava a `data/indicadores.csv` como `-rw-------`, e a tela (`appuser` no
   contêiner) não lia: todo raio-x falhava com `Permission denied`.
-- **MA3b (Marcos, 04/11): conserto da #48.** `temporario.chmod(0o644)` antes do `replace` em `publicar()`
+- **MA3b (Marcos, PR #51, na `main` em 04/11): conserto da #48.** `temporario.chmod(0o644)` antes do `replace` em `publicar()`
   (`scripts/indicadores.py`) e o teste `test_publicar_deixa_o_csv_legivel_para_outros_usuarios` (`tests/test_dados.py`).
-  **Não conferido no Linux:** no Windows o teste passa mesmo sem o conserto (sem permissão Unix); quem prova é o CI (Ubuntu).
-  Falta o Miguel recarregar a CVM no Linux depois do merge e ver `-rw-r--r--` e o raio-x sem o `chmod` à mão.
+  **Conferido pelo Miguel no Linux** (na branch do PR, antes do merge; relato dele, não refeito aqui): com o CSV trancado
+  (`-rw-------`), o `indicadores.py` pelo Docker deixou `-rw-r--r--`; a tela reiniciada gerou a Camil sem o `chmod` (R$ 11,1 bi,
+  −1%); o teste falha sem a linha do conserto; 245 passed. A #48 foi fechada com esse relato.
+- **MA5 (Marcos, 04/11): BPMN 2.0 do processo com o Raio-X** em `docs/bpmn/raio-x-comercial.bpmn` e `.png`, desenhado pelo
+  Claude Code a partir do código (o PLANO previa o Marcos desenhando e o Claude revisando). Raias "Vendedor" e "Aplicação",
+  o Gemini como pool à parte, PostgreSQL e `data/` como armazenamentos; as decisões "Tem dados da empresa?" e "Passou no
+  validador?" (frase por frase), "IA ligada?" e o erro "Gemini falhou" (→ texto sem IA). Abre no bpmn-js (o motor do bpmn.io)
+  com 0 avisos; o PNG saiu dele. O BPMN "hoje" (sem o Raio-X) não foi feito: é o corte 1 da seção 7 (o `requisitos_projeto.MD`
+  pede o BPMN "do processo da regra de negócio da aplicação", e esse está feito).
 - **Testes:** 244 passed, nenhum pulado (Linux do Miguel, com o PostgreSQL ligado, a branch da MG4b com o #46 mesclado, 04/11).
   No Windows do Marcos, 241 passed com `PYTHONUTF8=1` (03/11 ~12h, branch do #46); sem ele, 8 testes das travas falham: issue #45 (abaixo).
 - **Textos-base prontos:** `docs/justificativa.md` (ED8; falta o Marcos ler) e `docs/etica.md` (base da NA5).
@@ -93,17 +101,15 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 1. **A recarga dos dados depois do #46 (MA3, na `main` desde 03/11).** Todos rodam de novo `python scripts/carregar_dfp.py` e
    `python scripts/indicadores.py` (os dois precisam do PostgreSQL ligado) e reiniciam a tela (o cache da #43 guarda a tabela velha).
    Sem a tabela `indicadores`, a busca não acha nada e a tela diz "O banco está vazio" (o banco do compose do Miguel não tinha a
-   tabela até a recarga de 04/11). No Linux, até o PR da MA3b (#48) entrar na `main`: depois da recarga,
-   `chmod 644 data/indicadores.csv`, senão a tela não gera nenhum raio-x.
-2. **Os entregáveis.** O código está perto do fim; o que falta é documento: BPMN (MA5), EDA (MA4, atrasada), PDF (MA6),
+   tabela até a recarga de 04/11). No Linux, o `chmod 644 data/indicadores.csv` à mão não é mais preciso desde o #51 (MA3b, 04/11).
+2. **Os entregáveis.** O código está perto do fim; o que falta é documento: EDA (MA4, atrasada), PDF (MA6; o BPMN da MA5 já existe),
    deck (NA5 e NA6) e vídeo (MG6 e MG7). Hoje, quase tudo isso está com o Marcos e a Náthally.
 3. **Proposta da revisão: congelar também o processo.** Até 16/11, nenhuma regra, trava ou guia novo para o time: só o que fecha
    uma linha do [REQUISITOS.md](REQUISITOS.md). Dos PRs de 02 e 03/11, a maioria foi de notas e regras; a banca avalia os entregáveis.
 
 ### Próximo passo de cada um
-- **Marcos:** ✅ MA3b, a #48 (PR aberto em 04/11; falta o Miguel conferir no Linux) → ~~o zip da `data/` no Drive com o
-  link no grupo~~ (feito: no Drive, com o link no grupo; fecha a MA3) → ~~apagar a `tratamento_dados`~~ (feito: em 04/11 ela não
-  aparece em `git branch -r`) → MA5 BPMN (qua–qui) → MA4 EDA (atrasada) → revisar o rascunho do MA6 do Eduardo (sáb 07/11) →
+- **Marcos:** ✅ MA3b (#51, #48 fechada) → ✅ MA5 BPMN (PR aberto em 04/11; abrir o `.bpmn` no demo.bpmn.io e treinar a
+  explicação para os minutos 3–6 da banca) → MA4 EDA (atrasada) → revisar o rascunho do MA6 do Eduardo (sáb 07/11) →
   trocar a citação do `raiox/limpeza.py` para a seção "Dados e limpeza" do `docs/documentacao.md` e tirar o
   `docs/Raio-X Comercial.pdf` (depois do MA6). Um PR pequeno, com o ok do
   Eduardo, tirando `verificar_automatico.py` e `yfinance` (cortados na seção 7; o `graficos.py` fica para a MA4, abaixo). Ler a `docs/justificativa.md` (ED8).
@@ -218,8 +224,8 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | dom 01/11 | revisões | MA4 EDA | ~~prazo da MG3~~ (entrou no sáb); MG4 | NA3 |
 | seg 02/11 (feriado) | ✅ ED12 na `main` (#30); ✅ ED8 adiantada (#31) | | ✅ MG4 adiantada (#36) | |
 | ter 03/11 | ✅ **demo ponta a ponta · tag `v0.1-demo`** (compose e Terraform no Mac); revisão geral (issues #42 a #44) | MA4 (atrasada); ✅ MA3: PR #46 (#42, #17) | ~~MG4~~ (feita em 02/11); ✅ MG4b adiantada (#47) | NA3 ROI mínimo |
-| qua 04/11 | **ED13: issue #43** (~30 min); ✅ ED8 (feita em 02/11) | ~~PR da MA3 e #17~~ (PR #46, 03/11); zip da `data/`; MA5 BPMN | ~~MG4b~~ (#47, merge em 04/11); recarga da CVM; MG5 arquitetura + README | NA4 slide de métricas |
-| qui 05/11 | só bugs; **ED14: issue #45** (travas no Windows) | **MA3b: issue #48** (~20 min); MA5 | MG6 vídeo v0 | NA3 (prazo do ROI mínimo) |
+| qua 04/11 | **ED13: issue #43** (~30 min); ✅ ED8 (feita em 02/11) | ~~PR da MA3 e #17~~ (PR #46, 03/11); ✅ zip da `data/`; ✅ MA5 BPMN | ~~MG4b~~ (#47, merge em 04/11); recarga da CVM; MG5 arquitetura + README | NA4 slide de métricas |
+| qui 05/11 | só bugs; **ED14: issue #45** (travas no Windows) | ✅ MA3b (#51); ✅ MA5 (adiantada, 04/11) | MG6 vídeo v0 | NA3 (prazo do ROI mínimo) |
 | sex 06/11 | **ED9: código congelado · tag `v1.0`**; ED11 avaliação final | | | |
 | sáb 07/11 | ED10 teste do zero; MA6 rascunho (`docs/documentacao.md`) | revisar o rascunho do MA6 | MG7 vídeo final na `v1.0` (no Mac do Eduardo) | NA5 ética |
 | dom 08/11 | **todos mandam o conteúdo dos slides à Náthally** | | | NA5 deck |
@@ -256,9 +262,9 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | MA1 | 27/10 | ✅ PR #4 | revisar o #4: o código é seu, só os imports mudaram; decidir sobre o `scripts/dados.py` | — | — | #4 aprovado | `marcos-porta-dados` |
 | MA2 | qui 29–sáb 31/10 | ✅ PR #21 (Marcos, 29/10) e PR #22 (Eduardo, 30/10, com o ok do Marcos): o "pronto quando" passa. Sobram para a MA3: `cd_cvm` int e só ativas no C1, tabela `indicadores` (seção 0) | **PostgreSQL na `main`** (regra do professor): trazer o `5508116` para a estrutura da `main` (sem `src/`), `DATABASE_URL` e `TEST_DATABASE_URL` no `.env.example`, serviço postgres no CI (`.github/workflows/testes.yml`) para os testes do banco não pularem; e o C1/C2: CSV padrão (sem `sep=";"` e sem `decimal=","` na **escrita**), `cd_cvm` int, tabela `indicadores` no banco, busca só com empresas ativas e com indicadores | `scripts/`, `raiox/dados.py`, `requirements.txt`, CI, `tests/` | Plan | CI verde **rodando** os testes do banco (não pulados); `python -m pytest -q tests/test_ponta_a_ponta.py` passa com os seus dados reais | `marcos-postgres` → PR (Eduardo + Miguel) |
 | MA3 | sex 30–sáb 31/10 (atrasada) | ✅ PR #46 (mesclado em 03/11): C1 e C2, S1, S2 (13 linhas, 0,00%), #17 (o ano do exercício: Camil = DFP de 28/02/2026), corte de R$ 10 mi ok, `checagem` sem "erro". Zip da `data/` no Drive, com o link no grupo (04/11) | dados reais + checagem + 5 empresas conferidas no RI; zip da `data/` no Drive | `avaliacao/conferencia.csv`; consertos | Manual | diferença < 1%; nenhum "erro"; link no grupo | PR |
-| MA3b | qui 05/11 | ✅ PR da branch `marcos-ajustes-ma3` (04/11): `chmod(0o644)` e teste novo; falta o Miguel conferir no Linux | consertar a **issue #48**, achada pelo Miguel em 04/11: o `publicar()` grava a `data/indicadores.csv` com permissão só do dono (`NamedTemporaryFile`), e no Docker do Linux a tela não lê o arquivo (todo raio-x falha). Guia §5: "A aplicação funciona de ponta a ponta na demonstração?" (20%) | `scripts/indicadores.py`, `tests/test_dados.py` | Manual | depois de `docker compose run --rm --user "$(id -u):$(id -g)" tela python scripts/indicadores.py`, `ls -la data/indicadores.csv` → `-rw-r--r--` e a tela gera o raio-x sem o `chmod`; teste novo da permissão; antes do vídeo v0 (MG6) | PR que fecha #48 |
+| MA3b | qui 05/11 | ✅ PR #51 (na `main` em 04/11): `chmod(0o644)` e teste novo; conferido pelo Miguel no Linux (`-rw-r--r--`, Camil sem `chmod`); #48 fechada | consertar a **issue #48**, achada pelo Miguel em 04/11: o `publicar()` grava a `data/indicadores.csv` com permissão só do dono (`NamedTemporaryFile`), e no Docker do Linux a tela não lê o arquivo (todo raio-x falha). Guia §5: "A aplicação funciona de ponta a ponta na demonstração?" (20%) | `scripts/indicadores.py`, `tests/test_dados.py` | Manual | depois de `docker compose run --rm --user "$(id -u):$(id -g)" tela python scripts/indicadores.py`, `ls -la data/indicadores.csv` → `-rw-r--r--` e a tela gera o raio-x sem o `chmod`; teste novo da permissão; antes do vídeo v0 (MG6) | PR que fecha #48 |
 | MA4 | dom 01–ter 03/11 | — | EDA com 4 gráficos (nulos, distribuições, extremos, cobertura) | `notebooks/eda.ipynb`, `docs/graficos/` | Manual | "Restart & Run All" sem erro | PR |
-| MA5 | qua 04–qui 05/11 | — | BPMN 2.0 com o Raio-X (obrigatório) e o de hoje (se der tempo), no bpmn.io | `docs/bpmn/` | Plan (o Claude só revisa) | abre no bpmn.io; decisões "tem dados?" e "passou no validador?" | PR |
+| MA5 | qua 04–qui 05/11 | ✅ PR da branch `marcos-bpmn` (04/11): `docs/bpmn/raio-x-comercial.bpmn` e `.png`, desenhados pelo Claude Code a partir do código; abre no bpmn-js com 0 avisos e tem as 2 decisões. O de hoje não foi feito (corte 1, seção 7) | BPMN 2.0 com o Raio-X (obrigatório) e o de hoje (se der tempo), no bpmn.io | `docs/bpmn/` | Plan (o Claude só revisa) | abre no bpmn.io; decisões "tem dados?" e "passou no validador?" | PR |
 | MA6 | sáb 07–seg 09/11 | ➡️ com o **Eduardo** (decidido em 04/11); o Marcos revisa o rascunho no sáb 07/11 | montar o documento do projeto, escrito em markdown e gerado em PDF (o R aceita markdown; o G §6 pede PDF: vão os dois) | `docs/documentacao.md`, `docs/documentacao.pdf` | Manual | etapas desenvolvidas no processo (R Documentação; a base é o `docs/HISTORICO.md`) + BPMN + justificativa + ética + arquitetura + seção "Dados e limpeza" (as regras do `raiox/limpeza.py`, no lugar do `docs/Raio-X Comercial.pdf`); o Marcos revisou | PR (Eduardo) |
 
 ### Miguel (Claude Code)
