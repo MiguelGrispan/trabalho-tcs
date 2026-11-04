@@ -20,8 +20,9 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em qua 04/11, ~9h** (MA6, Eduardo com o Claude Code). Na `main`: PRs #1 a #16, #19 a #41 e #46. Abertos: #47 (MG4b, Miguel) e
-o da MA6 (branch `eduardo-documentacao`), que só entra depois do ok do grupo.
+**Em qua 04/11, ~9h** (MA6, Eduardo com o Claude Code; antes, ~8h30, o fim da MG4b, Miguel com o Claude Code).
+Na `main`: PRs #1 a #16, #19 a #41, #46 (MA3) e #47 (MG4b). Aberto: o da MA6 (branch `eduardo-documentacao`), que só entra
+depois do ok do grupo.
 A versão longa desta seção, até 03/11, ficou no Git: `git show 9f85bc9:docs/PLANO.md`. O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 
 **Faltam 2 dias para o código congelar (sex 06/11) e 12 para a entrega (seg 16/11).**
@@ -36,8 +37,25 @@ A versão longa desta seção, até 03/11, ficou no Git: `git show 9f85bc9:docs/
   13 valores de 5 empresas conferidos no RI, todos com 0,00% (`avaliacao/conferencia.csv`). Corte de R$ 10 mi confirmado pelo Marcos
   (`scripts/avaliar_corte_receita.py`: abaixo, 31 empresas, 52% com |margem EBIT| > 100%; acima, 564 e 4%). Com o banco desligado,
   a conexão desiste em 5 s (`raiox/banco.py`).
-- **Testes:** 241 passed, nenhum pulado (Windows do Marcos, com o PostgreSQL ligado e `PYTHONUTF8=1`, 03/11, branch do #46).
-  No Mac do Eduardo, sem o PostgreSQL ligado (04/11, branch `eduardo-documentacao`): 215 passed e 26 skipped (os do banco).
+- **MG4b (PR #47, Miguel, 03/11): a tela não se contradiz quando a IA falha** (`guia_projeto_final.pdf` §5: "a interface é
+  amigável ao usuário?", 20%; segurança de dados, 15%). Conferido no Linux do Miguel com
+  `GOOGLE_API_KEY=chave-falsa-teste RAIOX_IA_REAL=1 docker compose up -d --build` e a WEG (0 tokens):
+  - o aviso tem uma frase; o erro do Google fica em "Detalhes técnicos" e no `docker compose logs tela` (#38);
+  - o topo diz "Texto montado sem IA: o Gemini não respondeu.", e o rodapé só diz "escrito por IA" quando o Gemini respondeu (#39);
+  - o compose publica a tela só em `127.0.0.1`, como o Terraform (#44): `docker compose ps` → `127.0.0.1:8501->8501/tcp`; pelo IP da rede, não responde;
+  - os avisos de banco vazio e de banco desligado também dão os comandos de quem subiu pelo Terraform (`infra/main.tf`).
+- **Terraform no Linux do Miguel (03/11 de manhã, Claude Code; anotado na MG4b, não refeito nela):** a tela nova da MG4 sobe pelo
+  `infra/` e avisa do banco vazio. Com `contas` e `empresas` copiadas do banco do compose (`pg_dump`, sem baixar a CVM), gera a WEG
+  (receita R$ 40,8 bi) e grava a consulta na `consultas` do `raiox-banco`; `docker exec raiox-tela python -m pytest -q tests/test_tela.py` → 8 passed.
+- **Recarga da CVM com o #46 no Linux do Miguel (04/11, branch da MG4b com a `main` mesclada):** `carregar_dfp.py` (2.567 empresas,
+  660 ativas, 384.591 linhas, ~1 min 30 s com o download) e `indicadores.py` (595 linhas na tabela `indicadores`). Camil (24228):
+  receita R$ 11,12 bi e crescimento −1,2%, no banco e na tela, e a consulta gravada na `consultas` com `cd_cvm` número.
+  **Achado: issue #48 (Marcos)**: o `indicadores.py` novo grava a `data/indicadores.csv` como `-rw-------`, e a tela (`appuser` no
+  contêiner) não lê: todo raio-x falha com `Permission denied`. Contorno até o conserto: `chmod 644 data/indicadores.csv` e
+  `docker compose restart tela` depois de cada recarga.
+- **Testes:** 244 passed, nenhum pulado (Linux do Miguel, com o PostgreSQL ligado, a branch da MG4b com o #46 mesclado, 04/11).
+  No Windows do Marcos, 241 passed com `PYTHONUTF8=1` (03/11 ~12h, branch do #46); sem ele, 8 testes das travas falham (issue #45).
+  No Mac do Eduardo, sem o PostgreSQL ligado (04/11, branch da MA6 com o #47 mesclado): 218 passed e 26 skipped (os do banco).
 - **Textos-base:** `docs/justificativa.md` (ED8; falta o Marcos ler) e `docs/etica.md` (base da NA5; atualizado em 04/11 com o resultado da MA3).
 - No Mac, o Terraform só acha o Docker com `export DOCKER_HOST=unix://$HOME/.docker/run/docker.sock` (`README.md:158`).
 
@@ -60,14 +78,17 @@ A versão longa desta seção, até 03/11, ficou no Git: `git show 9f85bc9:docs/
 ### Issues abertas
 - **#43** (Eduardo, ED13): a tela aberta antes de carregar a CVM não acha a empresa até ser reiniciada (cache em `raiox/ia.py:51`).
 - **#45** (Eduardo, ED14): no Windows, as travas leem o Git em cp1252 e bloqueiam commit e merge.
-- **#38, #39 e #44** (Miguel, MG4b): no PR #47, aberto.
-- **#48** (aberta em 04/11): na recarga no Linux, o `indicadores.csv` sai com permissão só do dono e a tela não gera nenhum raio-x.
-  Não li o corpo da issue nem conferi quem é o dono.
+- **#48** (Marcos, MA3b, achada pelo Miguel em 04/11): o `indicadores.py` novo grava a `data/indicadores.csv` como `-rw-------`, e a
+  tela no contêiner não lê: todo raio-x falha com `Permission denied`. Contorno: `chmod 644 data/indicadores.csv` e
+  `docker compose restart tela` depois de cada recarga.
+- As #38, #39 e #44 foram fechadas pelo #47 (MG4b).
 
 ### Caminho crítico (o que trava os outros)
 1. **A recarga dos dados com o #46.** Cada um roda de novo `python scripts/carregar_dfp.py` e `python scripts/indicadores.py` (os dois
-   precisam do PostgreSQL ligado) e reinicia a tela (o cache da #43 guarda a tabela velha). Depois, o Eduardo refaz o
-   `python -m raiox.segmentos`, os PNG e os números do K-means na seção 6 do PDF.
+   precisam do PostgreSQL ligado) e reinicia a tela (o cache da #43 guarda a tabela velha). Sem a tabela `indicadores`, a busca não
+   acha nada e a tela diz "O banco está vazio". **No Linux, até a #48 ser consertada:** depois da recarga, `chmod 644 data/indicadores.csv`,
+   senão a tela não gera nenhum raio-x. Depois, o Eduardo refaz o `python -m raiox.segmentos`, os PNG e os números do K-means na
+   seção 6 do PDF.
 2. **Os entregáveis.** O código está perto do fim; o que falta é documento: BPMN (MA5), EDA (MA4, atrasada), diagrama de arquitetura
    (MG5), ética final (NA5), ROI (NA3), deck (NA6) e vídeo (MG6 e MG7). O PDF (MA6) já tem o rascunho 1: cada parte que chega entra
    no lugar marcado com [PENDENTE], sem refazer o resto.
@@ -75,12 +96,13 @@ A versão longa desta seção, até 03/11, ficou no Git: `git show 9f85bc9:docs/
    fecha uma linha do [REQUISITOS.md](REQUISITOS.md).
 
 ### Próximo passo de cada um
-- **Marcos:** zip da `data/` no Drive, com o link no grupo (fecha a MA3) → MA5 BPMN (até qui 05/11; o `.png` entra na seção 4 do
+- **Marcos:** **MA3b, a #48** (qui 05/11, antes do vídeo v0) → zip da `data/` no Drive, com o link no grupo (fecha a MA3) → MA5 BPMN (até qui 05/11; o `.png` entra na seção 4 do
   PDF) → MA4 EDA (os gráficos entram na seção 3). Ler a `docs/justificativa.md` e revisar o rascunho do PDF até sáb 07/11. Quando o
   PR da MA6 entrar: trocar a citação do `raiox/limpeza.py` e tirar o `docs/Raio-X Comercial.pdf`. Apagar a `tratamento_dados`
   pelo site do GitHub. Um PR pequeno, com o ok do Eduardo, tirando `verificar_automatico.py` e `yfinance` (cortados na seção 7).
-- **Miguel:** MG4b (PR #47) → MG5 diagrama e README (o `docs/arquitetura.png` entra na seção 5 do PDF) → MG6 roteiro e vídeo v0
-  (qui 05/11), gravado no Mac do Eduardo.
+- **Miguel:** ✅ MG4b (#47: #38, #39 e #44) → ✅ recarga da CVM no banco do compose (04/11, com o contorno da #48) → MG5 diagrama e
+  README (o `docs/arquitetura.png` entra na seção 5 do PDF) → MG6 roteiro e vídeo v0 (qui 05/11), gravado no Mac do Eduardo.
+  Avisar o grupo das mudanças em pastas comuns: `tests/test_tela.py` (MG4b) e, da MG4, `.env.example` e `aprender/`.
 - **Náthally (obrigatório):** NA3 ROI mínimo (até qui 05/11; entra nas seções 1 e 7.7 do PDF) → NA4 slide de métricas (os números da
   seção 8 do PDF) → NA5 ética: reescrever a seção 7 do PDF a partir do `docs/etica.md` (sáb 07 a dom 08/11) → NA6 deck.
 - **Eduardo:** merge do PR da MA6 quando o grupo liberar → ED13 (#43) → ED14 (#45) → recarga e K-means refeito → ED9 tag `v1.0` e
@@ -91,7 +113,8 @@ A versão longa desta seção, até 03/11, ficou no Git: `git show 9f85bc9:docs/
 ### Decisões
 - **Decidido em 04/11** (mensagem do Marcos, aceita pelo Eduardo):
   - a MA6 (o documento) passa ao Eduardo; o Marcos fica com a MA5 (BPMN) e a MA4 (EDA);
-  - a demo da banca roda no Mac do Eduardo, o único conferido com compose, Terraform e Gemini (03/11); o Miguel grava nele o vídeo v0
+  - a demo da banca roda no Mac do Eduardo, o único conferido com compose, Terraform e Gemini no mesmo dia (03/11; o Linux do Miguel
+    tem compose e Terraform com a tela nova, mas o Gemini de verdade só pelo Terraform em 31/10); o Miguel grava nele o vídeo v0
     (qui 05/11) e o final (sáb 07/11, na `v1.0`), para a banca ver o mesmo que o vídeo;
   - o documento é escrito em markdown e o PDF é gerado dele: o PR mostra o que mudou e cada número pode ser conferido;
   - o `docs/Raio-X Comercial.pdf` sai quando o PDF novo entrar na `main`.
@@ -123,9 +146,9 @@ A versão longa desta seção, até 03/11, ficou no Git: `git show 9f85bc9:docs/
 | parte | feito | falta | horas que faltam |
 |---|---|---|---|
 | núcleo: dados, ML, IA, validador, avaliação | ~94% (com o #46) | #43, #45, #48; recarga e gráficos do K-means refeitos | 2 a 3 h |
-| tela e infraestrutura | ~85% | MG4b (#47); MG5 (diagrama e README) | 3 a 4 h |
+| tela e infraestrutura | ~90% (depois da MG4b) | MG5 (diagrama e README) | 2 a 3 h |
 | entregáveis: BPMN, EDA, PDF, deck, vídeo, ensaios | ~25% (PDF no rascunho 1, com justificativa e ética como base) | BPMN, EDA, deck, vídeo, ensaios; PDF final | 20 a 30 h |
-| **total** | **~63%** | 15 de 27 dias usados (21/10 a 16/11) | **25 a 37 h**, para uns 40 a 80 h de capacidade do grupo até 16/11 |
+| **total** | **~63%** | 15 de 27 dias usados (21/10 a 16/11) | **24 a 36 h**, para uns 40 a 80 h de capacidade do grupo até 16/11 |
 
 **Folga:** 4 dias de reserva (12 a 15/11) antes da entrega de seg 16/11, e mais 2 até a banca.
 Regra: atraso come a folga; **nunca** se acrescenta escopo. Se a folga acabar, use a lista de cortes da seção 7.
@@ -178,9 +201,9 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | sáb 31/10 | revisões; ED8 começa; plano B da MA2 se precisar | **MA2 (prazo)**; MA3 | ✅ MG3 Terraform (PR #29) | NA3 tempo manual; marcar testes |
 | dom 01/11 | revisões | MA4 EDA | ~~prazo da MG3~~ (entrou no sáb); MG4 | NA3 |
 | seg 02/11 (feriado) | ✅ ED12 na `main` (#30); ✅ ED8 adiantada (#31) | | ✅ MG4 adiantada (#36) | |
-| ter 03/11 | ✅ **demo ponta a ponta · tag `v0.1-demo`** (compose e Terraform no Mac); revisão geral (issues #42 a #44) | MA4 (atrasada); MA3 numa branch sem PR (#42) | ~~MG4~~ (feita em 02/11) | NA3 ROI mínimo |
-| qua 04/11 | 🟡 **MA6 rascunho 1** (PDF; merge quando o grupo liberar); **ED13: issue #43** (~30 min); ✅ ED8 (feita em 02/11) | ~~PR da MA3 e #17~~ (PR #46, 03/11); zip da `data/`; MA5 BPMN | **MG4b: issues #38, #39 e #44** (~45 min); MG5 arquitetura + README | NA4 slide de métricas |
-| qui 05/11 | só bugs; **ED14: issue #45** (travas no Windows) | MA5 | MG6 vídeo v0 | NA3 (prazo do ROI mínimo) |
+| ter 03/11 | ✅ **demo ponta a ponta · tag `v0.1-demo`** (compose e Terraform no Mac); revisão geral (issues #42 a #44) | MA4 (atrasada); ✅ MA3: PR #46 (#42, #17) | ~~MG4~~ (feita em 02/11); ✅ MG4b adiantada (#47) | NA3 ROI mínimo |
+| qua 04/11 | 🟡 **MA6 rascunho 1** (PDF; merge quando o grupo liberar); **ED13: issue #43** (~30 min); ✅ ED8 (feita em 02/11) | ~~PR da MA3 e #17~~ (PR #46, 03/11); zip da `data/`; MA5 BPMN | ~~MG4b~~ (#47, merge em 04/11); recarga da CVM; MG5 arquitetura + README | NA4 slide de métricas |
+| qui 05/11 | só bugs; **ED14: issue #45** (travas no Windows) | **MA3b: issue #48** (~20 min); MA5 | MG6 vídeo v0 | NA3 (prazo do ROI mínimo) |
 | sex 06/11 | **ED9: código congelado · tag `v1.0`**; ED11 avaliação final | | | |
 | sáb 07/11 | ED10 teste do zero | revisar o rascunho do PDF (MA6) | MG7 vídeo final na `v1.0` | NA5 ética |
 | dom 08/11 | **todos mandam o conteúdo dos slides à Náthally** | | | NA5 deck |
@@ -217,7 +240,8 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 |---|---|---|---|---|---|---|---|
 | MA1 | 27/10 | ✅ PR #4 | revisar o #4: o código é seu, só os imports mudaram; decidir sobre o `scripts/dados.py` | — | — | #4 aprovado | `marcos-porta-dados` |
 | MA2 | qui 29–sáb 31/10 | ✅ PR #21 (Marcos, 29/10) e PR #22 (Eduardo, 30/10, com o ok do Marcos): o "pronto quando" passa. Sobram para a MA3: `cd_cvm` int e só ativas no C1, tabela `indicadores` (seção 0) | **PostgreSQL na `main`** (regra do professor): trazer o `5508116` para a estrutura da `main` (sem `src/`), `DATABASE_URL` e `TEST_DATABASE_URL` no `.env.example`, serviço postgres no CI (`.github/workflows/testes.yml`) para os testes do banco não pularem; e o C1/C2: CSV padrão (sem `sep=";"` e sem `decimal=","` na **escrita**), `cd_cvm` int, tabela `indicadores` no banco, busca só com empresas ativas e com indicadores | `scripts/`, `raiox/dados.py`, `requirements.txt`, CI, `tests/` | Plan | CI verde **rodando** os testes do banco (não pulados); `python -m pytest -q tests/test_ponta_a_ponta.py` passa com os seus dados reais | `marcos-postgres` → PR (Eduardo + Miguel) |
-| MA3 | sex 30–sáb 31/10 (atrasada) | 🟡 PR #46 (03/11): C1 e C2, S1, S2 (13 linhas, 0,00%), #17 (o ano do exercício: Camil = DFP de 28/02/2026), corte de R$ 10 mi ok, `checagem` sem "erro". Falta o zip da `data/` no Drive (link no grupo), depois do merge | dados reais + checagem + 5 empresas conferidas no RI; zip da `data/` no Drive | `avaliacao/conferencia.csv`; consertos | Manual | diferença < 1%; nenhum "erro"; link no grupo | PR |
+| MA3 | sex 30–sáb 31/10 (atrasada) | 🟡 PR #46 (03/11): C1 e C2, S1, S2 (13 linhas, 0,00%), #17 (o ano do exercício: Camil = DFP de 28/02/2026), corte de R$ 10 mi ok, `checagem` sem "erro". Mesclado em 03/11. Falta o zip da `data/` no Drive (link no grupo) e a #48 (MA3b) | dados reais + checagem + 5 empresas conferidas no RI; zip da `data/` no Drive | `avaliacao/conferencia.csv`; consertos | Manual | diferença < 1%; nenhum "erro"; link no grupo | PR |
+| MA3b | qui 05/11 | — | consertar a **issue #48**, achada pelo Miguel em 04/11: o `publicar()` grava a `data/indicadores.csv` com permissão só do dono (`NamedTemporaryFile`), e no Docker do Linux a tela não lê o arquivo (todo raio-x falha). Guia §5: "A aplicação funciona de ponta a ponta na demonstração?" (20%) | `scripts/indicadores.py`, `tests/test_dados.py` | Manual | depois de `docker compose run --rm --user "$(id -u):$(id -g)" tela python scripts/indicadores.py`, `ls -la data/indicadores.csv` → `-rw-r--r--` e a tela gera o raio-x sem o `chmod`; teste novo da permissão; antes do vídeo v0 (MG6) | PR que fecha #48 |
 | MA4 | dom 01–ter 03/11 | — | EDA com 4 gráficos (nulos, distribuições, extremos, cobertura) | `notebooks/eda.ipynb`, `docs/graficos/` | Manual | "Restart & Run All" sem erro | PR |
 | MA5 | qua 04–qui 05/11 | — | BPMN 2.0 com o Raio-X (obrigatório) e o de hoje (se der tempo), no bpmn.io | `docs/bpmn/` | Plan (o Claude só revisa) | abre no bpmn.io; decisões "tem dados?" e "passou no validador?" | PR |
 | MA6 | — | passou ao Eduardo em 04/11 (tabela do Eduardo). O Marcos revisa o rascunho até sáb 07/11 e, quando o PDF novo entrar, troca a citação do `raiox/limpeza.py` | — | — | — | — | — |
@@ -230,7 +254,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | MG2 | qui 29–sex 30/10 | ✅ PR #24 (30/10): os 2 contêineres `healthy`, health `ok`, `carregar_dfp.py` no banco do contêiner, 87 passed no contêiner | `Dockerfile` + `.dockerignore` + `docker-compose.yml` (tela + PostgreSQL com volume do banco; `data/` como volume; chave e `DATABASE_URL` por variável) | `Dockerfile`, `.dockerignore`, `docker-compose.yml` | Plan | `docker compose up` sobe os 2; `curl localhost:8501/_stcore/health` → `ok`; `scripts/carregar_dfp.py` grava no PostgreSQL do contêiner | `miguel-docker` → PR (Eduardo) |
 | MG3 | sáb 31/10–dom 01/11 | ✅ PR #29 (31/10): `apply` sobe os 2 `healthy`; `destroy` + `apply` mantém o banco e a `data/`; 87 passed no contêiner; 2º `plan` sem mudanças. IA pelo Terraform vista pelo Miguel. Portas padrão e Mac conferidos pelo Eduardo em 03/11 (seção 0) | **Terraform na `main`, obrigatório** (`requisitos_projeto.MD`, Aplicação: "Infraestrutura automatizada com Terraform"): provider docker com os 2 contêineres (tela + PostgreSQL), a partir do `terraform/` da branch `docs-docker-e-terraform`. Prazo: dom 01/11; reserva: seg 02/11 com o Eduardo. Não pode ser cortado | `infra/` | Plan | `terraform apply` sobe a tela e o banco; `destroy` + `apply` mantém a `data/` e o banco | PR |
 | MG4 | dom 01–ter 03/11 | ✅ PR #36 (02/11): WEG, Embraer e Ambev geram o raio-x no contêiner, e as 3 consultas estão na `consultas`; 8 testes em `tests/test_tela.py`. Gemini de verdade conferido em 03/11 (WEG). Volta para o modo sem IA com o Gemini fora do ar conferida em 03/11 (chave inválida, WEG): funciona; os 2 problemas de aparência viraram a MG4b | tela com dados reais e **com o banco** (R Aplicação: banco de dados): `RAIOX_DADOS` (`falsos`/`real`) no lugar do `USAR_DADOS_FALSOS`, e com `real` a busca e o `registrar_consulta` usam o PostgreSQL (`raiox/dados.py`); volta sozinha para o modo sem IA, com aviso; `registrar_consulta` dentro do `try`; `tests/test_tela.py` | `app/`, `.env.example`, `tests/` | Plan | 3 empresas reais geram raio-x no contêiner, e cada consulta aparece na tabela `consultas` | PR (Eduardo) |
-| MG4b | qua 04/11 | — | consertar as issues **#38** (o aviso de falha da IA mostra o JSON inteiro do Google), **#39** (o topo diz "Texto escrito pelo Gemini" quando o texto foi montado sem IA) e **#44** (o compose abre a tela para a rede toda: `127.0.0.1:8501:8501`, como o Terraform), achadas pelo Eduardo em 03/11. Guia §5: "a interface é amigável ao usuário?" (protótipo, 20%) | `app/streamlit_app.py`, `tests/test_tela.py`, `docker-compose.yml` | Manual | com `GOOGLE_API_KEY=chave-falsa-teste RAIOX_IA_REAL=1 docker compose up -d --build`, a WEG mostra um aviso curto e o topo não diz "escrito pelo Gemini"; teste novo para cada issue; `docker ps` mostra `127.0.0.1:8501`; antes do vídeo v0 (MG6) e do congelamento (sex 06/11) | PR que fecha #38, #39 e #44 |
+| MG4b | qua 04/11 | ✅ PR #47 (03/11, adiantada): com a chave falsa, a WEG mostra o aviso curto e "Texto montado sem IA: o Gemini não respondeu."; 3 testes novos e o do rodapé em `tests/test_tela.py`; `docker compose ps` → `127.0.0.1:8501`. Junto: os avisos de banco vazio e desligado citam o Terraform | consertar as issues **#38** (o aviso de falha da IA mostra o JSON inteiro do Google), **#39** (o topo diz "Texto escrito pelo Gemini" quando o texto foi montado sem IA) e **#44** (o compose abre a tela para a rede toda: `127.0.0.1:8501:8501`, como o Terraform), achadas pelo Eduardo em 03/11. Guia §5: "a interface é amigável ao usuário?" (protótipo, 20%) | `app/streamlit_app.py`, `tests/test_tela.py`, `docker-compose.yml` | Manual | com `GOOGLE_API_KEY=chave-falsa-teste RAIOX_IA_REAL=1 docker compose up -d --build`, a WEG mostra um aviso curto e o topo não diz "escrito pelo Gemini"; teste novo para cada issue; `docker ps` mostra `127.0.0.1:8501`; antes do vídeo v0 (MG6) e do congelamento (sex 06/11) | PR que fecha #38, #39 e #44 |
 | MG5 | qua 04/11 | — | diagrama de arquitetura + README (tema, objetivo e tecnologias já estão; pré-requisitos com Python 3.14; rodar local, Docker e Terraform) | `docs/arquitetura.png`, `README.md` | Manual | um colega entende o fluxo lendo o README; o README cobre o que o R pede em "Documentação" | PR |
 | MG6 | qui 05/11 | — | roteiro de 6 min da demo + vídeo v0 | — | — | vídeo salvo em 2 lugares | — |
 | MG7 | sáb 07/11 | — | vídeo final na `v1.0` | — | — | vídeo salvo em 2 lugares | — |
@@ -277,7 +301,7 @@ Para subir um arquivo:
 | `tests/test_avaliar.py` | `avaliar.py`: colunas do C4, casos válidos, caso com erro, formato do `casos_avaliacao.csv` (5 colunas, `cd_cvm` inteiro em todos) | Eduardo | sim |
 | `tests/test_limpeza.py`, `test_carregar_dfp.py`, `test_dados.py`, `test_banco.py`, `test_verificar_automatico.py` (PRs #4 e #21) | regras de limpeza, carga da DFP (rede simulada), catálogo e C1 em PostgreSQL (banco de teste separado: `tests/banco_teste.py`); o C2 (CSV padrão, `cd_cvm` int, mesma tabela no banco) em `test_publicar_grava_o_mesmo_c2_no_csv_e_no_banco` (#46; era `test_calcular_grava_csv_padrao_com_cd_cvm_inteiro`, do #22) | Marcos | sim: o CI sobe um PostgreSQL desde o #22 (sem ele, os testes do banco pulam; `-rs` mostra quais) |
 | C1 e C2 no banco, ano do exercício (MA3, PR #46) | `test_busca_exige_cadastro_ativo_e_indicadores`, `test_sem_a_tabela_indicadores_a_busca_volta_vazia`, `test_publicar_grava_o_mesmo_c2_no_csv_e_no_banco` (`tests/test_dados.py`); `test_ano_do_exercicio_e_o_ano_com_mais_meses` e `test_limpar_demo_usa_o_ano_do_exercicio_e_nao_o_do_arquivo` (`tests/test_limpeza.py`); `test_main_usa_o_exercicio_de_quem_fecha_fora_de_dezembro`, `test_main_segue_sem_o_arquivo_do_ano_seguinte` e `test_main_para_se_falta_o_arquivo_de_um_dos_anos` (`tests/test_carregar_dfp.py`); `test_desiste_rapido_se_o_banco_nao_responde` (`tests/test_banco.py`) | Marcos | sim |
-| `tests/test_tela.py` (MG4) | a tela com os falsos: busca, gerar, 6 métricas, sem erro | Miguel | sim |
+| `tests/test_tela.py` (MG4, MG4b) | a tela com os falsos: busca, gerar, 6 métricas, sem erro; com a IA fora do ar, aviso de uma frase (o erro em "Detalhes técnicos" e no log) e o topo e o rodapé sem "escrito pelo Gemini"; os avisos do banco com os comandos do Terraform | Miguel | sim |
 | `tests/test_ponta_a_ponta.py` | C2 real, raio-x sem IA de 3 setores, `cd_cvm` dos casos (todos preenchidos e na tabela real) | Eduardo | **não**: pula sem `data/`. Rodar local antes de `v0.1-demo`, `v1.0` e no teste do zero |
 | `tests/test_aprender.py` | o notebook `aprender/passo_a_passo.ipynb` roda inteiro e vai para o Git sem saídas | Eduardo | sim |
 | `tests/test_guarda.py` (#30, 137 testes) | as travas do Claude Code (`.claude/hooks/guarda.py`): o que bloqueia, o que pergunta e o que libera; o teste do fim de resposta; e o repositório inteiro sem `data/`, `.env`, chave nem arquivo acima de 10 MB (vale para os 4, inclusive upload pelo navegador) | Eduardo | sim (os de Git pulam no contêiner, que não tem `git`) |
@@ -319,13 +343,13 @@ Para subir um arquivo:
 | R5 ML | ED4 |
 | R6 GenAI | ED1, ED3, ED7 |
 | R6b RAG × fine-tuning | ED8, ED11 |
-| R7 Interface | MG4, MG6 |
+| R7 Interface | MG4, MG4b, MG6 |
 | R8 Boas práticas e agentic coding | ED0, ED2, ED6, ED8, todos os PRs |
 | R9 Arquitetura e infra com Terraform (obrigatório) | MG2, MG3, MG5 |
-| R10 Governança e ética | NA5, ED8, MG4 |
+| R10 Governança e ética | NA5, ED8, MG4, MG4b |
 | R11 ROI | NA1, NA3 |
 | R12 Métricas | NA2, ED5, ED7, NA4, ED11 |
-| R13 Backend, frontend e banco na aplicação | MG4 (pergunta ao professor respondida em 02/11: Streamlit vale, em 2 contêineres) |
+| R13 Backend, frontend e banco na aplicação | MG4, MG4b (pergunta ao professor respondida em 02/11: Streamlit vale, em 2 contêineres) |
 | R14 Prompts do vibecoding | ED8 |
 | D1 Repositório | ED0, MA1, NA1, ED9 |
 | D1b README | MG5, ED8, ED10 |

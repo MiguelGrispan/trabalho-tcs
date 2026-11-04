@@ -81,6 +81,9 @@ O projeto durou 4 semanas (19/10 a 16/11/2026). O detalhe de cada passo está no
   Terraform, com tudo gravado no banco. Tag `v0.1-demo`.
 - **Correção do ano fiscal** (PR #46, 03/11): a Camil fecha o exercício em fevereiro, e o sistema mostrava o exercício anterior.
   O "ano" de cada número passou a ser o do exercício. 5 empresas conferidas contra o RI, com diferença de 0,00% (seção 8).
+- **Tela mais clara e mais segura** (PR #47, 04/11): aviso curto quando a IA falha, a tela só diz "escrito por IA" quando o Gemini
+  respondeu e só abre no próprio computador. A carga da CVM refeita com a correção do ano fiscal deu 595 empresas e a Camil com o
+  valor do RI.
 - **Decisões de 04/11:** a demo da banca roda no Mac do Eduardo, o único conferido com o compose, o Terraform e o Gemini, e os
   vídeos são gravados nele; este documento passa a ser escrito em markdown e convertido em PDF.
 - Código congelado e tag `v1.0` na sex 06/11; vídeo final gravado na `v1.0` no sáb 07/11. [PENDENTE: confirmar as datas reais no fim da semana]
@@ -371,8 +374,10 @@ O que resolve, no fim, é a leitura humana. Por isso o raio-x é apoio, e não d
   então não fica no `terraform.tfstate`. Nenhuma chave em todo o histórico do Git (busca pelo padrão de chave, 29/10).
 - **Ponto fraco conhecido:** a senha do PostgreSQL local passa por variável do Terraform e fica no `terraform.tfstate`, que não vai
   para o Git. O banco só aceita conexões do próprio computador (`127.0.0.1`).
-- **A tela no `docker compose`** abria para a rede toda; o Terraform já fechava em `127.0.0.1`. Correção no PR #47 (issue #44).
-  [PENDENTE: confirmar o merge do #47]
+- **A tela só abre no próprio computador** (`127.0.0.1`), no `docker compose` e no Terraform. Até o PR #47 (04/11, issue #44), o
+  compose abria a tela para a rede toda: com a IA ligada, qualquer um no mesmo Wi-Fi abria a tela e gastava crédito.
+- **O erro técnico da IA não aparece para o vendedor:** o aviso tem uma frase, e o erro do Google vai para "Detalhes técnicos" e
+  para o log (PR #47, issue #38).
 - **O que vai para o Gemini:** o setor, os indicadores já formatados com a posição, o tamanho do grupo, o produto e o objetivo.
   Nem o nome da empresa vai (`montar()`, `raiox/ia.py`). [PENDENTE: citar a política de uso de dados do Google para a API paga]
 - **O que fica gravado:** a tabela `consultas` guarda empresa, produto, objetivo, tempo e custo. Não há dado pessoal, mas o produto
@@ -384,7 +389,8 @@ O que resolve, no fim, é a leitura humana. Por isso o raio-x é apoio, e não d
 - **Apoio, não decisão:** o raio-x prepara a primeira reunião; o vendedor confere antes de usar. A tela avisa: "Confira antes de usar".
 - **Não é recomendação de investimento:** o mesmo aviso, na tela.
 - **Se a IA falhar, a ferramenta continua:** a tela monta o texto sem IA, com os mesmos números, e avisa. Conferido em 03/11 com
-  uma chave inválida: WEG gerada sem IA e consulta gravada com custo 0.
+  uma chave inválida: WEG gerada sem IA e consulta gravada com custo 0. Desde o PR #47, a tela só diz que o texto foi escrito por IA
+  quando o Gemini respondeu (issue #39).
 - **Custo acompanhado:** cada consulta grava os tokens e o custo.
 
 ### 7.7 Viabilidade
@@ -429,7 +435,7 @@ trechos removidos não dependem disso. [PENDENTE: se a avaliação for refeita n
 13 valores de 5 empresas, cada um com o documento do RI e a página de onde veio (coluna `fonte` do arquivo).
 
 ### 8.3 Qualidade do código
-- Testes automáticos: 241 passando, nenhum pulado (03/11, com o PostgreSQL de testes). Os testes não chamam a API.
+- Testes automáticos: 244 passando, nenhum pulado (04/11, Linux do Miguel, com o PostgreSQL de testes). Os testes não chamam a API.
 - O CI roda os testes em todo pull request, com um PostgreSQL só para eles; a `main` só recebe mudanças por PR com o CI verde.
 
 ---
@@ -490,7 +496,7 @@ recebe) é outro: `avaliacao/regras_prompt.md`.
 | WEG com o Gemini: US$ 0,0011 | demo de 03/11 (`docs/HISTORICO.md`) | tabela `consultas` do banco da demo |
 | 15 s por tentativa, 2 tentativas, `temperature=0.2` | `TEMPO_LIMITE_S`, `TENTATIVAS`, `raiox/ia.py` | ler o arquivo |
 | banco desiste em 5 s | `TEMPO_LIMITE_S`, `raiox/banco.py` | ler o arquivo |
-| 241 testes passando, nenhum pulado | Windows do Marcos, 03/11, com o PostgreSQL (`docs/PLANO.md`, seção 0) | `python -m pytest -q -rs` com o PostgreSQL ligado |
+| 244 testes passando, nenhum pulado | Linux do Miguel, 04/11, com o PostgreSQL (`docs/PLANO.md`, seção 0) | `python -m pytest -q -rs` com o PostgreSQL ligado |
 
 ## Apêndice B · Pendências deste rascunho (sai da versão final)
 
@@ -503,6 +509,5 @@ recebe) é outro: `avaliacao/regras_prompt.md`.
 | gráficos da EDA na seção 3 | Marcos (MA4) | — |
 | gráficos do K-means refeitos com os dados depois do PR #46 | Eduardo | sex 06/11 |
 | números do Apêndice A conferidos de novo na `v1.0` (recarga da CVM depois do #46) | Eduardo | seg 09/11 |
-| merge do PR #47 (tela fechada em `127.0.0.1` no compose) | Miguel | — |
 | política de uso de dados do Google para a API paga (7.5) | Náthally ou Eduardo | seg 09/11 |
 | datas reais do congelamento e da `v1.0` (seção 2) | Eduardo | seg 09/11 |

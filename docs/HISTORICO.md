@@ -87,6 +87,15 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   termina, e o "2025" dela (mar/2025 a fev/2026) estava no arquivo de 2026, que não era baixado. Agora a receita (R$ 11,1 bi) e o crescimento
   (−1,2%) batem com o RI e com a conferência manual da Náthally; mudaram as 9 empresas que fecham fora de dezembro.
   No Windows, as travas leem o Git em cp1252 e bloqueavam commit e merge (#45, Eduardo).
+- **03/11** · **MG4b** (PR #47, Miguel): a tela para de se contradizer quando a IA falha. O aviso tem uma frase (o erro do Google
+  vai para "Detalhes técnicos" e para o log), e o topo e o rodapé só dizem que a IA escreveu quando o Gemini respondeu (#38, #39).
+  O compose passa a abrir a tela só no próprio computador, como o Terraform (#44). A tela nova da MG4 também foi conferida pelo
+  Terraform, no Linux do Miguel.
+- **04/11** · O 1º fechamento da MG4b parou no meio do `git merge main` (o #46 tinha entrado), e a conversa foi voltada no Claude
+  Code. Voltar a conversa restaura os arquivos que o Claude editou, mas não desfaz o Git: o merge ficou pela metade, com cópias
+  antigas por cima, e o `tests/test_tela.py` antigo junto do `raiox/dados.py` novo derrubou 1 teste. Conserto: `git merge --abort`
+  (com o ok do Miguel) e o merge refeito do zero. Na recarga da CVM com o #46, a tela não gerava nenhum raio-x: o
+  `indicadores.py` novo grava o CSV com permissão só do dono, e o contêiner não lê (issue #48, Marcos; contorno: `chmod 644`).
 - **04/11** · O grupo decide (mensagem do Marcos): a demo da banca roda no Mac do Eduardo, onde o Miguel grava os vídeos, e o
   documento do projeto (MA6) passa ao Eduardo; o Marcos fica com o BPMN e a EDA. **MA6, rascunho 1** (Eduardo com o Claude Code):
   `docs/documentacao.md` e o PDF gerado dele, com as etapas, a limpeza, a justificativa, a ética, as métricas e a fonte de cada número;
@@ -124,6 +133,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 03/11 | o "ano" de cada número é o do exercício (o ano com mais meses dele), e não o do arquivo da CVM; baixa-se também o arquivo do ano seguinte (opção 3 da #17) | a Camil fecha em fevereiro e aparecia com o exercício anterior; o rótulo sozinho (opção 2) mudaria o C2 e o C3, e tirar a Camil da demo (opção 1) deixaria 8 empresas erradas sem aviso. Coube em 2 arquivos e 3 testes, sem mudar o formato do C2 |
 | 03/11 | corte de receita mínima de R$ 10 mi no K-means, confirmado pelo Marcos | abaixo dele, 52% das 31 empresas têm margem EBIT acima de 100% ou abaixo de −100%; acima, só 4% das 564 |
 | 03/11 | a conexão com o banco desiste em 5 s | sem limite, o psycopg espera 130 s, e a tela ficava parada antes do aviso de banco desligado (a demo não pode travar) |
+| 03/11 | a tela só abre no próprio computador (`127.0.0.1`), no compose como no Terraform; o erro técnico da IA vai para "Detalhes técnicos" e para o log, nunca para o aviso | com a IA ligada, qualquer um no mesmo Wi-Fi (o do SENAI, no dia da banca) abria a tela e gastava crédito; quem precisar abrir de outro aparelho muda a porta de propósito. Um JSON do Google no telão não diz nada ao vendedor, mas quem conserta precisa dele |
 | 04/11 | a demo da banca roda no Mac do Eduardo, e o Miguel grava nele os vídeos v0 e final | é o único computador conferido com o compose, o Terraform e o Gemini (03/11); a banca vê o mesmo que o vídeo |
 | 04/11 | o documento do projeto (MA6) passa ao Eduardo | o Marcos tinha 4 sessões (MA3 a MA6); o Eduardo escreveu a base (justificativa, ética, HISTORICO) |
 | 04/11 | o documento é escrito em markdown (`docs/documentacao.md`) e o PDF é gerado dele | o PR mostra o que mudou, cada número tem a fonte ao lado (Apêndice A) e corrigir leva um minuto; o guia §6 pede PDF, o `requisitos_projeto.MD` aceita markdown: vale o mais exigente |
