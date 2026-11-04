@@ -69,8 +69,10 @@ if DADOS_FALSOS:
     st.warning("Versão de teste: empresas e números inventados.")
 else:
     st.caption("Empresas e números da CVM (DFP), buscados no banco PostgreSQL.")
-# Quem escreveu o texto (Gemini ou sem IA) só se sabe depois de gerar: o espaço fica aqui e é preenchido mais abaixo.
+# Quem escreveu o texto (Gemini ou sem IA) só se sabe depois de gerar: a legenda começa pelo modo e é trocada mais abaixo.
 origem_do_texto = st.empty()
+origem_do_texto.caption("IA ligada: o texto será escrito pelo Gemini." if USAR_IA_REAL
+                        else "Texto montado sem IA (modo de teste, sem custo).")
 
 # ------------------------------------------------------------------ entrada (barra lateral)
 with st.sidebar:
@@ -131,14 +133,9 @@ rx = st.session_state.get("rx")
 erro_ia = st.session_state.get("erro_ia")
 # Só diz "escrito pelo Gemini" quando ele respondeu de verdade nesta consulta (issue #39)
 texto_do_gemini = USAR_IA_REAL and not erro_ia
-if not USAR_IA_REAL:
-    origem_do_texto.caption("Texto montado sem IA (modo de teste, sem custo).")
-elif not rx:
-    origem_do_texto.caption("IA ligada: o texto será escrito pelo Gemini.")
-elif texto_do_gemini:
-    origem_do_texto.caption("Texto escrito pelo Gemini.")
-else:
-    origem_do_texto.caption("Texto montado sem IA: o Gemini não respondeu.")
+if USAR_IA_REAL and rx:
+    origem_do_texto.caption("Texto escrito pelo Gemini." if texto_do_gemini
+                            else "Texto montado sem IA: o Gemini não respondeu.")
 if not rx:
     st.info("Na barra à esquerda, escolha a empresa, diga o que você vende e o objetivo da reunião. "
             "Depois clique em **Gerar raio-x**.")

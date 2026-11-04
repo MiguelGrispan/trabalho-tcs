@@ -137,12 +137,14 @@ def test_tela_nao_diz_que_o_texto_e_da_ia_quando_ela_falha(monkeypatch):        
     legendas = textos(at.caption)                                # o topo e o rodapé são legendas (st.caption)
     assert "escrito pelo Gemini" not in legendas
     assert "escrito por IA" not in legendas
-    assert "montado sem IA" in legendas
+    assert "Texto montado sem IA: o Gemini não respondeu." in legendas   # o topo (o rodapé sozinho não basta)
 
 
 def test_tela_diz_que_o_texto_e_do_gemini_quando_ele_responde(monkeypatch):       # issue #39, o outro lado
     ligar_ia(monkeypatch, gemini_que_responde)
-    at = gerar(abrir())
+    at = abrir()
+    assert "IA ligada: o texto será escrito pelo Gemini." in textos(at.caption)   # antes de gerar, só o modo
+    at = gerar(at)
     assert not at.exception and not at.error
     assert "não respondeu" not in textos(at.warning)
     legendas = textos(at.caption)
@@ -180,6 +182,7 @@ def test_tela_mostra_erro_quando_nem_o_modo_sem_ia_funciona(monkeypatch):
     assert not at.exception
     assert "Não foi possível gerar o raio-x" in textos(at.error)
     assert not at.subheader                                      # nenhum raio-x na tela
+    assert "Texto montado sem IA" in textos(at.caption)          # a legenda do topo não some no erro (revisor, #47)
 
 
 def test_tela_avisa_quando_o_banco_esta_vazio(banco_vazio):
