@@ -158,36 +158,60 @@ def resolver_conflitos(contas):
 
 
 FATOR_ESCALA = 1000
-# Quanto a receita corrigida pode se afastar da do ano anterior (para mais ou menos).
+# Quanto o valor corrigido pode se afastar do ano de comparação (para mais ou menos).
 TOLERANCIA_ESCALA = 3
+
+
+def _mil_vezes_menor(valor, comparacao):
+    """True se valor × 1000 fica perto de comparacao (dentro da TOLERANCIA_ESCALA).
+
+    Valor vazio, zero ou negativo dá False: não há como saber a escala.
+    """
+    if not (valor > 0 and comparacao > 0):
+        return False
+    razao = valor * FATOR_ESCALA / comparacao
+    return 1 / TOLERANCIA_ESCALA <= razao <= TOLERANCIA_ESCALA
 
 
 def encontrar_escala_errada(contas):
     """Retorna os pares (cd_cvm, ano) com valores em milhares declarados como unidade.
 
     Algumas empresas informam ESCALA_MOEDA = UNIDADE mas mandam os valores em
-    milhares. O sinal é a receita (DRE 3.01) cair cerca de 1000x em relação ao
-    ano anterior: se, multiplicada por 1000, ela fica parecida com a do ano
-    anterior, o ano está com a escala errada. O ano corrigido serve de base
-    para o seguinte (o erro pode se repetir).
+    milhares. O sinal é a receita (DRE 3.01) cerca de 1000x menor que a de um
+    ano vizinho:
+    - a partir do segundo ano, o ano é comparado com o anterior; se a receita,
+      multiplicada por 1000, fica parecida com a do ano anterior, ele está com
+      a escala errada. O ano corrigido serve de base para o seguinte (o erro
+      pode se repetir);
+    - o primeiro ano não tem anterior: é comparado com o seguinte (issue #53).
+      Aqui um salto de 1000x pode ser uma empresa que começou a operar, então
+      a receita E o ativo (BPA 1) precisam estar ~1000x menores juntos.
     """
     receita = contas[(contas["demonstracao"] == "DRE") & (contas["cd_conta"] == "3.01")]
     receita = receita.sort_values(["cd_cvm", "ano"])
+    ativo = contas[(contas["demonstracao"] == "BPA") & (contas["cd_conta"] == "1")]
+    ativo_por_ano = dict(zip(zip(ativo["cd_cvm"], ativo["ano"]), ativo["valor"]))
+    vazio = float("nan")
 
     errados = []
-    empresa_anterior = None
-    receita_anterior = None
-    for cd_cvm, ano, valor in zip(receita["cd_cvm"], receita["ano"], receita["valor"]):
-        # Primeiro ano da empresa: não há ano anterior para comparar.
-        # Comparações com valor vazio dão False, então ele nunca é corrigido.
-        if cd_cvm == empresa_anterior and receita_anterior > 0 and valor > 0:
-            razao = valor * FATOR_ESCALA / receita_anterior
-            if 1 / TOLERANCIA_ESCALA <= razao <= TOLERANCIA_ESCALA:
-                errados.append((cd_cvm, ano))
-                valor = valor * FATOR_ESCALA
+    for cd_cvm, linhas in receita.groupby("cd_cvm", sort=False):
+        anos = list(linhas["ano"])
+        valores = list(linhas["valor"])
 
-        empresa_anterior = cd_cvm
-        receita_anterior = valor
+        # Primeiro ano: comparado com o seguinte, pela receita e pelo ativo.
+        if len(anos) >= 2:
+            primeiro, seguinte = anos[0], anos[1]
+            ativo_primeiro = ativo_por_ano.get((cd_cvm, primeiro), vazio)
+            ativo_seguinte = ativo_por_ano.get((cd_cvm, seguinte), vazio)
+            if _mil_vezes_menor(valores[0], valores[1]) and _mil_vezes_menor(ativo_primeiro, ativo_seguinte):
+                errados.append((cd_cvm, primeiro))
+                valores[0] = valores[0] * FATOR_ESCALA
+
+        # Demais anos: comparados com o anterior (já corrigido, se foi o caso).
+        for i in range(1, len(anos)):
+            if _mil_vezes_menor(valores[i], valores[i - 1]):
+                errados.append((cd_cvm, anos[i]))
+                valores[i] = valores[i] * FATOR_ESCALA
 
     return errados
 

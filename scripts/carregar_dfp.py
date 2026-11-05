@@ -148,7 +148,8 @@ def main():
     if len(escala_errada) > 0:
         print(
             f"Aviso: {len(escala_errada)} empresa/ano com receita ~1000× menor "
-            f"que no ano anterior; valores multiplicados por 1000: {escala_errada}"
+            f"que no ano anterior (no primeiro ano, receita e ativo ~1000× menores "
+            f"que no seguinte); valores multiplicados por 1000: {escala_errada}"
         )
     contas = corrigir_escala(contas, escala_errada)
 
