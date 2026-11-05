@@ -203,7 +203,7 @@ docker compose down                 # desliga os 2; o banco continua guardado no
 
 - **Dados da CVM no banco do contêiner:** `docker compose run --rm --user "$(id -u):$(id -g)" tela python scripts/carregar_dfp.py`
   e o mesmo com `scripts/indicadores.py` (no Linux, o `--user` deixa o contêiner gravar na sua `data/`; no Mac não precisa).
-  Abriu a tela antes de carregar? Depois da carga, `docker compose restart tela` (até o conserto da issue #43).
+  A tela já aberta passa a usar os dados novos sozinha (issue #43, consertada no PR #63).
 - **IA ligada:** `RAIOX_IA_REAL=1 docker compose up -d`. A chave vem do `GOOGLE_API_KEY` do `.env`, que o Compose lê sozinho.
   A chave e a `data/` nunca entram na imagem (`.dockerignore`): a `data/` entra como volume.
 - **Porta 5432 ocupada** por outro PostgreSQL: `PORTA_BANCO=5433 docker compose up -d`.
