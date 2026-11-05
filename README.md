@@ -267,7 +267,6 @@ psql -U postgres -c "CREATE DATABASE raiox_teste"
 ```bash
 python scripts/carregar_dfp.py        # baixa a DFP dos exercícios 2023–2025, limpa (raiox/limpeza.py) → data/contas.csv e tabelas contas e empresas
 python scripts/indicadores.py         # 6 indicadores por empresa (C2) → data/indicadores.csv e tabela indicadores
-python scripts/verificar_automatico.py   # opcional: compara receita, EBIT e lucro com o Yahoo Finance
 ```
 
 **Testes** (não gastam crédito):
