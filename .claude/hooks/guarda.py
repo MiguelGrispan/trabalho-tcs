@@ -73,10 +73,13 @@ BUSCA_AMPLA = [
     r"\bprintenv\b",                                    # mostra as variáveis do ambiente, chave incluída
 ]
 
-# As próprias travas e o CI: mudam o computador e os PRs de todos
-TRAVAS = (".claude/settings.json", ".claude/settings.local.json", ".claude/hooks/", ".claude/agents/", ".claude/skills/",
-          ".githooks/", ".github/workflows/", "tests/test_guarda.py", ".gitignore", "CLAUDE.md")
-ESCREVE = r"(>|\bsed\s+-i|\bperl\s+-p?i|\brm\b|\bmv\b|\bcp\b|\btee\b|\btruncate\b)"
+# Só o que desliga as travas sem passar por ninguém: as permissões, os hooks e o settings.local.json (disableAllHooks).
+# CLAUDE.md, skills, revisor, .githooks, CI, .gitignore e testes saíram da lista em 05/11: a pergunta aparecia o tempo todo
+# para todos, e esses arquivos já passam pelo PR, pelo CI e pelo revisor; o .env e a chave continuam barrados no commit e no
+# CI mesmo sem o .gitignore (proibido(), abaixo).
+TRAVAS = (".claude/settings.json", ".claude/settings.local.json", ".claude/hooks/")
+# Escrever num arquivo pelo terminal. O ">" de 2>&1, &> e >&2 só junta as saídas: não conta (antes, git diff CLAUDE.md 2>&1 perguntava)
+ESCREVE = r"((?<![\d&>])>(?!&)|\bsed\s+-i|\bperl\s+-p?i|\brm\b|\bmv\b|\bcp\b|\btee\b|\btruncate\b)"
 
 SAIDA_MENSAGEM = ("Se é só o texto de uma mensagem de commit ou PR, escreva a mensagem num arquivo fora do repositório "
                   "com a ferramenta Write e use git commit -F <arquivo> ou gh pr create --body-file <arquivo>.")
@@ -86,7 +89,9 @@ def git(*args):
     """Roda um comando git na raiz e devolve a saída (vazia se der erro ou se não houver git, como no contêiner).
     core.quotePath=false: nome com acento sai como é ("data/relatório.csv"), não entre aspas e com códigos."""
     try:
-        r = subprocess.run(["git", "-C", str(RAIZ), "-c", "core.quotePath=false", *args], capture_output=True, text=True)
+        # encoding="utf-8": no Windows o padrão é cp1252, que não lê "”" nem emoji do diff e travava todo commit (issue #45)
+        r = subprocess.run(["git", "-C", str(RAIZ), "-c", "core.quotePath=false", *args], capture_output=True, text=True,
+                           encoding="utf-8", errors="replace")
     except OSError:
         return ""
     return r.stdout.strip()
@@ -239,9 +244,10 @@ def antes(dados):
                 bloquear("Bloqueado: o commit pode levar " + "; ".join(ruins) + ". Tire do stage com "
                          "git restore --staged <arquivo>, ponha no .gitignore o que é seu e confira o git status "
                          "(REGRAS-IA.md, seção 2).")
-        # 4. As travas e o CI mudados pelo terminal (sed -i, >, rm, mv...)
+        # 4. As travas mudadas pelo terminal (sed -i, >, rm, mv...)
         if any(t in cmd for t in TRAVAS) and re.search(ESCREVE, cmd):
-            perguntar("Este comando muda as travas ou o CI de todos. O grupo sabe? (CLAUDE.md, pastas comuns)")
+            perguntar("Este comando muda as travas de segurança do Claude Code (o que ele bloqueia ou pergunta) "
+                      "para os 4. Só com o grupo sabendo.")
         # 5. Gemini de verdade gasta crédito pré-pago: pergunta antes.
         #    Atenção: no raiox/ia.py o padrão é COM IA (python -m raiox.ia sem --sem-ia; preparar_raio_x sem usar_ia=False)
         gemini = (re.search(r"""RAIOX_IA_REAL=["']?1|--com-ia|usar_ia\s*=\s*True|rodar_tela_com_ia|gerar_llm\(""", cmd)
@@ -257,9 +263,10 @@ def antes(dados):
             relativo = Path(caminho).resolve().relative_to(RAIZ).as_posix()
         except ValueError:
             return  # arquivo fora do projeto: não é com este hook
-        # 6. As próprias travas e o CI
+        # 6. As próprias travas
         if relativo.startswith(TRAVAS):
-            perguntar(f"{relativo} muda as travas ou o CI de todos. O grupo sabe? (CLAUDE.md, pastas comuns)")
+            perguntar(f"{relativo} é uma trava de segurança do Claude Code (o que ele bloqueia ou pergunta). "
+                      "Mudar aqui muda para os 4: só com o grupo sabendo.")
         # 7. Contrato antes de código (CLAUDE.md, regra 2)
         if relativo == "contratos.md":
             perguntar("O contratos.md é o formato entre as partes. Quem recebe já foi avisado? (CLAUDE.md, regra 2)")
@@ -287,11 +294,13 @@ def fim(dados):
     assinatura = assinatura.hexdigest()
     if marca.is_file() and marca.read_text() == assinatura:
         return
-    python = os.environ.get("RAIOX_PYTHON") or (
-        str(RAIZ / ".venv/bin/python") if (RAIZ / ".venv/bin/python").exists() else "python3")
+    # .venv/bin/python no Mac e no Linux; .venv/Scripts/python.exe no Windows (issue #45)
+    venv = next((RAIZ / p for p in (".venv/bin/python", ".venv/Scripts/python.exe") if (RAIZ / p).exists()), None)
+    python = os.environ.get("RAIOX_PYTHON") or (str(venv) if venv else "python3")
     try:
-        r = subprocess.run([os.path.expanduser(python), "-m", "pytest", "-q", "-x"],
-                           cwd=RAIZ, capture_output=True, text=True, timeout=300)
+        r = subprocess.run([os.path.expanduser(python), "-m", "pytest", "-q", "-x"], cwd=RAIZ, capture_output=True,
+                           text=True, encoding="utf-8", errors="replace", timeout=300,
+                           env={**os.environ, "PYTHONUTF8": "1"})   # o pytest escreve em UTF-8, e a leitura é em UTF-8
     except (OSError, subprocess.TimeoutExpired) as erro:
         print(f"guarda.py: não consegui rodar os testes ({erro}).", file=sys.stderr)
         sys.exit(1)  # código 1 = aviso que não bloqueia
@@ -338,6 +347,10 @@ def conferir():
 
 
 if __name__ == "__main__":
+    # Lê e escreve em UTF-8 em qualquer sistema. No Windows o padrão é cp1252, que não tem o "≈" da mensagem do Gemini:
+    # o print quebrava e a pergunta antes de gastar crédito sumia (issue #45)
+    for fluxo in (sys.stdin, sys.stdout, sys.stderr):
+        fluxo.reconfigure(encoding="utf-8")
     modo = sys.argv[1] if len(sys.argv) > 1 else ""
     if modo == "conferir":
         sys.exit(conferir())
