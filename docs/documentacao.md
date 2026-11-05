@@ -278,11 +278,12 @@ O vendedor precisa de **números certos** e de **texto útil**. Cada parte do si
   empresas** (`escolher_k()`, `raiox/segmentos.py`).
 - **5 parecidas:** `NearestNeighbors` com 6 vizinhos no mesmo espaço padronizado, porque o 1º vizinho é a própria empresa.
 
-**Resultado** (dados de 30/10): k = 4, silhueta 0,29, grupos de 327, 76, 59 e 102 empresas no treino (564 empresas).
+**Resultado** (dados de 05/11, depois das correções dos PRs #46 e #59): k = 4, silhueta 0,29 (0,286), grupos de 60, 310, 88 e 106
+empresas no treino (564 empresas). Com as 595, contando as que só recebem o grupo mais próximo: 66, 312, 103 e 114.
 
 **Por que a silhueta de 0,77 enganava.** Antes da regra dos 5%, a silhueta era 0,77 e parecia ótima, mas o modelo só separava
 9 empresas extremas e juntava todas as outras num grupo só: 567 das 595. Com a regra, a silhueta cai para 0,30 (0,29 com os dados
-de 30/10) e os grupos passam a servir para comparar. Preferimos grupos úteis a um número bonito.
+de 05/11) e os grupos passam a servir para comparar. Preferimos grupos úteis a um número bonito.
 
 ![Silhueta por k antes da regra dos 5%](graficos/silhueta_antes_ed4.png)
 
@@ -290,15 +291,12 @@ de 30/10) e os grupos passam a servir para comparar. Preferimos grupos úteis a 
 
 ![Silhueta por k depois da regra dos 5%](graficos/silhueta.png)
 
-*Figura 2. Silhueta por k depois da regra dos 5% (28/10): 0,30 em k = 4.*
+*Figura 2. Silhueta por k depois da regra dos 5% (dados de 05/11): 0,29 em k = 4.*
 
 ![Os grupos em 2 dimensões (PCA)](graficos/grupos.png)
 
-*Figura 3. Os 4 grupos projetados em 2 dimensões (PCA), com os dados de 28/10. As 5 variáveis viram 2 eixos só para desenhar;
+*Figura 3. Os 4 grupos projetados em 2 dimensões (PCA), com os dados de 05/11 (a legenda conta as 595 empresas). As 5 variáveis viram 2 eixos só para desenhar;
 o modelo usa as 5.*
-
-[PENDENTE: refazer as figuras 2 e 3 com os dados depois da correção do ano fiscal (PR #46). As de hoje são de 28/10:
-silhueta 0,30 e grupos de 333, 65, 90 e 107 na legenda (todas as empresas); o texto acima usa os dados de 30/10.]
 
 ### 6.3 IA generativa: por que nem RAG vetorial nem fine-tuning
 **A base de dados da IA** é a tabela de indicadores calculada da DFP da CVM. O código busca a linha exata da empresa pelo
@@ -367,19 +365,28 @@ O que resolve, no fim, é a leitura humana. Por isso o raio-x é apoio, e não d
   comparação é menos confiável.
 - **Extremos cortados só no modelo:** os números mostrados são os reais, mas uma empresa muito fora da curva fica num grupo que
   não a representa bem.
-- **Perfil financeiro, não setor:** com os dados de 30/10, as parecidas da WEG (máquinas) incluem Cemig e Copel (energia),
+- **Perfil financeiro, não setor:** com os dados de 05/11, as parecidas da WEG (máquinas) incluem Cemig e Copel (energia),
   Votorantim Cimentos e Telefônica: empresas grandes, rentáveis e pouco endividadas, mas de outros setores. Isso serve para prospectar perfis
   parecidos, mas não são concorrentes.
 - **Silhueta 0,29:** os grupos se sobrepõem. É uma régua de comparação, não uma classificação exata.
+- **Os 10 casos da avaliação caem no mesmo grupo** (o maior, com 312 empresas e receita mediana de R$ 3,6 bi). A Petrobras
+  (R$ 497,5 bi de receita) é comparada com esse grupo, e "acima do grupo" diz pouco para uma empresa desse porte (issue #60).
 
 ### 7.4 Confiabilidade dos dados
 - **Dado de até um ano atrás:** a DFP é anual; resultado trimestral não entra. O ano aparece em cada número.
 - **Fonte em cada número:** cada indicador mostra a conta da DFP de onde veio, para o vendedor conferir.
 - **Conferência contra o RI** (Marcos, 03/11, `avaliacao/conferencia.csv`): 13 valores de 5 empresas (WEG, Camil, Magalu,
   RD Saúde e CSN), todos com diferença de 0,00%.
-- **A conferência manual de 29/10** (Náthally) deu 7 de 10. Das 3 diferenças: a Camil era um erro nosso (o ano fiscal), corrigido
-  no PR #46; em Magalu e RD Saúde, o sistema bate com o RI, e a diferença parece vir da fonte usada na conferência manual
-  (não se sabe qual fonte foi usada nela).
+- **A conferência manual** (Náthally) deu 7 de 10 em 29/10 e **8 de 10 em 05/11**, nos 6 indicadores (critério: receita e
+  ativo com até 1% de diferença; percentuais com até 0,15 ponto). A Camil era um erro nosso (o ano fiscal), corrigido no PR #46.
+  As 2 diferenças que sobram são de **definição contábil**, conferidas nos PDFs usados por ela:
+  - **RD Saúde:** a conferência usou a tabela "Pré-IFRS 16" do Relatório da Administração, que está no PDF da DFP 2025 (p. 48 da
+    DFP) e tira os aluguéis das lojas: ativo R$ 20,6 bi, endividamento 62,44%, margem EBIT 5,27% (EBIT ajustado). O sistema usa a
+    DFP oficial, com IFRS 16: ativo R$ 25,2 bi (com R$ 4,3 bi de direito de uso das lojas), 70,9% e 6,2%.
+  - **Magazine Luiza:** os 5,81% da conferência saem do EBIT oficial (R$ 1.918,7 mi) sem as perdas de créditos esperadas e sem a
+    equivalência patrimonial; o sistema usa a linha oficial da DRE (4,96%). Reconstrução nossa; falta a Náthally confirmar.
+- **Número oficial × "ajustado":** empresas divulgam no release números "ajustados" ou "Pré-IFRS 16", e o vendedor pode ouvi-los
+  na reunião. O raio-x mostra o número contábil oficial, igual para as 595 empresas, que pode ser diferente.
 
 ### 7.5 Segurança de dados
 - **Chave do Gemini** só no `.env`, fora do Git. No Terraform, o `.env` é montado só para leitura e a chave não passa por variável,
@@ -407,7 +414,7 @@ O que resolve, no fim, é a leitura humana. Por isso o raio-x é apoio, e não d
 
 ### 7.7 Viabilidade
 - **Custo de IA por raio-x:** ≈ US$ 0,0012 (seção 8).
-- **Tempo de resposta da IA:** 2,2 s em média.
+- **Tempo de resposta da IA:** 2,2 s em média (rodada de 05/11).
 - **Manutenção:** a DFP é anual; a base é recarregada uma vez por ano com 2 comandos (`scripts/carregar_dfp.py` e `scripts/indicadores.py`).
 - [PENDENTE: ROI · NA3, Náthally]
 
@@ -417,7 +424,8 @@ O que resolve, no fim, é a leitura humana. Por isso o raio-x é apoio, e não d
 
 ### 8.1 Avaliação com 10 casos reais (`avaliacao/resultados.csv`)
 10 raio-x com o Gemini, um por caso de `avaliacao/casos_avaliacao.csv` (empresa, produto e objetivo escritos pela Náthally):
-Camil, CSN, Magazine Luiza, Petrobras, Embraer, Suzano, Raia Drogasil, Localiza, WEG e Telefônica. Rodados em 29/10 (PR #20).
+Camil, CSN, Magazine Luiza, Petrobras, Embraer, Suzano, Raia Drogasil, Localiza, WEG e Telefônica. A 1ª rodada foi em 29/10
+(PR #20); a de hoje, em 05/11 (PR #58), com os dados depois dos PRs #46 e #59.
 
 | métrica | resultado |
 |---|---|
@@ -425,15 +433,14 @@ Camil, CSN, Magazine Luiza, Petrobras, Embraer, Suzano, Raia Drogasil, Localiza,
 | trechos removidos pelo validador | 0 |
 | custo total | US$ 0,0118 |
 | custo por raio-x | US$ 0,0012 em média (de 0,0011 a 0,0012) |
-| tempo de resposta da IA | 2,2 s em média (de 1,8 a 2,9 s) |
-| tokens por raio-x | ≈ 2.262 de entrada e ≈ 409 de saída, em média |
+| tempo de resposta da IA | 2,2 s em média (de 1,9 a 2,8 s) |
+| tokens por raio-x | ≈ 2.262 de entrada e ≈ 413 de saída, em média |
 
 O custo é calculado com os tokens reais de cada chamada e o preço da página oficial do Google (US$ 0,25 por milhão de tokens de
 entrada e US$ 1,50 por milhão de saída, conferido em 20/10/2026).
 
-Os 10 raio-x foram gerados em 29/10, com os dados e os grupos daquele dia, antes da correção do ano fiscal (PR #46): o da Camil usou o
-exercício anterior, e o grupo de cada empresa pode ser diferente do de hoje (no arquivo, o grupo da Camil tem 333 empresas). O custo,
-o tempo e os trechos removidos não dependem disso (suposição: o texto muda pouco com outro grupo, mas isso não foi medido). [PENDENTE: se a avaliação for refeita na `v1.0` (ED11), trocar os números]
+Os 10 raio-x usam os dados e os grupos de 05/11: a Camil já com o exercício certo (mar/2025 a fev/2026) e os 10 casos no grupo
+de 312 empresas. Na 1ª rodada (29/10), com os dados antigos, os números eram parecidos: US$ 0,0118, 2,2 s e 0 removidos.
 
 ### 8.2 Conferência dos números contra o RI (`avaliacao/conferencia.csv`)
 
@@ -498,15 +505,17 @@ recebe) é outro: `avaliacao/regras_prompt.md`.
 |---|---|---|
 | 595 empresas com indicadores | `data/indicadores.csv` (gerado, fora do Git) | `python -c "import pandas as pd; print(len(pd.read_csv('data/indicadores.csv')))"` |
 | 384.591 linhas de contas; carga em 1 min 48 s | carga do Marcos em 03/11 (`docs/REQUISITOS.md`, R2) | `python scripts/carregar_dfp.py` imprime o total |
-| k = 4; silhueta 0,29; grupos 327, 76, 59 e 102; 564 no treino | `segmentar()` com os dados de 30/10 | sem gravar nada: `python -c "import pandas as pd; from raiox import segmentos as s; df = pd.read_csv('data/indicadores.csv'); out, sil, k = s.segmentar(df); b = s.treino(df); print(k, round(sil[k], 3), out.set_index('cd_cvm').loc[b.cd_cvm, 'grupo'].value_counts().sort_index().tolist())"` → `4 0.293 [327, 76, 59, 102]`. O `python -m raiox.segmentos` mostra os grupos com todas as 595 empresas e grava de novo os PNG e o `data/segmentos.csv` |
+| k = 4; silhueta 0,29; grupos 60, 310, 88 e 106; 564 no treino | `segmentar()` com os dados de 05/11 | sem gravar nada: `python -c "import pandas as pd; from raiox import segmentos as s; df = pd.read_csv('data/indicadores.csv'); out, sil, k = s.segmentar(df); b = s.treino(df); print(k, round(sil[k], 3), out.set_index('cd_cvm').loc[b.cd_cvm, 'grupo'].value_counts().sort_index().tolist())"` → `4 0.286 [60, 310, 88, 106]`. O `python -m raiox.segmentos` mostra os grupos com todas as 595 empresas e grava de novo os PNG e o `data/segmentos.csv` |
 | 567 de 595 num grupo só; silhueta 0,77 antes | ED1 e ED4 (27 e 28/10), `docs/HISTORICO.md` | `docs/graficos/silhueta_antes_ed4.png` |
 | 31 empresas abaixo de R$ 10 mi (52%); 564 acima (4%) | `scripts/avaliar_corte_receita.py`, 03/11 | rodar o script |
-| receita da Camil: R$ 12,26 bi → R$ 11,12 bi; 9 empresas mudaram | PR #46 (`docs/PLANO.md`, seção 0) | 11,12 bi: `avaliacao/conferencia.csv`, linha da Camil; 12,26 bi (antes): `avaliacao/resultados.csv`, caso 1 (`valor_num` da receita, em R$ milhões) |
+| receita da Camil: R$ 12,26 bi → R$ 11,12 bi; 9 empresas mudaram | PR #46 (`docs/PLANO.md`, seção 0) | 11,12 bi: `avaliacao/conferencia.csv`, linha da Camil; 12,26 bi (antes): `git show 8bfb991:avaliacao/resultados.csv`, caso 1 (`valor_num` da receita, em R$ milhões) |
 | nenhum "erro" e 180 "atenção" em 98 empresas | `raiox/checagem.py`, 03/11 | `python -m raiox.checagem data/indicadores.csv data/contas.csv` |
-| 10 raio-x, 0 removidos, US$ 0,0118, US$ 0,0012, 2,2 s, tokens | `avaliacao/resultados.csv` | soma e média das colunas `n_removidos`, `custo_usd`, `tempo_s`, `tokens_*` |
+| 10 raio-x, 0 removidos, US$ 0,0118, US$ 0,0012, 2,2 s, tokens | `avaliacao/resultados.csv` (rodada de 05/11, PR #58) | soma e média das colunas `n_removidos`, `custo_usd`, `tempo_s`, `tokens_*` |
 | US$ 0,25 e US$ 1,50 por milhão de tokens | `PRECO_US_POR_MILHAO`, `raiox/ia.py` | página oficial de preços do Google (20/10/2026) |
 | 13 valores de 5 empresas, 0,00% | `avaliacao/conferencia.csv` | coluna `diferenca_pct` |
-| 7 de 10 na conferência manual | Náthally, 29/10 (`docs/HISTORICO.md`) | `revisao_manual.md`, na branch `feat/metricas` |
+| 7 de 10 (29/10) e 8 de 10 (05/11) na conferência manual | Náthally; ED16 (`docs/PLANO.md`, seção 0) | `revisao_manual.md`, na branch `feat/metricas`, contra os raio-x de `avaliacao/resultados.csv` |
+| RD Saúde Pré-IFRS 16: ativo R$ 20.630,8 mi, PL R$ 7.749,6 mi, EBIT ajustado R$ 2.331,9 mi | PDF da DFP 2025 da RD (link da Náthally), Relatório da Administração, p. 48 da DFP | tabela "Pré-IFRS 16 / IFRS 16" |
+| Magalu: EBIT R$ 1.918,7 mi; perdas de crédito R$ 455,8 mi; equivalência R$ 127,3 mi | DRE consolidada da DFP 2025, PDF p. 13 | (1.918,7 + 455,8 − 127,3) ÷ 38.703,4 = 5,81% |
 | WEG com o Gemini: US$ 0,0011 | demo de 03/11 (`docs/HISTORICO.md`) | tabela `consultas` do banco da demo |
 | 15 s por tentativa, 2 tentativas, `temperature=0.2` | `TEMPO_LIMITE_S`, `TENTATIVAS`, `raiox/ia.py` | ler o arquivo |
 | banco desiste em 5 s | `TEMPO_LIMITE_S`, `raiox/banco.py` | ler o arquivo |

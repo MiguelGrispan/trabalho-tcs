@@ -189,6 +189,53 @@ class LimpezaTests(unittest.TestCase):
 
         self.assertEqual(encontrar_escala_errada(contas), [])
 
+    def test_escala_errada_pega_o_primeiro_ano_pela_receita_e_pelo_ativo(self):
+        """O primeiro ano não tem anterior: olha o seguinte (issue #53, NTS). ⏭️"""
+        receita = {"cd_cvm": "1", "demonstracao": "DRE", "cd_conta": "3.01"}
+        ativo = {"cd_cvm": "1", "demonstracao": "BPA", "cd_conta": "1"}
+        contas = pd.DataFrame([
+            {**receita, "ano": 2023, "valor": 7_350_000.0},  # deveria ser 7,35 bilhões
+            {**receita, "ano": 2024, "valor": 7_260_000_000.0},
+            {**receita, "ano": 2025, "valor": 7_890_000_000.0},
+            {**ativo, "ano": 2023, "valor": 11_300_000.0},  # deveria ser 11,3 bilhões
+            {**ativo, "ano": 2024, "valor": 21_800_000_000.0},
+            {**ativo, "ano": 2025, "valor": 19_200_000_000.0},
+        ])
+
+        errados = encontrar_escala_errada(contas)
+        resultado = corrigir_escala(contas, errados)
+
+        self.assertEqual(errados, [("1", 2023)])
+        valores = dict(zip(zip(resultado["ano"], resultado["cd_conta"]), resultado["valor"]))
+        self.assertEqual(valores[(2023, "3.01")], 7_350_000_000.0)
+        self.assertEqual(valores[(2023, "1")], 11_300_000_000.0)
+        self.assertEqual(valores[(2024, "3.01")], 7_260_000_000.0)  # o resto não muda
+
+    def test_escala_errada_nao_mexe_no_primeiro_ano_sem_os_dois_sinais(self):
+        """Só a receita saltar 1000× pode ser empresa que começou a operar. 🌱"""
+        receita = {"demonstracao": "DRE", "cd_conta": "3.01"}
+        ativo = {"demonstracao": "BPA", "cd_conta": "1"}
+        contas = pd.DataFrame([
+            # Empresa 1: a receita salta 1000×, mas o ativo é do mesmo tamanho
+            {**receita, "cd_cvm": "1", "ano": 2024, "valor": 5_000.0},
+            {**receita, "cd_cvm": "1", "ano": 2025, "valor": 5_000_000.0},
+            {**ativo, "cd_cvm": "1", "ano": 2024, "valor": 80_000_000.0},
+            {**ativo, "cd_cvm": "1", "ano": 2025, "valor": 90_000_000.0},
+            # Empresa 2 (como o JBS N.V.): o ativo salta 1000×, mas a receita do primeiro ano é zero.
+            # Quem a protege é a receita zero (não há escala para comparar), e não a condição do ativo;
+            # as empresas 1 e 3 é que provam o ativo.
+            {**receita, "cd_cvm": "2", "ano": 2024, "valor": 0.0},
+            {**receita, "cd_cvm": "2", "ano": 2025, "valor": 9_000_000_000.0},
+            {**ativo, "cd_cvm": "2", "ano": 2024, "valor": 10_700_000.0},
+            {**ativo, "cd_cvm": "2", "ano": 2025, "valor": 11_700_000_000.0},
+            # Empresa 3: a receita e o ativo saltam, mas o ativo do primeiro ano falta
+            {**receita, "cd_cvm": "3", "ano": 2024, "valor": 5_000.0},
+            {**receita, "cd_cvm": "3", "ano": 2025, "valor": 5_000_000.0},
+            {**ativo, "cd_cvm": "3", "ano": 2025, "valor": 90_000_000.0},
+        ])
+
+        self.assertEqual(encontrar_escala_errada(contas), [])
+
     def test_preparar_empresas_uma_linha_por_codigo_preferindo_ativo(self):
         """Uma linha por empresa, e quem está ATIVO ganha a cadeira. 🪑"""
         cadastro = pd.DataFrame([

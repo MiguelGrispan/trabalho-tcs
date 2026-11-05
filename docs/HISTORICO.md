@@ -75,7 +75,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   pelo grupo no Google Docs) foi desfeito pelo #35, e a branch antiga `docs-docker-e-terraform` foi apagada (a MG2 e a MG3 já a cobriam).
 - **03/11** · **Demo ponta a ponta no Mac do Eduardo** e tag `v0.1-demo` (no merge do #36): Vale, Embraer e Ambev sem IA e WEG com o
   Gemini (US$ 0,0011), todas gravadas na `consultas`. O **Terraform** sobe pela 1ª vez num Mac, nas portas padrão, e o banco sobrevive ao
-  `destroy` + `apply`. No Mac, o Terraform só acha o Docker com o `DOCKER_HOST` (`README.md:158`).
+  `destroy` + `apply`. No Mac, o Terraform só acha o Docker com o `DOCKER_HOST` (`README.md:235`).
 - **03/11** · O Eduardo testa a tela com o Gemini fora do ar (chave falsa): o plano B funciona; 2 problemas de aparência viram as
   issues #38 e #39 (Miguel, MG4b). Entra `docs/etica.md`, a base técnica da ética para a Náthally (PR `eduardo-etica`).
 - **03/11** · **Revisão geral** (Eduardo com o Claude Code): a MA3 do Marcos estava pronta numa branch sem PR, e a nota dizia que
@@ -96,10 +96,32 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   antigas por cima, e o `tests/test_tela.py` antigo junto do `raiox/dados.py` novo derrubou 1 teste. Conserto: `git merge --abort`
   (com o ok do Miguel) e o merge refeito do zero. Na recarga da CVM com o #46, a tela não gerava nenhum raio-x: o
   `indicadores.py` novo grava o CSV com permissão só do dono, e o contêiner não lê (issue #48, Marcos; contorno: `chmod 644`).
+- **04/11** · **MA3b** (Marcos): conserto da #48. O `publicar()` libera o CSV para leitura (`0644`) antes de trocá-lo, com teste novo.
+  Falta a conferência no Linux do Miguel. Na validação do dia, o `python -m raiox.segmentos` deu grupos de 330, 108, 91 e 66
+  com os dados do #46 (os PNG de `docs/graficos/` continuam os de 28/10).
+- **04/11** · O #51 (MA3b) entrou na `main`, e a #48 foi fechada depois de o Miguel conferir no Linux: o CSV sai legível e a
+  Camil gera o raio-x sem o `chmod`. **MA5** (Marcos): o BPMN 2.0 do processo com o Raio-X (`docs/bpmn/`), desenhado pelo Claude
+  Code a partir do código, com as decisões "tem dados?" e "passou no validador?" (item por item); abre no bpmn-js sem avisos. O `revisor` achou que o
+  1º desenho dizia "frase por frase", e o código confere o resumo inteiro, cada pergunta e cada lacuna: corrigido no mesmo PR.
+- **04/11** · **MA4** (Marcos): a EDA em `notebooks/eda.ipynb`, com 4 gráficos (nulos, distribuições, extremos, cobertura) e o
+  porquê de cada decisão de limpeza e do K-means; um teste roda o notebook inteiro no CI. A EDA achou um erro que a limpeza
+  deixava passar: a NTS tem 2023 de 1.000 a 2.000 vezes menor e aparecia com crescimento de +107.154% (issue #53, MA4b).
+- **04/11** · **MG5** (Miguel, PR #55): o README ganhou a seção "Arquitetura" (diagrama dos 2 contêineres, da `data/`, do Gemini,
+  da CVM e do Terraform) e a de "Pré-requisitos"; a mesma figura está em `docs/arquitetura.png` para o documento e o deck. Achado
+  no caminho: o README mandava `python -m venv`, que não funciona no Linux do Miguel (lá, `python3` é o 3.12); agora é `python3.14`.
+  O `revisor` achou mais 2 erros fora do PR: a tela diz que os números vêm do banco (#56, Miguel) e os outros guias têm o mesmo
+  `venv` (#57, Eduardo).
 - **04/11** · O grupo decide (mensagem do Marcos): a demo da banca roda no Mac do Eduardo, onde o Miguel grava os vídeos, e o
-  documento do projeto (MA6) passa ao Eduardo; o Marcos fica com o BPMN e a EDA. **MA6, rascunho 1** (Eduardo com o Claude Code):
-  `docs/documentacao.md` e o PDF gerado dele, com as etapas, a limpeza, a justificativa, a ética, as métricas e a fonte de cada número;
-  BPMN, arquitetura, ética final e ROI entram quando chegarem. Achado: os 10 raio-x da avaliação são de antes da correção da Camil.
+  documento do projeto (MA6) passa ao Eduardo; o Marcos fica com o BPMN e a EDA. **MA6, rascunho 1** (Eduardo com o Claude Code,
+  PR #49): `docs/documentacao.md` e o PDF gerado dele; em 05/11, com o K-means e as métricas novas do #58.
+- **05/11** · **MA4b** (Marcos): conserto da #53. A limpeza agora confere também o primeiro ano de cada empresa, comparando-o com
+  o seguinte; a NTS passou de +107.154% para +7,3% de crescimento, e nenhuma outra empresa mudou. O JBS N.V. continua como caso a
+  conferir na CVM (falta o segundo sinal). Todos recarregam a `data/` depois do merge.
+- **05/11** · **ED16** (Eduardo): os 10 raio-x da Náthally de novo, com o Gemini e a Camil corrigida pelo #46. Agora 8 de 10
+  batem com a conferência manual dela (era 7); Magalu e RD Saúde seguem iguais à DFP e diferentes dela. O K-means e os gráficos
+  foram refeitos com os dados novos, já com o #59 (silhueta 0,29; grupos de 60, 310, 88 e 106 no treino), e o `resultados.csv` trocado.
+  As 2 diferenças foram explicadas abrindo os PDFs dela: a RD Saúde estava em "Pré-IFRS 16" (sem os aluguéis das lojas) e o
+  Magalu com outra conta do EBIT. Não é erro de dado, é definição; o sistema segue a DFP oficial.
 
 ## Decisões (e por quê)
 
@@ -134,9 +156,12 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 03/11 | corte de receita mínima de R$ 10 mi no K-means, confirmado pelo Marcos | abaixo dele, 52% das 31 empresas têm margem EBIT acima de 100% ou abaixo de −100%; acima, só 4% das 564 |
 | 03/11 | a conexão com o banco desiste em 5 s | sem limite, o psycopg espera 130 s, e a tela ficava parada antes do aviso de banco desligado (a demo não pode travar) |
 | 03/11 | a tela só abre no próprio computador (`127.0.0.1`), no compose como no Terraform; o erro técnico da IA vai para "Detalhes técnicos" e para o log, nunca para o aviso | com a IA ligada, qualquer um no mesmo Wi-Fi (o do SENAI, no dia da banca) abria a tela e gastava crédito; quem precisar abrir de outro aparelho muda a porta de propósito. Um JSON do Google no telão não diz nada ao vendedor, mas quem conserta precisa dele |
+| 04/11 | a EDA importa do código os limites da checagem e o corte do K-means, em vez de copiar os números; vai para o Git já rodada; com os dados falsos, roda sem gravar os PNG | o notebook nunca discorda do código; a banca vê os gráficos no GitHub sem rodar nada; o CI confere o "Run All" sem tocar nos gráficos dos dados reais |
+| 04/11 | o diagrama de arquitetura é texto (Mermaid) dentro do README, e o PNG sai dele; um teste confere que ele só cita arquivos que existem | o GitHub desenha o Mermaid sozinho e o PR mostra a mudança como texto; uma figura só em imagem fica velha sem ninguém ver (lição de 29/10: documento velho confunde mais que documento nenhum) |
 | 04/11 | a demo da banca roda no Mac do Eduardo, e o Miguel grava nele os vídeos v0 e final | é o único computador conferido com o compose, o Terraform e o Gemini (03/11); a banca vê o mesmo que o vídeo |
 | 04/11 | o documento do projeto (MA6) passa ao Eduardo | o Marcos tinha 4 sessões (MA3 a MA6); o Eduardo escreveu a base (justificativa, ética, HISTORICO) |
 | 04/11 | o documento é escrito em markdown (`docs/documentacao.md`) e o PDF é gerado dele | o PR mostra o que mudou, cada número tem a fonte ao lado (Apêndice A) e corrigir leva um minuto; o guia §6 pede PDF, o `requisitos_projeto.MD` aceita markdown: vale o mais exigente |
+| 05/11 | escala errada no primeiro ano da empresa: corrigida só quando a receita **e** o ativo estão ~1.000 vezes menores que no ano seguinte (decisão do Marcos) | o primeiro ano não tem anterior para comparar; um salto de 1.000 vezes só na receita pode ser uma empresa que começou a operar, e multiplicar esse ano por 1.000 inventaria um número. Com os 2 sinais, a NTS é corrigida e mais nenhuma empresa muda |
 
 **Já cortado do escopo:** verificação com yfinance, receita em 3 anos, filtro de setor, RAG, nome dos grupos pelo LLM,
 exportar o raio-x, 20 casos (ficaram 10). A lista e a ordem dos próximos cortes estão no PLANO, seção 7.
