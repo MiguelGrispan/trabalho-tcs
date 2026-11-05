@@ -82,7 +82,7 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
   pré-requisitos e instruções de execução"; §3, minutos 3–6). Seção "Arquitetura" com o diagrama em Mermaid (o GitHub desenha
   sozinho): os 2 contêineres (tela com `app/` e `raiox/`; banco com o PostgreSQL 17), a `data/` (pasta do computador montada na
   tela), a API do Gemini, a CVM e o Terraform que cria tudo (o compose faz o mesmo); linhas cheias a cada raio-x, tracejadas
-  antes da demo; 6 frases embaixo. O mesmo desenho em `docs/arquitetura.png` (4231×2923, gerado do bloco do README com o
+  antes da demo; 6 frases embaixo. O mesmo desenho em `docs/arquitetura.png` (4872×2172, gerado do bloco do README com o
   Mermaid 11.4.1), para o MA6 e o deck. Seção "Pré-requisitos" com os 3 jeitos de rodar, o Terraform como a infraestrutura
   exigida (`requisitos_projeto.MD`, Aplicação). **Conserto:** o README mandava `python -m venv`, mas no Linux do Miguel `python`
   não existe e o `python3` é o 3.12; agora é `python3.14 -m venv .venv` (os outros guias: #57). `tests/test_readme.py` (3 testes):
@@ -146,7 +146,8 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
   PR, sai a linha do `verificar_automatico.py` do README ("Como rodar", `README.md:269`). Ler a `docs/justificativa.md` (ED8).
 - **Miguel:** ✅ MG4b (#47: #38, #39 e #44) → ✅ recarga da CVM no banco do compose (04/11, com o contorno da #48) → ✅ MG5 diagrama
   e README (#55, 04/11; pedir a um colega que leia a seção "Arquitetura" e conferir o desenho na página do PR) → **MG5b: issue
-  #56** (a frase da tela sobre a origem dos números; qui 05/11, antes do vídeo) → MG6 roteiro e vídeo v0 (qui 05/11), gravado no Mac do Eduardo (o computador da banca). Avisar o grupo das mudanças em pastas comuns: `README.md`,
+  #56** (a frase da tela sobre a origem dos números; qui 05/11, antes do vídeo) → MG6 roteiro e vídeo v0 (qui 05/11),
+  gravado no Mac do Eduardo (o computador da banca). Avisar o grupo das mudanças em pastas comuns: `README.md`,
   `docs/arquitetura.png` e `tests/test_readme.py` (MG5), `tests/test_tela.py` (MG4b) e, da MG4, `.env.example` e `aprender/`.
 - **Náthally (obrigatório):** NA3 ROI mínimo (até qui 05/11) → NA4 slide de métricas (o "7 de 10" com a explicação da S2; a
   Camil agora bate com a conferência dela em receita e crescimento, #46) → NA5 ética (base: `docs/etica.md`) → NA6 deck. Sugestões, se der tempo: seção 3.

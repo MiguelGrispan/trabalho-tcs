@@ -36,6 +36,7 @@ O que o projeto precisa ter vem dos arquivos do professor, em [docs/professor/](
 %% Mudou o diagrama? Gere de novo o docs/arquitetura.png: cole este bloco em mermaid.live e exporte em PNG.
 flowchart LR
     vendedor(["Vendedor<br/>(navegador)"])
+    cvm["CVM: dados abertos<br/>DFP 2023–2025"]
     iac["Terraform: infra/*.tf<br/>cria a imagem, a rede<br/>e os 2 contêineres<br/>(o docker-compose.yml<br/>faz o mesmo)"]
 
     subgraph pc["Docker (máquina local)"]
@@ -53,7 +54,6 @@ flowchart LR
     end
 
     gemini["API do Gemini<br/>gemini-3.1-flash-lite"]
-    cvm["CVM: dados abertos<br/>DFP 2023–2025"]
 
     vendedor -- "localhost:8501<br/>(só 127.0.0.1)" --> app
     app --> dados
@@ -65,6 +65,7 @@ flowchart LR
     ia --> seg
     seg --> pasta
     ia -- "LangChain, chave do .env<br/>só com RAIOX_IA_REAL=1" --> gemini
+    iac ~~~ vendedor
     iac -..-> pc
 ```
 
