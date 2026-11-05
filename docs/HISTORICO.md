@@ -121,8 +121,8 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   Magalu com outra conta do EBIT. Não é erro de dado, é definição; o sistema segue a DFP oficial.
 - **05/11** · **Validação das sessões MA** (Marcos): as 7 conferidas contra o GitHub e o código (252 passed). Num PR de limpeza
   saíram o que o PLANO já tinha cortado (`verificar_automatico.py`, `yfinance`, `scripts/graficos.py`) e o `scripts/dados.py`, que
-  calculava os indicadores de novo, direto do banco, sem ninguém usar; 2 testes fracos foram reforçados e o C4 diz agora que o
-  `conferencia.csv` é do Marcos.
+  calculava os indicadores de novo, direto do banco, sem ninguém usar; 2 testes fracos foram reforçados. O C4 continua dizendo que
+  o `conferencia.csv` é da Náthally, que está fazendo a conferência manual.
 
 ## Decisões (e por quê)
 

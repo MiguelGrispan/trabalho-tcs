@@ -169,11 +169,9 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
   ✅ MA4 EDA (#54, 04/11) → ✅ MA4b, a #53 (05/11; depois do merge, avisar o grupo para recarregar a `data/`) →
   revisar o rascunho do MA6 do Eduardo (sáb 07/11) → trocar a citação do `raiox/limpeza.py` para a seção "Dados e limpeza" do
   `docs/documentacao.md` e tirar o `docs/Raio-X Comercial.pdf` (depois do MA6). ✅ PR de limpeza da branch `marcos-validacao-ma`
-  (05/11; **falta o ok do Eduardo**, porque mexe em `tests/` e no `requirements.txt`, **e o da Náthally**, pelo C4 e pelo
-  `avaliacao/README.md`): saem o `verificar_automatico.py` e o `yfinance` (cortados na seção 7), o `scripts/graficos.py` (a EDA
+  (05/11; **falta o ok do Eduardo**, porque mexe em `tests/` e no `requirements.txt`): saem o `verificar_automatico.py` e o `yfinance` (cortados na seção 7), o `scripts/graficos.py` (a EDA
   cobre o que ele fazia), o `scripts/dados.py` (o `obter_indicadores()` só era chamado pelos testes: a tela lê a
-  `data/indicadores.csv`) e a linha do `verificar_automatico.py` no README; 2 testes fracos reforçados; o dono do
-  `conferencia.csv` no C4. Zip novo da `data/` no Drive na sex 06/11 (o de 04/11 tem a NTS de antes da MA4b). Ler a
+  `data/indicadores.csv`) e a linha do `verificar_automatico.py` no README; 2 testes fracos reforçados. Zip novo da `data/` no Drive na sex 06/11 (o de 04/11 tem a NTS de antes da MA4b). Ler a
   `docs/justificativa.md` (ED8).
 - **Miguel:** ✅ MG4b (#47: #38, #39 e #44) → ✅ recarga da CVM no banco do compose (04/11, com o contorno da #48) → ✅ MG5 diagrama
   e README (#55, 04/11; pedir a um colega que leia a seção "Arquitetura" e conferir o desenho na página do PR) → **MG5b: issue
@@ -218,8 +216,8 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 - ✅ Marcos (PR de limpeza, 05/11): os 3 testes fracos. O `test_resolver_conflitos_…` agora roda nas duas ordens; o
   `test_obter_indicadores_…` saiu com o `scripts/dados.py`, e o `test_calcular_exporta_…` ganhou a receita de 2 anos antes igual a
   zero e a ausente, e olha o `ativo_total`. Estragando o código de propósito, os 2 falham.
-- ✅ O C4 (`contratos.md`) e o `avaliacao/README.md` dizem que o `conferencia.csv` é do Marcos, com as 7 colunas de verdade
-  (PR de limpeza, 05/11; falta o ok da Náthally).
+- O C4 (`contratos.md`) diz que o `avaliacao/conferencia.csv` é da Náthally: **fica assim** (Marcos, 05/11), porque ela está
+  fazendo a conferência manual. O arquivo na `main` tem 7 colunas (as 5 do C4, mais `fonte` e `observacoes`); acertar com ela.
 - Limite conhecido do ano do exercício (`raiox/limpeza.py`, `ano_do_exercicio`): quem muda a data de fechamento pode ter duas DFPs no
   mesmo ano, e aí os valores divergentes ficam vazios (o `carregar_dfp.py` avisa "contas repetidas"). Nos dados de 03/11, nenhum valor
   vazio a mais. Achado do `revisor` no #46; serve para a ética (limites).
