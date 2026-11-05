@@ -168,9 +168,13 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 - **Marcos:** ✅ MA5 BPMN (#52; falta abrir o `.bpmn` no demo.bpmn.io e treinar a explicação para os minutos 3–6 da banca) →
   ✅ MA4 EDA (#54, 04/11) → ✅ MA4b, a #53 (05/11; depois do merge, avisar o grupo para recarregar a `data/`) →
   revisar o rascunho do MA6 do Eduardo (sáb 07/11) → trocar a citação do `raiox/limpeza.py` para a seção "Dados e limpeza" do
-  `docs/documentacao.md` e tirar o `docs/Raio-X Comercial.pdf` (depois do MA6). Um PR pequeno, com o ok do Eduardo, tirando
-  `verificar_automatico.py` e `yfinance` (cortados na seção 7) e o `scripts/graficos.py` (a EDA já cobre o que ele fazia); no mesmo
-  PR, sai a linha do `verificar_automatico.py` do README ("Como rodar", `README.md:269`). Ler a `docs/justificativa.md` (ED8).
+  `docs/documentacao.md` e tirar o `docs/Raio-X Comercial.pdf` (depois do MA6). ✅ PR de limpeza da branch `marcos-validacao-ma`
+  (05/11; **falta o ok do Eduardo**, porque mexe em `tests/` e no `requirements.txt`, **e o da Náthally**, pelo C4 e pelo
+  `avaliacao/README.md`): saem o `verificar_automatico.py` e o `yfinance` (cortados na seção 7), o `scripts/graficos.py` (a EDA
+  cobre o que ele fazia), o `scripts/dados.py` (o `obter_indicadores()` só era chamado pelos testes: a tela lê a
+  `data/indicadores.csv`) e a linha do `verificar_automatico.py` no README; 2 testes fracos reforçados; o dono do
+  `conferencia.csv` no C4. Zip novo da `data/` no Drive na sex 06/11 (o de 04/11 tem a NTS de antes da MA4b). Ler a
+  `docs/justificativa.md` (ED8).
 - **Miguel:** ✅ MG4b (#47: #38, #39 e #44) → ✅ recarga da CVM no banco do compose (04/11, com o contorno da #48) → ✅ MG5 diagrama
   e README (#55, 04/11; pedir a um colega que leia a seção "Arquitetura" e conferir o desenho na página do PR) → **MG5b: issue
   #56** (a frase da tela sobre a origem dos números; qui 05/11, antes do vídeo) → MG6 roteiro e vídeo v0 (qui 05/11),
@@ -195,13 +199,13 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
     final (MG7) são gravados nele também. Reserva: o Linux do Miguel (compose e Terraform com a tela nova, 03/11; o Gemini de
     verdade, só pelo Terraform em 31/10, visto pelo Miguel).
 - Data e horário da banca; perguntas 2 e 3 ao professor (Eduardo).
-- `scripts/dados.py` ou `raiox/dados.py` (ficar com um só; Marcos).
+- ✅ `scripts/dados.py` ou `raiox/dados.py`: fica o `raiox/dados.py` (Marcos, 05/11); o `scripts/dados.py` sai no PR de limpeza.
 - Decidido pelo Marcos em 03/11:
-  - o `verificar_automatico.py` e o `yfinance` saem num PR separado (falta o ok do Eduardo, porque mexe em `tests/` e no
-    `requirements.txt`);
+  - o `verificar_automatico.py` e o `yfinance` saem num PR separado (feito no PR de limpeza de 05/11; falta o ok do Eduardo,
+    porque mexe em `tests/` e no `requirements.txt`);
   - o `scripts/graficos.py` **fica até a MA4**: são gráficos exploratórios em Matplotlib que podem virar a base do
     `notebooks/eda.ipynb` (`guia_projeto_final.pdf` §2: "Visualização explicativa dos dados"; §1: EDA). Só o script pode sair;
-    a visualização é obrigatória. (04/11: a EDA da MA4 cobre o que ele fazia; ele sai no PR pequeno do Marcos, acima);
+    a visualização é obrigatória. (04/11: a EDA da MA4 cobre o que ele fazia; saiu no PR de limpeza de 05/11);
   - o `docs/Raio-X Comercial.pdf` fica até a MA6, porque o `raiox/limpeza.py` o cita como a fonte das regras de limpeza (ele ainda
     fala de SQLite). Quando o `docs/documentacao.md` entrar, com a seção "Dados e limpeza" (04/11), o Marcos troca a citação do
     `limpeza.py` para ela e o PDF velho sai;
@@ -211,10 +215,11 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 
 ### Pendências pequenas (não travam)
 - Eduardo: `tests/test_aprender.py:19` exige exatamente "5 passed" no notebook.
-- Marcos: 3 testes fracos: `test_resolver_conflitos_trata_valor_vazio_como_divergente` (`tests/test_limpeza.py`) passa só pela ordem
-  das linhas; `test_obter_indicadores_deixa_ausente_indicador_de_conta_ausente` (`tests/test_dados.py`) não olha o `ativo_total`;
-  `test_calcular_exporta_…` não tem receita de 2 anos antes igual a zero.
-- O C4 (`contratos.md`) diz que o `avaliacao/conferencia.csv` é da Náthally, mas quem escreve é o Marcos: corrigir com o ok dos dois.
+- ✅ Marcos (PR de limpeza, 05/11): os 3 testes fracos. O `test_resolver_conflitos_…` agora roda nas duas ordens; o
+  `test_obter_indicadores_…` saiu com o `scripts/dados.py`, e o `test_calcular_exporta_…` ganhou a receita de 2 anos antes igual a
+  zero e a ausente, e olha o `ativo_total`. Estragando o código de propósito, os 2 falham.
+- ✅ O C4 (`contratos.md`) e o `avaliacao/README.md` dizem que o `conferencia.csv` é do Marcos, com as 7 colunas de verdade
+  (PR de limpeza, 05/11; falta o ok da Náthally).
 - Limite conhecido do ano do exercício (`raiox/limpeza.py`, `ano_do_exercicio`): quem muda a data de fechamento pode ter duas DFPs no
   mesmo ano, e aí os valores divergentes ficam vazios (o `carregar_dfp.py` avisa "contas repetidas"). Nos dados de 03/11, nenhum valor
   vazio a mais. Achado do `revisor` no #46; serve para a ética (limites).
@@ -384,7 +389,7 @@ Para subir um arquivo:
 | `tests/conftest.py` | todo teste usa a tabela falsa (`RAIOX_DADOS=falsos`) e nada grava em `data/` | Eduardo | sim |
 | `tests/test_raio_x.py` | validador (regra de ouro), contrato C3, fonte, modo sem IA nas 30 empresas falsas, prompt (lê as regras da Náthally, chaves preservadas, só marcadores de indicador), texto sem IA na forma da v2, limite de tempo e de tentativas do Gemini, `RAIOX_DADOS`, segmentação (k = 3, 29 de 30; menor grupo ≥ 5%; empresas pequenas fora do treino; `segmentos.csv` refeito quando o código muda), gráficos, checador | Eduardo | sim |
 | `tests/test_avaliar.py` | `avaliar.py`: colunas do C4, casos válidos, caso com erro, formato do `casos_avaliacao.csv` (5 colunas, `cd_cvm` inteiro em todos) | Eduardo | sim |
-| `tests/test_limpeza.py`, `test_carregar_dfp.py`, `test_dados.py`, `test_banco.py`, `test_verificar_automatico.py` (PRs #4 e #21) | regras de limpeza, carga da DFP (rede simulada), catálogo e C1 em PostgreSQL (banco de teste separado: `tests/banco_teste.py`); o C2 (CSV padrão, `cd_cvm` int, mesma tabela no banco) em `test_publicar_grava_o_mesmo_c2_no_csv_e_no_banco` (#46; era `test_calcular_grava_csv_padrao_com_cd_cvm_inteiro`, do #22) | Marcos | sim: o CI sobe um PostgreSQL desde o #22 (sem ele, os testes do banco pulam; `-rs` mostra quais) |
+| `tests/test_limpeza.py`, `test_carregar_dfp.py`, `test_dados.py`, `test_banco.py` (PRs #4 e #21) | regras de limpeza, carga da DFP (rede simulada), catálogo e C1 em PostgreSQL (banco de teste separado: `tests/banco_teste.py`); o C2 (CSV padrão, `cd_cvm` int, mesma tabela no banco) em `test_publicar_grava_o_mesmo_c2_no_csv_e_no_banco` (#46; era `test_calcular_grava_csv_padrao_com_cd_cvm_inteiro`, do #22) | Marcos | sim: o CI sobe um PostgreSQL desde o #22 (sem ele, os testes do banco pulam; `-rs` mostra quais) |
 | C1 e C2 no banco, ano do exercício (MA3, PR #46) | `test_busca_exige_cadastro_ativo_e_indicadores`, `test_sem_a_tabela_indicadores_a_busca_volta_vazia`, `test_publicar_grava_o_mesmo_c2_no_csv_e_no_banco` (`tests/test_dados.py`); `test_ano_do_exercicio_e_o_ano_com_mais_meses` e `test_limpar_demo_usa_o_ano_do_exercicio_e_nao_o_do_arquivo` (`tests/test_limpeza.py`); `test_main_usa_o_exercicio_de_quem_fecha_fora_de_dezembro`, `test_main_segue_sem_o_arquivo_do_ano_seguinte` e `test_main_para_se_falta_o_arquivo_de_um_dos_anos` (`tests/test_carregar_dfp.py`); `test_desiste_rapido_se_o_banco_nao_responde` (`tests/test_banco.py`) | Marcos | sim |
 | `tests/test_tela.py` (MG4, MG4b) | a tela com os falsos: busca, gerar, 6 métricas, sem erro; com a IA fora do ar, aviso de uma frase (o erro em "Detalhes técnicos" e no log) e o topo e o rodapé sem "escrito pelo Gemini"; os avisos do banco com os comandos do Terraform | Miguel | sim |
 | `tests/test_ponta_a_ponta.py` | C2 real, raio-x sem IA de 3 setores, `cd_cvm` dos casos (todos preenchidos e na tabela real) | Eduardo | **não**: pula sem `data/`. Rodar local antes de `v0.1-demo`, `v1.0` e no teste do zero |

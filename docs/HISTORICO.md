@@ -119,6 +119,10 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   foram refeitos com os dados novos, já com o #59 (silhueta 0,29; grupos de 60, 310, 88 e 106 no treino), e o `resultados.csv` trocado.
   As 2 diferenças foram explicadas abrindo os PDFs dela: a RD Saúde estava em "Pré-IFRS 16" (sem os aluguéis das lojas) e o
   Magalu com outra conta do EBIT. Não é erro de dado, é definição; o sistema segue a DFP oficial.
+- **05/11** · **Validação das sessões MA** (Marcos): as 7 conferidas contra o GitHub e o código (252 passed). Num PR de limpeza
+  saíram o que o PLANO já tinha cortado (`verificar_automatico.py`, `yfinance`, `scripts/graficos.py`) e o `scripts/dados.py`, que
+  calculava os indicadores de novo, direto do banco, sem ninguém usar; 2 testes fracos foram reforçados e o C4 diz agora que o
+  `conferencia.csv` é do Marcos.
 
 ## Decisões (e por quê)
 
