@@ -70,7 +70,7 @@ if DADOS_FALSOS:
     st.warning("Versão de teste: empresas e números inventados.")
 else:
     # Igual ao README ("Arquitetura"): só a busca e o registro usam o banco; os números vêm do CSV (issue #56).
-    st.caption("Empresas buscadas no banco PostgreSQL; números da CVM (DFP), lidos da `data/indicadores.csv`.")
+    st.caption("Empresas buscadas no banco PostgreSQL; números da CVM (DFP), lidos da data/indicadores.csv.")
 # Quem escreveu o texto (Gemini ou sem IA) só se sabe depois de gerar: a legenda começa pelo modo e é trocada mais abaixo.
 origem_do_texto = st.empty()
 origem_do_texto.caption("IA ligada: o texto será escrito pelo Gemini." if USAR_IA_REAL
