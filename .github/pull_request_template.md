@@ -13,6 +13,7 @@
 - O que mudou, com prova (arquivo, linha ou comando):
 - Testes (passed / pulados, em qual máquina):
 - Linha do `docs/REQUISITOS.md` afetada (ou "nenhuma"):
+- Issues abertas nesta sessão (ou "nenhuma"):
 - Próximo passo:
 
 ## Achados não consertados

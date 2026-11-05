@@ -19,9 +19,10 @@ arquivo, o PLANO e o REQUISITOS. Quando os dois diferem, vale o mais exigente: o
 **Contra alucinação (vale para o Claude Code e para quem lê):**
 - Nunca diga que algo exigido nesses arquivos é opcional, extra, "já coberto por outra coisa" ou que pode ser cortado.
   Toda afirmação sobre o que o professor exige vem com o arquivo e o item (ex.: "`requisitos_projeto.MD`, Aplicação: Terraform").
-- Se uma nota (PLANO, REQUISITOS, guias de `aprender/`) contradiz os arquivos do professor, a nota está errada: avise a pessoa e corrija a nota.
-- Se o arquivo do professor não é claro (ex.: se a tabela de indicadores conta como "base de dados de conhecimento"), diga que não sabe e anote a pergunta
-  em `docs/REQUISITOS.md` para o Eduardo levar ao professor. Não decida sozinho.
+- Se uma nota (PLANO, REQUISITOS, guias de `aprender/`) contradiz os arquivos do professor, a nota está errada: avise a pessoa e corrija a nota
+  (PLANO, REQUISITOS e HISTORICO, só o Eduardo corrige: nos outros PRs, escreva em "Para as notas").
+- Se o arquivo do professor não é claro (ex.: se a tabela de indicadores conta como "base de dados de conhecimento"), diga que não sabe e escreva a pergunta
+  em "Para as notas" (o Eduardo a põe no `docs/REQUISITOS.md` e leva ao professor). Não decida sozinho.
 - Cortar escopo (PLANO, seção 7) só vale para o que **não** está nos arquivos do professor.
 
 **Depois,** leia o `docs/PLANO.md` (seção 0: o que está acontecendo agora; seção 3: a sessão da pessoa, ex.: "MA2"; seção 7: o que
@@ -123,7 +124,8 @@ Parte das regras não depende de lembrar: o `.claude/settings.json` e o `.claude
   `main`, `rebase`, `reset --hard`, `git clean`, `add --force`, `--no-verify`; commit na `main`; commit com `data/`, `.env`, chave
   `AIza…`, senha de banco, `.db`, `.zip`, `.parquet`, Terraform, chave privada ou arquivo acima de 10 MB.
 - **Pergunta antes:** o merge do PR (depois do "pode" falado, a permissão é a segunda trava); ligar o Gemini; editar o `contratos.md`,
-  `docs/professor/`, a pasta de outro dono e as próprias travas (`.claude/`, `.githooks/`, `.github/workflows/`, `.gitignore`, este arquivo).
+  `docs/professor/`, a pasta de outro dono e as próprias travas (`.claude/settings.json`, `.claude/settings.local.json`,
+  `.claude/hooks/`). Skills, revisor, CI, `.gitignore` e este arquivo não perguntam (desde 05/11): passam pelo PR, pelo CI e pelo revisor.
 - **No fim de cada resposta:** se um `.py` ou `.ipynb` mudou, roda o `pytest`; vermelho, você volta e conserta.
 - **Na hora do commit, pelo Git** (`.githooks/pre-commit`, ligado pelo `/inicio-de-sessao`): a mesma conferência, com o stage de verdade,
   também para commit feito fora do Claude Code.

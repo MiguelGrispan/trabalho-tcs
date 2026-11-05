@@ -12,7 +12,8 @@ Siga os passos **em ordem** e pare no primeiro que falhar.
 
 - `git branch --show-current`. Se for `main`, crie agora a branch `pessoa-tarefa` com as mudanças (`git switch -c pessoa-tarefa`).
 - Descubra qual sessão do `docs/PLANO.md` (ex.: MA2) foi feita. Se não estiver claro na conversa, pergunte.
-- Descubra quem é a pessoa (`git config user.name`): o passo 4 muda se é o Eduardo ou não.
+- Descubra quem é a pessoa: `gh api user --jq .login` (logins no passo 6). O passo 4 muda se é o Eduardo (`Mindoim`) ou não;
+  na dúvida, trate como não-Eduardo.
 
 ## 2. Testes
 
@@ -42,13 +43,17 @@ tempo, o mesmo parágrafo mudava em três branches e todo merge virava conflito 
 - **A pessoa não é o Eduardo:** não mexa em `docs/PLANO.md`, `docs/REQUISITOS.md` nem `docs/HISTORICO.md` (nem na coluna de status).
   Se o `git status` mostra mudança neles, não ponha no commit e pergunte à pessoa o que fazer. Escreva o que mudou na seção
   **"Para as notas"** da descrição do PR (passo 5); o Eduardo leva para as notas.
+  **Branch que já tem commit nessas notas** (feito antes desta regra): copie o que ela escreveu nelas para "Para as notas" e
+  volte os 3 arquivos para a versão da `main`: `git fetch`, `git checkout origin/main -- docs/PLANO.md docs/REQUISITOS.md
+  docs/HISTORICO.md` e um commit "Notas saem do PR: só o Eduardo edita". Assim o PR não conflita com ninguém nas notas.
 - **A pessoa é o Eduardo:** ele atualiza as notas **uma vez por dia**, num PR dele (pode ser o da própria sessão). Já atualizou
   hoje e nada entrou na `main` depois? Não mexa. Se for atualizar:
   - confira o GitHub: `git fetch --prune`, `git branch -r --no-merged origin/main` e, para cada branch, `gh pr list --head <branch>
     --state all` (branch com commit novo e sem PR vira linha na seção 0; em 03/11, a MA3 ficou pronta numa branch sem PR);
-  - leia a seção "Para as notas" de cada PR mesclado depois da data da seção 0 (`gh pr list --state merged --limit 10` e `gh pr view <número>`);
-  - **`docs/PLANO.md`, seção 0:** data e hora aproximada; o que mudou, com prova; os testes; o próximo passo de cada um.
-    Apague o que ficou velho, em vez de só acrescentar;
+  - a seção 0 diz o último PR levado para as notas ("último PR levado: #N"). Para cada PR mesclado com número maior
+    (`gh pr list --state all --limit 30`, coluna do estado), leia "Para as notas" e "Achados não consertados" (`gh pr view <número>`);
+  - **`docs/PLANO.md`, seção 0:** data e hora aproximada; "último PR levado: #N"; o que mudou, com prova; os testes; o próximo
+    passo de cada um; as issues novas. Apague o que ficou velho, em vez de só acrescentar;
   - **`docs/PLANO.md`, seção 3:** a coluna "status" das sessões que terminaram (✅ feito, 🟡 em parte);
   - **`docs/REQUISITOS.md`:** se um PR fechou ou mudou uma linha, troque o status e escreva a prova;
   - **`docs/HISTORICO.md`:** de 1 a 3 linhas no dia (o que mudou, em português simples, com os números dos PRs); decisão nova
@@ -71,12 +76,13 @@ tempo, o mesmo parágrafo mudava em três branches e todo merge virava conflito 
 
 - **Ninguém espera ninguém.** Mostre à pessoa quem tem PR aberto agora e o que ele mexe:
   `gh pr list --state open --json number,title,author,files --jq '.[] | "#\(.number) \(.author.login): \(.title) · \([.files[].path] | join(", "))"'`
-  (logins na lista de issues, abaixo). Compare com os arquivos deste PR (`gh pr diff <número> --name-only`):
+  (logins na lista de issues, abaixo). Tire o próprio PR da lista e compare com os arquivos dele (`gh pr diff <número> --name-only`):
   - **nenhum arquivo em comum:** diga "pode seguir, não precisa esperar ninguém". Os dois PRs entram na `main` sem conflito;
   - **arquivo em comum:** diga quem é o dono do outro PR e qual arquivo. Quem terminar primeiro faz o merge; o outro faz
-    `git merge main` na própria branch e roda os testes. Conflito: `git merge --abort` e a pessoa fala com o dono do arquivo.
-- Se o GitHub disser que a branch está desatualizada (`gh pr view <número> --json mergeStateStatus` → `BEHIND`): `git merge main`,
-  testes, `git push` e espere o CI de novo. Sem conflito, não precisa falar com ninguém.
+    `git fetch` e `git merge origin/main` na própria branch e roda os testes. Conflito: `git merge --abort` e a pessoa fala com o
+    dono do arquivo (conflito nas 3 notas: quem resolve é o Eduardo).
+- Se o `gh pr merge` recusar porque a branch está desatualizada: `git fetch`, `git merge origin/main`, testes, `git push` e espere
+  o CI de novo. Sem conflito, não precisa falar com ninguém.
 - Espere o CI: `gh pr checks <número> --watch`. Se aparecer "no checks reported", o CI ainda não começou: espere uns
   segundos e rode de novo. **Só faça o merge depois de ver `pass`** (em 29/10 o PR #15 foi mesclado antes do CI começar).
   Vermelho: mostre o erro, conserte na mesma branch e espere de novo.
@@ -89,8 +95,9 @@ tempo, o mesmo parágrafo mudava em três branches e todo merge virava conflito 
     PR (`gh pr edit <número> --body-file <arquivo>`).
   Depois, diga em 3 linhas o que o PR muda e o risco que sobrou.
 - **Erro achado fora do PR, na pasta de outro dono** (na sessão ou pelo revisor): não conserte lá (CLAUDE.md, regra 1).
-  - **Até a entrega (16/11), só vira issue o que quebra a demo, um requisito do professor ou a regra de ouro.** Texto, nota e
-    frase de guia não viram issue: vão para "Achados não consertados".
+  - **Até a entrega (16/11), só vira issue o que quebra a demo, um requisito do professor ou a regra de ouro.** Texto que
+    contradiz os arquivos do professor ou deixa um entregável errado (README, documento, deck) conta como requisito: vira issue.
+    O resto (nota, frase de guia, estilo) vai para "Achados não consertados".
   - A issue: `gh issue create --assignee <login> --label bug --body-file <arquivo>`. O título vai na linha de comando: sem `.env`
     nem comando proibido nele. O corpo, escrito pela ferramenta Write fora do repositório, nunca leva chave, senha nem dado pessoal
     (o repositório vai para o professor) e diz: o que acontece, onde (arquivo e linha), por que importa na banca (arquivo do

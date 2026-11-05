@@ -73,10 +73,13 @@ BUSCA_AMPLA = [
     r"\bprintenv\b",                                    # mostra as variáveis do ambiente, chave incluída
 ]
 
-# As próprias travas e o CI: mudam o computador e os PRs de todos
-TRAVAS = (".claude/settings.json", ".claude/settings.local.json", ".claude/hooks/", ".claude/agents/", ".claude/skills/",
-          ".githooks/", ".github/workflows/", "tests/test_guarda.py", ".gitignore", "CLAUDE.md")
-ESCREVE = r"(>|\bsed\s+-i|\bperl\s+-p?i|\brm\b|\bmv\b|\bcp\b|\btee\b|\btruncate\b)"
+# Só o que desliga as travas sem passar por ninguém: as permissões, os hooks e o settings.local.json (disableAllHooks).
+# CLAUDE.md, skills, revisor, .githooks, CI, .gitignore e testes saíram da lista em 05/11: a pergunta aparecia o tempo todo
+# para todos, e esses arquivos já passam pelo PR, pelo CI e pelo revisor; o .env e a chave continuam barrados no commit e no
+# CI mesmo sem o .gitignore (proibido(), abaixo).
+TRAVAS = (".claude/settings.json", ".claude/settings.local.json", ".claude/hooks/")
+# Escrever num arquivo pelo terminal. O ">" de 2>&1, &> e >&2 só junta as saídas: não conta (antes, git diff CLAUDE.md 2>&1 perguntava)
+ESCREVE = r"((?<![\d&>])>(?!&)|\bsed\s+-i|\bperl\s+-p?i|\brm\b|\bmv\b|\bcp\b|\btee\b|\btruncate\b)"
 
 SAIDA_MENSAGEM = ("Se é só o texto de uma mensagem de commit ou PR, escreva a mensagem num arquivo fora do repositório "
                   "com a ferramenta Write e use git commit -F <arquivo> ou gh pr create --body-file <arquivo>.")
@@ -239,9 +242,10 @@ def antes(dados):
                 bloquear("Bloqueado: o commit pode levar " + "; ".join(ruins) + ". Tire do stage com "
                          "git restore --staged <arquivo>, ponha no .gitignore o que é seu e confira o git status "
                          "(REGRAS-IA.md, seção 2).")
-        # 4. As travas e o CI mudados pelo terminal (sed -i, >, rm, mv...)
+        # 4. As travas mudadas pelo terminal (sed -i, >, rm, mv...)
         if any(t in cmd for t in TRAVAS) and re.search(ESCREVE, cmd):
-            perguntar("Este comando muda as travas ou o CI de todos. O grupo sabe? (CLAUDE.md, pastas comuns)")
+            perguntar("Este comando muda as travas de segurança do Claude Code (o que ele bloqueia ou pergunta) "
+                      "para os 4. Só com o grupo sabendo.")
         # 5. Gemini de verdade gasta crédito pré-pago: pergunta antes.
         #    Atenção: no raiox/ia.py o padrão é COM IA (python -m raiox.ia sem --sem-ia; preparar_raio_x sem usar_ia=False)
         gemini = (re.search(r"""RAIOX_IA_REAL=["']?1|--com-ia|usar_ia\s*=\s*True|rodar_tela_com_ia|gerar_llm\(""", cmd)
@@ -257,9 +261,10 @@ def antes(dados):
             relativo = Path(caminho).resolve().relative_to(RAIZ).as_posix()
         except ValueError:
             return  # arquivo fora do projeto: não é com este hook
-        # 6. As próprias travas e o CI
+        # 6. As próprias travas
         if relativo.startswith(TRAVAS):
-            perguntar(f"{relativo} muda as travas ou o CI de todos. O grupo sabe? (CLAUDE.md, pastas comuns)")
+            perguntar(f"{relativo} é uma trava de segurança do Claude Code (o que ele bloqueia ou pergunta). "
+                      "Mudar aqui muda para os 4: só com o grupo sabendo.")
         # 7. Contrato antes de código (CLAUDE.md, regra 2)
         if relativo == "contratos.md":
             perguntar("O contratos.md é o formato entre as partes. Quem recebe já foi avisado? (CLAUDE.md, regra 2)")

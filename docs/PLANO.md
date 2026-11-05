@@ -21,7 +21,7 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o Eduardo reescreve esta seção uma vez por dia e apaga o que ficou velho)
 
-**Em qui 05/11, ~10h (Brasília)** (fim da ED16, Eduardo com o Claude Code: os 10 raio-x da Náthally com a Camil corrigida,
+**Em qui 05/11, ~10h (Brasília)** · último PR levado: #59 (fim da ED16, Eduardo com o Claude Code: os 10 raio-x da Náthally com a Camil corrigida,
 depois do merge da MA4b, #59; as notas da MA4b, da MG5, da MA4, da MA5 e da MG4b, e da MA3, de 03/11, continuam abaixo).
 Na `main`: PRs #1 a #16, #19 a #41, o #46 (MA3, fechou #17 e #42), o #47 (MG4b, fechou #38, #39 e #44), o #51 (MA3b; a #48 foi
 fechada à mão, depois da conferência do Miguel no Linux), o #52 (MA5, BPMN), o #54 (MA4, EDA), o #55 (MG5, arquitetura) e o #59
