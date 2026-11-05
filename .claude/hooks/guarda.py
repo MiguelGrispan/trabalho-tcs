@@ -89,7 +89,9 @@ def git(*args):
     """Roda um comando git na raiz e devolve a saída (vazia se der erro ou se não houver git, como no contêiner).
     core.quotePath=false: nome com acento sai como é ("data/relatório.csv"), não entre aspas e com códigos."""
     try:
-        r = subprocess.run(["git", "-C", str(RAIZ), "-c", "core.quotePath=false", *args], capture_output=True, text=True)
+        # encoding="utf-8": no Windows o padrão é cp1252, que não lê "”" nem emoji do diff e travava todo commit (issue #45)
+        r = subprocess.run(["git", "-C", str(RAIZ), "-c", "core.quotePath=false", *args], capture_output=True, text=True,
+                           encoding="utf-8", errors="replace")
     except OSError:
         return ""
     return r.stdout.strip()
@@ -292,11 +294,13 @@ def fim(dados):
     assinatura = assinatura.hexdigest()
     if marca.is_file() and marca.read_text() == assinatura:
         return
-    python = os.environ.get("RAIOX_PYTHON") or (
-        str(RAIZ / ".venv/bin/python") if (RAIZ / ".venv/bin/python").exists() else "python3")
+    # .venv/bin/python no Mac e no Linux; .venv/Scripts/python.exe no Windows (issue #45)
+    venv = next((RAIZ / p for p in (".venv/bin/python", ".venv/Scripts/python.exe") if (RAIZ / p).exists()), None)
+    python = os.environ.get("RAIOX_PYTHON") or (str(venv) if venv else "python3")
     try:
-        r = subprocess.run([os.path.expanduser(python), "-m", "pytest", "-q", "-x"],
-                           cwd=RAIZ, capture_output=True, text=True, timeout=300)
+        r = subprocess.run([os.path.expanduser(python), "-m", "pytest", "-q", "-x"], cwd=RAIZ, capture_output=True,
+                           text=True, encoding="utf-8", errors="replace", timeout=300,
+                           env={**os.environ, "PYTHONUTF8": "1"})   # o pytest escreve em UTF-8, e a leitura é em UTF-8
     except (OSError, subprocess.TimeoutExpired) as erro:
         print(f"guarda.py: não consegui rodar os testes ({erro}).", file=sys.stderr)
         sys.exit(1)  # código 1 = aviso que não bloqueia
@@ -343,6 +347,10 @@ def conferir():
 
 
 if __name__ == "__main__":
+    # Lê e escreve em UTF-8 em qualquer sistema. No Windows o padrão é cp1252, que não tem o "≈" da mensagem do Gemini:
+    # o print quebrava e a pergunta antes de gastar crédito sumia (issue #45)
+    for fluxo in (sys.stdin, sys.stdout, sys.stderr):
+        fluxo.reconfigure(encoding="utf-8")
     modo = sys.argv[1] if len(sys.argv) > 1 else ""
     if modo == "conferir":
         sys.exit(conferir())
