@@ -20,10 +20,10 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em qui 05/11, ~9h30 (Brasília)** (fim da ED16, Eduardo com o Claude Code: os 10 raio-x da Náthally com a Camil corrigida; as
-notas da MG5, da MA4, da MA5 e da MG4b, de 04/11, e da MA3, de 03/11, continuam abaixo). Na `main`: PRs #1 a #16, #19 a #41, o #46 (MA3, fechou #17 e #42), o #47 (MG4b, fechou #38,
-#39 e #44), o #51 (MA3b; a #48 foi fechada à mão, depois da conferência do Miguel no Linux), o #52 (MA5, BPMN) e o #54 (MA4, EDA).
-Também o #55 (MG5). **Aberto:** o #49 (Eduardo, rascunho do MA6) e o PR da ED16 (esta nota).
+**Em qui 05/11, ~9h30 (Brasília)** (fim da ED16, Eduardo com o Claude Code: os 10 raio-x da Náthally com a Camil
+corrigida; as notas da MG5, da MA4, da MA5 e da MG4b, de 04/11, e da MA3, de 03/11, continuam abaixo). Na `main`: PRs #1 a #16,
+#19 a #41, o #46 (MA3, fechou #17 e #42), o #47 (MG4b, fechou #38, #39 e #44), o #51 (MA3b; a #48 foi fechada à mão, depois da
+conferência do Miguel no Linux), o #52 (MA5, BPMN), o #54 (MA4, EDA) e o #55 (MG5). **Aberto:** o #49 (Eduardo, rascunho do MA6) e o PR da ED16 (esta nota).
 Issues abertas: #43, #45 e #50 (Eduardo; a #50: o validador deixa passar "dobrou", "triplicou", "um quarto") e **#53 (Marcos,
 achada pela EDA):** a escala errada no primeiro ano da base escapa da limpeza, e a NTS aparece com crescimento de +107.154%.
 Do revisor no #55 (MG5): **#56 (Miguel)**, a tela diz que os números vêm do PostgreSQL, mas vêm da `data/indicadores.csv`; e
@@ -32,14 +32,14 @@ Testes na branch da MG5: 250 passed, nenhum pulado (Linux do Miguel, PostgreSQL 
 A versão longa desta seção, com o detalhe de cada PR até 03/11, ficou no Git: `git show 9f85bc9:docs/PLANO.md`.
 O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 
-**Faltam 2 dias para o código congelar (sex 06/11) e 12 para a entrega (seg 16/11).**
+**Falta 1 dia para o código congelar (sex 06/11) e 11 para a entrega (seg 16/11).**
 
 ### O que já funciona (conferido)
 - **ED16 (Eduardo, 05/11): os 10 raio-x da Náthally de novo, com a Camil corrigida (#46) e o Gemini respondendo nos 10.**
   No Mac do Eduardo, a `data/` ainda era de 30/10 (Camil com R$ 12,3 bi e +20%): `carregar_dfp.py` (384.591 linhas, 660 ativas),
   `indicadores.py` e `python -m raiox.segmentos` de novo, com o PostgreSQL do compose. Camil (24228): R$ 11,1 bi e −1,2%.
   Mesmos 10 casos da branch dela (`feat/metricas`, `Semana_02/casos_avaliacao.csv` = `avaliacao/casos_avaliacao.csv`).
-  **8 de 10 batem com a conferência dela nos 6 indicadores** (era 7 de 10); Magalu (5 de 6) e RD Saúde (3 de 6) seguem
+  **8 de 10 batem com a conferência dela nos 6 indicadores** (era 7 de 10; critério: receita e ativo com até 1% de diferença; os 4 percentuais com até 0,15 ponto percentual); Magalu (5 de 6) e RD Saúde (3 de 6; com 0,1 ponto, seria 2 de 6) seguem
   diferentes dela e iguais à DFP (S2 do Marcos). 0 trechos removidos, nenhum número fora da tabela no texto (conferido por fora,
   com regex), US$ 0,0116 no total, 2,5 s por caso em média. O `avaliacao/resultados.csv` foi trocado por essa rodada.
   O arquivo para ela (`raiox_para_nathally.md`, os 10 JSON e o script) fica só na `data/nathally_05_11/` do Mac do Eduardo.
@@ -163,8 +163,8 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 - **Náthally (obrigatório):** NA3 ROI mínimo (até qui 05/11) → NA4 slide de métricas (o "8 de 10" da rodada de 05/11, ED16, com a explicação da S2 para
   Magalu e RD Saúde; a Camil bate nos 6 indicadores) → NA5 ética (base: `docs/etica.md`) → NA6 deck. Sugestões, se der tempo: seção 3.
 - **Eduardo:** ED13, a #43 (qua 04/11) → ED14, a #45 (travas no Windows, qui 05/11) → a #50 (validador e quantidade sem
-  algarismo; regra de ouro, antes do congelamento) → ✅ K-means e PNG com os dados do #46 (ED16) → ED9 tag `v1.0` e ED11 (sex 06/11) → **ED15: issue #57** (`python3.14 -m venv` no `CLAUDE.md` e no
-  `aprender/`, antes do teste do zero) → ED10 teste do zero (sáb 07/11) → **MA6** (agora dele): rascunho do
+  algarismo; regra de ouro, antes do congelamento) → ✅ K-means e PNG com os dados do #46 (ED16) → ED9 tag `v1.0` e ED11
+  (sex 06/11) → **ED15: issue #57** (`python3.14 -m venv` no `CLAUDE.md` e no `aprender/`, antes do teste do zero) → ED10 teste do zero (sáb 07/11) → **MA6** (agora dele): rascunho do
   `docs/documentacao.md` no sáb 07/11 para o Marcos revisar; final e PDF na seg 09/11. O "[PENDENTE: diagrama · MG5, Miguel]"
   da seção 5 do rascunho (#49) já pode usar o `docs/arquitetura.png` (depois do merge do #55).
   Mandar ao grupo a mensagem da revisão; perguntar ao professor a data da banca e as perguntas 2 e 3 do REQUISITOS;
@@ -211,7 +211,7 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 
 | parte | feito | falta | horas que faltam |
 |---|---|---|---|
-| núcleo: dados, ML, IA, validador, avaliação | ~94% (Claude, 03/11 ~12h, com o #46) | #43, #45; gráficos do K-means refeitos | 2 a 3 h |
+| núcleo: dados, ML, IA, validador, avaliação | ~94% (Claude, 03/11 ~12h, com o #46) | #43, #45 | 2 a 3 h |
 | tela e infraestrutura | ~97% (Claude, 04/11, depois da MG5) | um colega ler o README; o desenho na página do GitHub | até 1 h |
 | entregáveis: BPMN, EDA, PDF, deck, vídeo, ensaios | ~15% (justificativa e ética prontas como base) | quase tudo | 25 a 35 h |
 | **total** | **~61%** | 14 de 27 dias usados (21/10 a 16/11): no ritmo, **se** os entregáveis começarem esta semana | **27 a 42 h**, para uns 40 a 80 h de capacidade do grupo até 16/11 |

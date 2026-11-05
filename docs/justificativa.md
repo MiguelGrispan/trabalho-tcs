@@ -38,7 +38,8 @@ Número errado numa reunião de vendas destrói a confiança no produto. Por iss
   - fica com a maior silhueta, **mas só entre os k em que o menor grupo tem pelo menos 5% das empresas**.
 - **Lição para a banca:** antes do ED4, a silhueta era 0,77 e parecia ótima, mas só separava 9 empresas extremas e juntava todas as
   outras num grupo só (`docs/HISTORICO.md`, "O que aprendemos"; `raiox/segmentos.py:78`). Com a regra dos 5%, saem 4 grupos e silhueta 0,30. Com os dados do PR #46 (recarregados em 05/11),
-  0,29 e grupos de 60, 77, 100 e 327 empresas no treino (`docs/REQUISITOS.md`, R5).
+  0,29 e grupos de 60, 77, 100 e 327 empresas no treino (`docs/REQUISITOS.md`, R5). A legenda do `grupos.png` mostra 66, 91, 108 e 330:
+  são as 595 empresas, contando as que ficaram fora do treino e recebem o grupo mais próximo.
   Silhueta menor, grupos úteis. Os gráficos de antes e depois são `docs/graficos/silhueta_antes_ed4.png` e `silhueta.png`
   (refeito em 05/11: 0,29 em k = 4).
 - **5 empresas parecidas:** `NearestNeighbors` com 6 vizinhos, porque o 1º vizinho é a própria empresa e sai da lista
@@ -67,7 +68,7 @@ resposta (`docs/REQUISITOS.md`). O projeto também segue o caminho "Treinamento 
 |---|---|---|
 | RAG vetorial | quebrar documentos em pedaços, gerar embeddings e buscar os trechos mais parecidos com a pergunta | os dados são números em tabela, não texto. Busca por semelhança pode trazer a empresa ou o ano errado; busca por chave traz sempre a linha certa. Também exigiria um banco vetorial a mais para manter |
 | Fine-tuning | treinar o modelo com exemplos de raio-x bons | não temos centenas de exemplos rotulados; custa mais; os dados mudam todo ano (DFP nova); e treinar **não impede** o modelo de errar número, que é o risco principal |
-| **O que usamos** | prompt + saída estruturada (Pydantic) + validador | barato (≈ US$ 0,0012 por raio-x), reproduzível e conferível. Nos 10 casos do ED7: 10 raio-x gerados, 0 trechos removidos pelo validador, US$ 0,0118 no total e 2,2 s em média (`avaliacao/resultados.csv`) |
+| **O que usamos** | prompt + saída estruturada (Pydantic) + validador | barato (≈ US$ 0,0012 por raio-x), reproduzível e conferível. Nos 10 casos de avaliação (rodada de 05/11, ED16, com os dados do #46): 10 raio-x gerados, 0 trechos removidos pelo validador, US$ 0,0116 no total e 2,5 s em média (`avaliacao/resultados.csv`) |
 
 **Quando RAG passaria a valer:** se o raio-x tivesse de ler texto livre, como o release de resultados ou as notas explicativas
 da DFP. Ficou fora do escopo (`docs/PLANO.md`, seção 7).
