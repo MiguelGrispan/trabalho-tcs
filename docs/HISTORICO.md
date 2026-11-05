@@ -75,7 +75,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   pelo grupo no Google Docs) foi desfeito pelo #35, e a branch antiga `docs-docker-e-terraform` foi apagada (a MG2 e a MG3 já a cobriam).
 - **03/11** · **Demo ponta a ponta no Mac do Eduardo** e tag `v0.1-demo` (no merge do #36): Vale, Embraer e Ambev sem IA e WEG com o
   Gemini (US$ 0,0011), todas gravadas na `consultas`. O **Terraform** sobe pela 1ª vez num Mac, nas portas padrão, e o banco sobrevive ao
-  `destroy` + `apply`. No Mac, o Terraform só acha o Docker com o `DOCKER_HOST` (`README.md:158`).
+  `destroy` + `apply`. No Mac, o Terraform só acha o Docker com o `DOCKER_HOST` (`README.md:235`).
 - **03/11** · O Eduardo testa a tela com o Gemini fora do ar (chave falsa): o plano B funciona; 2 problemas de aparência viram as
   issues #38 e #39 (Miguel, MG4b). Entra `docs/etica.md`, a base técnica da ética para a Náthally (PR `eduardo-etica`).
 - **03/11** · **Revisão geral** (Eduardo com o Claude Code): a MA3 do Marcos estava pronta numa branch sem PR, e a nota dizia que
@@ -109,6 +109,8 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 - **04/11** · **MG5** (Miguel, PR #55): o README ganhou a seção "Arquitetura" (diagrama dos 2 contêineres, da `data/`, do Gemini,
   da CVM e do Terraform) e a de "Pré-requisitos"; a mesma figura está em `docs/arquitetura.png` para o documento e o deck. Achado
   no caminho: o README mandava `python -m venv`, que não funciona no Linux do Miguel (lá, `python3` é o 3.12); agora é `python3.14`.
+  O `revisor` achou mais 2 erros fora do PR: a tela diz que os números vêm do banco (#56, Miguel) e os outros guias têm o mesmo
+  `venv` (#57, Eduardo).
 
 ## Decisões (e por quê)
 

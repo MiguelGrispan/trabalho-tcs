@@ -36,7 +36,7 @@ O que o projeto precisa ter vem dos arquivos do professor, em [docs/professor/](
 %% Mudou o diagrama? Gere de novo o docs/arquitetura.png: cole este bloco em mermaid.live e exporte em PNG.
 flowchart LR
     vendedor(["Vendedor<br/>(navegador)"])
-    iac["Terraform: infra/*.tf<br/>(ou docker-compose.yml)"]
+    iac["Terraform: infra/*.tf<br/>cria a imagem, a rede<br/>e os 2 contêineres<br/>(o docker-compose.yml<br/>faz o mesmo)"]
 
     subgraph pc["Docker (máquina local)"]
         subgraph tela["Contêiner da tela"]
@@ -44,7 +44,7 @@ flowchart LR
             dados["raiox/dados.py<br/>busca a empresa<br/>e grava a consulta"]
             ia["raiox/ia.py<br/>números pelo código,<br/>texto pelo LLM, validador"]
             seg["raiox/segmentos.py<br/>K-means + 5 vizinhos"]
-            pasta[("data/ (pasta montada)<br/>indicadores.csv<br/>segmentos.csv")]
+            pasta[("data/ (do computador,<br/>montada no contêiner)<br/>contas.csv<br/>indicadores.csv<br/>segmentos.csv")]
             carga["Carga (antes da demo)<br/>scripts/carregar_dfp.py<br/>scripts/indicadores.py"]
         end
         subgraph banco["Contêiner do banco"]
@@ -65,7 +65,7 @@ flowchart LR
     ia --> seg
     seg --> pasta
     ia -- "LangChain, chave do .env<br/>só com RAIOX_IA_REAL=1" --> gemini
-    iac -. "cria a imagem, a rede<br/>e os 2 contêineres" .-> pc
+    iac -..-> pc
 ```
 
 Linhas cheias: o que acontece a cada raio-x. Tracejadas: o que acontece antes da demo (subir a infraestrutura e carregar os
@@ -74,14 +74,15 @@ dados da CVM). A mesma figura em PNG, para o documento e os slides: [docs/arquit
 - **Dois contêineres.** O da tela roda o Streamlit (a interface, o frontend) e o `raiox/` (o backend: busca, K-means, IA e
   validador) no mesmo processo Python; o do banco roda o PostgreSQL 17. O professor aceitou o Streamlit como backend e frontend,
   em 2 contêineres ([docs/REQUISITOS.md](docs/REQUISITOS.md), "Regras do professor").
-- **Quem cria os dois:** o Terraform (`infra/*.tf`, com o provider `kreuzwerker/docker`) ou o `docker-compose.yml`. Os dois
-  descrevem a mesma coisa: a imagem da tela (o `Dockerfile`), a rede entre os contêineres, as portas e as pastas montadas.
-  Use um de cada vez, porque usam as mesmas portas.
+- **Quem cria os dois:** o Terraform (`infra/*.tf`, com o provider `kreuzwerker/docker`), a infraestrutura automatizada que o
+  `requisitos_projeto.MD` exige (Aplicação). O `docker-compose.yml` sobe a mesma coisa com um comando: a imagem da tela (o
+  `Dockerfile`), a rede entre os contêineres, as portas e as pastas montadas. Use um de cada vez, porque usam as mesmas portas.
 - **Onde ficam os dados:** a busca da empresa e o registro de cada consulta usam o PostgreSQL (`raiox/dados.py`); os números do
   raio-x e os grupos do K-means vêm da `data/`. A carga (que roda com a imagem da tela) grava os indicadores nos dois lugares,
   a tabela `indicadores` e o `indicadores.csv`; o `raiox/segmentos.py` faz o `segmentos.csv` a partir dele e o refaz quando ele
-  fica mais velho que os dados. O banco fica num volume do Docker e a `data/` é uma pasta do seu computador: os dois
-  continuam depois do `docker compose down` e do `terraform destroy`.
+  fica mais velho que os dados (se a `data/` não aceitar gravação, os grupos ficam só na memória, com um aviso no log). O banco
+  fica num volume do Docker e a `data/` é uma pasta do seu computador, montada no contêiner da tela: os dois continuam depois
+  do `docker compose down` e do `terraform destroy`.
 - **O que sai do computador:** a carga baixa os arquivos públicos da CVM (uma vez, antes da demo), e o raio-x com IA chama a API
   do Gemini (só com `RAIOX_IA_REAL=1`). Sem a IA, ou com o Gemini fora do ar, a tela monta o texto sem IA e avisa (o plano B da demo).
 - **Segurança:** a tela e o banco só abrem no próprio computador (`127.0.0.1`); a chave do Gemini fica no `.env`, fora do Git,
@@ -175,12 +176,13 @@ Na raiz: `contratos.md`, `REGRAS-IA.md` (regras do time para uso de IA), `CLAUDE
 
 ## Pré-requisitos
 
-Há três jeitos de rodar. Escolha um:
+Há três jeitos de rodar. A infraestrutura que o professor exige é a do Terraform (`requisitos_projeto.MD`, Aplicação:
+"Infraestrutura automatizada com Terraform"); o compose sobe a mesma coisa pelo caminho mais curto; sem Docker é para programar.
 
 | jeito | precisa de | confira com |
 |---|---|---|
-| Docker (o mais curto) | Docker com o Compose | `docker compose version` |
-| Terraform (a infraestrutura automatizada) | Docker e Terraform 1.5 ou mais novo | `terraform version` |
+| Terraform (a infraestrutura automatizada) | Docker e Terraform 1.x, do 1.5 em diante | `terraform version` |
+| Docker Compose (o mais curto) | Docker com o Compose | `docker compose version` |
 | sem Docker | Python 3.14 e PostgreSQL (o CI e o Docker usam o 17) | `python3.14 --version` (Windows: `py -3.14 --version`), `psql --version` |
 
 Os três precisam também do Git, de internet na carga dos dados da CVM e, só para o raio-x com IA, de uma chave do Gemini no `.env`
