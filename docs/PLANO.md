@@ -10,17 +10,18 @@ até a entrega de **seg 16/11** (banca prevista para qua 18/11, a confirmar). Se
 cada item → [REQUISITOS.md](REQUISITOS.md); o que já aconteceu → [HISTORICO.md](HISTORICO.md).
 
 **Como usar:** cada linha das tabelas da seção 3 é uma sessão de trabalho, com um código (ex.: MA2). No Claude Code, comece
-com `/inicio-de-sessao MA2` e termine com `/fim-de-sessao`: ele faz o Git, atualiza a seção 0, o REQUISITOS e o HISTORICO,
-abre o PR, espera o CI e faz o merge depois do seu "pode". Guia: [aprender/claude-code.md](../aprender/claude-code.md).
+com `/inicio-de-sessao MA2` e termine com `/fim-de-sessao`: ele faz o Git, escreve no PR o que mudou, abre o PR, espera o CI e
+faz o merge depois do seu "pode". **Só o Eduardo edita este PLANO, o REQUISITOS e o HISTORICO**, uma vez por dia, a partir da
+seção "Para as notas" dos PRs (desde 05/11). Guia: [aprender/claude-code.md](../aprender/claude-code.md).
 
 **Hipóteses:** cada pessoa tem de 6 a 12 h por semana, fora a aula. Eduardo, Marcos e Miguel usam o Claude Code;
 a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seção 3).
 
 ---
 
-## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
+## 0. Situação atual (o Eduardo reescreve esta seção uma vez por dia e apaga o que ficou velho)
 
-**Em qui 05/11, ~10h (Brasília)** (fim da ED16, Eduardo com o Claude Code: os 10 raio-x da Náthally com a Camil corrigida,
+**Em qui 05/11, ~10h (Brasília)** · último PR levado: #59 (fim da ED16, Eduardo com o Claude Code: os 10 raio-x da Náthally com a Camil corrigida,
 depois do merge da MA4b, #59; as notas da MA4b, da MG5, da MA4, da MA5 e da MG4b, e da MA3, de 03/11, continuam abaixo).
 Na `main`: PRs #1 a #16, #19 a #41, o #46 (MA3, fechou #17 e #42), o #47 (MG4b, fechou #38, #39 e #44), o #51 (MA3b; a #48 foi
 fechada à mão, depois da conferência do Miguel no Linux), o #52 (MA5, BPMN), o #54 (MA4, EDA), o #55 (MG5, arquitetura) e o #59
@@ -161,8 +162,10 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 2. **Os entregáveis.** O código está perto do fim; o que falta é documento: PDF (MA6; o BPMN da MA5, a EDA da MA4 e o diagrama
    de arquitetura da MG5 já existem),
    deck (NA5 e NA6) e vídeo (MG6 e MG7). Hoje, quase tudo isso está com o Marcos e a Náthally.
-3. **Proposta da revisão: congelar também o processo.** Até 16/11, nenhuma regra, trava ou guia novo para o time: só o que fecha
-   uma linha do [REQUISITOS.md](REQUISITOS.md). Dos PRs de 02 e 03/11, a maioria foi de notas e regras; a banca avalia os entregáveis.
+3. **Processo congelado (05/11).** Só o Eduardo edita este PLANO, o REQUISITOS e o HISTORICO, uma vez por dia; os outros PRs
+   trazem "Para as notas" na descrição. O revisor faz uma rodada só, e até 16/11 só vira issue o que quebra a demo, um requisito do
+   professor ou a regra de ouro. Ninguém espera ninguém: o `/fim-de-sessao` mostra quem tem PR aberto e se mexe no mesmo arquivo.
+   Depois desta mudança, nenhuma regra, trava ou guia novo até 16/11: só o que fecha uma linha do [REQUISITOS.md](REQUISITOS.md).
 
 ### Próximo passo de cada um
 - **Marcos:** ✅ MA5 BPMN (#52; falta abrir o `.bpmn` no demo.bpmn.io e treinar a explicação para os minutos 3–6 da banca) →
@@ -261,7 +264,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | Proteção da `main` | exige PR e o check `testes` verde; só "Allow merge commits"; "Automatically delete head branches" ligado. Quem configura: o Miguel (só ele é admin), na MG1 | sem pedir aprovação, o CI é a trava: nada entra com teste vermelho |
 | Trazer a `main` para a sua branch | `git merge main` e rodar os testes. Conflito: `git merge --abort` e fale com o dono do arquivo | o `rebase` exige `push --force`, o jeito mais comum de apagar trabalho do colega |
 | Tags | `v0.1-demo` na **ter 03/11** e `v1.0` na **sex 06/11**; depois, só `v1.0.1`… com consertos. Quem cria é o Eduardo: `git tag -a v1.0 -m "versão da banca"` e `git push origin v1.0` | avaliação final, vídeo e teste do zero rodam na mesma versão |
-| Arquivo comum (`README`, `contratos`, `requirements`, `tests/`, `docs/`) | um PR por vez; avise no grupo | evita conflito |
+| Arquivo comum (`README`, `contratos`, `requirements`, `tests/`, `docs/`) | ninguém espera ninguém: o `/fim-de-sessao` mostra quem tem PR aberto e se ele mexe no mesmo arquivo. Só nesse caso, quem terminar primeiro faz o merge e o outro faz `git merge main` | o conflito só acontece no mesmo arquivo; esperar todos os PRs travava o time |
 
 ---
 

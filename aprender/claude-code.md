@@ -9,8 +9,10 @@ As regras de uso de IA do time estão no [REGRAS-IA.md](../REGRAS-IA.md); este g
 2. Digite `/inicio-de-sessao XX`, trocando `XX` pelo código da sua sessão (não sabe? digite só `/inicio-de-sessao`).
    Ele atualiza a `main`, cria a sua branch e diz o que mudou e por onde começar.
 3. Trabalhe numa tarefa só. O Claude pede licença antes de mudar arquivos.
-4. No fim, digite `/fim-de-sessao`. Ele roda os testes, atualiza o PLANO e o HISTORICO, abre o PR, espera o CI, lê o diff e,
-   depois do seu "pode", faz o merge na `main`. Você não precisa mexer no GitHub.
+4. No fim, digite `/fim-de-sessao`. Ele roda os testes, escreve no PR o que mudou, abre o PR, mostra quem mais tem PR aberto,
+   espera o CI, lê o diff e, depois do seu "pode", faz o merge na `main`. Você não precisa mexer no GitHub nem nas notas
+   (PLANO, REQUISITOS, HISTORICO): só o Eduardo mexe nelas. Não precisa esperar ninguém, a não ser que ele avise que outro PR
+   aberto mexe no mesmo arquivo.
 5. Antes da próxima tarefa, digite `/clear`.
 
 ## Qual é a minha sessão?
@@ -72,7 +74,7 @@ como `python -m pytest -q` e `git status`.
 - Cada plano tem um limite de uso que volta depois de algumas horas, e há também um limite semanal.
 - Quando estiver perto, o Claude Code avisa e diz quando volta. O `/usage` mostra quanto você já usou.
 - Conversas longas e arquivos grandes gastam mais. O modo Plan antes de uma tarefa grande evita retrabalho, e retrabalho é o que mais gasta.
-- Bateu o limite no meio da tarefa? Faça o commit do que estiver pronto e anote na seção 0 do PLANO onde parou.
+- Bateu o limite no meio da tarefa? Faça o commit do que estiver pronto e escreva onde parou na mensagem do commit.
 
 **3. O crédito do Gemini (o do produto, não o do Claude).**
 - A assinatura do Claude Code **não** paga o Gemini. A chave do Gemini, no `.env`, é de um plano pré-pago do time.
@@ -85,8 +87,8 @@ como `python -m pytest -q` e `git status`.
 Digite `/fim-de-sessao`. Ele faz, nesta ordem:
 1. roda os testes;
 2. lê o `git status` com você;
-3. atualiza a seção 0 do PLANO e o REQUISITOS;
-4. escreve de 1 a 3 linhas no `docs/HISTORICO.md`;
+3. escreve na descrição do PR o que mudou ("Para as notas"; só o Eduardo mexe no PLANO, no REQUISITOS e no HISTORICO);
+4. mostra quem mais tem PR aberto e se mexe nos mesmos arquivos (se não mexe, ninguém espera ninguém);
 5. faz o commit, o push e abre o PR;
 6. espera o CI e pede a revisão do diff ao `revisor`, um segundo Claude que só lê e não viu a sessão;
 7. pede o seu "pode" e roda o merge; aparece ainda um pedido de permissão, que é a segunda trava (recusou, nada acontece).
@@ -112,7 +114,7 @@ Algumas regras do `CLAUDE.md` não dependem de ele lembrar. O `.claude/settings.
 | "Bloqueado: o commit pode levar data/… (ou chave, ou arquivo grande)" | REGRAS-IA.md, seção 2. O hook confere tudo o que está mudado ou solto na pasta, não só o que vai no commit | `git restore --staged <arquivo>`; arquivo seu que não vai para o Git: ponha no `.gitignore` |
 | pedido de permissão com "gasta crédito do Gemini" | o Gemini é pré-pago | aceite só se for de propósito |
 | pedido de permissão com "está na pasta de…" ou "contratos.md" | regras 1 e 2 do `CLAUDE.md` | aceite só se o dono deu o ok no grupo |
-| pedido de permissão com "muda as travas ou o CI de todos" | `.claude/settings.json`, `.claude/hooks/` ou `.github/workflows/` | aceite só se o grupo sabe |
+| pedido de permissão com "trava de segurança do Claude Code" | `.claude/settings.json`, `.claude/settings.local.json` ou `.claude/hooks/` | aceite só se o grupo sabe |
 | pedido de permissão para `gh pr merge` | segunda trava, depois do seu "pode" | leia o resumo do `revisor` antes |
 | "Os testes falharam…", e ele continua trabalhando | ele mudou código e o `pytest` ficou vermelho | deixe ele consertar |
 
@@ -135,8 +137,8 @@ sozinho, nem um comando de terminal (`sed -i`, `>`) de escrever na pasta de outr
 
 - Colar o conteúdo do `.env` ou qualquer chave na conversa.
 - Aceitar `git push --force`, `git rebase` ou commit direto na `main`, mesmo que ele sugira.
-- Aceitar mudança em pasta de outro dono sem combinar (a tabela de donos está no `CLAUDE.md`). Achou um erro lá? Peça
-  "abra uma issue para o dono e coloque no PLANO": o `/fim-de-sessao` faz (passo 6). Fique de olho nas issues com o seu nome:
+- Aceitar mudança em pasta de outro dono sem combinar (a tabela de donos está no `CLAUDE.md`). Achou um erro lá que quebra a
+  demo? Peça "abra uma issue para o dono": o `/fim-de-sessao` faz (passo 6). Fique de olho nas issues com o seu nome:
   `gh issue list --assignee @me`, ou a aba "Issues" do repositório no GitHub.
 - Subir algo que você não sabe explicar. Peça "explique o que você mudou e por quê", ou use `/explicar`.
 
@@ -150,5 +152,5 @@ sozinho, nem um comando de terminal (`sed -i`, `>`) de escrever na pasta de outr
 | `/inicio-de-sessao`, `/fim-de-sessao` ou `/explicar` não aparece | a sua branch não tem a pasta `.claude/skills/`: `git switch main` e `git pull`, depois abra o `claude` de novo |
 | "guarda.py: este Python não tem pytest" | configure o `RAIOX_PYTHON` (seção "Travas") |
 | as travas não aparecem (nem o resumo da branch no começo) | abra o `claude` na **raiz** do projeto; dentro dele, `/hooks` lista as travas carregadas |
-| atingiu o limite de uso | commit, anote onde parou na seção 0 do PLANO e continue quando o limite voltar |
+| atingiu o limite de uso | commit (com onde parou na mensagem) e continue quando o limite voltar |
 | "command not found: claude" | o Claude Code não está instalado nesse terminal; veja a página de instalação do Claude Code ou peça ajuda ao Eduardo |

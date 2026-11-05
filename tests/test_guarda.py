@@ -203,7 +203,19 @@ def test_libera_o_trabalho_normal(comando):
 
 def test_pergunta_antes_de_mudar_as_travas_pelo_terminal():
     assert decisao(bash("sed -i '' 's/2/0/' .claude/hooks/guarda.py")) == "ask"
-    assert decisao(bash("echo x >> .github/workflows/testes.yml")) == "ask"
+    assert decisao(bash("echo x >> .claude/settings.json")) == "ask"
+    assert decisao(bash("rm .claude/settings.local.json")) == "ask"
+
+
+@pytest.mark.parametrize("comando", [
+    "git diff CLAUDE.md 2>&1 | tail -5",                        # 2>&1 só junta as saídas: não escreve arquivo
+    "git log --oneline -- .claude/hooks/guarda.py 2>&1",
+    "python3 .claude/hooks/guarda.py conferir >&2",
+    "echo x >> .github/workflows/testes.yml",                   # o CI passa pelo PR: não pergunta mais (05/11)
+    "cp CLAUDE.md /tmp/claude-copia.md",
+])
+def test_nao_pergunta_sem_mudar_as_travas(comando):
+    assert decisao(bash(comando)) == "libera"
 
 
 # ---------------------------------------------------------------- arquivos (PreToolUse, Edit e Write)
@@ -216,18 +228,19 @@ def test_pergunta_antes_de_mudar_as_travas_pelo_terminal():
     ("eduardo", "avaliacao/regras_prompt.md", "ask"),      # ...o resto de avaliacao/ é da Náthally
     ("nathally", "docs/produto/persona.md", "libera"),     # sem acento também vale
     ("eduardo", "docs/professor/requisitos_projeto.MD", "ask"),
-    ("eduardo", "docs/PLANO.md", "libera"),                # pasta comum: o /fim-de-sessao edita sempre
+    ("eduardo", "docs/PLANO.md", "libera"),                # o Eduardo edita as notas (desde 05/11, só ele)
     ("eduardo", "contratos.md", "ask"),
-    ("eduardo", ".claude/settings.json", "ask"),           # as travas e o CI mudam a máquina e os PRs de todos
+    ("eduardo", ".claude/settings.json", "ask"),           # as travas: desligá-las não passa por ninguém
     ("eduardo", ".claude/hooks/guarda.py", "ask"),
-    ("eduardo", ".claude/agents/revisor.md", "ask"),
-    ("eduardo", "tests/test_guarda.py", "ask"),
-    ("miguel", ".github/workflows/testes.yml", "ask"),
     ("eduardo", ".claude/settings.local.json", "ask"),      # aceita disableAllHooks: desligaria tudo
-    ("eduardo", ".githooks/pre-commit", "ask"),
-    ("eduardo", "CLAUDE.md", "ask"),                       # a tabela de donos e as travas moram nele
-    ("eduardo", ".gitignore", "ask"),                      # tirar o .env dali desligaria a proteção
-    ("eduardo", ".claude/skills/fim-de-sessao/SKILL.md", "ask"),
+    # Desde 05/11 não perguntam: passam pelo PR, pelo CI e pelo revisor, e a pergunta aparecia o tempo todo para todos
+    ("eduardo", ".claude/agents/revisor.md", "libera"),
+    ("eduardo", "tests/test_guarda.py", "libera"),
+    ("miguel", ".github/workflows/testes.yml", "libera"),
+    ("eduardo", ".githooks/pre-commit", "libera"),
+    ("eduardo", "CLAUDE.md", "libera"),
+    ("eduardo", ".gitignore", "libera"),                   # o .env continua barrado no commit e no CI sem ele
+    ("eduardo", ".claude/skills/fim-de-sessao/SKILL.md", "libera"),
 ])
 def test_pergunta_antes_de_mexer_em_pasta_de_outro_dono(pessoa, arquivo, esperado):
     assert decisao(editar(arquivo, pessoa=pessoa)) == esperado

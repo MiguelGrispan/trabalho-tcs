@@ -119,6 +119,9 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   foram refeitos com os dados novos, já com o #59 (silhueta 0,29; grupos de 60, 310, 88 e 106 no treino), e o `resultados.csv` trocado.
   As 2 diferenças foram explicadas abrindo os PDFs dela: a RD Saúde estava em "Pré-IFRS 16" (sem os aluguéis das lojas) e o
   Magalu com outra conta do EBIT. Não é erro de dado, é definição; o sistema segue a DFP oficial.
+- **05/11** · **Processo** (Eduardo): uma auditoria do projeto mostrou que os conflitos entre as branches vinham das notas:
+  os PRs #46 a #59 mexeram todos no PLANO, no REQUISITOS e no HISTORICO, e o time esperava um pelo outro para fazer o merge.
+  Agora só o Eduardo edita as notas, uma vez por dia; os outros escrevem o que mudou no PR, e o `/fim-de-sessao` mostra quem tem PR aberto.
 
 ## Decisões (e por quê)
 
@@ -156,6 +159,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 04/11 | a EDA importa do código os limites da checagem e o corte do K-means, em vez de copiar os números; vai para o Git já rodada; com os dados falsos, roda sem gravar os PNG | o notebook nunca discorda do código; a banca vê os gráficos no GitHub sem rodar nada; o CI confere o "Run All" sem tocar nos gráficos dos dados reais |
 | 04/11 | o diagrama de arquitetura é texto (Mermaid) dentro do README, e o PNG sai dele; um teste confere que ele só cita arquivos que existem | o GitHub desenha o Mermaid sozinho e o PR mostra a mudança como texto; uma figura só em imagem fica velha sem ninguém ver (lição de 29/10: documento velho confunde mais que documento nenhum) |
 | 05/11 | escala errada no primeiro ano da empresa: corrigida só quando a receita **e** o ativo estão ~1.000 vezes menores que no ano seguinte (decisão do Marcos) | o primeiro ano não tem anterior para comparar; um salto de 1.000 vezes só na receita pode ser uma empresa que começou a operar, e multiplicar esse ano por 1.000 inventaria um número. Com os 2 sinais, a NTS é corrigida e mais nenhuma empresa muda |
+| 05/11 | só o Eduardo edita o PLANO, o REQUISITOS e o HISTORICO, uma vez por dia; os outros PRs trazem "Para as notas" na descrição. O revisor faz uma rodada só, e até 16/11 só vira issue o que quebra a demo, um requisito do professor ou a regra de ouro. O `/fim-de-sessao` e o `/inicio-de-sessao` mostram quem tem PR aberto e quais arquivos ele mexe | todo PR reescrevia o mesmo parágrafo da seção 0, então todo merge virava conflito e ninguém sabia quem estava fazendo PR: o time esperava. 78 commits tinham mexido no PLANO e 39 no código. Com as notas num PR só, o conflito só acontece quando dois PRs mexem no mesmo arquivo, e o Claude mostra quando é o caso |
 
 **Já cortado do escopo:** verificação com yfinance, receita em 3 anos, filtro de setor, RAG, nome dos grupos pelo LLM,
 exportar o raio-x, 20 casos (ficaram 10). A lista e a ordem dos próximos cortes estão no PLANO, seção 7.
