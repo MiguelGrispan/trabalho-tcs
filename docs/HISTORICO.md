@@ -119,6 +119,9 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   foram refeitos com os dados novos, já com o #59 (silhueta 0,29; grupos de 60, 310, 88 e 106 no treino), e o `resultados.csv` trocado.
   As 2 diferenças foram explicadas abrindo os PDFs dela: a RD Saúde estava em "Pré-IFRS 16" (sem os aluguéis das lojas) e o
   Magalu com outra conta do EBIT. Não é erro de dado, é definição; o sistema segue a DFP oficial.
+- **05/11** · **MG5b** (Miguel, PR #61): a legenda da tela agora diz que as empresas são buscadas no PostgreSQL e que os números
+  vêm da `data/indicadores.csv`, como o README (#56). O Miguel viu o diagrama da MG5 desenhado na página do repositório e
+  recarregou a `data/` e o banco do compose depois do #59: só a NTS mudou, e os grupos do K-means bateram com os da ED16.
 
 ## Decisões (e por quê)
 

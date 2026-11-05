@@ -20,17 +20,19 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em qui 05/11, ~10h (Brasília)** (fim da ED16, Eduardo com o Claude Code: os 10 raio-x da Náthally com a Camil corrigida,
-depois do merge da MA4b, #59; as notas da MA4b, da MG5, da MA4, da MA5 e da MG4b, e da MA3, de 03/11, continuam abaixo).
+**Em qui 05/11, ~11h30 (Brasília)** (fim da MG5b, Miguel com o Claude Code: a legenda da tela e a recarga depois do #59; as
+notas da ED16, da MA4b, da MG5, da MA4, da MA5 e da MG4b, e da MA3, de 03/11, continuam abaixo).
 Na `main`: PRs #1 a #16, #19 a #41, o #46 (MA3, fechou #17 e #42), o #47 (MG4b, fechou #38, #39 e #44), o #51 (MA3b; a #48 foi
-fechada à mão, depois da conferência do Miguel no Linux), o #52 (MA5, BPMN), o #54 (MA4, EDA), o #55 (MG5, arquitetura) e o #59
-(MA4b, fechou a **#53**). **Abertos:** o #49 (Eduardo, rascunho do MA6) e o #58 (Eduardo, ED16, o PR desta nota).
-Issues abertas: #43, #45, #50 e #60 (Eduardo; a #60: os 10 casos de avaliação caem no mesmo grupo do K-means; a #50: o validador deixa passar "dobrou", "triplicou", "um quarto"); do revisor no #55:
-**#56 (Miguel)**, a tela diz que os números vêm do PostgreSQL, mas vêm da `data/indicadores.csv`; e **#57 (Eduardo)**, os guias
-criam o ambiente com `python` ou `python3`, que pode não ser o 3.14.
-**Depois do merge da MA4b, todos recarregam a `data/`** (`python scripts/carregar_dfp.py`, `python scripts/indicadores.py` e
-`python -m raiox.segmentos`; o Miguel também no banco do compose). A NTS muda, e com ela os grupos do K-means (abaixo, ED16).
-Testes na branch da ED16, com a `main` (e o #59) mesclada: 252 passed, nenhum pulado (Mac do Eduardo, PostgreSQL do compose ligado, 05/11).
+fechada à mão, depois da conferência do Miguel no Linux), o #52 (MA5, BPMN), o #54 (MA4, EDA), o #55 (MG5, arquitetura), o #58
+(ED16) e o #59 (MA4b, fechou a **#53**). **Abertos:** o #49 (Eduardo, rascunho do MA6) e o #61 (MG5b, o PR desta nota, que fecha
+a **#56**).
+Issues abertas: #43, #45, #50, #57 e #60 (Eduardo; a #60: os 10 casos de avaliação caem no mesmo grupo do K-means; a #50: o
+validador deixa passar "dobrou", "triplicou", "um quarto"; a #57: os guias criam o ambiente com `python` ou `python3`, que pode
+não ser o 3.14).
+**A recarga da `data/` depois da MA4b (#59) está feita nos 3 computadores que rodam o código:** Windows do Marcos e Mac do
+Eduardo (05/11, notas da MA4b e da ED16) e Linux do Miguel, também no banco do compose (05/11, MG5b, abaixo).
+Testes na branch da MG5b, com a `main` (#58 e #59) mesclada: 253 passed, nenhum pulado (Linux do Miguel, `data/` recarregada,
+PostgreSQL do compose ligado, 05/11 ~11h).
 A versão longa desta seção, com o detalhe de cada PR até 03/11, ficou no Git: `git show 9f85bc9:docs/PLANO.md`.
 O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 
@@ -115,10 +117,25 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
   não existe e o `python3` é o 3.12; agora é `python3.14 -m venv .venv` (os outros guias: #57). `tests/test_readme.py` (3 testes):
   o diagrama só cita arquivos que existem e o modelo de `raiox/ia.py:28`; estragado de propósito, falha. **Revisor: ATENÇÃO**,
   corrigido no PR: a seta do Terraform sumia sob o rótulo; a `data/` parecia dentro do Docker; "escolha um" lia o Terraform como
-  opcional; a referência de linha no HISTORICO. Fora do PR: #56 e #57. **Não conferido:** o desenho do Mermaid na página do
-  GitHub (por isso a R9 fica 🟡) e o "pronto quando" (um colega entender o fluxo lendo o README).
-- **Testes:** 252 passed, nenhum pulado (Windows do Marcos, `PYTHONUTF8=1`, PostgreSQL 17 local, branch da MA4b, 05/11); na
-  branch da MG5, 250 passed (Linux do Miguel, 04/11). No Windows, sem `PYTHONUTF8=1`, 8 testes das travas falham: issue #45 (abaixo).
+  opcional; a referência de linha no HISTORICO. Fora do PR: #56 (consertada na MG5b, abaixo) e #57. **Conferido pelo Miguel em
+  05/11** (relato dele, não refeito pelo Claude): o desenho do Mermaid aparece na seção "Arquitetura" do README, na página do
+  repositório e no VS Code; com isso, a R9 fica ✅. **Falta** o "pronto quando": um colega entender o fluxo lendo o README.
+- **MG5b (Miguel, PR #61, 05/11): a legenda da tela diz de onde vem cada coisa** (issue #56; `guia_projeto_final.pdf` §3, a demo
+  ao vivo, e §2, "Governança e Ética": confiabilidade). Com os dados reais, a tela dizia "Empresas e números da CVM (DFP),
+  buscados no banco PostgreSQL."; agora diz "Empresas buscadas no banco PostgreSQL; números da CVM (DFP), lidos da
+  data/indicadores.csv." (`app/streamlit_app.py:73`), como o README ("Arquitetura", `README.md:81`); o nome do arquivo em letra
+  normal, a pedido do Miguel. Teste novo: `test_tela_diz_de_onde_vem_cada_coisa_com_dados_reais` (`tests/test_tela.py`), que abre
+  a tela sem precisar do banco e falha com a frase antiga (conferido). Tela aberta no `docker compose` depois da mudança: a
+  legenda nova, e a WEG gerada sem erro. **Recarga depois do #59 (Linux do Miguel, pelo Docker, comandos do topo do
+  `docker-compose.yml`):** o `carregar_dfp.py` (384.591 linhas, 2.567 empresas, 660 ativas; 1 min 6 s) marca a NTS (24708, 2023);
+  no `indicadores.py`, das 595 empresas só a NTS mudou (crescimento +107.154% → +7,3%, comparado com uma cópia do CSV de antes;
+  no banco, 7,3); o `python -m raiox.segmentos` deu grupos de 60, 310, 88 e 106 no treino, os mesmos da ED16. A tela gera a NTS
+  com +7% (grupo 3, 114 empresas). Pelo Docker, o `raiox.segmentos` grava a `data/segmentos.csv` e depois para com
+  `PermissionError` ao salvar `docs/graficos/silhueta.png` (a `docs/` é da imagem, não é montada); os PNG não precisavam mudar
+  (refeitos na ED16, #58), e a tela refaz a `segmentos.csv` sozinha quando ela fica mais velha que os dados (`README.md:83`).
+- **Testes:** 253 passed, nenhum pulado (Linux do Miguel, branch da MG5b com a `main` mesclada, `data/` recarregada, 05/11);
+  252 passed no Windows do Marcos (`PYTHONUTF8=1`, PostgreSQL 17 local, branch da MA4b, 05/11). No Windows, sem `PYTHONUTF8=1`,
+  8 testes das travas falham: issue #45 (abaixo).
 - **Textos-base prontos:** `docs/justificativa.md` (ED8; falta o Marcos ler) e `docs/etica.md` (base da NA5).
 - No Mac, o Terraform só acha o Docker com `export DOCKER_HOST=unix://$HOME/.docker/run/docker.sock` (`README.md:235`).
 
@@ -154,10 +171,8 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 - O `/fim-de-sessao` passa a listar as branches sem PR antes de reescrever esta seção (passo 4), para não repetir o caso da MA3.
 
 ### Caminho crítico (o que trava os outros)
-1. **A recarga dos dados depois do #46 (MA3, na `main` desde 03/11).** Todos rodam de novo `python scripts/carregar_dfp.py` e
-   `python scripts/indicadores.py` (os dois precisam do PostgreSQL ligado) e reiniciam a tela (o cache da #43 guarda a tabela velha).
-   Sem a tabela `indicadores`, a busca não acha nada e a tela diz "O banco está vazio" (o banco do compose do Miguel não tinha a
-   tabela até a recarga de 04/11). No Linux, o `chmod 644 data/indicadores.csv` à mão não é mais preciso desde o #51 (MA3b, 04/11).
+1. **A recarga dos dados depois do #46 e do #59: feita** (05/11) no Windows do Marcos, no Mac do Eduardo e no Linux do Miguel
+   (este também no banco do compose). Quem recarregar de novo reinicia a tela depois: o cache da #43 guarda a tabela velha.
 2. **Os entregáveis.** O código está perto do fim; o que falta é documento: PDF (MA6; o BPMN da MA5, a EDA da MA4 e o diagrama
    de arquitetura da MG5 já existem),
    deck (NA5 e NA6) e vídeo (MG6 e MG7). Hoje, quase tudo isso está com o Marcos e a Náthally.
@@ -171,11 +186,11 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
   `docs/documentacao.md` e tirar o `docs/Raio-X Comercial.pdf` (depois do MA6). Um PR pequeno, com o ok do Eduardo, tirando
   `verificar_automatico.py` e `yfinance` (cortados na seção 7) e o `scripts/graficos.py` (a EDA já cobre o que ele fazia); no mesmo
   PR, sai a linha do `verificar_automatico.py` do README ("Como rodar", `README.md:269`). Ler a `docs/justificativa.md` (ED8).
-- **Miguel:** ✅ MG4b (#47: #38, #39 e #44) → ✅ recarga da CVM no banco do compose (04/11, com o contorno da #48) → ✅ MG5 diagrama
-  e README (#55, 04/11; pedir a um colega que leia a seção "Arquitetura" e conferir o desenho na página do PR) → **MG5b: issue
-  #56** (a frase da tela sobre a origem dos números; qui 05/11, antes do vídeo) → MG6 roteiro e vídeo v0 (qui 05/11),
-  gravado no Mac do Eduardo (o computador da banca). Avisar o grupo das mudanças em pastas comuns: `README.md`,
-  `docs/arquitetura.png` e `tests/test_readme.py` (MG5), `tests/test_tela.py` (MG4b) e, da MG4, `.env.example` e `aprender/`.
+- **Miguel:** ✅ MG4b (#47: #38, #39 e #44) → ✅ MG5 diagrama e README (#55, 04/11; o desenho na página do repositório
+  conferido em 05/11; falta pedir a um colega que leia a seção "Arquitetura") → ✅ MG5b, a #56 (#61, 05/11, com a recarga
+  depois do #59) → MG6 roteiro e vídeo v0 (qui 05/11), gravado no Mac do Eduardo (o computador da banca). Avisar o grupo das
+  mudanças em pastas comuns: `tests/test_tela.py` (MG5b e MG4b), `README.md`, `docs/arquitetura.png` e `tests/test_readme.py`
+  (MG5) e, da MG4, `.env.example` e `aprender/`.
 - **Náthally (obrigatório):** NA3 ROI mínimo (até qui 05/11) → NA4 slide de métricas (o "8 de 10" da rodada de 05/11, ED16, com a explicação da S2 para
   Magalu e RD Saúde; a Camil bate nos 6 indicadores) → NA5 ética (base: `docs/etica.md`) → NA6 deck. Sugestões, se der tempo: seção 3.
 - **Eduardo:** ED13, a #43 (qua 04/11) → ED14, a #45 (travas no Windows, qui 05/11) → a #50 (validador e quantidade sem
@@ -228,7 +243,7 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 | parte | feito | falta | horas que faltam |
 |---|---|---|---|
 | núcleo: dados, ML, IA, validador, avaliação | ~94% (Claude, 03/11 ~12h, com o #46) | #43, #45 | 2 a 3 h |
-| tela e infraestrutura | ~97% (Claude, 04/11, depois da MG5) | um colega ler o README; o desenho na página do GitHub | até 1 h |
+| tela e infraestrutura | ~98% (Claude, 05/11, depois da MG5b) | um colega ler o README | até 30 min |
 | entregáveis: BPMN, EDA, PDF, deck, vídeo, ensaios | ~15% (justificativa e ética prontas como base) | quase tudo | 25 a 35 h |
 | **total** | **~61%** | 14 de 27 dias usados (21/10 a 16/11): no ritmo, **se** os entregáveis começarem esta semana | **27 a 42 h**, para uns 40 a 80 h de capacidade do grupo até 16/11 |
 
@@ -285,7 +300,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | seg 02/11 (feriado) | ✅ ED12 na `main` (#30); ✅ ED8 adiantada (#31) | | ✅ MG4 adiantada (#36) | |
 | ter 03/11 | ✅ **demo ponta a ponta · tag `v0.1-demo`** (compose e Terraform no Mac); revisão geral (issues #42 a #44) | MA4 (atrasada); ✅ MA3: PR #46 (#42, #17) | ~~MG4~~ (feita em 02/11); ✅ MG4b adiantada (#47) | NA3 ROI mínimo |
 | qua 04/11 | **ED13: issue #43** (~30 min); ✅ ED8 (feita em 02/11) | ~~PR da MA3 e #17~~ (PR #46, 03/11); ✅ zip da `data/`; ✅ MA5 BPMN; ✅ MA4 EDA (atrasada; achou a #53) | ~~MG4b~~ (#47, merge em 04/11); recarga da CVM; ✅ MG5 arquitetura + README (#55) | NA4 slide de métricas |
-| qui 05/11 | só bugs; **ED14: issue #45** (travas no Windows) | ✅ MA3b (#51); ✅ MA5 (adiantada, 04/11); ✅ MA4b (#53) | **MG5b: issue #56**; MG6 vídeo v0 | NA3 (prazo do ROI mínimo) |
+| qui 05/11 | só bugs; **ED14: issue #45** (travas no Windows) | ✅ MA3b (#51); ✅ MA5 (adiantada, 04/11); ✅ MA4b (#53) | ✅ MG5b (#61, fecha a #56); MG6 vídeo v0 | NA3 (prazo do ROI mínimo) |
 | sex 06/11 | **ED9: código congelado · tag `v1.0`**; ED11 avaliação final | | | |
 | sáb 07/11 | ED10 teste do zero; MA6 rascunho (`docs/documentacao.md`) | revisar o rascunho do MA6 | MG7 vídeo final na `v1.0` (no Mac do Eduardo) | NA5 ética |
 | dom 08/11 | **todos mandam o conteúdo dos slides à Náthally** | | | NA5 deck |
@@ -339,8 +354,8 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | MG3 | sáb 31/10–dom 01/11 | ✅ PR #29 (31/10): `apply` sobe os 2 `healthy`; `destroy` + `apply` mantém o banco e a `data/`; 87 passed no contêiner; 2º `plan` sem mudanças. IA pelo Terraform vista pelo Miguel. Portas padrão e Mac conferidos pelo Eduardo em 03/11 (seção 0) | **Terraform na `main`, obrigatório** (`requisitos_projeto.MD`, Aplicação: "Infraestrutura automatizada com Terraform"): provider docker com os 2 contêineres (tela + PostgreSQL), a partir do `terraform/` da branch `docs-docker-e-terraform`. Prazo: dom 01/11; reserva: seg 02/11 com o Eduardo. Não pode ser cortado | `infra/` | Plan | `terraform apply` sobe a tela e o banco; `destroy` + `apply` mantém a `data/` e o banco | PR |
 | MG4 | dom 01–ter 03/11 | ✅ PR #36 (02/11): WEG, Embraer e Ambev geram o raio-x no contêiner, e as 3 consultas estão na `consultas`; 8 testes em `tests/test_tela.py`. Gemini de verdade conferido em 03/11 (WEG). Volta para o modo sem IA com o Gemini fora do ar conferida em 03/11 (chave inválida, WEG): funciona; os 2 problemas de aparência viraram a MG4b | tela com dados reais e **com o banco** (R Aplicação: banco de dados): `RAIOX_DADOS` (`falsos`/`real`) no lugar do `USAR_DADOS_FALSOS`, e com `real` a busca e o `registrar_consulta` usam o PostgreSQL (`raiox/dados.py`); volta sozinha para o modo sem IA, com aviso; `registrar_consulta` dentro do `try`; `tests/test_tela.py` | `app/`, `.env.example`, `tests/` | Plan | 3 empresas reais geram raio-x no contêiner, e cada consulta aparece na tabela `consultas` | PR (Eduardo) |
 | MG4b | qua 04/11 | ✅ PR #47 (03/11, adiantada): com a chave falsa, a WEG mostra o aviso curto e "Texto montado sem IA: o Gemini não respondeu."; 3 testes novos e o do rodapé em `tests/test_tela.py`; `docker compose ps` → `127.0.0.1:8501`. Junto: os avisos de banco vazio e desligado citam o Terraform | consertar as issues **#38** (o aviso de falha da IA mostra o JSON inteiro do Google), **#39** (o topo diz "Texto escrito pelo Gemini" quando o texto foi montado sem IA) e **#44** (o compose abre a tela para a rede toda: `127.0.0.1:8501:8501`, como o Terraform), achadas pelo Eduardo em 03/11. Guia §5: "a interface é amigável ao usuário?" (protótipo, 20%) | `app/streamlit_app.py`, `tests/test_tela.py`, `docker-compose.yml` | Manual | com `GOOGLE_API_KEY=chave-falsa-teste RAIOX_IA_REAL=1 docker compose up -d --build`, a WEG mostra um aviso curto e o topo não diz "escrito pelo Gemini"; teste novo para cada issue; `docker ps` mostra `127.0.0.1:8501`; antes do vídeo v0 (MG6) e do congelamento (sex 06/11) | PR que fecha #38, #39 e #44 |
-| MG5 | qua 04/11 | ✅ PR #55 (04/11): seção "Arquitetura" no README (diagrama em Mermaid + 6 frases), `docs/arquitetura.png`, seção "Pré-requisitos", `python3.14 -m venv`; 3 testes em `tests/test_readme.py`. Falta um colega ler o README (o "pronto quando") | diagrama de arquitetura + README (tema, objetivo e tecnologias já estão; pré-requisitos com Python 3.14; rodar local, Docker e Terraform) | `docs/arquitetura.png`, `README.md` | Manual | um colega entende o fluxo lendo o README; o README cobre o que o R pede em "Documentação" | PR |
-| MG5b | qui 05/11 | — | consertar a **issue #56**: com os dados reais, a tela diz "Empresas e números da CVM (DFP), buscados no banco PostgreSQL." (`app/streamlit_app.py:71`), mas os números vêm da `data/indicadores.csv`; só a busca e o registro usam o banco. Achada pelo `revisor` no #55. Guia §3 (a frase aparece na demo) e §2, "Governança e Ética" (confiabilidade) | `app/streamlit_app.py`, `tests/test_tela.py` (se algum teste procura o texto) | Manual | a legenda diz de onde vem cada coisa, igual ao README ("Arquitetura"); tela aberta depois da mudança; antes do vídeo v0 (MG6) e do congelamento (sex 06/11) | PR que fecha #56 |
+| MG5 | qua 04/11 | ✅ PR #55 (04/11): seção "Arquitetura" no README (diagrama em Mermaid + 6 frases), `docs/arquitetura.png`, seção "Pré-requisitos", `python3.14 -m venv`; 3 testes em `tests/test_readme.py`. O desenho do Mermaid na página do repositório, conferido pelo Miguel (05/11). Falta um colega ler o README (o "pronto quando") | diagrama de arquitetura + README (tema, objetivo e tecnologias já estão; pré-requisitos com Python 3.14; rodar local, Docker e Terraform) | `docs/arquitetura.png`, `README.md` | Manual | um colega entende o fluxo lendo o README; o README cobre o que o R pede em "Documentação" | PR |
+| MG5b | qui 05/11 | ✅ PR #61 (05/11): a legenda diz "Empresas buscadas no banco PostgreSQL; números da CVM (DFP), lidos da data/indicadores.csv."; teste novo em `tests/test_tela.py`, que falha com a frase antiga; tela aberta no compose (WEG e NTS). Junto: a recarga da `data/` e do banco do compose depois do #59 | consertar a **issue #56**: com os dados reais, a tela diz "Empresas e números da CVM (DFP), buscados no banco PostgreSQL." (`app/streamlit_app.py:71`), mas os números vêm da `data/indicadores.csv`; só a busca e o registro usam o banco. Achada pelo `revisor` no #55. Guia §3 (a frase aparece na demo) e §2, "Governança e Ética" (confiabilidade) | `app/streamlit_app.py`, `tests/test_tela.py` (se algum teste procura o texto) | Manual | a legenda diz de onde vem cada coisa, igual ao README ("Arquitetura"); tela aberta depois da mudança; antes do vídeo v0 (MG6) e do congelamento (sex 06/11) | PR que fecha #56 |
 | MG6 | qui 05/11 | — | roteiro de 6 min da demo + vídeo v0 | — | — | vídeo salvo em 2 lugares | — |
 | MG7 | sáb 07/11 | — | vídeo final na `v1.0` | — | — | vídeo salvo em 2 lugares | — |
 
