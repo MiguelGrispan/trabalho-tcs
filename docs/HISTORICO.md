@@ -114,6 +114,11 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 - **05/11** · **MA4b** (Marcos): conserto da #53. A limpeza agora confere também o primeiro ano de cada empresa, comparando-o com
   o seguinte; a NTS passou de +107.154% para +7,3% de crescimento, e nenhuma outra empresa mudou. O JBS N.V. continua como caso a
   conferir na CVM (falta o segundo sinal). Todos recarregam a `data/` depois do merge.
+- **05/11** · **ED16** (Eduardo): os 10 raio-x da Náthally de novo, com o Gemini e a Camil corrigida pelo #46. Agora 8 de 10
+  batem com a conferência manual dela (era 7); Magalu e RD Saúde seguem iguais à DFP e diferentes dela. O K-means e os gráficos
+  foram refeitos com os dados novos, já com o #59 (silhueta 0,29; grupos de 60, 310, 88 e 106 no treino), e o `resultados.csv` trocado.
+  As 2 diferenças foram explicadas abrindo os PDFs dela: a RD Saúde estava em "Pré-IFRS 16" (sem os aluguéis das lojas) e o
+  Magalu com outra conta do EBIT. Não é erro de dado, é definição; o sistema segue a DFP oficial.
 
 ## Decisões (e por quê)
 
