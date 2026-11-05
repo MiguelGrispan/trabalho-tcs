@@ -9,7 +9,6 @@ import numpy as np
 import pandas as pd
 from sqlalchemy import text
 
-from scripts import dados as acesso
 from scripts import indicadores
 from raiox import dados
 from tests.banco_teste import TesteComBanco, precisa_do_banco
@@ -90,36 +89,6 @@ class CatalogoTests(TesteComBanco):
             payload = conn.execute(text("SELECT registro_json FROM consultas")).fetchone()[0]
         self.assertEqual(json.loads(payload), registro)
 
-    def test_obter_indicadores_calcula_divisoes_com_denominadores_validos(self):
-        resultado = acesso.obter_indicadores("000123")
-
-        self.assertAlmostEqual(resultado["cresc_2a"], 0.25)
-        self.assertAlmostEqual(resultado["margem_ebit"], 0.2)
-        self.assertAlmostEqual(resultado["margem_liquida"], 0.1)
-        self.assertAlmostEqual(resultado["endividamento"], 0.4)
-
-    def test_obter_indicadores_deixa_ausente_indicador_de_conta_ausente(self):
-        # A limpeza deixa ausente a conta que veio com valores divergentes.
-        self.executar("UPDATE contas SET valor = NULL WHERE cd_conta = '3.01' AND ano = 2023")
-
-        resultado = acesso.obter_indicadores("123")
-
-        self.assertIsNone(resultado["cresc_2a"])
-        self.assertAlmostEqual(resultado["margem_ebit"], 0.2)
-
-    def test_obter_indicadores_nao_divide_por_zero(self):
-        self.executar("UPDATE contas SET valor = 0 WHERE cd_conta = '1'")
-        self.executar("UPDATE contas SET valor = 0 WHERE cd_conta = '3.01' AND ano = 2023")
-
-        resultado = acesso.obter_indicadores("123")
-
-        self.assertIsNone(resultado["endividamento"])
-        self.assertIsNone(resultado["cresc_2a"])
-        self.assertAlmostEqual(resultado["margem_liquida"], 0.1)
-
-    def test_obter_indicadores_de_empresa_fora_do_catalogo(self):
-        self.assertEqual(acesso.obter_indicadores("789"), {})
-
     def test_publicar_grava_o_mesmo_c2_no_csv_e_no_banco(self):
         """Contrato C2: o pd.read_csv lê sem nenhum parâmetro e o cd_cvm é número."""
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -168,7 +137,6 @@ class CatalogoTests(TesteComBanco):
         self.executar("DROP TABLE contas")
 
         self.assertEqual(dados.buscar_empresas("Empresa"), [])
-        self.assertEqual(acesso.obter_indicadores("123"), {})
 
 
 class IndicadoresTests(unittest.TestCase):
@@ -183,6 +151,16 @@ class IndicadoresTests(unittest.TestCase):
                 ["123", "Empresa A", "Tecnologia", "1", "Ativo", 0, 2025, "BPA", "con", 2],
                 ["123", "Empresa A", "Tecnologia", "2.03", "PL", 50, 2025, "BPP", "con", 2],
                 ["123", "Empresa A", "Tecnologia", "3.01", "Receita de Venda", 80, 2023, "DRE", "con", 1],
+                # Receita de 2 anos antes igual a zero: o crescimento seria infinito.
+                ["456", "Empresa B", "Varejo", "3.01", "Receita de Venda", 100, 2025, "DRE", "con", 1],
+                ["456", "Empresa B", "Varejo", "3.05", "EBIT", 30, 2025, "DRE", "con", 1],
+                ["456", "Empresa B", "Varejo", "1", "Ativo", 400, 2025, "BPA", "con", 1],
+                ["456", "Empresa B", "Varejo", "2.03", "PL", 100, 2025, "BPP", "con", 1],
+                ["456", "Empresa B", "Varejo", "3.01", "Receita de Venda", 0, 2023, "DRE", "con", 1],
+                # Receita de 2 anos antes divergente: a limpeza a deixou ausente.
+                ["789", "Empresa C", "Energia", "3.01", "Receita de Venda", 200, 2025, "DRE", "con", 1],
+                ["789", "Empresa C", "Energia", "3.05", "EBIT", 50, 2025, "DRE", "con", 1],
+                ["789", "Empresa C", "Energia", "3.01", "Receita de Venda", None, 2023, "DRE", "con", 1],
             ], columns=[
                 "cd_cvm", "nome", "setor", "cd_conta", "ds_conta", "valor",
                 "ano", "demonstracao", "origem", "versao",
@@ -193,9 +171,22 @@ class IndicadoresTests(unittest.TestCase):
                 resultado = indicadores.calcular()
 
             self.assertEqual(list(resultado.columns), indicadores.COLUNAS_SAIDA)
-            self.assertAlmostEqual(resultado.iloc[0]["cresc_2a"], 0.25)
-            self.assertTrue(pd.isna(resultado.iloc[0]["margem_ebit"]))
-            self.assertTrue(pd.isna(resultado.iloc[0]["endividamento"]))
+            linha = resultado.set_index("cd_cvm")
+            # A: EBIT ausente e ativo zero viram vazio; o resto é calculado
+            self.assertAlmostEqual(linha.loc[123, "cresc_2a"], 0.25)
+            self.assertTrue(pd.isna(linha.loc[123, "margem_ebit"]))
+            self.assertAlmostEqual(linha.loc[123, "margem_liquida"], 0.1)
+            self.assertEqual(linha.loc[123, "ativo_total"], 0)
+            self.assertTrue(pd.isna(linha.loc[123, "endividamento"]))
+            # B: receita de 2 anos antes zero não vira crescimento infinito
+            self.assertTrue(pd.isna(linha.loc[456, "cresc_2a"]))
+            self.assertAlmostEqual(linha.loc[456, "margem_ebit"], 0.3)
+            self.assertEqual(linha.loc[456, "ativo_total"], 400)
+            self.assertAlmostEqual(linha.loc[456, "endividamento"], 0.75)
+            # C: só o crescimento depende da receita ausente; a margem continua
+            self.assertTrue(pd.isna(linha.loc[789, "cresc_2a"]))
+            self.assertAlmostEqual(linha.loc[789, "margem_ebit"], 0.25)
+            self.assertTrue(pd.isna(linha.loc[789, "ativo_total"]))
             self.assertFalse(
                 np.isinf(resultado.select_dtypes(include="number")).any().any()
             )

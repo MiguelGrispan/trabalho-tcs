@@ -19,9 +19,10 @@ arquivo, o PLANO e o REQUISITOS. Quando os dois diferem, vale o mais exigente: o
 **Contra alucinação (vale para o Claude Code e para quem lê):**
 - Nunca diga que algo exigido nesses arquivos é opcional, extra, "já coberto por outra coisa" ou que pode ser cortado.
   Toda afirmação sobre o que o professor exige vem com o arquivo e o item (ex.: "`requisitos_projeto.MD`, Aplicação: Terraform").
-- Se uma nota (PLANO, REQUISITOS, guias de `aprender/`) contradiz os arquivos do professor, a nota está errada: avise a pessoa e corrija a nota.
-- Se o arquivo do professor não é claro (ex.: se a tabela de indicadores conta como "base de dados de conhecimento"), diga que não sabe e anote a pergunta
-  em `docs/REQUISITOS.md` para o Eduardo levar ao professor. Não decida sozinho.
+- Se uma nota (PLANO, REQUISITOS, guias de `aprender/`) contradiz os arquivos do professor, a nota está errada: avise a pessoa e corrija a nota
+  (PLANO, REQUISITOS e HISTORICO, só o Eduardo corrige: nos outros PRs, escreva em "Para as notas").
+- Se o arquivo do professor não é claro (ex.: se a tabela de indicadores conta como "base de dados de conhecimento"), diga que não sabe e escreva a pergunta
+  em "Para as notas" (o Eduardo a põe no `docs/REQUISITOS.md` e leva ao professor). Não decida sozinho.
 - Cortar escopo (PLANO, seção 7) só vale para o que **não** está nos arquivos do professor.
 
 **Depois,** leia o `docs/PLANO.md` (seção 0: o que está acontecendo agora; seção 3: a sessão da pessoa, ex.: "MA2"; seção 7: o que
@@ -97,7 +98,8 @@ Caminhos: todo código que usa `data/` ou `docs/` aponta para a **raiz** do repo
 
 ## Regras
 1. **Não mexa em pasta de outro dono.** Precisa de mudança lá? Peça ao dono ou combine antes no grupo.
-   Achou um erro lá? Vira **issue no GitHub para o dono** e uma sessão dele no `docs/PLANO.md` (como no `/fim-de-sessao`, passo 6).
+   Achou um erro lá que quebra a demo, um requisito do professor ou a regra de ouro? Vira **issue no GitHub para o dono**
+   (como no `/fim-de-sessao`, passo 6); o Eduardo põe a sessão no `docs/PLANO.md`.
 2. **Contrato antes de código.** Mudou um formato entre partes? Primeiro o `contratos.md`, avisando quem recebe; depois o código.
 3. **Testes antes de dizer "pronto".** Rode `python -m pytest -q` e mostre o resultado. Mudou a tela? Abra a tela também.
    Toda mudança de comportamento vem com teste novo ou atualizado no mesmo PR (lista dos testes: `docs/PLANO.md`, seção 4).
@@ -109,8 +111,10 @@ Caminhos: todo código que usa `data/` ou `docs/` aponta para a **raiz** do repo
    `contratos.md` ou na pasta dela. No PR, 2 linhas: o que foi feito com IA e o que o autor entendeu ou conferiu
    (vale "ainda não li": o que não vale é inventar).
 8. **Git: o Claude Code faz.** O `/inicio-de-sessao` cria a branch `pessoa-tarefa` a partir da `main`. O `/fim-de-sessao` roda os
-   testes, atualiza a seção 0 do `docs/PLANO.md` (é por ela que a próxima sessão começa), o `docs/REQUISITOS.md` e o
-   `docs/HISTORICO.md`, abre o PR, espera o CI e faz o merge. Para trazer a `main`, `git merge main`.
+   testes, escreve na descrição do PR o que mudou ("Para as notas"), abre o PR, mostra quem mais tem PR aberto, espera o CI,
+   revisa numa rodada e faz o merge. **Só o Eduardo edita a seção 0 do `docs/PLANO.md`, o `docs/REQUISITOS.md` e o
+   `docs/HISTORICO.md`**, uma vez por dia (desde 05/11: quando todo PR editava os três, todo merge virava conflito).
+   Ninguém espera ninguém: PRs que não mexem nos mesmos arquivos entram na hora. Para trazer a `main`, `git merge main`.
    Nunca `rebase`, `push --force` nem commit na `main`.
 
 ## Travas automáticas
@@ -120,7 +124,8 @@ Parte das regras não depende de lembrar: o `.claude/settings.json` e o `.claude
   `main`, `rebase`, `reset --hard`, `git clean`, `add --force`, `--no-verify`; commit na `main`; commit com `data/`, `.env`, chave
   `AIza…`, senha de banco, `.db`, `.zip`, `.parquet`, Terraform, chave privada ou arquivo acima de 10 MB.
 - **Pergunta antes:** o merge do PR (depois do "pode" falado, a permissão é a segunda trava); ligar o Gemini; editar o `contratos.md`,
-  `docs/professor/`, a pasta de outro dono e as próprias travas (`.claude/`, `.githooks/`, `.github/workflows/`, `.gitignore`, este arquivo).
+  `docs/professor/`, a pasta de outro dono e as próprias travas (`.claude/settings.json`, `.claude/settings.local.json`,
+  `.claude/hooks/`). Skills, revisor, CI, `.gitignore` e este arquivo não perguntam (desde 05/11): passam pelo PR, pelo CI e pelo revisor.
 - **No fim de cada resposta:** se um `.py` ou `.ipynb` mudou, roda o `pytest`; vermelho, você volta e conserta.
 - **Na hora do commit, pelo Git** (`.githooks/pre-commit`, ligado pelo `/inicio-de-sessao`): a mesma conferência, com o stage de verdade,
   também para commit feito fora do Claude Code.

@@ -147,8 +147,9 @@ para código. A IA escreve muito do código; **quem responde por ele é a pessoa
    (`docs/PLANO.md`, seção 0) antes de mexer em qualquer coisa.
 2. **Durante:** a IA segue o [CLAUDE.md](CLAUDE.md) (donos de cada pasta, regra de ouro, contratos) e o [REGRAS-IA.md](REGRAS-IA.md)
    (o que nunca vai para uma IA: chave, senha, dados pessoais). Toda afirmação sobre o código vem com arquivo e linha, ou com um comando que prova.
-3. **Fim:** `/fim-de-sessao` roda os testes, atualiza o PLANO, o REQUISITOS e o HISTORICO e abre o PR. O CI roda os testes de novo, e o merge
-   só acontece depois de um "pode" da pessoa.
+3. **Fim:** `/fim-de-sessao` roda os testes, escreve no PR o que mudou e abre o PR. O CI roda os testes de novo, um segundo Claude
+   revisa numa rodada, e o merge só acontece depois de um "pode" da pessoa. As notas do projeto (PLANO, REQUISITOS, HISTORICO) são
+   atualizadas por uma pessoa só, uma vez por dia: quando todo PR as editava, as branches entravam em conflito.
 4. **No PR, duas linhas obrigatórias** ([modelo](.github/pull_request_template.md)): o que foi feito com IA e o que o autor entendeu ou conferiu.
    Vale escrever "ainda não li"; o que não vale é inventar.
 5. **Na banca, cada um defende o seu código sem consulta:** a skill `/explicar` treina isso (ler, prever, rodar, explicar).
@@ -202,7 +203,7 @@ docker compose down                 # desliga os 2; o banco continua guardado no
 
 - **Dados da CVM no banco do contêiner:** `docker compose run --rm --user "$(id -u):$(id -g)" tela python scripts/carregar_dfp.py`
   e o mesmo com `scripts/indicadores.py` (no Linux, o `--user` deixa o contêiner gravar na sua `data/`; no Mac não precisa).
-  Abriu a tela antes de carregar? Depois da carga, `docker compose restart tela` (até o conserto da issue #43).
+  A tela já aberta passa a usar os dados novos sozinha (issue #43, consertada no PR #63).
 - **IA ligada:** `RAIOX_IA_REAL=1 docker compose up -d`. A chave vem do `GOOGLE_API_KEY` do `.env`, que o Compose lê sozinho.
   A chave e a `data/` nunca entram na imagem (`.dockerignore`): a `data/` entra como volume.
 - **Porta 5432 ocupada** por outro PostgreSQL: `PORTA_BANCO=5433 docker compose up -d`.
@@ -267,7 +268,6 @@ psql -U postgres -c "CREATE DATABASE raiox_teste"
 ```bash
 python scripts/carregar_dfp.py        # baixa a DFP dos exercícios 2023–2025, limpa (raiox/limpeza.py) → data/contas.csv e tabelas contas e empresas
 python scripts/indicadores.py         # 6 indicadores por empresa (C2) → data/indicadores.csv e tabela indicadores
-python scripts/verificar_automatico.py   # opcional: compara receita, EBIT e lucro com o Yahoo Finance
 ```
 
 **Testes** (não gastam crédito):

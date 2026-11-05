@@ -28,8 +28,11 @@ O time é iniciante em Git. Você faz o Git; a pessoa só diz qual tarefa vai fa
 - **Primeiro, os arquivos do professor, inteiros:** `docs/professor/requisitos_projeto.MD` e `docs/professor/guia_projeto_final.pdf`
   (o PDF com a ferramenta Read). Eles valem mais que o CLAUDE.md, o PLANO e o REQUISITOS; quando os dois diferem, vale o mais
   exigente (ex.: o Terraform é obrigatório). Se uma nota contradiz esses arquivos, avise a pessoa antes de seguir.
-- Leia a seção 0 do `docs/PLANO.md` e as últimas linhas do `docs/HISTORICO.md`.
+- Leia a seção 0 do `docs/PLANO.md` e as últimas linhas do `docs/HISTORICO.md`. Só o Eduardo atualiza essas notas, uma vez
+  por dia: o que entrou depois está na seção "Para as notas" dos PRs mesclados depois do "último PR levado: #N" da seção 0 (`gh pr view <número>`).
 - Confira o estado real: `gh pr list --state all --limit 8` e `git log --oneline -10`.
+- **Quem está trabalhando agora:** `gh pr list --state open --json number,title,author,files --jq '.[] | "#\(.number) \(.author.login): \(.title) · \([.files[].path] | join(", "))"'`.
+  Logins: Marcos `MarcosIurak`, Miguel `MiguelGrispan`, Náthally `Hawkie06`, Eduardo `Mindoim`.
 - Olhe se alguém subiu algo fora da `main`: `git fetch` e `git log --oneline -3` das branches antigas (`origin/tratamento_dados`,
   `origin/feat/metricas`) e das branches sem PR. Se tiver entrega nova, avise.
 
@@ -39,6 +42,8 @@ O time é iniciante em Git. Você faz o Git; a pessoa só diz qual tarefa vai fa
 2. o objetivo da sessão e o "pronto quando" (PLANO, seção 3), e qual requisito do professor ela atende (arquivo e item,
    ex.: "`requisitos_projeto.MD`, Aplicação: Terraform");
 3. o primeiro passo concreto;
-4. se a tarefa mexe em pasta de outro dono ou no `contratos.md`: quem precisa dar o ok no grupo antes do merge.
+4. se a tarefa mexe em pasta de outro dono ou no `contratos.md`: quem precisa dar o ok no grupo antes do merge;
+5. quem tem PR aberto agora e se algum mexe nos arquivos desta tarefa. Se nenhum mexe: "ninguém precisa esperar ninguém".
+   Se algum mexe: o nome da pessoa e o arquivo, para combinarem no grupo quem faz o merge primeiro.
 
 No fim da tarefa, lembre: `/fim-de-sessao`.

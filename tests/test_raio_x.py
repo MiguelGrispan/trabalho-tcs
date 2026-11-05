@@ -72,6 +72,23 @@ def test_regra_de_ouro_remove_numero_por_extenso(frase):
     assert r["removidos"][0]["motivo"].startswith("número por extenso"), frase
 
 
+@pytest.mark.parametrize("frase", [                       # issue #50: passavam pelo validador até 05/11
+    "A receita dobrou no período.",
+    "A margem triplicou.",
+    "Um quarto da receita vem de fora.",
+    "O lucro duplicou desde o último exercício.",
+    "A dívida quadruplicou.",
+    "A receita dobra a cada ciclo.",
+    "Um décimo da receita vem de serviços.",               # achados do revisor no #63
+    "A margem dobraria com a solução.",
+    "O endividamento subiu meio ponto.",
+])
+def test_regra_de_ouro_remove_quantidade_sem_algarismo(frase):
+    r = ia.validar_e_preencher(rx(resumo=frase), VALORES)
+    assert r["resumo"] == "", frase
+    assert r["removidos"][0]["motivo"].startswith("número por extenso"), frase
+
+
 @pytest.mark.parametrize("frase", ["Crescimento de ½ do grupo.", "A margem subiu ² pontos.",
                                    "Receita de R$ ２０ bi.", "Fase Ⅲ da expansão."])
 def test_regra_de_ouro_remove_simbolo_numerico(frase):
@@ -89,7 +106,8 @@ def test_regra_de_ouro_vale_para_perguntas_e_lacunas():
 def test_regra_de_ouro_aceita_texto_sem_numero():
     # nome do indicador com "dois", ordinais, "um/uma" e palavras que contêm um número ("dezembro")
     frase = ("O crescimento em dois anos ficou acima do grupo; em dezembro, a primeira reunião "
-             "pode mostrar um caminho para o segundo semestre.")
+             "pode mostrar um caminho para o segundo semestre e para o quarto trimestre, "
+             "com as duplicatas a receber no meio da conversa.")
     r = ia.validar_e_preencher(rx(resumo=frase), VALORES)
     assert r["resumo"] == frase and r["removidos"] == []
 
@@ -195,6 +213,27 @@ def test_raiox_dados_falsos_ignora_tabela_real(tmp_path, monkeypatch):
     monkeypatch.setenv("RAIOX_DADOS", "real")
     df, falso = segmentos.carregar_indicadores()
     assert not falso and len(df) == 3
+
+
+def test_tela_aberta_antes_da_cvm_acha_a_empresa_depois(tmp_path, monkeypatch):
+    # issue #43: a tela gerou um raio-x com os falsos e depois a CVM foi carregada (e mais tarde recarregada).
+    # Antes, o raio-x seguia com a tabela guardada na memória: "Empresa ... não está na tabela de indicadores".
+    ind = tmp_path / "indicadores.csv"
+    monkeypatch.setattr(segmentos, "ARQ_INDICADORES", ind)
+    monkeypatch.setattr(segmentos, "ARQ_SEGMENTOS", tmp_path / "segmentos.csv")
+    ia.preparar_raio_x(90001, "software", "reunião", usar_ia=False)    # 1. ainda sem a CVM: tabela falsa
+
+    real = pd.read_csv(segmentos.ARQ_FALSO)
+    real["cd_cvm"] += 1000                                               # 2. a "CVM" chega, com outros códigos
+    real.to_csv(ind, index=False)
+    monkeypatch.setenv("RAIOX_DADOS", "real")
+    assert ia.preparar_raio_x(91001, "software", "reunião", usar_ia=False)["empresa"] == real.loc[0, "nome"]
+
+    real.loc[0, "nome"] = "NOME NOVO S.A."                               # 3. o indicadores.csv é refeito
+    real.to_csv(ind, index=False)
+    depois = ind.stat().st_mtime + 10
+    os.utime(ind, (depois, depois))
+    assert ia.preparar_raio_x(91001, "software", "reunião", usar_ia=False)["empresa"] == "NOME NOVO S.A."
 
 
 def test_com_dados_falsos_nada_e_gravado_em_data(tmp_path, monkeypatch):
