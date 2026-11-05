@@ -236,8 +236,9 @@ POR_EXTENSO = re.compile(
     r"|cem|cento|(?:duz|trez|quatroc|quinh|seisc|setec|oitoc|novec)ent[oa]s|mil|milhão|milhões|bilhão|bilhões"
     r"|trilhão|trilhões|dezenas?|centenas?|milhar|milhares|dúzias?|dobro|triplo|metade|terços?|por cento"
     # quantidade em verbo ou fração (issue #50): "a receita dobrou", "triplicou", "um quarto da receita".
-    # "quarto" sozinho fica de fora: é ordinal em "quarto trimestre".
-    r"|dobr(?:a|am|ou|aram|ar|ará|ando|ad[oa]s?)|duplic\w*|triplic\w*|quadruplic\w*|qu[aá]drupl[oa]s?|um\s+quarto)\b",
+    # "quarto" sozinho fica de fora: é ordinal em "quarto trimestre". "duplicata" e "duplicidade" ficam: não são quantidade.
+    r"|dobr(?:a|am|e|em|ou|aram|ar|ará|arão|aria|ariam|ando|ad[oa]s?)|duplic(?!at|id)\w*|triplic\w*|quadruplic\w*"
+    r"|qu[aá]drupl[oa]s?|um\s+(?:quarto|quinto|sexto|sétimo|oitavo|nono|décimo)|meio\s+(?:ponto|por\s+cento))\b",
     re.IGNORECASE)
 NOMES_DOS_INDICADORES = re.compile("|".join(re.escape(v[1]) for v in INDICADORES.values()), re.IGNORECASE)
 

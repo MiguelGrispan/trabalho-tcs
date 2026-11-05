@@ -79,6 +79,9 @@ def test_regra_de_ouro_remove_numero_por_extenso(frase):
     "O lucro duplicou desde o último exercício.",
     "A dívida quadruplicou.",
     "A receita dobra a cada ciclo.",
+    "Um décimo da receita vem de serviços.",               # achados do revisor no #63
+    "A margem dobraria com a solução.",
+    "O endividamento subiu meio ponto.",
 ])
 def test_regra_de_ouro_remove_quantidade_sem_algarismo(frase):
     r = ia.validar_e_preencher(rx(resumo=frase), VALORES)
@@ -103,7 +106,8 @@ def test_regra_de_ouro_vale_para_perguntas_e_lacunas():
 def test_regra_de_ouro_aceita_texto_sem_numero():
     # nome do indicador com "dois", ordinais, "um/uma" e palavras que contêm um número ("dezembro")
     frase = ("O crescimento em dois anos ficou acima do grupo; em dezembro, a primeira reunião "
-             "pode mostrar um caminho para o segundo semestre e para o quarto trimestre.")
+             "pode mostrar um caminho para o segundo semestre e para o quarto trimestre, "
+             "com as duplicatas a receber no meio da conversa.")
     r = ia.validar_e_preencher(rx(resumo=frase), VALORES)
     assert r["resumo"] == frase and r["removidos"] == []
 
