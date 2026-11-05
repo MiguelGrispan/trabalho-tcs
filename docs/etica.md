@@ -14,7 +14,7 @@ Atende:
 | risco | o que fizemos | prova |
 |---|---|---|
 | O LLM inventa ou arredonda um número (alucinação) e o vendedor leva um dado falso para a reunião | o LLM só escreve marcadores como `{margem_ebit}`; o código coloca os valores; o validador apaga o trecho com algarismo, número por extenso ou marcador inventado | `checar()` e `validar_e_preencher()`, `raiox/ia.py:230-282`; testes `test_validador_*` e `test_regra_de_ouro_*` em `tests/test_raio_x.py` |
-| Resultado medido | 10 raio-x reais: 0 trechos removidos, US$ 0,0012 cada, 2,5 s em média | `avaliacao/resultados.csv` (rodada de 05/11, ED16; a primeira foi a ED7, PR #20) |
+| Resultado medido | 10 raio-x reais: 0 trechos removidos, US$ 0,0012 cada, 2,2 s em média | `avaliacao/resultados.csv` (rodada de 05/11, ED16; a primeira foi a ED7, PR #20) |
 
 ## 2. Alucinação que o validador **não** pega
 
@@ -47,7 +47,7 @@ traz a "base", o indicador que a motivou, visível na tela. **O que não resolve
   `avaliacao/conferencia.csv`) tem como parecidas Cemig, Copel, Axia (energia), Votorantim Cimentos e Telefônica: empresas grandes,
   rentáveis e pouco endividadas, mas de outros setores (raio-x sem IA, 03/11). Isso é útil para prospectar perfis parecidos, mas não é "concorrente".
   A tela precisa dizer isso (sugestão para a NA5 e o deck).
-- **Os 10 casos de avaliação caem no mesmo grupo** (o maior, com 330 empresas e receita mediana de R$ 3,3 bi; rodadas de 29/10 e
+- **Os 10 casos de avaliação caem no mesmo grupo** (o maior, com 312 empresas e receita mediana de R$ 3,6 bi; rodadas de 29/10 e
   05/11). A Petrobras (R$ 497,5 bi de receita) é comparada com esse grupo: "acima do grupo" diz pouco para uma empresa desse porte.
   É um limite do K-means com 4 grupos, não um erro de dado (issue a abrir para o Eduardo).
 - **Silhueta 0,29:** os grupos se sobrepõem. É uma régua de comparação, não uma classificação exata
@@ -60,7 +60,17 @@ traz a "base", o indicador que a motivou, visível na tela. **O que não resolve
   `feat/metricas`, ainda não na `main`), com os dados de 05/11 (ED16). Critério de "bate": receita e ativo com até 1% de diferença; os 4 percentuais com até 0,15 ponto percentual.
   Era 7 de 10 até a Camil ser corrigida (ano fiscal de março a fevereiro, issue #17, PR #46). As 2 diferenças: Magalu (margem EBIT)
   e RD Saúde (margem EBIT, endividamento e ativo); nas duas, o sistema bate com a DFP oficial (conferência S2 do Marcos,
-  `avaliacao/conferencia.csv`), e a diferença parece vir da fonte da conferência manual (suposição). **Na banca, falar 8 de 10, não "100%".**
+  `avaliacao/conferencia.csv`), e a diferença é de **definição**, não de dado (conferido nos PDFs que ela usou, 05/11):
+  - **RD Saúde:** a conferência usou a tabela "Pré-IFRS 16" do Relatório da Administração, que está no mesmo PDF da DFP 2025
+    (p. 48 da DFP). Ela tira os aluguéis das lojas do balanço e do resultado: ativo R$ 20.630,8 mi, PL R$ 7.749,6 mi, EBIT ajustado
+    R$ 2.331,9 mi e lucro R$ 1.362,5 mi dão exatamente os 4 números dela. O sistema usa a DFP oficial, com IFRS 16 (CPC 06):
+    ativo R$ 25.170,5 mi, com R$ 4.336,0 mi de direito de uso das lojas alugadas.
+  - **Magalu:** os 5,81% saem exatamente do EBIT oficial (R$ 1.918,7 mi) sem as perdas de créditos esperadas (−R$ 455,8 mi) e sem
+    a equivalência patrimonial (+R$ 127,3 mi). É reconstrução nossa; falta a Náthally confirmar que foi essa a conta.
+  **Na banca, falar 8 de 10, não "100%"**, e explicar que as 2 diferenças são de definição contábil.
+- **Número oficial × número "ajustado":** empresas como a RD divulgam no release números "ajustados" ou "Pré-IFRS 16", e o vendedor
+  pode ouvi-los na reunião. O raio-x mostra o número contábil oficial da DFP, igual para as 595 empresas, que pode ser diferente.
+  O vendedor precisa saber disso (sugestão para a NA5, o deck e, depois do congelamento, um aviso na tela).
 - **Fonte em cada número:** cada indicador mostra a conta da DFP de onde veio (coluna "fonte", `raiox/ia.py:36-44`), para o vendedor
   conferir.
 
@@ -82,5 +92,5 @@ traz a "base", o indicador que a motivou, visível na tela. **O que não resolve
 ## 6. Viabilidade (a completar pela Náthally)
 
 - **Custo por raio-x:** ≈ US$ 0,0012 de IA (`avaliacao/resultados.csv`).
-- **Tempo:** 2,5 s de IA (média da rodada de 05/11); o tempo manual de comparação é o ROI da NA3 (a medir).
+- **Tempo:** 2,2 s de IA (média da rodada de 05/11); o tempo manual de comparação é o ROI da NA3 (a medir).
 - **Limite de escala:** a DFP é anual; a base precisa ser recarregada uma vez por ano (`scripts/carregar_dfp.py`).

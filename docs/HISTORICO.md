@@ -111,9 +111,14 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   no caminho: o README mandava `python -m venv`, que não funciona no Linux do Miguel (lá, `python3` é o 3.12); agora é `python3.14`.
   O `revisor` achou mais 2 erros fora do PR: a tela diz que os números vêm do banco (#56, Miguel) e os outros guias têm o mesmo
   `venv` (#57, Eduardo).
+- **05/11** · **MA4b** (Marcos): conserto da #53. A limpeza agora confere também o primeiro ano de cada empresa, comparando-o com
+  o seguinte; a NTS passou de +107.154% para +7,3% de crescimento, e nenhuma outra empresa mudou. O JBS N.V. continua como caso a
+  conferir na CVM (falta o segundo sinal). Todos recarregam a `data/` depois do merge.
 - **05/11** · **ED16** (Eduardo): os 10 raio-x da Náthally de novo, com o Gemini e a Camil corrigida pelo #46. Agora 8 de 10
   batem com a conferência manual dela (era 7); Magalu e RD Saúde seguem iguais à DFP e diferentes dela. O K-means e os gráficos
-  foram refeitos com os dados novos (silhueta 0,29; grupos de 60, 77, 100 e 327 no treino), e o `resultados.csv` trocado.
+  foram refeitos com os dados novos, já com o #59 (silhueta 0,29; grupos de 60, 310, 88 e 106 no treino), e o `resultados.csv` trocado.
+  As 2 diferenças foram explicadas abrindo os PDFs dela: a RD Saúde estava em "Pré-IFRS 16" (sem os aluguéis das lojas) e o
+  Magalu com outra conta do EBIT. Não é erro de dado, é definição; o sistema segue a DFP oficial.
 
 ## Decisões (e por quê)
 
@@ -150,6 +155,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 03/11 | a tela só abre no próprio computador (`127.0.0.1`), no compose como no Terraform; o erro técnico da IA vai para "Detalhes técnicos" e para o log, nunca para o aviso | com a IA ligada, qualquer um no mesmo Wi-Fi (o do SENAI, no dia da banca) abria a tela e gastava crédito; quem precisar abrir de outro aparelho muda a porta de propósito. Um JSON do Google no telão não diz nada ao vendedor, mas quem conserta precisa dele |
 | 04/11 | a EDA importa do código os limites da checagem e o corte do K-means, em vez de copiar os números; vai para o Git já rodada; com os dados falsos, roda sem gravar os PNG | o notebook nunca discorda do código; a banca vê os gráficos no GitHub sem rodar nada; o CI confere o "Run All" sem tocar nos gráficos dos dados reais |
 | 04/11 | o diagrama de arquitetura é texto (Mermaid) dentro do README, e o PNG sai dele; um teste confere que ele só cita arquivos que existem | o GitHub desenha o Mermaid sozinho e o PR mostra a mudança como texto; uma figura só em imagem fica velha sem ninguém ver (lição de 29/10: documento velho confunde mais que documento nenhum) |
+| 05/11 | escala errada no primeiro ano da empresa: corrigida só quando a receita **e** o ativo estão ~1.000 vezes menores que no ano seguinte (decisão do Marcos) | o primeiro ano não tem anterior para comparar; um salto de 1.000 vezes só na receita pode ser uma empresa que começou a operar, e multiplicar esse ano por 1.000 inventaria um número. Com os 2 sinais, a NTS é corrigida e mais nenhuma empresa muda |
 
 **Já cortado do escopo:** verificação com yfinance, receita em 3 anos, filtro de setor, RAG, nome dos grupos pelo LLM,
 exportar o raio-x, 20 casos (ficaram 10). A lista e a ordem dos próximos cortes estão no PLANO, seção 7.

@@ -20,15 +20,17 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em qui 05/11, ~9h30 (Brasília)** (fim da ED16, Eduardo com o Claude Code: os 10 raio-x da Náthally com a Camil
-corrigida; as notas da MG5, da MA4, da MA5 e da MG4b, de 04/11, e da MA3, de 03/11, continuam abaixo). Na `main`: PRs #1 a #16,
-#19 a #41, o #46 (MA3, fechou #17 e #42), o #47 (MG4b, fechou #38, #39 e #44), o #51 (MA3b; a #48 foi fechada à mão, depois da
-conferência do Miguel no Linux), o #52 (MA5, BPMN), o #54 (MA4, EDA) e o #55 (MG5). **Aberto:** o #49 (Eduardo, rascunho do MA6) e o PR da ED16 (esta nota).
-Issues abertas: #43, #45 e #50 (Eduardo; a #50: o validador deixa passar "dobrou", "triplicou", "um quarto") e **#53 (Marcos,
-achada pela EDA):** a escala errada no primeiro ano da base escapa da limpeza, e a NTS aparece com crescimento de +107.154%.
-Do revisor no #55 (MG5): **#56 (Miguel)**, a tela diz que os números vêm do PostgreSQL, mas vêm da `data/indicadores.csv`; e
-**#57 (Eduardo)**, os guias criam o ambiente com `python` ou `python3`, que pode não ser o 3.14.
-Testes na branch da MG5: 250 passed, nenhum pulado (Linux do Miguel, PostgreSQL do compose ligado, 04/11 ~21h).
+**Em qui 05/11, ~10h (Brasília)** (fim da ED16, Eduardo com o Claude Code: os 10 raio-x da Náthally com a Camil corrigida,
+depois do merge da MA4b, #59; as notas da MA4b, da MG5, da MA4, da MA5 e da MG4b, e da MA3, de 03/11, continuam abaixo).
+Na `main`: PRs #1 a #16, #19 a #41, o #46 (MA3, fechou #17 e #42), o #47 (MG4b, fechou #38, #39 e #44), o #51 (MA3b; a #48 foi
+fechada à mão, depois da conferência do Miguel no Linux), o #52 (MA5, BPMN), o #54 (MA4, EDA), o #55 (MG5, arquitetura) e o #59
+(MA4b, fechou a **#53**). **Abertos:** o #49 (Eduardo, rascunho do MA6) e o #58 (Eduardo, ED16, o PR desta nota).
+Issues abertas: #43, #45 e #50 (Eduardo; a #50: o validador deixa passar "dobrou", "triplicou", "um quarto"); do revisor no #55:
+**#56 (Miguel)**, a tela diz que os números vêm do PostgreSQL, mas vêm da `data/indicadores.csv`; e **#57 (Eduardo)**, os guias
+criam o ambiente com `python` ou `python3`, que pode não ser o 3.14.
+**Depois do merge da MA4b, todos recarregam a `data/`** (`python scripts/carregar_dfp.py`, `python scripts/indicadores.py` e
+`python -m raiox.segmentos`; o Miguel também no banco do compose). A NTS muda, e com ela os grupos do K-means (abaixo, ED16).
+Testes na branch da ED16, com a `main` (e o #59) mesclada: 252 passed, nenhum pulado (Mac do Eduardo, PostgreSQL do compose ligado, 05/11).
 A versão longa desta seção, com o detalhe de cada PR até 03/11, ficou no Git: `git show 9f85bc9:docs/PLANO.md`.
 O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 
@@ -37,13 +39,14 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 ### O que já funciona (conferido)
 - **ED16 (Eduardo, 05/11): os 10 raio-x da Náthally de novo, com a Camil corrigida (#46) e o Gemini respondendo nos 10.**
   No Mac do Eduardo, a `data/` ainda era de 30/10 (Camil com R$ 12,3 bi e +20%): `carregar_dfp.py` (384.591 linhas, 660 ativas),
-  `indicadores.py` e `python -m raiox.segmentos` de novo, com o PostgreSQL do compose. Camil (24228): R$ 11,1 bi e −1,2%.
+  `indicadores.py` e `python -m raiox.segmentos` de novo, com o PostgreSQL do compose, e outra vez depois do merge do #59 (MA4b),
+  que mudou os grupos (o raio-x da manhã citava as medianas velhas e foi refeito). Camil (24228): R$ 11,1 bi e −1,2%.
   Mesmos 10 casos da branch dela (`feat/metricas`, `Semana_02/casos_avaliacao.csv` = `avaliacao/casos_avaliacao.csv`).
   **8 de 10 batem com a conferência dela nos 6 indicadores** (era 7 de 10; critério: receita e ativo com até 1% de diferença; os 4 percentuais com até 0,15 ponto percentual); Magalu (5 de 6) e RD Saúde (3 de 6; com 0,1 ponto, seria 2 de 6) seguem
-  diferentes dela e iguais à DFP (S2 do Marcos). 0 trechos removidos, nenhum número fora da tabela no texto (conferido por fora,
-  com regex), US$ 0,0116 no total, 2,5 s por caso em média. O `avaliacao/resultados.csv` foi trocado por essa rodada.
+  diferentes dela e iguais à DFP (S2 do Marcos); as 2 diferenças são de definição, não de dado (conferido nos PDFs que ela usou, 05/11): na RD Saúde, a conferência usou a tabela "Pré-IFRS 16" do Relatório da Administração, dentro do PDF da DFP 2025 (p. 48 da DFP; sem os aluguéis das lojas: ativo R$ 20.630,8 mi, PL R$ 7.749,6 mi, EBIT ajustado R$ 2.331,9 mi, lucro R$ 1.362,5 mi, os 4 números dela), e o sistema usa a DFP oficial, com IFRS 16; no Magalu, os 5,81% saem exatamente do EBIT oficial (R$ 1.918,7 mi) sem as perdas de créditos esperadas e sem a equivalência patrimonial (R$ 2.247,2 mi; reconstrução nossa, falta ela confirmar). 0 trechos removidos, nenhum número fora da tabela no texto (conferido por fora,
+  com regex), US$ 0,0118 no total, 2,2 s por caso em média (rodada depois do #59). O `avaliacao/resultados.csv` foi trocado por essa rodada.
   O arquivo para ela (`raiox_para_nathally.md`, os 10 JSON e o script) fica só na `data/nathally_05_11/` do Mac do Eduardo.
-  **K-means com os dados do #46:** k = 4, silhueta 0,29, grupos de 60, 77, 100 e 327 no treino (66, 91, 108 e 330 com as 595);
+  **K-means com os dados do #46 e do #59:** k = 4, silhueta 0,29 (0,286), grupos de 60, 310, 88 e 106 no treino (66, 312, 103 e 114 com as 595);
   `docs/graficos/silhueta.png` e `grupos.png` refeitos; números trocados no REQUISITOS (R5 e R12) e na `docs/justificativa.md` §2.
   O `docs/documentacao.md` do #49 ainda cita os números de 30/10 (327, 76, 59 e 102): trocar no MA6.
 - **Demo ponta a ponta** no `docker compose` e no Terraform (Mac do Eduardo, 03/11), tag `v0.1-demo` (`9689db9`): busca no
@@ -86,9 +89,22 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
   grava PNG; `tests/test_eda.py` roda o notebook inteiro assim, então o CI confere o "Run All" em todo PR. Números (dados de
   04/11): só o crescimento tem vazios (30 de 595: 23 sem receita de 2023, 7 com ela zero); 24 dos 51 setores têm menos de 5
   empresas. **Achado:** a NTS tem 2023 de 1.000 a 2.000 vezes menor (receita 987 vezes, ativo 1.923 vezes), e o
-  `encontrar_escala_errada` (`raiox/limpeza.py:165`) só compara cada ano com o anterior: o primeiro ano passa. Virou a
-  **issue #53** (MA4b, abaixo). O JBS N.V. tem o mesmo salto no ativo de 2023 (1.084 vezes), mas com receita zero em 2023: um
-  conserto só pela receita não o pega. FASA, TRV XLIII e Azevedo & Travassos têm outros saltos; nenhum foi olhado na CVM ainda.
+  `encontrar_escala_errada` só comparava cada ano com o anterior: o primeiro ano passava. Virou a **issue #53**, consertada na
+  MA4b (abaixo).
+- **MA4b (Marcos, 05/11, PR da branch `marcos-escala-primeiro-ano`): conserto da #53** (`guia_projeto_final.pdf` §2: "Python
+  e Pandas para limpeza"; §5, qualidade técnica, 30%). Em `encontrar_escala_errada()` (`raiox/limpeza.py`), o primeiro ano de
+  cada empresa agora é comparado com o **seguinte** e só é corrigido quando a receita (DRE 3.01) **e** o ativo (BPA 1) estão
+  ~1.000 vezes menores juntos (decisão do Marcos: um salto só na receita pode ser empresa que começou a operar). 2 testes
+  novos em `tests/test_limpeza.py`: o 1º falhou antes do conserto; o 2º falha se a condição do ativo sai (conferido tirando-a
+  de propósito). **Recarga com a `data/` real (Windows do Marcos, 05/11):** a única marcação nova é a NTS (24708, 2023); o
+  crescimento dela foi de +107.154% para +7,3%; as outras 594 empresas ficaram iguais (comparado com uma cópia do
+  `indicadores.csv` de antes); `checagem`: 179 "atenção" (eram 180), nenhum "erro". O notebook rodou de novo sem erro: extremos
+  do crescimento 15 → 14, saltos de 500 vezes 7 → 5; só o `eda_2_distribuicoes.png` mudou. **Fica de fora, de propósito:** o
+  JBS N.V. (salto no ativo, receita zero em 2023: falta o 2º sinal), FASA, TRV XLIII e Azevedo & Travassos; nenhum foi olhado na
+  CVM. Vão como limite conhecido no MA6 (seção "Dados e limpeza"), com mais um (achado do `revisor`, já era assim antes do PR):
+  se o 1º **e** o 2º ano vêm em milhares e só o 3º vem certo, nenhum dos dois é pego. **Não conferido:** o efeito no K-means do #58 (Eduardo),
+  refeito com a base de antes; o crescimento da NTS é cortado no percentil 95, e o p95 caiu de 1,33 para 1,30.
+  Na máquina do Marcos, o `carregar_dfp.py` levou mais de 10 min (no Linux do Miguel, ~1 min 30 s).
 - **MG5 (Miguel, PR #55, 04/11): a arquitetura no README** (`guia_projeto_final.pdf` §6: "README.md detalhando a arquitetura,
   pré-requisitos e instruções de execução"; §3, minutos 3–6). Seção "Arquitetura" com o diagrama em Mermaid (o GitHub desenha
   sozinho): os 2 contêineres (tela com `app/` e `raiox/`; banco com o PostgreSQL 17), a `data/` (pasta do computador montada na
@@ -101,8 +117,8 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
   corrigido no PR: a seta do Terraform sumia sob o rótulo; a `data/` parecia dentro do Docker; "escolha um" lia o Terraform como
   opcional; a referência de linha no HISTORICO. Fora do PR: #56 e #57. **Não conferido:** o desenho do Mermaid na página do
   GitHub (por isso a R9 fica 🟡) e o "pronto quando" (um colega entender o fluxo lendo o README).
-- **Testes:** 250 passed, nenhum pulado (Linux do Miguel, com o PostgreSQL do compose ligado, branch da MG5, 04/11).
-  No Windows do Marcos, 241 passed com `PYTHONUTF8=1` (03/11 ~12h, branch do #46); sem ele, 8 testes das travas falham: issue #45 (abaixo).
+- **Testes:** 252 passed, nenhum pulado (Windows do Marcos, `PYTHONUTF8=1`, PostgreSQL 17 local, branch da MA4b, 05/11); na
+  branch da MG5, 250 passed (Linux do Miguel, 04/11). No Windows, sem `PYTHONUTF8=1`, 8 testes das travas falham: issue #45 (abaixo).
 - **Textos-base prontos:** `docs/justificativa.md` (ED8; falta o Marcos ler) e `docs/etica.md` (base da NA5).
 - No Mac, o Terraform só acha o Docker com `export DOCKER_HOST=unix://$HOME/.docker/run/docker.sock` (`README.md:235`).
 
@@ -150,7 +166,7 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 
 ### Próximo passo de cada um
 - **Marcos:** ✅ MA5 BPMN (#52; falta abrir o `.bpmn` no demo.bpmn.io e treinar a explicação para os minutos 3–6 da banca) →
-  ✅ MA4 EDA (#54, 04/11) → **MA4b: issue #53** (escala do primeiro ano; antes do congelamento, sex 06/11) →
+  ✅ MA4 EDA (#54, 04/11) → ✅ MA4b, a #53 (05/11; depois do merge, avisar o grupo para recarregar a `data/`) →
   revisar o rascunho do MA6 do Eduardo (sáb 07/11) → trocar a citação do `raiox/limpeza.py` para a seção "Dados e limpeza" do
   `docs/documentacao.md` e tirar o `docs/Raio-X Comercial.pdf` (depois do MA6). Um PR pequeno, com o ok do Eduardo, tirando
   `verificar_automatico.py` e `yfinance` (cortados na seção 7) e o `scripts/graficos.py` (a EDA já cobre o que ele fazia); no mesmo
@@ -163,7 +179,7 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 - **Náthally (obrigatório):** NA3 ROI mínimo (até qui 05/11) → NA4 slide de métricas (o "8 de 10" da rodada de 05/11, ED16, com a explicação da S2 para
   Magalu e RD Saúde; a Camil bate nos 6 indicadores) → NA5 ética (base: `docs/etica.md`) → NA6 deck. Sugestões, se der tempo: seção 3.
 - **Eduardo:** ED13, a #43 (qua 04/11) → ED14, a #45 (travas no Windows, qui 05/11) → a #50 (validador e quantidade sem
-  algarismo; regra de ouro, antes do congelamento) → ✅ K-means e PNG com os dados do #46 (ED16) → ED9 tag `v1.0` e ED11
+  algarismo; regra de ouro, antes do congelamento) → ✅ K-means e PNG com os dados do #46 e do #59 (ED16) → ED9 tag `v1.0` e ED11
   (sex 06/11) → **ED15: issue #57** (`python3.14 -m venv` no `CLAUDE.md` e no `aprender/`, antes do teste do zero) → ED10 teste do zero (sáb 07/11) → **MA6** (agora dele): rascunho do
   `docs/documentacao.md` no sáb 07/11 para o Marcos revisar; final e PDF na seg 09/11. O "[PENDENTE: diagrama · MG5, Miguel]"
   da seção 5 do rascunho (#49) já pode usar o `docs/arquitetura.png` (depois do merge do #55).
@@ -269,7 +285,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | seg 02/11 (feriado) | ✅ ED12 na `main` (#30); ✅ ED8 adiantada (#31) | | ✅ MG4 adiantada (#36) | |
 | ter 03/11 | ✅ **demo ponta a ponta · tag `v0.1-demo`** (compose e Terraform no Mac); revisão geral (issues #42 a #44) | MA4 (atrasada); ✅ MA3: PR #46 (#42, #17) | ~~MG4~~ (feita em 02/11); ✅ MG4b adiantada (#47) | NA3 ROI mínimo |
 | qua 04/11 | **ED13: issue #43** (~30 min); ✅ ED8 (feita em 02/11) | ~~PR da MA3 e #17~~ (PR #46, 03/11); ✅ zip da `data/`; ✅ MA5 BPMN; ✅ MA4 EDA (atrasada; achou a #53) | ~~MG4b~~ (#47, merge em 04/11); recarga da CVM; ✅ MG5 arquitetura + README (#55) | NA4 slide de métricas |
-| qui 05/11 | só bugs; **ED14: issue #45** (travas no Windows) | ✅ MA3b (#51); ✅ MA5 (adiantada, 04/11); **MA4b: issue #53** | **MG5b: issue #56**; MG6 vídeo v0 | NA3 (prazo do ROI mínimo) |
+| qui 05/11 | só bugs; **ED14: issue #45** (travas no Windows) | ✅ MA3b (#51); ✅ MA5 (adiantada, 04/11); ✅ MA4b (#53) | **MG5b: issue #56**; MG6 vídeo v0 | NA3 (prazo do ROI mínimo) |
 | sex 06/11 | **ED9: código congelado · tag `v1.0`**; ED11 avaliação final | | | |
 | sáb 07/11 | ED10 teste do zero; MA6 rascunho (`docs/documentacao.md`) | revisar o rascunho do MA6 | MG7 vídeo final na `v1.0` (no Mac do Eduardo) | NA5 ética |
 | dom 08/11 | **todos mandam o conteúdo dos slides à Náthally** | | | NA5 deck |
@@ -298,7 +314,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | ED13 | qua 04/11 | — | consertar a **issue #43**: a tela aberta antes de carregar a CVM não acha a empresa (cache de `_base()`, `raiox/ia.py:51`). Guia §5: "funciona de ponta a ponta?" | `raiox/ia.py`, `tests/test_raio_x.py` | Manual | o passo a passo da #43 gera o raio-x da WEG; teste novo com essa ordem | PR que fecha #43 |
 | ED14 | qui 05/11 | — | consertar a **issue #45**: no Windows, o `guarda.py` lê a saída do Git em cp1252 (`.claude/hooks/guarda.py:89`), bloqueia commit e merge com `”` ou emoji no diff, e 8 testes das travas falham. Guia §2: "agentic coding" | `.claude/hooks/guarda.py`, `tests/test_guarda.py` | Manual | no Windows do Marcos, sem `PYTHONUTF8`: `python -m pytest -q tests/test_guarda.py` sem falhas e um commit com `”` no diff passa pela trava | PR que fecha #45 |
 | ED15 | sex 06/11 | — | consertar a **issue #57**: o `CLAUDE.md:142` e o `aprender/entenda-o-projeto.md:167` mandam `python -m venv .venv` (no Linux do Miguel não existe `python`); o `aprender/COMANDOS.md:16` e os 3 atalhos `.command` usam `python3 -m venv`, que lá é o 3.12. O README já usa `python3.14` (#55). `requisitos_projeto.MD`, Documentação: "instruções para executar" | `CLAUDE.md` (ok no grupo), `aprender/` | Manual | os 6 lugares com `python3.14 -m venv .venv` (Windows: `py -3.14`); antes do ED10 (sáb 07/11) | PR que fecha #57 |
-| ED16 | qui 05/11 | ✅ PR desta sessão | 10 raio-x para a Náthally com a Camil corrigida (#46), com o Gemini; K-means e PNG refeitos com os dados do #46 | `avaliacao/resultados.csv`, `docs/graficos/`, `data/nathally_05_11/` (só no Mac) | Manual | 8 de 10 batem com a conferência dela; 0 removidos; números do K-means trocados nos docs | `eduardo-raiox-nathally` |
+| ED16 | qui 05/11 | ✅ PR desta sessão | 10 raio-x para a Náthally com a Camil corrigida (#46), com o Gemini; K-means e PNG refeitos com os dados do #46 e do #59; diferenças da RD e do Magalu explicadas | `avaliacao/resultados.csv`, `docs/graficos/`, `data/nathally_05_11/` (só no Mac) | Manual | 8 de 10 batem com a conferência dela; 0 removidos; números do K-means trocados nos docs | `eduardo-raiox-nathally` |
 | ED12 | sáb 31/10 | ✅ PR #30 (na `main` em 02/11) | travas do Claude Code (R14 e guia §2, agentic coding): `.claude/settings.json`, `.claude/hooks/guarda.py`, subagent `revisor`, import do `requisitos_projeto.MD` | `.claude/`, `CLAUDE.md`, `AGENTS.md`, `README.md`, `aprender/claude-code.md`, `tests/test_guarda.py` | Plan | testes verdes; o hook bloqueia de verdade numa sessão | `eduardo-claude-config` |
 
 ### Marcos (Claude Code)
@@ -310,7 +326,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | MA3 | sex 30–sáb 31/10 (atrasada) | ✅ PR #46 (mesclado em 03/11): C1 e C2, S1, S2 (13 linhas, 0,00%), #17 (o ano do exercício: Camil = DFP de 28/02/2026), corte de R$ 10 mi ok, `checagem` sem "erro". Zip da `data/` no Drive, com o link no grupo (04/11) | dados reais + checagem + 5 empresas conferidas no RI; zip da `data/` no Drive | `avaliacao/conferencia.csv`; consertos | Manual | diferença < 1%; nenhum "erro"; link no grupo | PR |
 | MA3b | qui 05/11 | ✅ PR #51 (na `main` em 04/11): `chmod(0o644)` e teste novo; conferido pelo Miguel no Linux (`-rw-r--r--`, Camil sem `chmod`); #48 fechada | consertar a **issue #48**, achada pelo Miguel em 04/11: o `publicar()` grava a `data/indicadores.csv` com permissão só do dono (`NamedTemporaryFile`), e no Docker do Linux a tela não lê o arquivo (todo raio-x falha). Guia §5: "A aplicação funciona de ponta a ponta na demonstração?" (20%) | `scripts/indicadores.py`, `tests/test_dados.py` | Manual | depois de `docker compose run --rm --user "$(id -u):$(id -g)" tela python scripts/indicadores.py`, `ls -la data/indicadores.csv` → `-rw-r--r--` e a tela gera o raio-x sem o `chmod`; teste novo da permissão; antes do vídeo v0 (MG6) | PR que fecha #48 |
 | MA4 | dom 01–ter 03/11 (feita em 04/11) | ✅ PR da branch `marcos-eda` (04/11): notebook montado pelo Claude Code a partir do `scripts/graficos.py`; "Restart & Run All" com a `data/` real sem erro; `tests/test_eda.py` roda o notebook com os falsos no CI; achado da NTS → issue #53 | EDA com 4 gráficos (nulos, distribuições, extremos, cobertura) | `notebooks/eda.ipynb`, `docs/graficos/` | Manual | "Restart & Run All" sem erro | PR |
-| MA4b | qui 05/11 | — | consertar a **issue #53**, achada pela EDA em 04/11: o `encontrar_escala_errada` (`raiox/limpeza.py:165-192`) só compara cada ano com o anterior, e o erro de escala no primeiro ano da base passa (NTS: 2023 de 1.000 a 2.000 vezes menor, crescimento de +107.154%; o JBS N.V. tem o mesmo salto no ativo, com receita zero em 2023). Guia §2 (limpeza com Pandas) e §5 (qualidade técnica, 30%) | `raiox/limpeza.py`, `tests/test_limpeza.py`; recarga da `data/` | Manual | teste novo com o primeiro ano marcado (e que falha sem o conserto); depois da recarga, o crescimento da NTS perto de +7% e o notebook rodado de novo; o grupo avisado para recarregar. Se não der até o congelamento (sex 06/11): limite no documento (MA6) e a NTS fora da demo | PR que fecha #53 |
+| MA4b | qui 05/11 | ✅ PR da branch `marcos-escala-primeiro-ano` (05/11): o primeiro ano comparado com o seguinte, pela receita e pelo ativo juntos; 2 testes novos (o 1º falhava antes); recarga: NTS +107.154% → +7,3%, só ela mudou; notebook rodado de novo. JBS N.V. fica de fora (receita zero em 2023): limite no MA6 | consertar a **issue #53**, achada pela EDA em 04/11: o `encontrar_escala_errada` (`raiox/limpeza.py:165-192`) só compara cada ano com o anterior, e o erro de escala no primeiro ano da base passa (NTS: 2023 de 1.000 a 2.000 vezes menor, crescimento de +107.154%; o JBS N.V. tem o mesmo salto no ativo, com receita zero em 2023). Guia §2 (limpeza com Pandas) e §5 (qualidade técnica, 30%) | `raiox/limpeza.py`, `tests/test_limpeza.py`; recarga da `data/` | Manual | teste novo com o primeiro ano marcado (e que falha sem o conserto); depois da recarga, o crescimento da NTS perto de +7% e o notebook rodado de novo; o grupo avisado para recarregar. Se não der até o congelamento (sex 06/11): limite no documento (MA6) e a NTS fora da demo | PR que fecha #53 |
 | MA5 | qua 04–qui 05/11 | ✅ PR #52 (na `main` em 04/11): `docs/bpmn/raio-x-comercial.bpmn` e `.png`, desenhados pelo Claude Code a partir do código; o bpmn-js abre com 0 avisos (falta abrir no demo.bpmn.io) e tem as 2 decisões. O de hoje não foi feito (corte 1, seção 7) | BPMN 2.0 com o Raio-X (obrigatório) e o de hoje (se der tempo), no bpmn.io | `docs/bpmn/` | Plan (o Claude só revisa) | abre no bpmn.io; decisões "tem dados?" e "passou no validador?" | PR |
 | MA6 | sáb 07–seg 09/11 | ➡️ com o **Eduardo** (decidido em 04/11); o Marcos revisa o rascunho no sáb 07/11 | montar o documento do projeto, escrito em markdown e gerado em PDF (o R aceita markdown; o G §6 pede PDF: vão os dois) | `docs/documentacao.md`, `docs/documentacao.pdf` | Manual | etapas desenvolvidas no processo (R Documentação; a base é o `docs/HISTORICO.md`) + BPMN + justificativa + ética + arquitetura + seção "Dados e limpeza" (as regras do `raiox/limpeza.py`, no lugar do `docs/Raio-X Comercial.pdf`); o Marcos revisou | PR (Eduardo) |
 
@@ -349,7 +365,7 @@ Para subir um arquivo:
 | NA1 | qua 28–qui 29/10 | ✅ regras v2 (PR #11) | regras v2 alinhadas ao código | `avaliacao/regras_prompt.md` | PR aberto |
 | NA2 | sex 30/10 | ✅ códigos (PR #10); ela ainda confere | preencher o `cd_cvm` dos 10 casos (WEG = 5410) | `avaliacao/casos_avaliacao.csv` | `tests/test_ponta_a_ponta.py` passa (o Eduardo roda) |
 | NA3 | até qui 05/11 | — | **Obrigatório, versão mínima: o ROI.** Cronometrar 1 vez a montagem manual de um raio-x (1 empresa, pelo site de RI) e 1 vez com a ferramenta, contando digitar, ler e conferir (não só os ~2 s da API), com a conta do ganho em 3 linhas (guia §7: "ROI ou a redução do tempo operacional"). *Sugestão:* 3 empresas no `tempo_manual.csv` e 3 testes com usuários (sem nome) | `docs/produto/` (ou `avaliacao/`) | 1 tempo medido e a conta do ROI |
-| NA4 | qua 04/11 | — | **Obrigatório: 1 slide de métricas** com os números do `avaliacao/resultados.csv` (10 casos, 0 trechos removidos, US$ 0,0012 por raio-x, 2,5 s; rodada de 05/11) e o acerto: **8 de 10 batem com o RI** na conferência manual dela (Magalu e RD Saúde batem com a DFP oficial, S2 do Marcos). Sem o acerto, o slide parece melhor que a realidade, que o Eduardo tira com o Claude Code. *Sugestão:* `revisao.csv`, com a nota dela para cada raio-x | deck (e `avaliacao/revisao.csv`, se fizer) | o slide de métricas existe |
+| NA4 | qua 04/11 | — | **Obrigatório: 1 slide de métricas** com os números do `avaliacao/resultados.csv` (10 casos, 0 trechos removidos, US$ 0,0012 por raio-x, 2,2 s; rodada de 05/11) e o acerto: **8 de 10 batem com o RI** na conferência manual dela; nas 2 que diferem, a diferença é de definição: RD Saúde em "Pré-IFRS 16", Magalu com outra conta do EBIT (ED16). Sem o acerto, o slide parece melhor que a realidade, que o Eduardo tira com o Claude Code. *Sugestão:* `revisao.csv`, com a nota dela para cada raio-x | deck (e `avaliacao/revisao.csv`, se fizer) | o slide de métricas existe |
 | NA5 | sáb 07–dom 08/11 | — | **Obrigatório: o texto de governança e ética** (guia §2; §6: "análise de ética e segurança", no PDF): viabilidade, limites, viés, confiabilidade, alucinação, segurança de dados e uso responsável. Base pronta: `docs/justificativa.md`, seção 5. Deck com o tempo de cada parte | `docs/etica.md`, deck | o Marcos recebe a ética; todos os slides chegaram |
 | NA6 | seg 09–qua 11/11 | — | **Obrigatório: o deck final** (`requisitos_projeto.MD`, Documentação; guia §6) e ensaios cronometrados (guia §3: no máximo 20 min; guia §7 pede o ensaio; o grupo marcou 2) | deck | ensaio abaixo de 20 min |
 
