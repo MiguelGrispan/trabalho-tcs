@@ -37,10 +37,10 @@ Número errado numa reunião de vendas destrói a confiança no produto. Por iss
   - testa k de 3 a 8;
   - fica com a maior silhueta, **mas só entre os k em que o menor grupo tem pelo menos 5% das empresas**.
 - **Lição para a banca:** antes do ED4, a silhueta era 0,77 e parecia ótima, mas só separava 9 empresas extremas e juntava todas as
-  outras num grupo só (`docs/HISTORICO.md`, "O que aprendemos"; `raiox/segmentos.py:78`). Com a regra dos 5%, saem 4 grupos e silhueta 0,30. Com os dados de 30/10 (PR #22),
-  0,29 e grupos de 327, 76, 59 e 102 empresas no treino (`docs/REQUISITOS.md`, R5).
+  outras num grupo só (`docs/HISTORICO.md`, "O que aprendemos"; `raiox/segmentos.py:78`). Com a regra dos 5%, saem 4 grupos e silhueta 0,30. Com os dados do PR #46 (recarregados em 05/11),
+  0,29 e grupos de 60, 77, 100 e 327 empresas no treino (`docs/REQUISITOS.md`, R5).
   Silhueta menor, grupos úteis. Os gráficos de antes e depois são `docs/graficos/silhueta_antes_ed4.png` e `silhueta.png`
-  (ainda da versão 0,30).
+  (refeito em 05/11: 0,29 em k = 4).
 - **5 empresas parecidas:** `NearestNeighbors` com 6 vizinhos, porque o 1º vizinho é a própria empresa e sai da lista
   (`raiox/segmentos.py:97-103`).
 

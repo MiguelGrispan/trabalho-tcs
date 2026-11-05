@@ -111,6 +111,9 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   no caminho: o README mandava `python -m venv`, que não funciona no Linux do Miguel (lá, `python3` é o 3.12); agora é `python3.14`.
   O `revisor` achou mais 2 erros fora do PR: a tela diz que os números vêm do banco (#56, Miguel) e os outros guias têm o mesmo
   `venv` (#57, Eduardo).
+- **05/11** · **ED16** (Eduardo): os 10 raio-x da Náthally de novo, com o Gemini e a Camil corrigida pelo #46. Agora 8 de 10
+  batem com a conferência manual dela (era 7); Magalu e RD Saúde seguem iguais à DFP e diferentes dela. O K-means e os gráficos
+  foram refeitos com os dados novos (silhueta 0,29; grupos de 60, 77, 100 e 327 no treino), e o `resultados.csv` trocado.
 
 ## Decisões (e por quê)
 

@@ -20,10 +20,10 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o `/fim-de-sessao` reescreve esta seção e apaga o que ficou velho)
 
-**Em qua 04/11, ~21h (Brasília)** (fim da MG5, Miguel com o Claude Code; as notas da MA4, da MA5 e da MG4b, de 04/11, e da
-MA3, de 03/11, continuam abaixo). Na `main`: PRs #1 a #16, #19 a #41, o #46 (MA3, fechou #17 e #42), o #47 (MG4b, fechou #38,
+**Em qui 05/11, ~9h30 (Brasília)** (fim da ED16, Eduardo com o Claude Code: os 10 raio-x da Náthally com a Camil corrigida; as
+notas da MG5, da MA4, da MA5 e da MG4b, de 04/11, e da MA3, de 03/11, continuam abaixo). Na `main`: PRs #1 a #16, #19 a #41, o #46 (MA3, fechou #17 e #42), o #47 (MG4b, fechou #38,
 #39 e #44), o #51 (MA3b; a #48 foi fechada à mão, depois da conferência do Miguel no Linux), o #52 (MA5, BPMN) e o #54 (MA4, EDA).
-**Aberto:** o #49 (Eduardo, rascunho do MA6) e o #55 (MG5, o PR desta nota).
+Também o #55 (MG5). **Aberto:** o #49 (Eduardo, rascunho do MA6) e o PR da ED16 (esta nota).
 Issues abertas: #43, #45 e #50 (Eduardo; a #50: o validador deixa passar "dobrou", "triplicou", "um quarto") e **#53 (Marcos,
 achada pela EDA):** a escala errada no primeiro ano da base escapa da limpeza, e a NTS aparece com crescimento de +107.154%.
 Do revisor no #55 (MG5): **#56 (Miguel)**, a tela diz que os números vêm do PostgreSQL, mas vêm da `data/indicadores.csv`; e
@@ -35,6 +35,17 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 **Faltam 2 dias para o código congelar (sex 06/11) e 12 para a entrega (seg 16/11).**
 
 ### O que já funciona (conferido)
+- **ED16 (Eduardo, 05/11): os 10 raio-x da Náthally de novo, com a Camil corrigida (#46) e o Gemini respondendo nos 10.**
+  No Mac do Eduardo, a `data/` ainda era de 30/10 (Camil com R$ 12,3 bi e +20%): `carregar_dfp.py` (384.591 linhas, 660 ativas),
+  `indicadores.py` e `python -m raiox.segmentos` de novo, com o PostgreSQL do compose. Camil (24228): R$ 11,1 bi e −1,2%.
+  Mesmos 10 casos da branch dela (`feat/metricas`, `Semana_02/casos_avaliacao.csv` = `avaliacao/casos_avaliacao.csv`).
+  **8 de 10 batem com a conferência dela nos 6 indicadores** (era 7 de 10); Magalu (5 de 6) e RD Saúde (3 de 6) seguem
+  diferentes dela e iguais à DFP (S2 do Marcos). 0 trechos removidos, nenhum número fora da tabela no texto (conferido por fora,
+  com regex), US$ 0,0116 no total, 2,5 s por caso em média. O `avaliacao/resultados.csv` foi trocado por essa rodada.
+  O arquivo para ela (`raiox_para_nathally.md`, os 10 JSON e o script) fica só na `data/nathally_05_11/` do Mac do Eduardo.
+  **K-means com os dados do #46:** k = 4, silhueta 0,29, grupos de 60, 77, 100 e 327 no treino (66, 91, 108 e 330 com as 595);
+  `docs/graficos/silhueta.png` e `grupos.png` refeitos; números trocados no REQUISITOS (R5 e R12) e na `docs/justificativa.md` §2.
+  O `docs/documentacao.md` do #49 ainda cita os números de 30/10 (327, 76, 59 e 102): trocar no MA6.
 - **Demo ponta a ponta** no `docker compose` e no Terraform (Mac do Eduardo, 03/11), tag `v0.1-demo` (`9689db9`): busca no
   PostgreSQL, raio-x sem IA (Vale, Embraer, Ambev) e com o Gemini (WEG, US$ 0,0011), cada consulta gravada na `consultas`.
   Com o Gemini fora do ar (chave falsa), a tela cai no modo sem IA, avisa e grava a consulta com custo 0.
@@ -149,11 +160,10 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
   #56** (a frase da tela sobre a origem dos números; qui 05/11, antes do vídeo) → MG6 roteiro e vídeo v0 (qui 05/11),
   gravado no Mac do Eduardo (o computador da banca). Avisar o grupo das mudanças em pastas comuns: `README.md`,
   `docs/arquitetura.png` e `tests/test_readme.py` (MG5), `tests/test_tela.py` (MG4b) e, da MG4, `.env.example` e `aprender/`.
-- **Náthally (obrigatório):** NA3 ROI mínimo (até qui 05/11) → NA4 slide de métricas (o "7 de 10" com a explicação da S2; a
-  Camil agora bate com a conferência dela em receita e crescimento, #46) → NA5 ética (base: `docs/etica.md`) → NA6 deck. Sugestões, se der tempo: seção 3.
+- **Náthally (obrigatório):** NA3 ROI mínimo (até qui 05/11) → NA4 slide de métricas (o "8 de 10" da rodada de 05/11, ED16, com a explicação da S2 para
+  Magalu e RD Saúde; a Camil bate nos 6 indicadores) → NA5 ética (base: `docs/etica.md`) → NA6 deck. Sugestões, se der tempo: seção 3.
 - **Eduardo:** ED13, a #43 (qua 04/11) → ED14, a #45 (travas no Windows, qui 05/11) → a #50 (validador e quantidade sem
-  algarismo; regra de ouro, antes do congelamento) → refazer `python -m raiox.segmentos` e os PNG
-  com os dados do #46 → ED9 tag `v1.0` e ED11 (sex 06/11) → **ED15: issue #57** (`python3.14 -m venv` no `CLAUDE.md` e no
+  algarismo; regra de ouro, antes do congelamento) → ✅ K-means e PNG com os dados do #46 (ED16) → ED9 tag `v1.0` e ED11 (sex 06/11) → **ED15: issue #57** (`python3.14 -m venv` no `CLAUDE.md` e no
   `aprender/`, antes do teste do zero) → ED10 teste do zero (sáb 07/11) → **MA6** (agora dele): rascunho do
   `docs/documentacao.md` no sáb 07/11 para o Marcos revisar; final e PDF na seg 09/11. O "[PENDENTE: diagrama · MG5, Miguel]"
   da seção 5 do rascunho (#49) já pode usar o `docs/arquitetura.png` (depois do merge do #55).
@@ -184,8 +194,7 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 - As 3 notas do código (`NOTAS_DO_CODIGO`, em `raiox/ia.py`) vão para a v3 das regras? (Náthally).
 
 ### Pendências pequenas (não travam)
-- Eduardo: `tests/test_aprender.py:19` exige exatamente "5 passed" no notebook; refazer os gráficos e os números do K-means
-  (`python -m raiox.segmentos`) depois do #46: os PNG de `docs/graficos/` são de 28/10.
+- Eduardo: `tests/test_aprender.py:19` exige exatamente "5 passed" no notebook.
 - Marcos: 3 testes fracos: `test_resolver_conflitos_trata_valor_vazio_como_divergente` (`tests/test_limpeza.py`) passa só pela ordem
   das linhas; `test_obter_indicadores_deixa_ausente_indicador_de_conta_ausente` (`tests/test_dados.py`) não olha o `ativo_total`;
   `test_calcular_exporta_…` não tem receita de 2 anos antes igual a zero.
@@ -289,6 +298,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | ED13 | qua 04/11 | — | consertar a **issue #43**: a tela aberta antes de carregar a CVM não acha a empresa (cache de `_base()`, `raiox/ia.py:51`). Guia §5: "funciona de ponta a ponta?" | `raiox/ia.py`, `tests/test_raio_x.py` | Manual | o passo a passo da #43 gera o raio-x da WEG; teste novo com essa ordem | PR que fecha #43 |
 | ED14 | qui 05/11 | — | consertar a **issue #45**: no Windows, o `guarda.py` lê a saída do Git em cp1252 (`.claude/hooks/guarda.py:89`), bloqueia commit e merge com `”` ou emoji no diff, e 8 testes das travas falham. Guia §2: "agentic coding" | `.claude/hooks/guarda.py`, `tests/test_guarda.py` | Manual | no Windows do Marcos, sem `PYTHONUTF8`: `python -m pytest -q tests/test_guarda.py` sem falhas e um commit com `”` no diff passa pela trava | PR que fecha #45 |
 | ED15 | sex 06/11 | — | consertar a **issue #57**: o `CLAUDE.md:142` e o `aprender/entenda-o-projeto.md:167` mandam `python -m venv .venv` (no Linux do Miguel não existe `python`); o `aprender/COMANDOS.md:16` e os 3 atalhos `.command` usam `python3 -m venv`, que lá é o 3.12. O README já usa `python3.14` (#55). `requisitos_projeto.MD`, Documentação: "instruções para executar" | `CLAUDE.md` (ok no grupo), `aprender/` | Manual | os 6 lugares com `python3.14 -m venv .venv` (Windows: `py -3.14`); antes do ED10 (sáb 07/11) | PR que fecha #57 |
+| ED16 | qui 05/11 | ✅ PR desta sessão | 10 raio-x para a Náthally com a Camil corrigida (#46), com o Gemini; K-means e PNG refeitos com os dados do #46 | `avaliacao/resultados.csv`, `docs/graficos/`, `data/nathally_05_11/` (só no Mac) | Manual | 8 de 10 batem com a conferência dela; 0 removidos; números do K-means trocados nos docs | `eduardo-raiox-nathally` |
 | ED12 | sáb 31/10 | ✅ PR #30 (na `main` em 02/11) | travas do Claude Code (R14 e guia §2, agentic coding): `.claude/settings.json`, `.claude/hooks/guarda.py`, subagent `revisor`, import do `requisitos_projeto.MD` | `.claude/`, `CLAUDE.md`, `AGENTS.md`, `README.md`, `aprender/claude-code.md`, `tests/test_guarda.py` | Plan | testes verdes; o hook bloqueia de verdade numa sessão | `eduardo-claude-config` |
 
 ### Marcos (Claude Code)
@@ -339,7 +349,7 @@ Para subir um arquivo:
 | NA1 | qua 28–qui 29/10 | ✅ regras v2 (PR #11) | regras v2 alinhadas ao código | `avaliacao/regras_prompt.md` | PR aberto |
 | NA2 | sex 30/10 | ✅ códigos (PR #10); ela ainda confere | preencher o `cd_cvm` dos 10 casos (WEG = 5410) | `avaliacao/casos_avaliacao.csv` | `tests/test_ponta_a_ponta.py` passa (o Eduardo roda) |
 | NA3 | até qui 05/11 | — | **Obrigatório, versão mínima: o ROI.** Cronometrar 1 vez a montagem manual de um raio-x (1 empresa, pelo site de RI) e 1 vez com a ferramenta, contando digitar, ler e conferir (não só os ~2 s da API), com a conta do ganho em 3 linhas (guia §7: "ROI ou a redução do tempo operacional"). *Sugestão:* 3 empresas no `tempo_manual.csv` e 3 testes com usuários (sem nome) | `docs/produto/` (ou `avaliacao/`) | 1 tempo medido e a conta do ROI |
-| NA4 | qua 04/11 | — | **Obrigatório: 1 slide de métricas** com os números do `avaliacao/resultados.csv` (10 casos, 0 trechos removidos, US$ 0,0012 por raio-x, 2,2 s) e o acerto: **7 de 10 batem com o RI** na conferência manual dela de 29/10 (as 3 que diferem estão na MA3). Sem o acerto, o slide parece melhor que a realidade, que o Eduardo tira com o Claude Code. *Sugestão:* `revisao.csv`, com a nota dela para cada raio-x | deck (e `avaliacao/revisao.csv`, se fizer) | o slide de métricas existe |
+| NA4 | qua 04/11 | — | **Obrigatório: 1 slide de métricas** com os números do `avaliacao/resultados.csv` (10 casos, 0 trechos removidos, US$ 0,0012 por raio-x, 2,5 s; rodada de 05/11) e o acerto: **8 de 10 batem com o RI** na conferência manual dela (Magalu e RD Saúde batem com a DFP oficial, S2 do Marcos). Sem o acerto, o slide parece melhor que a realidade, que o Eduardo tira com o Claude Code. *Sugestão:* `revisao.csv`, com a nota dela para cada raio-x | deck (e `avaliacao/revisao.csv`, se fizer) | o slide de métricas existe |
 | NA5 | sáb 07–dom 08/11 | — | **Obrigatório: o texto de governança e ética** (guia §2; §6: "análise de ética e segurança", no PDF): viabilidade, limites, viés, confiabilidade, alucinação, segurança de dados e uso responsável. Base pronta: `docs/justificativa.md`, seção 5. Deck com o tempo de cada parte | `docs/etica.md`, deck | o Marcos recebe a ética; todos os slides chegaram |
 | NA6 | seg 09–qua 11/11 | — | **Obrigatório: o deck final** (`requisitos_projeto.MD`, Documentação; guia §6) e ensaios cronometrados (guia §3: no máximo 20 min; guia §7 pede o ensaio; o grupo marcou 2) | deck | ensaio abaixo de 20 min |
 
