@@ -122,6 +122,10 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 - **05/11** · **Processo** (Eduardo): uma auditoria do projeto mostrou que os conflitos entre as branches vinham das notas:
   os PRs #46 a #59 mexeram todos no PLANO, no REQUISITOS e no HISTORICO, e o time esperava um pelo outro para fazer o merge.
   Agora só o Eduardo edita as notas, uma vez por dia; os outros escrevem o que mudou no PR, e o `/fim-de-sessao` mostra quem tem PR aberto.
+  No mesmo PR (#62), a trava parou de perguntar "o grupo sabe?" por CLAUDE.md, skills e CI: só pelo que desliga as travas.
+- **05/11** · **ED13, ED14 e #50** (Eduardo, PR #63): a tela aberta antes da carga da CVM agora acha a empresa sem reiniciar (#43);
+  o validador barra "dobrou", "triplicou" e "um quarto" (#50); a trava funciona no Windows, lendo e escrevendo em UTF-8 (#45,
+  falta o Marcos conferir lá). Cada teste novo falha sem o conserto.
 
 ## Decisões (e por quê)
 
