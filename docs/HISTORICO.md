@@ -106,6 +106,9 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 - **04/11** · **MA4** (Marcos): a EDA em `notebooks/eda.ipynb`, com 4 gráficos (nulos, distribuições, extremos, cobertura) e o
   porquê de cada decisão de limpeza e do K-means; um teste roda o notebook inteiro no CI. A EDA achou um erro que a limpeza
   deixava passar: a NTS tem 2023 de 1.000 a 2.000 vezes menor e aparecia com crescimento de +107.154% (issue #53, MA4b).
+- **04/11** · **MG5** (Miguel, PR #55): o README ganhou a seção "Arquitetura" (diagrama dos 2 contêineres, da `data/`, do Gemini,
+  da CVM e do Terraform) e a de "Pré-requisitos"; a mesma figura está em `docs/arquitetura.png` para o documento e o deck. Achado
+  no caminho: o README mandava `python -m venv`, que não funciona no Linux do Miguel (lá, `python3` é o 3.12); agora é `python3.14`.
 
 ## Decisões (e por quê)
 
@@ -141,6 +144,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 03/11 | a conexão com o banco desiste em 5 s | sem limite, o psycopg espera 130 s, e a tela ficava parada antes do aviso de banco desligado (a demo não pode travar) |
 | 03/11 | a tela só abre no próprio computador (`127.0.0.1`), no compose como no Terraform; o erro técnico da IA vai para "Detalhes técnicos" e para o log, nunca para o aviso | com a IA ligada, qualquer um no mesmo Wi-Fi (o do SENAI, no dia da banca) abria a tela e gastava crédito; quem precisar abrir de outro aparelho muda a porta de propósito. Um JSON do Google no telão não diz nada ao vendedor, mas quem conserta precisa dele |
 | 04/11 | a EDA importa do código os limites da checagem e o corte do K-means, em vez de copiar os números; vai para o Git já rodada; com os dados falsos, roda sem gravar os PNG | o notebook nunca discorda do código; a banca vê os gráficos no GitHub sem rodar nada; o CI confere o "Run All" sem tocar nos gráficos dos dados reais |
+| 04/11 | o diagrama de arquitetura é texto (Mermaid) dentro do README, e o PNG sai dele; um teste confere que ele só cita arquivos que existem | o GitHub desenha o Mermaid sozinho e o PR mostra a mudança como texto; uma figura só em imagem fica velha sem ninguém ver (lição de 29/10: documento velho confunde mais que documento nenhum) |
 
 **Já cortado do escopo:** verificação com yfinance, receita em 3 anos, filtro de setor, RAG, nome dos grupos pelo LLM,
 exportar o raio-x, 20 casos (ficaram 10). A lista e a ordem dos próximos cortes estão no PLANO, seção 7.
