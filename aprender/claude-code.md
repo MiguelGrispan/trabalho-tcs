@@ -9,8 +9,10 @@ As regras de uso de IA do time estão no [REGRAS-IA.md](../REGRAS-IA.md); este g
 2. Digite `/inicio-de-sessao XX`, trocando `XX` pelo código da sua sessão (não sabe? digite só `/inicio-de-sessao`).
    Ele atualiza a `main`, cria a sua branch e diz o que mudou e por onde começar.
 3. Trabalhe numa tarefa só. O Claude pede licença antes de mudar arquivos.
-4. No fim, digite `/fim-de-sessao`. Ele roda os testes, atualiza o PLANO e o HISTORICO, abre o PR, espera o CI, lê o diff e,
-   depois do seu "pode", faz o merge na `main`. Você não precisa mexer no GitHub.
+4. No fim, digite `/fim-de-sessao`. Ele roda os testes, escreve no PR o que mudou, abre o PR, mostra quem mais tem PR aberto,
+   espera o CI, lê o diff e, depois do seu "pode", faz o merge na `main`. Você não precisa mexer no GitHub nem nas notas
+   (PLANO, REQUISITOS, HISTORICO): só o Eduardo mexe nelas. Não precisa esperar ninguém, a não ser que ele avise que outro PR
+   aberto mexe no mesmo arquivo.
 5. Antes da próxima tarefa, digite `/clear`.
 
 ## Qual é a minha sessão?
@@ -135,8 +137,8 @@ sozinho, nem um comando de terminal (`sed -i`, `>`) de escrever na pasta de outr
 
 - Colar o conteúdo do `.env` ou qualquer chave na conversa.
 - Aceitar `git push --force`, `git rebase` ou commit direto na `main`, mesmo que ele sugira.
-- Aceitar mudança em pasta de outro dono sem combinar (a tabela de donos está no `CLAUDE.md`). Achou um erro lá? Peça
-  "abra uma issue para o dono e coloque no PLANO": o `/fim-de-sessao` faz (passo 6). Fique de olho nas issues com o seu nome:
+- Aceitar mudança em pasta de outro dono sem combinar (a tabela de donos está no `CLAUDE.md`). Achou um erro lá que quebra a
+  demo? Peça "abra uma issue para o dono": o `/fim-de-sessao` faz (passo 6). Fique de olho nas issues com o seu nome:
   `gh issue list --assignee @me`, ou a aba "Issues" do repositório no GitHub.
 - Subir algo que você não sabe explicar. Peça "explique o que você mudou e por quê", ou use `/explicar`.
 

@@ -147,8 +147,9 @@ para código. A IA escreve muito do código; **quem responde por ele é a pessoa
    (`docs/PLANO.md`, seção 0) antes de mexer em qualquer coisa.
 2. **Durante:** a IA segue o [CLAUDE.md](CLAUDE.md) (donos de cada pasta, regra de ouro, contratos) e o [REGRAS-IA.md](REGRAS-IA.md)
    (o que nunca vai para uma IA: chave, senha, dados pessoais). Toda afirmação sobre o código vem com arquivo e linha, ou com um comando que prova.
-3. **Fim:** `/fim-de-sessao` roda os testes, atualiza o PLANO, o REQUISITOS e o HISTORICO e abre o PR. O CI roda os testes de novo, e o merge
-   só acontece depois de um "pode" da pessoa.
+3. **Fim:** `/fim-de-sessao` roda os testes, escreve no PR o que mudou e abre o PR. O CI roda os testes de novo, um segundo Claude
+   revisa numa rodada, e o merge só acontece depois de um "pode" da pessoa. As notas do projeto (PLANO, REQUISITOS, HISTORICO) são
+   atualizadas por uma pessoa só, uma vez por dia: quando todo PR as editava, as branches entravam em conflito.
 4. **No PR, duas linhas obrigatórias** ([modelo](.github/pull_request_template.md)): o que foi feito com IA e o que o autor entendeu ou conferiu.
    Vale escrever "ainda não li"; o que não vale é inventar.
 5. **Na banca, cada um defende o seu código sem consulta:** a skill `/explicar` treina isso (ler, prever, rodar, explicar).
