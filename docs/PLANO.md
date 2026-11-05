@@ -89,7 +89,8 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
   `indicadores.csv` de antes); `checagem`: 179 "atenção" (eram 180), nenhum "erro". O notebook rodou de novo sem erro: extremos
   do crescimento 15 → 14, saltos de 500 vezes 7 → 5; só o `eda_2_distribuicoes.png` mudou. **Fica de fora, de propósito:** o
   JBS N.V. (salto no ativo, receita zero em 2023: falta o 2º sinal), FASA, TRV XLIII e Azevedo & Travassos; nenhum foi olhado na
-  CVM. Vão como limite conhecido no MA6 (seção "Dados e limpeza"). **Não conferido:** o efeito no K-means do #58 (Eduardo),
+  CVM. Vão como limite conhecido no MA6 (seção "Dados e limpeza"), com mais um (achado do `revisor`, já era assim antes do PR):
+  se o 1º **e** o 2º ano vêm em milhares e só o 3º vem certo, nenhum dos dois é pego. **Não conferido:** o efeito no K-means do #58 (Eduardo),
   refeito com a base de antes; o crescimento da NTS é cortado no percentil 95, e o p95 caiu de 1,33 para 1,30.
   Na máquina do Marcos, o `carregar_dfp.py` levou mais de 10 min (no Linux do Miguel, ~1 min 30 s).
 - **MG5 (Miguel, PR #55, 04/11): a arquitetura no README** (`guia_projeto_final.pdf` §6: "README.md detalhando a arquitetura,

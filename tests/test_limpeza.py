@@ -221,7 +221,9 @@ class LimpezaTests(unittest.TestCase):
             {**receita, "cd_cvm": "1", "ano": 2025, "valor": 5_000_000.0},
             {**ativo, "cd_cvm": "1", "ano": 2024, "valor": 80_000_000.0},
             {**ativo, "cd_cvm": "1", "ano": 2025, "valor": 90_000_000.0},
-            # Empresa 2 (como o JBS N.V.): o ativo salta 1000×, mas a receita do primeiro ano é zero
+            # Empresa 2 (como o JBS N.V.): o ativo salta 1000×, mas a receita do primeiro ano é zero.
+            # Quem a protege é a receita zero (não há escala para comparar), e não a condição do ativo;
+            # as empresas 1 e 3 é que provam o ativo.
             {**receita, "cd_cvm": "2", "ano": 2024, "valor": 0.0},
             {**receita, "cd_cvm": "2", "ano": 2025, "valor": 9_000_000_000.0},
             {**ativo, "cd_cvm": "2", "ano": 2024, "valor": 10_700_000.0},
