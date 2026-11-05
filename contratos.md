@@ -74,7 +74,7 @@ preparar_raio_x(cd_cvm: int, produto: str, objetivo: str) -> dict
 
 ## C4 · pasta `avaliacao/` · Náthally ⇄ Eduardo → Marcos
 
-`avaliacao/avaliar.py` (Eduardo) gera o `resultados.csv`; o Marcos escreve o `conferencia.csv` (conferência no RI, MA3); os outros arquivos são da Náthally. Resumo em `avaliacao/README.md`.
+`avaliacao/avaliar.py` (Eduardo) gera o `resultados.csv`; os outros arquivos são da Náthally. Resumo em `avaliacao/README.md`.
 
 | arquivo | quem escreve | colunas |
 |---|---|---|
@@ -83,7 +83,7 @@ preparar_raio_x(cd_cvm: int, produto: str, objetivo: str) -> dict
 | tempo_manual.csv | Náthally | empresa, minutos, fontes |
 | resultados.csv | Eduardo | caso_id, raio_x_json, n_removidos, tokens_entrada, tokens_saida, custo_usd, tempo_s |
 | revisao.csv | Náthally | caso_id, item, comparacao_certa, ligada_ao_produto, clara, utilidade |
-| conferencia.csv | Marcos | cd_cvm, indicador, valor_sistema, valor_ri, diferenca_pct, fonte, observacoes |
+| conferencia.csv | Náthally | cd_cvm, indicador, valor_sistema, valor_ri, diferenca_pct |
 | testes_usuarios.csv | Náthally | pessoa_id, cargo, minutos, utilidade, usaria, comentario |
 
 ## Datas de entrega entre pessoas
