@@ -25,7 +25,7 @@ depois do merge da MA4b, #59; as notas da MA4b, da MG5, da MA4, da MA5 e da MG4b
 Na `main`: PRs #1 a #16, #19 a #41, o #46 (MA3, fechou #17 e #42), o #47 (MG4b, fechou #38, #39 e #44), o #51 (MA3b; a #48 foi
 fechada à mão, depois da conferência do Miguel no Linux), o #52 (MA5, BPMN), o #54 (MA4, EDA), o #55 (MG5, arquitetura) e o #59
 (MA4b, fechou a **#53**). **Abertos:** o #49 (Eduardo, rascunho do MA6) e o #58 (Eduardo, ED16, o PR desta nota).
-Issues abertas: #43, #45 e #50 (Eduardo; a #50: o validador deixa passar "dobrou", "triplicou", "um quarto"); do revisor no #55:
+Issues abertas: #43, #45, #50 e #60 (Eduardo; a #60: os 10 casos de avaliação caem no mesmo grupo do K-means; a #50: o validador deixa passar "dobrou", "triplicou", "um quarto"); do revisor no #55:
 **#56 (Miguel)**, a tela diz que os números vêm do PostgreSQL, mas vêm da `data/indicadores.csv`; e **#57 (Eduardo)**, os guias
 criam o ambiente com `python` ou `python3`, que pode não ser o 3.14.
 **Depois do merge da MA4b, todos recarregam a `data/`** (`python scripts/carregar_dfp.py`, `python scripts/indicadores.py` e
@@ -102,8 +102,8 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
   do crescimento 15 → 14, saltos de 500 vezes 7 → 5; só o `eda_2_distribuicoes.png` mudou. **Fica de fora, de propósito:** o
   JBS N.V. (salto no ativo, receita zero em 2023: falta o 2º sinal), FASA, TRV XLIII e Azevedo & Travassos; nenhum foi olhado na
   CVM. Vão como limite conhecido no MA6 (seção "Dados e limpeza"), com mais um (achado do `revisor`, já era assim antes do PR):
-  se o 1º **e** o 2º ano vêm em milhares e só o 3º vem certo, nenhum dos dois é pego. **Não conferido:** o efeito no K-means do #58 (Eduardo),
-  refeito com a base de antes; o crescimento da NTS é cortado no percentil 95, e o p95 caiu de 1,33 para 1,30.
+  se o 1º **e** o 2º ano vêm em milhares e só o 3º vem certo, nenhum dos dois é pego. O efeito no K-means foi conferido na ED16 (#58), que refez
+  os grupos depois deste merge (60, 310, 88 e 106 no treino); o crescimento da NTS é cortado no percentil 95, e o p95 caiu de 1,33 para 1,30.
   Na máquina do Marcos, o `carregar_dfp.py` levou mais de 10 min (no Linux do Miguel, ~1 min 30 s).
 - **MG5 (Miguel, PR #55, 04/11): a arquitetura no README** (`guia_projeto_final.pdf` §6: "README.md detalhando a arquitetura,
   pré-requisitos e instruções de execução"; §3, minutos 3–6). Seção "Arquitetura" com o diagrama em Mermaid (o GitHub desenha

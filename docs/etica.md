@@ -39,7 +39,7 @@ traz a "base", o indicador que a motivou, visível na tela. **O que não resolve
   margem EBIT acima de 100% em valor absoluto (holdings, sem operação), segundo o `scripts/avaliar_corte_receita.py` (rodado em 30/10; `docs/PLANO.md`, seção 0). Essas empresas
   **recebem um grupo mesmo assim**, o mais próximo, sem terem ajudado a formá-lo (`segmentar()`, `raiox/segmentos.py:83-95`).
   Para elas, a comparação com o grupo é menos confiável. E elas também entram na mediana e no tamanho do grupo mostrados na tela
-  (ex.: o grupo da WEG tem 330 empresas na tela, mais que no treino).
+  (ex.: o grupo da WEG tem 312 empresas na tela e 310 no treino; dados de 05/11).
 - **Extremos cortados nos percentis 5 e 95** (`CORTE`, `raiox/segmentos.py:36`): só para o modelo; os números mostrados são os reais.
   Uma empresa muito fora da curva fica num grupo que não a representa bem.
 - **Grupo por perfil financeiro, não por setor:** as 5 variáveis são receita, crescimento, margens e endividamento
@@ -49,7 +49,7 @@ traz a "base", o indicador que a motivou, visível na tela. **O que não resolve
   A tela precisa dizer isso (sugestão para a NA5 e o deck).
 - **Os 10 casos de avaliação caem no mesmo grupo** (o maior, com 312 empresas e receita mediana de R$ 3,6 bi; rodadas de 29/10 e
   05/11). A Petrobras (R$ 497,5 bi de receita) é comparada com esse grupo: "acima do grupo" diz pouco para uma empresa desse porte.
-  É um limite do K-means com 4 grupos, não um erro de dado (issue a abrir para o Eduardo).
+  É um limite do K-means com 4 grupos, não um erro de dado (issue #60, Eduardo).
 - **Silhueta 0,29:** os grupos se sobrepõem. É uma régua de comparação, não uma classificação exata
   ([justificativa.md](justificativa.md), seção 2, explica por que 0,77 enganava).
 
