@@ -61,8 +61,3 @@ ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marc
   2 lugares. Arquivo ou link a inserir: ________
 - [ ] **Ensaio de até 20 minutos** · a confirmar · falta registrar data, tempo medido e quem falou cada parte (guia §3).
   Arquivo ou link a inserir: ________
-
-## Fora da lista, mas pode confundir a banca
-
-- [ ] O arquivo antigo `docs/Raio-X Comercial.pdf` (30/10) ainda está no repositório e fala de SQLite, que o professor não
-  aceita. Falta o grupo decidir se ele sai antes da entrega.

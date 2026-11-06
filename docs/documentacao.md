@@ -474,7 +474,11 @@ O que resolve, no fim, é a leitura humana. Por isso o raio-x é apoio, e não d
 - **O erro técnico da IA não aparece para o vendedor:** o aviso tem uma frase, e o erro do Google vai para "Detalhes técnicos" e
   para o log (PR #47, issue #38).
 - **O que vai para o Gemini:** o setor, os indicadores já formatados com a posição, o tamanho do grupo, o produto e o objetivo.
-  Nem o nome da empresa vai (`montar()`, `raiox/ia.py`). [PENDENTE: citar a política de uso de dados do Google para a API paga]
+  Nem o nome da empresa vai (`montar()`, `raiox/ia.py`). A chave do projeto usa o plano pago (pré-pago, com cobrança), e os termos
+  da API do Gemini para os serviços pagos ("Gemini API Additional Terms of Service", em vigor desde 23/03/2026, conferidos em
+  06/11) dizem que o Google **não usa os prompts nem as respostas para melhorar os produtos dele**; guarda os registros por um
+  tempo limitado, só para detectar abuso e por exigência legal, e pode armazená-los em qualquer país. No plano gratuito é o
+  contrário: o conteúdo pode ser lido por revisores humanos e usado para melhorar os produtos.
 - **O que fica gravado:** a tabela `consultas` guarda empresa, produto, objetivo, tempo e custo. Não há dado pessoal, mas o produto
   e o objetivo são texto livre: o vendedor não deve escrever nome de pessoa ou dado sigiloso ali.
 - **Travas na IA de programação:** a IA que ajudou a escrever o código não lê o `.env`, não faz commit de dados nem de chaves e
@@ -619,7 +623,6 @@ recebe) é outro: `avaliacao/regras_prompt.md`.
 |---|---|---|
 | ROI: 1 raio-x montado à mão e cronometrado, contra a ferramenta (seções 1 e 7.7) | Náthally (NA3) | o quanto antes; sem ele, o documento não fala em ganho de tempo |
 | texto final de ética na seção 7 e a viabilidade | Náthally (NA5) | sáb 07 a dom 08/11 |
-| política de uso de dados do Google para a API paga (7.5) | Náthally ou Eduardo | seg 09/11 |
 | tag `v1.0` e datas reais do congelamento (seção 2); números do Apêndice A conferidos de novo na `v1.0` | Eduardo | seg 09/11 |
 | data e horário da banca; resposta à pergunta 3 (seção 6.3) | professor (o Eduardo pergunta) | — |
 | leitura do documento inteiro (seção 4 contra o BPMN; seção 3 contra a EDA) | Marcos | sáb 07/11 |
