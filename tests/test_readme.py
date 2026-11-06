@@ -20,6 +20,8 @@ def _diagrama():
 def test_diagrama_so_cita_arquivos_que_existem():
     caminhos = set(re.findall(r"[\w*-]+(?:/[\w*-]+)*\.(?:py|tf|yml)", _diagrama()))
     assert len(caminhos) >= 8                              # a busca achou os arquivos (não passa por estar vazia)
+    if not (RAIZ / ".git").exists():                       # dentro do contêiner: o .dockerignore deixa a infra/ fora
+        caminhos = {c for c in caminhos if not c.startswith("infra/")}   # da imagem (o CI confere a infra/ inteira)
     faltando = sorted(c for c in caminhos if not any(RAIZ.glob(c)))
     assert faltando == []                                  # renomeou ou apagou? atualize o diagrama e o PNG
 
