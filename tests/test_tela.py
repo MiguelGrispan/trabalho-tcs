@@ -96,6 +96,15 @@ def test_tela_abre_com_dados_falsos_e_avisa():
     assert "empresas e números inventados" in textos(at.warning)
 
 
+def test_tela_diz_de_onde_vem_cada_coisa_com_dados_reais(dados_reais):            # issue #56
+    at = abrir()                                                 # abrir não usa o banco: roda sem PostgreSQL
+    assert not at.exception
+    legendas = textos(at.caption)
+    assert "Empresas buscadas no banco PostgreSQL" in legendas
+    assert "data/indicadores.csv" in legendas                    # os números vêm do CSV, como diz o README
+    assert "buscados no banco" not in legendas                   # a frase antiga dizia que os números vinham do banco
+
+
 def test_tela_gera_raio_x_com_dados_falsos():
     at = gerar(abrir())
     assert not at.exception and not at.error

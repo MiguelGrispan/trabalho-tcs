@@ -48,10 +48,22 @@ INDICADORES = {
 
 
 # ------------------------------------------------------------------ dados
-@lru_cache(maxsize=1)
 def _base() -> pd.DataFrame:
+    """A tabela do raio-x, guardada na memória enquanto a fonte não muda (issue #43).
+    A chave muda quando a fonte troca (falsos → CVM real) ou o data/indicadores.csv é refeito: sem ela, a tela aberta
+    antes de carregar a CVM guardava a tabela falsa até ser reiniciada ("Empresa ... não está na tabela de indicadores")."""
+    falsos = segmentos.usando_falsos()
+    versao = None if falsos else segmentos.ARQ_INDICADORES.stat().st_mtime_ns   # data e hora em que o arquivo mudou
+    return _base_em_cache(falsos, versao)
+
+
+@lru_cache(maxsize=1)
+def _base_em_cache(falsos: bool, versao: int | None) -> pd.DataFrame:
     df, _ = segmentos.carregar_indicadores()
     return segmentos.carregar_segmentos(df)
+
+
+_base.cache_clear = _base_em_cache.cache_clear   # os testes limpam a memória por aqui (tests/conftest.py)
 
 
 def fmt(v, tipo: str) -> str:
@@ -222,7 +234,11 @@ POR_EXTENSO = re.compile(
     r"\b(zero|dois|duas|tr[êe]s|quatro|cinco|seis|sete|oito|nove|dez|onze|doze|treze|catorze|quatorze|quinze"
     r"|dez[ea]sseis|dez[ea]ssete|dezoito|dez[ea]nove|vinte|trinta|quarenta|cinquenta|sessenta|setenta|oitenta|noventa"
     r"|cem|cento|(?:duz|trez|quatroc|quinh|seisc|setec|oitoc|novec)ent[oa]s|mil|milhão|milhões|bilhão|bilhões"
-    r"|trilhão|trilhões|dezenas?|centenas?|milhar|milhares|dúzias?|dobro|triplo|metade|terços?|por cento)\b",
+    r"|trilhão|trilhões|dezenas?|centenas?|milhar|milhares|dúzias?|dobro|triplo|metade|terços?|por cento"
+    # quantidade em verbo ou fração (issue #50): "a receita dobrou", "triplicou", "um quarto da receita".
+    # "quarto" sozinho fica de fora: é ordinal em "quarto trimestre". "duplicata" e "duplicidade" ficam: não são quantidade.
+    r"|dobr(?:a|am|e|em|ou|aram|ar|ará|arão|aria|ariam|ando|ad[oa]s?)|duplic(?!at|id)\w*|triplic\w*|quadruplic\w*"
+    r"|qu[aá]drupl[oa]s?|um\s+(?:quarto|quinto|sexto|sétimo|oitavo|nono|décimo)|meio\s+(?:ponto|por\s+cento))\b",
     re.IGNORECASE)
 NOMES_DOS_INDICADORES = re.compile("|".join(re.escape(v[1]) for v in INDICADORES.values()), re.IGNORECASE)
 

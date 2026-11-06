@@ -148,15 +148,16 @@ class LimpezaTests(unittest.TestCase):
     def test_resolver_conflitos_trata_valor_vazio_como_divergente(self):
         """Um diz 100, o outro não diz nada: na dúvida, ninguém ganha. 🤷"""
         chave = {"ano": 2025, "cd_cvm": "1", "demonstracao": "DRE", "cd_conta": "3.01"}
-        contas = pd.DataFrame([
-            {**chave, "valor": float("nan")},
-            {**chave, "valor": 100.0},
-        ])
+        # Nas duas ordens: com o vazio na frente, "fica a primeira linha" também
+        # daria vazio, e o teste passaria sem conferir a regra
+        for valores in ([float("nan"), 100.0], [100.0, float("nan")]):
+            with self.subTest(valores=valores):
+                contas = pd.DataFrame([{**chave, "valor": valor} for valor in valores])
 
-        resultado = resolver_conflitos(contas)
+                resultado = resolver_conflitos(contas)
 
-        self.assertEqual(len(resultado), 1)
-        self.assertTrue(pd.isna(resultado.iloc[0]["valor"]))
+                self.assertEqual(len(resultado), 1)
+                self.assertTrue(pd.isna(resultado.iloc[0]["valor"]))
 
     def test_escala_errada_corrige_queda_de_mil_vezes_em_sequencia(self):
         """Disse UNIDADE, mandou milhares, e repetiu no ano seguinte. 🔁"""

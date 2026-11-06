@@ -122,6 +122,13 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   foram refeitos com os dados novos, já com o #59 (silhueta 0,29; grupos de 60, 310, 88 e 106 no treino), e o `resultados.csv` trocado.
   As 2 diferenças foram explicadas abrindo os PDFs dela: a RD Saúde estava em "Pré-IFRS 16" (sem os aluguéis das lojas) e o
   Magalu com outra conta do EBIT. Não é erro de dado, é definição; o sistema segue a DFP oficial.
+- **05/11** · **Processo** (Eduardo): uma auditoria do projeto mostrou que os conflitos entre as branches vinham das notas:
+  os PRs #46 a #59 mexeram todos no PLANO, no REQUISITOS e no HISTORICO, e o time esperava um pelo outro para fazer o merge.
+  Agora só o Eduardo edita as notas, uma vez por dia; os outros escrevem o que mudou no PR, e o `/fim-de-sessao` mostra quem tem PR aberto.
+  No mesmo PR (#62), a trava parou de perguntar "o grupo sabe?" por CLAUDE.md, skills e CI: só pelo que desliga as travas.
+- **05/11** · **ED13, ED14 e #50** (Eduardo, PR #63): a tela aberta antes da carga da CVM agora acha a empresa sem reiniciar (#43);
+  o validador barra "dobrou", "triplicou" e "um quarto" (#50); a trava funciona no Windows, lendo e escrevendo em UTF-8 (#45,
+  falta o Marcos conferir lá). Cada teste novo falha sem o conserto.
 
 ## Decisões (e por quê)
 
@@ -162,6 +169,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 04/11 | o documento do projeto (MA6) passa ao Eduardo | o Marcos tinha 4 sessões (MA3 a MA6); o Eduardo escreveu a base (justificativa, ética, HISTORICO) |
 | 04/11 | o documento é escrito em markdown (`docs/documentacao.md`) e o PDF é gerado dele | o PR mostra o que mudou, cada número tem a fonte ao lado (Apêndice A) e corrigir leva um minuto; o guia §6 pede PDF, o `requisitos_projeto.MD` aceita markdown: vale o mais exigente |
 | 05/11 | escala errada no primeiro ano da empresa: corrigida só quando a receita **e** o ativo estão ~1.000 vezes menores que no ano seguinte (decisão do Marcos) | o primeiro ano não tem anterior para comparar; um salto de 1.000 vezes só na receita pode ser uma empresa que começou a operar, e multiplicar esse ano por 1.000 inventaria um número. Com os 2 sinais, a NTS é corrigida e mais nenhuma empresa muda |
+| 05/11 | só o Eduardo edita o PLANO, o REQUISITOS e o HISTORICO, uma vez por dia; os outros PRs trazem "Para as notas" na descrição. O revisor faz uma rodada só, e até 16/11 só vira issue o que quebra a demo, um requisito do professor ou a regra de ouro. O `/fim-de-sessao` e o `/inicio-de-sessao` mostram quem tem PR aberto e quais arquivos ele mexe | todo PR reescrevia o mesmo parágrafo da seção 0, então todo merge virava conflito e ninguém sabia quem estava fazendo PR: o time esperava. 78 commits tinham mexido no PLANO e 39 no código. Com as notas num PR só, o conflito só acontece quando dois PRs mexem no mesmo arquivo, e o Claude mostra quando é o caso |
 
 **Já cortado do escopo:** verificação com yfinance, receita em 3 anos, filtro de setor, RAG, nome dos grupos pelo LLM,
 exportar o raio-x, 20 casos (ficaram 10). A lista e a ordem dos próximos cortes estão no PLANO, seção 7.

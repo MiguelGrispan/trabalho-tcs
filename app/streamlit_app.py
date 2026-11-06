@@ -8,7 +8,8 @@ Rodar (o tema em .streamlit/config.toml só vale rodando de dentro de app/):
 Contratos que a tela usa:
   C1 · buscar_empresas, registrar_consulta  → raiox/dados.py do Marcos (PostgreSQL)
   C3 · preparar_raio_x                       → raiox/ia.py do Eduardo
-Dados: com a data/indicadores.csv real, a busca e o registro de cada consulta usam o PostgreSQL (raiox/dados.py).
+Dados: com a data/indicadores.csv real, a busca e o registro de cada consulta usam o PostgreSQL (raiox/dados.py);
+os números do raio-x vêm da própria data/indicadores.csv (raiox/segmentos.py).
 Com RAIOX_DADOS=falsos, ou sem a data/, tudo vem dos arquivos FALSOS (pasta falsos/), com o mesmo formato.
 IA: com RAIOX_IA_REAL=1 o texto é escrito pelo Gemini (o aprender/atalhos/rodar_tela_com_ia.command faz isso).
 Se o Gemini não responder, a tela monta o texto sem IA, avisa em uma frase e guarda o erro em "Detalhes técnicos".
@@ -68,7 +69,8 @@ st.caption("Prepare a primeira reunião com uma companhia aberta: números da CV
 if DADOS_FALSOS:
     st.warning("Versão de teste: empresas e números inventados.")
 else:
-    st.caption("Empresas e números da CVM (DFP), buscados no banco PostgreSQL.")
+    # Igual ao README ("Arquitetura"): só a busca e o registro usam o banco; os números vêm do CSV (issue #56).
+    st.caption("Empresas buscadas no banco PostgreSQL; números da CVM (DFP), lidos da data/indicadores.csv.")
 # Quem escreveu o texto (Gemini ou sem IA) só se sabe depois de gerar: a legenda começa pelo modo e é trocada mais abaixo.
 origem_do_texto = st.empty()
 origem_do_texto.caption("IA ligada: o texto será escrito pelo Gemini." if USAR_IA_REAL
