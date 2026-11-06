@@ -74,7 +74,7 @@ O projeto durou 4 semanas (19/10 a 16/11/2026). O detalhe de cada passo está no
 - **Integração contínua** (27/10): testes automáticos em todo PR, versões fixas (Python 3.14) e os primeiros 3 raio-x com dados
   reais (595 empresas). O teste revelou um problema: o K-means pôs 567 das 595 empresas num grupo só.
 - **Segmentação consertada** (PR #9, 28/10): receita mínima de R$ 10 mi, extremos cortados e menor grupo com 5% ou mais.
-  A silhueta caiu de 0,77 para 0,30, mas os grupos passaram a ser úteis (seção 6).
+  A silhueta caiu de 0,77 para 0,30 (0,286 com os dados de 05/11), mas os grupos passaram a ser úteis (seção 6).
 - **Prompt da Náthally no código** (PR #11, 29/10): o Gemini lê o arquivo de regras dela, sem cópia. **Avaliação com 10 casos
   reais** (PR #20): 0 trechos removidos pelo validador (seção 8).
 - **PostgreSQL** (PRs #21 e #22, 29 e 30/10): o professor fixou o PostgreSQL em aula (SQLite não vale); o CI passou a subir um

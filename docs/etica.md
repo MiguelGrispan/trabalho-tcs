@@ -13,7 +13,7 @@ Atende:
 
 | risco | o que fizemos | prova |
 |---|---|---|
-| O LLM inventa ou arredonda um número (alucinação) e o vendedor leva um dado falso para a reunião | o LLM só escreve marcadores como `{margem_ebit}`; o código coloca os valores; o validador apaga o trecho com algarismo, número ou quantidade por extenso (desde o PR #63, também "dobrou", "triplicou", "um quarto") ou marcador inventado | `checar()` e `validar_e_preencher()`, `raiox/ia.py:230-282`; testes `test_validador_*` e `test_regra_de_ouro_*` em `tests/test_raio_x.py` |
+| O LLM inventa ou arredonda um número (alucinação) e o vendedor leva um dado falso para a reunião | o LLM só escreve marcadores como `{margem_ebit}`; o código coloca os valores; o validador apaga o trecho com algarismo, número ou quantidade por extenso (desde o PR #63, também "dobrou", "triplicou", "um quarto") ou marcador inventado | `checar()` e `validar_e_preencher()`, `raiox/ia.py:230-297`; testes `test_validador_*` e `test_regra_de_ouro_*` em `tests/test_raio_x.py` |
 | Resultado medido | 10 raio-x reais: 0 trechos removidos, US$ 0,001185 cada (estimativa pelos tokens), 2,15 s em média (montagem + Gemini + validação). O "0 removidos" mede só o texto; a conferência dos números é a da seção 4 (8 de 10) | `avaliacao/resultados.csv` (rodada de 05/11, ED16; a primeira foi a ED7, PR #20) |
 
 ## 2. Alucinação que o validador **não** pega
@@ -24,14 +24,14 @@ O validador barra números, não ideias: olha a forma do texto, não o sentido. 
 - **afirmação falsa sem número:** "a empresa perdeu clientes para a concorrência" não tem número nem marcador e passa;
 - **pergunta enviesada ou com suposição falsa:** ex.: "como a gestão avalia o impacto dos custos na margem EBIT?" supõe que os custos
   são o problema; a margem pode ser baixa por outro motivo;
-- **"acima" ou "abaixo" trocado no texto:** a posição é calculada por código e entregue ao modelo (`montar()`, `raiox/ia.py:74`),
+- **"acima" ou "abaixo" trocado no texto:** a posição é calculada por código e entregue ao modelo (`montar()`, `raiox/ia.py:86`),
   mas a palavra na frase é o LLM que escreve, e o validador não confere. O que protege: a regra 4 do prompt
   (`avaliacao/regras_prompt.md`) e o cartão de cada indicador na tela, que mostra a posição calculada pelo código;
 - **lacuna genérica:** "pessoas que decidem a compra" serve para qualquer empresa;
 - **interpretação de setor:** o modelo pode associar a empresa a um negócio que ela não tem.
 
 O que reduz o risco: as regras do prompt da Náthally proíbem palavras de intensidade e lacuna em forma de pergunta
-(`avaliacao/regras_prompt.md`, lido por `regras()`, `raiox/ia.py:141`); `temperature=0.2` (`raiox/ia.py:161`); cada pergunta
+(`avaliacao/regras_prompt.md`, lido por `regras()`, `raiox/ia.py:153`); `temperature=0.2` (`raiox/ia.py:173`); cada pergunta
 traz a "base", o indicador que a motivou, visível na tela. **O que não resolve:** só a leitura humana. Por isso a seção 5.
 
 ## 3. Viés e limites do modelo de ML (K-means + vizinhos)
@@ -80,15 +80,15 @@ traz a "base", o indicador que a motivou, visível na tela. **O que não resolve
 ## 5. Uso responsável
 
 - **Apoio, não decisão:** o raio-x prepara a primeira reunião. O vendedor confere antes de usar; o aviso está na tela
-  ("Confira antes de usar...", `app/streamlit_app.py:187`).
-- **Não é recomendação de investimento** (mesmo aviso, `app/streamlit_app.py:187`).
+  ("Confira antes de usar...", `app/streamlit_app.py:205`).
+- **Não é recomendação de investimento** (mesmo aviso, `app/streamlit_app.py:207`).
 - **Dados públicos e de empresas, não de pessoas:** a DFP é publicada pela CVM. O sistema não guarda dado pessoal de cliente;
   a tabela `consultas` grava empresa, produto, objetivo, tempo e custo (`raiox/dados.py`, `registrar_consulta`).
   Atenção: o produto e o objetivo são texto livre; o vendedor não deve escrever nome de pessoa ou dado sigiloso ali.
 - **O que vai para o Gemini:** o setor, os indicadores já formatados com a posição no grupo, o tamanho do grupo, o produto e o
-  objetivo. Nem o nome da empresa vai (`entrada`, `raiox/ia.py:102-103`).
+  objetivo. Nem o nome da empresa vai (`entrada`, `raiox/ia.py:114-115`).
 - **Se a IA falhar, a ferramenta continua:** a tela monta o texto sem IA, com os mesmos números, e avisa. Conferido em 03/11 com uma
-  chave inválida (erro na hora; o caso de rede travada, ~30 s, só tem teste: `test_gemini_desiste_rapido_se_a_api_travar`) no `docker compose`: WEG gerada sem IA, aviso na tela, consulta gravada com custo 0 (`app/streamlit_app.py:49-55`).
+  chave inválida (erro na hora; o caso de rede travada, ~30 s, só tem teste: `test_gemini_desiste_rapido_se_a_api_travar`) no `docker compose`: WEG gerada sem IA, aviso na tela, consulta gravada com custo 0 (`app/streamlit_app.py:50-57`).
 - **Custo baixo e acompanhado:** ≈ US$ 0,0012 por raio-x. Não há limite de chamadas na tela; o controle é uma combinação do time
   (mais de 10 chamadas, o grupo é avisado: `CLAUDE.md`, "Cuidados").
 
