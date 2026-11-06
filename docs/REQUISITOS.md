@@ -11,7 +11,7 @@ o status, quem é o dono, a prova e o que a banca vai ver. As sessões que fecha
 **Como atualizar:** quando um PR fechar uma linha, troque o status e escreva a prova (arquivo, linha ou comando) no mesmo PR.
 
 Legenda: ✅ feito · 🟡 em parte · ⬜ falta · ❓ não verificado.
-Estado em **sex 06/11/2026** (MA6, PR #49: R6b e D2; #63: R6 e R7; #62: R8; ED16: R4, R5, R10 e R12; MG5: R9 e D1b; MA5: R1 e R7; MA3b: R6 e R7; MG4b, com o #46 mesclado: R7, R9, R10 e R13; conferência do Marcos depois do #47: D1, D2 e R12; MA3 e revisão geral de 03/11: R2, R3 e R12; D1b e D1c de 31/10; o resto, de 30/10).
+Estado em **sex 06/11/2026** (MA6, PR #49: R6b e D2; #65: R1; #66: R8 e R9; #63: R6 e R7; #62: R8; ED16: R4, R5, R10 e R12; MG5: R9 e D1b; MA5: R1 e R7; MA3b: R6 e R7; MG4b, com o #46 mesclado: R7, R9, R10 e R13; conferência do Marcos depois do #47: D1, D2 e R12; MA3 e revisão geral de 03/11: R2, R3 e R12; D1b e D1c de 31/10; o resto, de 30/10).
 As provas foram conferidas lendo o código ou rodando o comando indicado.
 
 ## Regras do professor (além do guia)

@@ -129,6 +129,10 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 - **05/11** · **ED13, ED14 e #50** (Eduardo, PR #63): a tela aberta antes da carga da CVM agora acha a empresa sem reiniciar (#43);
   o validador barra "dobrou", "triplicou" e "um quarto" (#50); a trava funciona no Windows, lendo e escrevendo em UTF-8 (#45,
   falta o Marcos conferir lá). Cada teste novo falha sem o conserto.
+- **06/11** · Marcos: o BPMN corrigido (#65) e os testes passando dentro do contêiner (#66). **MA6, rascunho 2** (Eduardo com o
+  Claude Code, PR #49): o documento com BPMN, arquitetura e EDA, os limites do K-means e do validador ditos com exemplo, e o
+  índice das entregas (`docs/ENTREGAS.md`); sai o PDF velho que falava de SQLite. Achado: o professor ainda não tem acesso ao
+  repositório privado.
 
 ## Decisões (e por quê)
 

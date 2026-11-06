@@ -21,22 +21,28 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o Eduardo reescreve esta seção uma vez por dia e apaga o que ficou velho)
 
-**Em qui 05/11, ~12h (Brasília)** · último PR levado: #63 (Eduardo com o Claude Code: auditoria do projeto, processo enxuto no #62
-e os 3 bugs do Eduardo no #63; as notas da ED16, da MA4b, da MG5, da MA4, da MA5 e da MG4b continuam abaixo).
-Na `main`: PRs #1 a #16, #19 a #41, #46, #47, #51, #52, #54, #55, #58, #59, #62 e o #63 (fecha **#43**, **#45** e **#50**).
-**Abertos:** o #49 (Eduardo, rascunho do MA6) e o **#61 (Miguel, MG5b: a frase da tela, fecha a #56)**; o #61 foi aberto antes da
-regra nova e mexe nas notas: no `/fim-de-sessao`, o Claude dele volta as notas para a versão da `main` (passo 4).
-Issues abertas: #56 (Miguel, no #61), #57 (Eduardo, ED15) e #60 (Eduardo: os 10 casos de avaliação caem no mesmo grupo do K-means;
-fica como limite na ética e treino de resposta para a banca, sem re-treinar).
-**Depois do merge da MA4b (#59), todos recarregam a `data/`** (`python scripts/carregar_dfp.py`, `python scripts/indicadores.py` e
-`python -m raiox.segmentos`; o Miguel também no banco do compose). Desde o #63, a tela aberta não precisa ser reiniciada depois da carga.
-Testes na branch do #63: 266 passed, nenhum pulado (Mac do Eduardo, PostgreSQL do compose ligado, 05/11).
-Auditoria de 05/11 (fora do repositório, no Mac do Eduardo: `~/projeto_final_tcs/auditoria-05-11.md`): o código passa nos requisitos;
-**o risco está nos entregáveis** (deck, ROI medido, vídeo, ética final).
-A versão longa desta seção ficou no Git: `git show 9f85bc9:docs/PLANO.md` (até 03/11) e `git show 88ca4d5:docs/PLANO.md` (até a ED16).
+**Em sex 06/11, ~12h (Brasília)** · último PR levado: #66 (Eduardo com o Claude Code: MA6, rascunho 2 do documento, no #49).
+Na `main`: PRs #1 a #16, #19 a #41, #46, #47, #51, #52, #54, #55, #58, #59 e #61 a #66, e o #49 (MA6) depois deste merge.
+- **#61 (Miguel, 05/11):** a legenda da tela diz de onde vem cada número (busca e consultas no PostgreSQL; números da
+  `data/indicadores.csv`); fecha a #56.
+- **#64 (Marcos, 05/11):** saem `scripts/verificar_automatico.py`, `scripts/graficos.py`, `scripts/dados.py`, o `yfinance` e 14
+  testes; 2 testes mais fortes. A #45 foi conferida no Windows do Marcos sem o `PYTHONUTF8`: `tests/test_guarda.py` → 144 passed.
+- **#65 (Marcos, 06/11):** o BPMN diz que as parecidas vêm dos vizinhos mais próximos e que o Gemini recebe os valores (R1).
+- **#66 (Marcos, 06/11):** o `tests/test_readme.py` passa dentro do contêiner, onde não há `infra/` (R8, R9).
+- **#49 (MA6, Eduardo, 06/11):** `docs/documentacao.md` e `.pdf` (rascunho 2, 21 páginas) com BPMN, arquitetura e EDA; K-means
+  conferido na base de 05/11 (k = 4, silhueta 0,286, os 10 casos no grupo de 312); o que o validador não pega (marcador no
+  indicador errado, afirmação falsa sem número); 2,15 s e US$ 0,001185 por raio-x; política de dados da API paga do Google.
+  Índice das entregas em `docs/ENTREGAS.md`. Sai o `docs/Raio-X Comercial.pdf` (falava de SQLite).
+Issues abertas: #57 (Eduardo, ED15) e #60 (Eduardo: limite do K-means, declarado no documento, sem re-treinar).
+**Achado de 06/11: o repositório é privado e o professor não é colaborador** (`gh api repos/MiguelGrispan/trabalho-tcs/collaborators`
+→ só os 4 do grupo). O Miguel (admin) precisa convidá-lo antes de 16/11.
+**Faltam nos entregáveis:** ROI medido (NA3), ética final (NA5), link do deck no `docs/ENTREGAS.md`, vídeo (MG6), ensaio, tag `v1.0`.
+Testes na branch do #49, com a `main` mesclada: 256 passed, nenhum pulado (Mac do Eduardo, PostgreSQL do compose ligado, 06/11).
+A versão longa desta seção ficou no Git: `git show 9f85bc9:docs/PLANO.md` (até 03/11), `git show 88ca4d5:docs/PLANO.md` (até a ED16)
+e `git show 169574b:docs/PLANO.md` (até 05/11).
 O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 
-**Falta 1 dia para o código congelar (sex 06/11) e 11 para a entrega (seg 16/11).**
+**O código congela hoje (sex 06/11); faltam 10 dias para a entrega (seg 16/11).**
 
 ### O que já funciona (conferido)
 - **Processo enxuto (#62, Eduardo, 05/11):** só o Eduardo edita o PLANO, o REQUISITOS e o HISTORICO; os outros escrevem "Para as
@@ -49,7 +55,7 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
   - **#50:** o validador barra "dobrou", "triplicou", "um quarto"... e deixa "quarto trimestre". Nenhum dos 80 trechos do Gemini
     nos 10 casos seria barrado;
   - **#45:** a trava lê e escreve em UTF-8 no Windows. Conferido só no Mac, com o terminal simulado (`PYTHONIOENCODING=cp1252`);
-    **falta o Marcos conferir no Windows**, sem o `PYTHONUTF8`.
+    conferido pelo Marcos no Windows, sem o `PYTHONUTF8`, no #64 (144 passed).
   - Cada teste novo falha sem o conserto.
 - **ED16 (Eduardo, 05/11): os 10 raio-x da Náthally de novo, com a Camil corrigida (#46) e o Gemini respondendo nos 10.**
   No Mac do Eduardo, a `data/` ainda era de 30/10 (Camil com R$ 12,3 bi e +20%): `carregar_dfp.py` (384.591 linhas, 660 ativas),
