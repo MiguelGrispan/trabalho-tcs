@@ -21,22 +21,28 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual (o Eduardo reescreve esta seção uma vez por dia e apaga o que ficou velho)
 
-**Em qui 05/11, ~12h (Brasília)** · último PR levado: #63 (Eduardo com o Claude Code: auditoria do projeto, processo enxuto no #62
-e os 3 bugs do Eduardo no #63; as notas da ED16, da MA4b, da MG5, da MA4, da MA5 e da MG4b continuam abaixo).
-Na `main`: PRs #1 a #16, #19 a #41, #46, #47, #51, #52, #54, #55, #58, #59, #62 e o #63 (fecha **#43**, **#45** e **#50**).
-**Abertos:** o #49 (Eduardo, rascunho do MA6) e o **#61 (Miguel, MG5b: a frase da tela, fecha a #56)**; o #61 foi aberto antes da
-regra nova e mexe nas notas: no `/fim-de-sessao`, o Claude dele volta as notas para a versão da `main` (passo 4).
-Issues abertas: #56 (Miguel, no #61), #57 (Eduardo, ED15) e #60 (Eduardo: os 10 casos de avaliação caem no mesmo grupo do K-means;
-fica como limite na ética e treino de resposta para a banca, sem re-treinar).
-**Depois do merge da MA4b (#59), todos recarregam a `data/`** (`python scripts/carregar_dfp.py`, `python scripts/indicadores.py` e
-`python -m raiox.segmentos`; o Miguel também no banco do compose). Desde o #63, a tela aberta não precisa ser reiniciada depois da carga.
-Testes na branch do #63: 266 passed, nenhum pulado (Mac do Eduardo, PostgreSQL do compose ligado, 05/11).
-Auditoria de 05/11 (fora do repositório, no Mac do Eduardo: `~/projeto_final_tcs/auditoria-05-11.md`): o código passa nos requisitos;
-**o risco está nos entregáveis** (deck, ROI medido, vídeo, ética final).
-A versão longa desta seção ficou no Git: `git show 9f85bc9:docs/PLANO.md` (até 03/11) e `git show 88ca4d5:docs/PLANO.md` (até a ED16).
+**Em sex 06/11, ~12h (Brasília)** · último PR levado: #66 (Eduardo com o Claude Code: MA6, rascunho 2 do documento, no #49).
+Na `main`: PRs #1 a #16, #19 a #41, #46, #47, #51, #52, #54, #55, #58, #59 e #61 a #66, e o #49 (MA6) depois deste merge.
+- **#61 (Miguel, 05/11):** a legenda da tela diz de onde vem cada número (busca e consultas no PostgreSQL; números da
+  `data/indicadores.csv`); fecha a #56.
+- **#64 (Marcos, 05/11):** saem `scripts/verificar_automatico.py`, `scripts/graficos.py`, `scripts/dados.py`, o `yfinance` e 14
+  testes; 2 testes mais fortes. A #45 foi conferida no Windows do Marcos sem o `PYTHONUTF8`: `tests/test_guarda.py` → 144 passed.
+- **#65 (Marcos, 06/11):** o BPMN diz que as parecidas vêm dos vizinhos mais próximos e que o Gemini recebe os valores (R1).
+- **#66 (Marcos, 06/11):** o `tests/test_readme.py` passa dentro do contêiner, onde não há `infra/` (R8, R9).
+- **#49 (MA6, Eduardo, 06/11):** `docs/documentacao.md` e `.pdf` (rascunho 2, 21 páginas) com BPMN, arquitetura e EDA; K-means
+  conferido na base de 05/11 (k = 4, silhueta 0,286, os 10 casos no grupo de 312); o que o validador não pega (marcador no
+  indicador errado, afirmação falsa sem número); 2,15 s e US$ 0,001185 por raio-x; política de dados da API paga do Google.
+  Índice das entregas em `docs/ENTREGAS.md`. Sai o `docs/Raio-X Comercial.pdf` (falava de SQLite).
+Issues abertas: #57 (Eduardo, ED15) e #60 (Eduardo: limite do K-means, declarado no documento, sem re-treinar).
+**Achado de 06/11: o repositório é privado e o professor não é colaborador** (`gh api repos/MiguelGrispan/trabalho-tcs/collaborators`
+→ só os 4 do grupo). O Miguel (admin) precisa convidá-lo antes de 16/11.
+**Faltam nos entregáveis:** ROI medido (NA3), ética final (NA5), link do deck no `docs/ENTREGAS.md`, vídeo (MG6), ensaio, tag `v1.0`.
+Testes na branch do #49, com a `main` mesclada: 256 passed, nenhum pulado (Mac do Eduardo, PostgreSQL do compose ligado, 06/11).
+A versão longa desta seção ficou no Git: `git show 9f85bc9:docs/PLANO.md` (até 03/11), `git show 88ca4d5:docs/PLANO.md` (até a ED16)
+e `git show 169574b:docs/PLANO.md` (até 05/11).
 O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 
-**Falta 1 dia para o código congelar (sex 06/11) e 11 para a entrega (seg 16/11).**
+**O código congela hoje (sex 06/11); faltam 10 dias para a entrega (seg 16/11).**
 
 ### O que já funciona (conferido)
 - **Processo enxuto (#62, Eduardo, 05/11):** só o Eduardo edita o PLANO, o REQUISITOS e o HISTORICO; os outros escrevem "Para as
@@ -49,7 +55,7 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
   - **#50:** o validador barra "dobrou", "triplicou", "um quarto"... e deixa "quarto trimestre". Nenhum dos 80 trechos do Gemini
     nos 10 casos seria barrado;
   - **#45:** a trava lê e escreve em UTF-8 no Windows. Conferido só no Mac, com o terminal simulado (`PYTHONIOENCODING=cp1252`);
-    **falta o Marcos conferir no Windows**, sem o `PYTHONUTF8`.
+    conferido pelo Marcos no Windows, sem o `PYTHONUTF8`, no #64 (144 passed).
   - Cada teste novo falha sem o conserto.
 - **ED16 (Eduardo, 05/11): os 10 raio-x da Náthally de novo, com a Camil corrigida (#46) e o Gemini respondendo nos 10.**
   No Mac do Eduardo, a `data/` ainda era de 30/10 (Camil com R$ 12,3 bi e +20%): `carregar_dfp.py` (384.591 linhas, 660 ativas),
@@ -62,7 +68,7 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
   O arquivo para ela (`raiox_para_nathally.md`, os 10 JSON e o script) fica só na `data/nathally_05_11/` do Mac do Eduardo.
   **K-means com os dados do #46 e do #59:** k = 4, silhueta 0,29 (0,286), grupos de 60, 310, 88 e 106 no treino (66, 312, 103 e 114 com as 595);
   `docs/graficos/silhueta.png` e `grupos.png` refeitos; números trocados no REQUISITOS (R5 e R12) e na `docs/justificativa.md` §2.
-  O `docs/documentacao.md` do #49 ainda cita os números de 30/10 (327, 76, 59 e 102): trocar no MA6.
+  O `docs/documentacao.md` do #49 foi atualizado com esses números e as métricas de 05/11 (merge da `main` na MA6, 05/11).
 - **Demo ponta a ponta** no `docker compose` e no Terraform (Mac do Eduardo, 03/11), tag `v0.1-demo` (`9689db9`): busca no
   PostgreSQL, raio-x sem IA (Vale, Embraer, Ambev) e com o Gemini (WEG, US$ 0,0011), cada consulta gravada na `consultas`.
   Com o Gemini fora do ar (chave falsa), a tela cai no modo sem IA, avisa e grava a consulta com custo 0.
@@ -152,8 +158,8 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
 ### Próximo passo de cada um
 - **Marcos:** ✅ MA5 BPMN (#52; falta abrir o `.bpmn` no demo.bpmn.io e treinar a explicação para os minutos 3–6 da banca) →
   ✅ MA4 EDA (#54, 04/11) → ✅ MA4b, a #53 (05/11; depois do merge, avisar o grupo para recarregar a `data/`) →
-  revisar o rascunho do MA6 do Eduardo (sáb 07/11) → trocar a citação do `raiox/limpeza.py` para a seção "Dados e limpeza" do
-  `docs/documentacao.md` e tirar o `docs/Raio-X Comercial.pdf` (depois do MA6). Um PR pequeno, com o ok do Eduardo, tirando
+  revisar o rascunho do MA6 do Eduardo (sáb 07/11). (A citação do `raiox/limpeza.py` e o `docs/Raio-X Comercial.pdf` saíram no
+  PR #49, 06/11.) Um PR pequeno, com o ok do Eduardo, tirando
   `verificar_automatico.py` e `yfinance` (cortados na seção 7) e o `scripts/graficos.py` (a EDA já cobre o que ele fazia); no mesmo
   PR, sai a linha do `verificar_automatico.py` do README ("Como rodar", `README.md:269`). Ler a `docs/justificativa.md` (ED8).
   **Novo (05/11): conferir o #63 no Windows** (fecha a ED14): tirar o `PYTHONUTF8` do `.claude/settings.local.json`, rodar
@@ -189,7 +195,7 @@ O resumo de cada dia está no [HISTORICO.md](HISTORICO.md).
   - o `scripts/graficos.py` **fica até a MA4**: são gráficos exploratórios em Matplotlib que podem virar a base do
     `notebooks/eda.ipynb` (`guia_projeto_final.pdf` §2: "Visualização explicativa dos dados"; §1: EDA). Só o script pode sair;
     a visualização é obrigatória. (04/11: a EDA da MA4 cobre o que ele fazia; ele sai no PR pequeno do Marcos, acima);
-  - o `docs/Raio-X Comercial.pdf` fica até a MA6, porque o `raiox/limpeza.py` o cita como a fonte das regras de limpeza (ele ainda
+  - ✅ (PR #49, 06/11) o `docs/Raio-X Comercial.pdf` fica até a MA6, porque o `raiox/limpeza.py` o cita como a fonte das regras de limpeza (ele ainda
     fala de SQLite). Quando o `docs/documentacao.md` entrar, com a seção "Dados e limpeza" (04/11), o Marcos troca a citação do
     `limpeza.py` para ela e o PDF velho sai;
   - a `tratamento_dados` será apagada (feito: em 04/11 ela não aparece em `git branch -r`).
@@ -426,7 +432,7 @@ Para subir um arquivo:
 | D1 Repositório | ED0, MA1, NA1, ED9 |
 | D1b README | MG5, ED8, ED10 |
 | D1c Infra (Terraform) e notebooks | MG2, MG3, MA4 |
-| D2 Documento (etapas, BPMN, justificativa, ética) | MA6 (com MA5, ED8, NA5, MG5) |
+| D2 Documento (etapas, BPMN, justificativa, ética) | MA6, do Eduardo desde 04/11 (com MA5, ED8, NA5, MG5) |
 | D3 Deck | NA5, NA6 |
 | D4 Vídeo | MG6, MG7 |
 | D5 20 minutos | NA6 + ensaios de 10–11/11 |

@@ -1,7 +1,7 @@
 """Regras de limpeza dos dados da CVM.
 
 Segue as "Regras de limpeza, na ordem" do documento do projeto
-(docs/Raio-X Comercial.pdf). A regra 1 (ler com sep, encoding, decimal
+(docs/documentacao.md, seção 3). A regra 1 (ler com sep, encoding, decimal
 e CD_CONTA como texto) fica em scripts/carregar_dfp.py; as outras estão
 aqui. A regra 7 (nulos) vale para todas: valor que falta fica vazio,
 nunca é inventado.

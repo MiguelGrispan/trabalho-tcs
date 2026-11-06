@@ -111,6 +111,9 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   no caminho: o README mandava `python -m venv`, que não funciona no Linux do Miguel (lá, `python3` é o 3.12); agora é `python3.14`.
   O `revisor` achou mais 2 erros fora do PR: a tela diz que os números vêm do banco (#56, Miguel) e os outros guias têm o mesmo
   `venv` (#57, Eduardo).
+- **04/11** · O grupo decide (mensagem do Marcos): a demo da banca roda no Mac do Eduardo, onde o Miguel grava os vídeos, e o
+  documento do projeto (MA6) passa ao Eduardo; o Marcos fica com o BPMN e a EDA. **MA6, rascunho 1** (Eduardo com o Claude Code,
+  PR #49): `docs/documentacao.md` e o PDF gerado dele; em 05/11, com o K-means e as métricas novas do #58.
 - **05/11** · **MA4b** (Marcos): conserto da #53. A limpeza agora confere também o primeiro ano de cada empresa, comparando-o com
   o seguinte; a NTS passou de +107.154% para +7,3% de crescimento, e nenhuma outra empresa mudou. O JBS N.V. continua como caso a
   conferir na CVM (falta o segundo sinal). Todos recarregam a `data/` depois do merge.
@@ -126,6 +129,10 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 - **05/11** · **ED13, ED14 e #50** (Eduardo, PR #63): a tela aberta antes da carga da CVM agora acha a empresa sem reiniciar (#43);
   o validador barra "dobrou", "triplicou" e "um quarto" (#50); a trava funciona no Windows, lendo e escrevendo em UTF-8 (#45,
   falta o Marcos conferir lá). Cada teste novo falha sem o conserto.
+- **06/11** · Marcos: o BPMN corrigido (#65) e os testes passando dentro do contêiner (#66). **MA6, rascunho 2** (Eduardo com o
+  Claude Code, PR #49): o documento com BPMN, arquitetura e EDA, os limites do K-means e do validador ditos com exemplo, e o
+  índice das entregas (`docs/ENTREGAS.md`); sai o PDF velho que falava de SQLite. Achado: o professor ainda não tem acesso ao
+  repositório privado.
 
 ## Decisões (e por quê)
 
@@ -162,6 +169,9 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 | 03/11 | a tela só abre no próprio computador (`127.0.0.1`), no compose como no Terraform; o erro técnico da IA vai para "Detalhes técnicos" e para o log, nunca para o aviso | com a IA ligada, qualquer um no mesmo Wi-Fi (o do SENAI, no dia da banca) abria a tela e gastava crédito; quem precisar abrir de outro aparelho muda a porta de propósito. Um JSON do Google no telão não diz nada ao vendedor, mas quem conserta precisa dele |
 | 04/11 | a EDA importa do código os limites da checagem e o corte do K-means, em vez de copiar os números; vai para o Git já rodada; com os dados falsos, roda sem gravar os PNG | o notebook nunca discorda do código; a banca vê os gráficos no GitHub sem rodar nada; o CI confere o "Run All" sem tocar nos gráficos dos dados reais |
 | 04/11 | o diagrama de arquitetura é texto (Mermaid) dentro do README, e o PNG sai dele; um teste confere que ele só cita arquivos que existem | o GitHub desenha o Mermaid sozinho e o PR mostra a mudança como texto; uma figura só em imagem fica velha sem ninguém ver (lição de 29/10: documento velho confunde mais que documento nenhum) |
+| 04/11 | a demo da banca roda no Mac do Eduardo, e o Miguel grava nele os vídeos v0 e final | é o único computador conferido com o compose, o Terraform e o Gemini (03/11); a banca vê o mesmo que o vídeo |
+| 04/11 | o documento do projeto (MA6) passa ao Eduardo | o Marcos tinha 4 sessões (MA3 a MA6); o Eduardo escreveu a base (justificativa, ética, HISTORICO) |
+| 04/11 | o documento é escrito em markdown (`docs/documentacao.md`) e o PDF é gerado dele | o PR mostra o que mudou, cada número tem a fonte ao lado (Apêndice A) e corrigir leva um minuto; o guia §6 pede PDF, o `requisitos_projeto.MD` aceita markdown: vale o mais exigente |
 | 05/11 | escala errada no primeiro ano da empresa: corrigida só quando a receita **e** o ativo estão ~1.000 vezes menores que no ano seguinte (decisão do Marcos) | o primeiro ano não tem anterior para comparar; um salto de 1.000 vezes só na receita pode ser uma empresa que começou a operar, e multiplicar esse ano por 1.000 inventaria um número. Com os 2 sinais, a NTS é corrigida e mais nenhuma empresa muda |
 | 05/11 | só o Eduardo edita o PLANO, o REQUISITOS e o HISTORICO, uma vez por dia; os outros PRs trazem "Para as notas" na descrição. O revisor faz uma rodada só, e até 16/11 só vira issue o que quebra a demo, um requisito do professor ou a regra de ouro. O `/fim-de-sessao` e o `/inicio-de-sessao` mostram quem tem PR aberto e quais arquivos ele mexe | todo PR reescrevia o mesmo parágrafo da seção 0, então todo merge virava conflito e ninguém sabia quem estava fazendo PR: o time esperava. 78 commits tinham mexido no PLANO e 39 no código. Com as notas num PR só, o conflito só acontece quando dois PRs mexem no mesmo arquivo, e o Claude mostra quando é o caso |
 
