@@ -13,12 +13,15 @@ Atende:
 
 | risco | o que fizemos | prova |
 |---|---|---|
-| O LLM inventa ou arredonda um número (alucinação) e o vendedor leva um dado falso para a reunião | o LLM só escreve marcadores como `{margem_ebit}`; o código coloca os valores; o validador apaga o trecho com algarismo, número por extenso ou marcador inventado | `checar()` e `validar_e_preencher()`, `raiox/ia.py:230-282`; testes `test_validador_*` e `test_regra_de_ouro_*` em `tests/test_raio_x.py` |
-| Resultado medido | 10 raio-x reais: 0 trechos removidos, US$ 0,0012 cada, 2,2 s em média | `avaliacao/resultados.csv` (rodada de 05/11, ED16; a primeira foi a ED7, PR #20) |
+| O LLM inventa ou arredonda um número (alucinação) e o vendedor leva um dado falso para a reunião | o LLM só escreve marcadores como `{margem_ebit}`; o código coloca os valores; o validador apaga o trecho com algarismo, número ou quantidade por extenso (desde o PR #63, também "dobrou", "triplicou", "um quarto") ou marcador inventado | `checar()` e `validar_e_preencher()`, `raiox/ia.py:230-282`; testes `test_validador_*` e `test_regra_de_ouro_*` em `tests/test_raio_x.py` |
+| Resultado medido | 10 raio-x reais: 0 trechos removidos, US$ 0,001185 cada (estimativa pelos tokens), 2,15 s em média (montagem + Gemini + validação). O "0 removidos" mede só o texto; a conferência dos números é a da seção 4 (8 de 10) | `avaliacao/resultados.csv` (rodada de 05/11, ED16; a primeira foi a ED7, PR #20) |
 
 ## 2. Alucinação que o validador **não** pega
 
-O validador barra números, não ideias. Continuam possíveis:
+O validador barra números, não ideias: olha a forma do texto, não o sentido. Continuam possíveis:
+- **marcador certo no indicador errado:** "A margem EBIT de {endividamento} está acima do grupo" passa, porque o marcador existe
+  (conferido em 06/11 com `checar()`); a tela mostraria o endividamento no lugar da margem;
+- **afirmação falsa sem número:** "a empresa perdeu clientes para a concorrência" não tem número nem marcador e passa;
 - **pergunta enviesada ou com suposição falsa:** ex.: "como a gestão avalia o impacto dos custos na margem EBIT?" supõe que os custos
   são o problema; a margem pode ser baixa por outro motivo;
 - **"acima" ou "abaixo" trocado no texto:** a posição é calculada por código e entregue ao modelo (`montar()`, `raiox/ia.py:74`),
@@ -50,7 +53,7 @@ traz a "base", o indicador que a motivou, visível na tela. **O que não resolve
 - **Os 10 casos de avaliação caem no mesmo grupo** (o maior, com 312 empresas e receita mediana de R$ 3,6 bi; rodadas de 29/10 e
   05/11). A Petrobras (R$ 497,5 bi de receita) é comparada com esse grupo: "acima do grupo" diz pouco para uma empresa desse porte.
   É um limite do K-means com 4 grupos, não um erro de dado (issue #60, Eduardo).
-- **Silhueta 0,29:** os grupos se sobrepõem. É uma régua de comparação, não uma classificação exata
+- **Silhueta 0,286:** os grupos se sobrepõem. É uma régua de comparação, não uma classificação exata
   ([justificativa.md](justificativa.md), seção 2, explica por que 0,77 enganava).
 
 ## 4. Confiabilidade dos dados
