@@ -144,7 +144,7 @@ ou `gh pr create --body-file <arquivo>`). Para procurar esse texto no código, u
 
 ## Como rodar (sempre a partir da raiz do repositório)
 Lista completa, com o que deve aparecer: `aprender/COMANDOS.md`.
-- Ambiente: `python -m venv .venv` e `pip install -r requirements.txt`. No Mac do Eduardo, sem `.venv`, use `~/bootcamp/bin/python`.
+- Ambiente: `python3.14 -m venv .venv` (Windows: `py -3.14 -m venv .venv`), ative o ambiente e rode `python -m pip install -r requirements.txt`. Depois de ativar, `python` aponta para o 3.14 desse ambiente. No Mac do Eduardo, sem `.venv`, use `~/bootcamp/bin/python`.
 - Testes: `python -m pytest -q` (não chamam a API).
 - Módulos: `python -m raiox.ia ... --sem-ia`, `python -m raiox.segmentos`, `python -m raiox.checagem --teste`.
 - Tela: `cd app && streamlit run streamlit_app.py`. `RAIOX_IA_REAL=1` liga o Gemini. Com a `data/` real, a tela busca no PostgreSQL;
