@@ -1,6 +1,6 @@
 # Plano até a banca (versão acelerada)
 
-Meta: **feito, não perfeito**. O congelamento estava previsto para **06/11/2026**; a candidata foi validada em **07/11/2026** e aguarda merge e tag `v1.0`. Tudo deve ficar pronto na **11/11/2026**, com folga
+Meta: **feito, não perfeito**. O congelamento estava previsto para **06/11/2026**; a versão **`v1.0` foi validada e publicada em 07/11/2026**, no commit `2c3e942` (merge do PR #67). Tudo deve ficar pronto na **11/11/2026**, com folga
 até a entrega de **seg 16/11** (banca prevista para qua 18/11, a confirmar). Se a banca vier antes, já estamos prontos.
 
 **O que o projeto precisa ter** vem dos arquivos do professor, em `docs/professor/` (`requisitos_projeto.MD` e
@@ -21,22 +21,22 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual
 
-**Em 07/11/2026, ~14h40 (Brasília)**
+**Em 07/11/2026, ~14h55 (Brasília)**
 
-**Foco: aprovar a candidata ao congelamento e concluir PDF, slides e ensaios.**
-Último PR levado: **#66 e #49** (a `main` termina em `b675119`, merge do #49). As alterações de 07/11 estão na branch
-`eduardo-diagnostico-congelamento`; ainda não entraram na `main` e a tag `v1.0` ainda não foi publicada.
+**Foco: PDF, slides, vídeo e ensaios; código congelado na `v1.0`.**
+Último PR levado: **#67**, mesclado em 07/11/2026 às 14h51 (Brasília). A tag anotada `v1.0` está publicada e aponta para
+`2c3e9428902665872811e9d6383a2e8976827825`. A conferência e os ajustes documentais desta branch não alteram o código da versão.
 A fotografia detalhada de 06/11 permanece no Git: `git show b675119:docs/PLANO.md`.
 
 ### Fechamento do Eduardo
 
 | sessão | estado verificável em 07/11 | falta para encerrar |
 |---|---|---|
-| ED15 · instruções Python, issue #57 | corrigidas nesta branch: Python 3.14 nos seis pontos; atalhos param se a criação do ambiente falhar; três testes novos | CI e merge do PR |
-| ED9 · congelamento | dados reais e PostgreSQL funcionando; ensaio funcional do Streamlit e modo sem IA conferidos; produto sem mudança de algoritmo | aprovação, merge e publicação da tag `v1.0` |
+| ED15 · instruções Python, issue #57 | ✅ na `main`, PR #67, issue #57 fechada: Python 3.14 nos seis pontos; atalhos param se a criação do ambiente falhar; três testes novos | nada nesta sessão |
+| ED9 · congelamento | ✅ `v1.0` publicada no commit `2c3e942`; CI do PR #67 verde e 259 testes locais aprovados | só consertos indispensáveis; nenhum recurso novo |
 | ED10 · instalação do zero | venv vazio com Python 3.14.10, dependências instaladas e 256 testes aprovados; imagem Docker reconstruída | outra pessoa seguir o README em outro computador; não foi feito nesta sessão |
 | ED11 · avaliação e defesa | avaliação existente conferida: dez casos, zero removidos, 2,15 s; conteúdo e perguntas em [conteudo_eduardo.md](conteudo_eduardo.md) | o Eduardo ensaiar e responder em voz alta; não declarado concluído pela IA |
-| MA6 · documento | rascunho técnico atualizado; BPMN, arquitetura, EDA, justificativa e limites presentes | ROI e ética final da Náthally; revisão do Marcos; respostas do professor |
+| MA6 · documento | rascunho 4; BPMN, arquitetura, EDA, justificativa e limites presentes; EDA reexecutada em 07/11 | ROI e ética final da Náthally; revisão do Marcos; respostas do professor |
 
 **Evidências de execução (Mac do Eduardo, 07/11):**
 - `python -m pytest -q`, com `~/bootcamp/bin` no PATH e PostgreSQL ligado: **259 passed, nenhum pulado**, incluindo os três testes novos dos atalhos (mais dois subtestes; um aviso de depreciação de uma dependência).
@@ -46,14 +46,18 @@ A fotografia detalhada de 06/11 permanece no Git: `git show b675119:docs/PLANO.m
 - `terraform fmt -check` e `terraform validate`: aprovados. O `apply` com dados reais já foi conferido em 03/11; não foi refeito em 07/11.
 - README no GitHub: o Mermaid aparece renderizado na árvore de acessibilidade do Chrome, com tela, banco, CVM, Gemini e Terraform. Isso confirma renderização; não é revisão visual do layout.
 
-Backups, recibos e logs locais: `../fechamento-2026-11-07/` (fora do repositório). O PR registra os arquivos alterados e a reversão.
+**EDA do Marcos reconferida (07/11):** notebook com 15 células de código executadas com os dados reais, quatro gráficos gerados e inspecionados. Base: 595 empresas, 384.591 linhas de contas, 30 crescimentos vazios, 51 setores. O notebook original e os quatro PNG versionados permaneceram idênticos (hashes conferidos); a execução de auditoria salvou as figuras fora do repositório. A EDA já foi incorporada ao PDF; não é pendência de desenvolvimento do Marcos.
+
+**Auditoria geral:** inventário de 114 arquivos versionados, sintaxe dos 33 Python válida, notebooks JSON válidos e links Markdown locais existentes; testes e verificação dos artefatos descritos no PR. Isso não substitui o ensaio humano nem as respostas do professor.
+
+Backups, recibos e logs locais: `../fechamento-2026-11-07/`, com a auditoria em `auditoria-final/` (fora do repositório). O PR registra os arquivos alterados e a reversão.
 
 ### Próxima entrega de cada pessoa
 
 | pessoa | próximo resultado concreto |
 |---|---|
-| Eduardo | fechar o PR e a tag; entregar os dois slides e falas de [conteudo_eduardo.md](conteudo_eduardo.md); perguntar data/horário e perguntas 2–3 ao professor; finalizar MA6 quando as contribuições chegarem |
-| Marcos | ler o documento e a justificativa; preparar a fala de dados, EDA e BPMN. As limpezas do código e a conferência das travas no Windows já entraram no #64 |
+| Eduardo | entregar os dois slides e falas de [conteudo_eduardo.md](conteudo_eduardo.md); perguntar data/horário e perguntas 2–3 ao professor; finalizar MA6 quando as contribuições chegarem |
+| Marcos | EDA pronta e verificada; ler o documento e a justificativa; preparar a fala de dados, EDA e BPMN. As limpezas do código e a conferência das travas no Windows já entraram no #64 |
 | Miguel | roteiro e vídeo da demo no Mac do Eduardo, guardado em dois lugares; confirmar acesso do professor ao GitHub privado; conteúdo da infraestrutura para o deck. A legenda da tela já foi corrigida no #61 |
 | Náthally | disponibilizar o link do deck; medir preparação manual × ferramenta (incluindo digitar, ler e conferir), finalizar ética e slide de métricas; confirmar a conta de EBIT usada no Magalu |
 
@@ -64,7 +68,7 @@ Entrega prevista em **16/11/2026**, condicionada à confirmação da banca em **
 
 | parte | estado | o que resta |
 |---|---|---|
-| aplicação | **~95% para liberação** (estimativa de esforço, não de qualidade) | aprovar e publicar a candidata; conferir instalação por outra pessoa |
+| aplicação | **código congelado e publicado: `v1.0`** | conferir instalação por outra pessoa (ED10); não ampliar o produto |
 | documento | **~80%** (estimativa de esforço) | ROI, ética final, revisão e respostas externas |
 | slides e ensaios | **não verificado** | deck relatado fora do repositório, sem link; vídeo e tempos de ensaio não apresentados |
 
@@ -152,12 +156,12 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | ED6 | 27/10 | ✅ PR #6 | teste ponta a ponta (pula sem `data/`) | `tests/test_ponta_a_ponta.py` | — | pula no CI; roda local com dados reais | `eduardo-ia-testes` |
 | ED7 | qui 29/10 | ✅ PR #20 | `python -m avaliacao.avaliar --com-ia` nos 10 casos (avisar o grupo) | `avaliacao/resultados.csv` | Manual | 10 linhas; custo anotado (feito: 10 linhas, 0 erros, 0 removidos, US$ 0,0118) | `eduardo-avaliacao-ia` |
 | ED8 | qua 04/11 | ✅ PR #31 (02/11; escrita pelo Claude Code a pedido do Eduardo; falta o Marcos ler) | justificativa técnica para o PDF (inclui RAG × fine-tuning e por que os dados da CVM são a base de conhecimento da IA) + README "Como usamos IA para programar", ligado aos arquivos de prompts do vibecoding (REQUISITOS R14) | `docs/justificativa.md`, `README.md` | Manual (você escreve; a IA confere com arquivo e linha) | o Marcos lê e entende | PR |
-| ED9 | sex 06/11 | 🟡 candidata validada em 07/11; aguarda merge e tag | congelar | só bugs | Plan | CI verde + ponta a ponta verde | **tag `v1.0`** |
+| ED9 | sex 06/11 | ✅ PR #67 mesclado; `v1.0` publicada em 07/11, commit `2c3e942` | congelar | só bugs | Plan | CI verde + ponta a ponta verde | **tag `v1.0`** |
 | ED10 | sáb 07/11 | 🟡 venv vazio e Docker no mesmo Mac, 07/11; falta outro computador | teste do zero em outra máquina, só com o README | consertos | Manual | rodou sem ajuda, ou cada falha virou PR | `v1.0.1` se precisar |
 | ED11 | sex 06/11 | 🟡 avaliação conferida, material em `docs/conteudo_eduardo.md`; falta treino pessoal | avaliação final na `v1.0` (só se a IA mudou depois do ED7) + ensaio de defesa | `resultados.csv` | Plan | 10 perguntas da banca respondidas sem consulta | PR |
 | ED13 | qua 04/11 | ✅ PR #63 (05/11) | consertar a **issue #43**: a tela aberta antes de carregar a CVM não acha a empresa (cache de `_base()`, `raiox/ia.py:51`). Guia §5: "funciona de ponta a ponta?" | `raiox/ia.py`, `tests/test_raio_x.py` | Manual | o passo a passo da #43 gera o raio-x da WEG; teste novo com essa ordem | PR que fecha #43 |
 | ED14 | qui 05/11 | ✅ PR #63; Windows conferido pelo Marcos no #64 (144 passed) | consertar a **issue #45**: no Windows, o `guarda.py` lê a saída do Git em cp1252 (`.claude/hooks/guarda.py:89`), bloqueia commit e merge com `”` ou emoji no diff, e 8 testes das travas falham. Guia §2: "agentic coding" | `.claude/hooks/guarda.py`, `tests/test_guarda.py` | Manual | no Windows do Marcos, sem `PYTHONUTF8`: `python -m pytest -q tests/test_guarda.py` sem falhas e um commit com `”` no diff passa pela trava | PR que fecha #45 |
-| ED15 | sex 06/11 | ✅ corrigida na branch de 07/11; aguarda CI e merge | consertar a **issue #57**: o `CLAUDE.md:142` e o `aprender/entenda-o-projeto.md:167` mandam `python -m venv .venv` (no Linux do Miguel não existe `python`); o `aprender/COMANDOS.md:16` e os 3 atalhos `.command` usam `python3 -m venv`, que lá é o 3.12. O README já usa `python3.14` (#55). `requisitos_projeto.MD`, Documentação: "instruções para executar" | `CLAUDE.md` (ok no grupo), `aprender/` | Manual | os 6 lugares com `python3.14 -m venv .venv` (Windows: `py -3.14`); antes do ED10 (sáb 07/11) | PR que fecha #57 |
+| ED15 | sex 06/11 | ✅ PR #67 mesclado em 07/11; #57 fechada | consertar a **issue #57**: o `CLAUDE.md:142` e o `aprender/entenda-o-projeto.md:167` mandam `python -m venv .venv` (no Linux do Miguel não existe `python`); o `aprender/COMANDOS.md:16` e os 3 atalhos `.command` usam `python3 -m venv`, que lá é o 3.12. O README já usa `python3.14` (#55). `requisitos_projeto.MD`, Documentação: "instruções para executar" | `CLAUDE.md` (ok no grupo), `aprender/` | Manual | os 6 lugares com `python3.14 -m venv .venv` (Windows: `py -3.14`); antes do ED10 (sáb 07/11) | PR que fecha #57 |
 | ED16 | qui 05/11 | ✅ PR desta sessão | 10 raio-x para a Náthally com a Camil corrigida (#46), com o Gemini; K-means e PNG refeitos com os dados do #46 e do #59; diferenças da RD e do Magalu explicadas | `avaliacao/resultados.csv`, `docs/graficos/`, `data/nathally_05_11/` (só no Mac) | Manual | 8 de 10 batem com a conferência dela; 0 removidos; números do K-means trocados nos docs | `eduardo-raiox-nathally` |
 | ED12 | sáb 31/10 | ✅ PR #30 (na `main` em 02/11) | travas do Claude Code (R14 e guia §2, agentic coding): `.claude/settings.json`, `.claude/hooks/guarda.py`, subagent `revisor`, import do `requisitos_projeto.MD` | `.claude/`, `CLAUDE.md`, `AGENTS.md`, `README.md`, `aprender/claude-code.md`, `tests/test_guarda.py` | Plan | testes verdes; o hook bloqueia de verdade numa sessão | `eduardo-claude-config` |
 
@@ -169,7 +173,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | MA2 | qui 29–sáb 31/10 | ✅ PR #21 (Marcos, 29/10) e PR #22 (Eduardo, 30/10, com o ok do Marcos): o "pronto quando" passa. Sobram para a MA3: `cd_cvm` int e só ativas no C1, tabela `indicadores` (seção 0) | **PostgreSQL na `main`** (regra do professor): trazer o `5508116` para a estrutura da `main` (sem `src/`), `DATABASE_URL` e `TEST_DATABASE_URL` no `.env.example`, serviço postgres no CI (`.github/workflows/testes.yml`) para os testes do banco não pularem; e o C1/C2: CSV padrão (sem `sep=";"` e sem `decimal=","` na **escrita**), `cd_cvm` int, tabela `indicadores` no banco, busca só com empresas ativas e com indicadores | `scripts/`, `raiox/dados.py`, `requirements.txt`, CI, `tests/` | Plan | CI verde **rodando** os testes do banco (não pulados); `python -m pytest -q tests/test_ponta_a_ponta.py` passa com os seus dados reais | `marcos-postgres` → PR (Eduardo + Miguel) |
 | MA3 | sex 30–sáb 31/10 (atrasada) | ✅ PR #46 (mesclado em 03/11): C1 e C2, S1, S2 (13 linhas, 0,00%), #17 (o ano do exercício: Camil = DFP de 28/02/2026), corte de R$ 10 mi ok, `checagem` sem "erro". Zip da `data/` no Drive, com o link no grupo (04/11) | dados reais + checagem + 5 empresas conferidas no RI; zip da `data/` no Drive | `avaliacao/conferencia.csv`; consertos | Manual | diferença < 1%; nenhum "erro"; link no grupo | PR |
 | MA3b | qui 05/11 | ✅ PR #51 (na `main` em 04/11): `chmod(0o644)` e teste novo; conferido pelo Miguel no Linux (`-rw-r--r--`, Camil sem `chmod`); #48 fechada | consertar a **issue #48**, achada pelo Miguel em 04/11: o `publicar()` grava a `data/indicadores.csv` com permissão só do dono (`NamedTemporaryFile`), e no Docker do Linux a tela não lê o arquivo (todo raio-x falha). Guia §5: "A aplicação funciona de ponta a ponta na demonstração?" (20%) | `scripts/indicadores.py`, `tests/test_dados.py` | Manual | depois de `docker compose run --rm --user "$(id -u):$(id -g)" tela python scripts/indicadores.py`, `ls -la data/indicadores.csv` → `-rw-r--r--` e a tela gera o raio-x sem o `chmod`; teste novo da permissão; antes do vídeo v0 (MG6) | PR que fecha #48 |
-| MA4 | dom 01–ter 03/11 (feita em 04/11) | ✅ PR da branch `marcos-eda` (04/11): notebook montado pelo Claude Code a partir do `scripts/graficos.py`; "Restart & Run All" com a `data/` real sem erro; `tests/test_eda.py` roda o notebook com os falsos no CI; achado da NTS → issue #53 | EDA com 4 gráficos (nulos, distribuições, extremos, cobertura) | `notebooks/eda.ipynb`, `docs/graficos/` | Manual | "Restart & Run All" sem erro | PR |
+| MA4 | dom 01–ter 03/11 (feita em 04/11) | ✅ PR #54 na main; notebook real reexecutado sem erro em 07/11 (15 células de código, quatro gráficos; originais preservados). Entrega de 04/11: notebook montado pelo Claude Code a partir do `scripts/graficos.py`; "Restart & Run All" com a `data/` real sem erro; `tests/test_eda.py` roda o notebook com os falsos no CI; achado da NTS → issue #53 | EDA com 4 gráficos (nulos, distribuições, extremos, cobertura) | `notebooks/eda.ipynb`, `docs/graficos/` | Manual | "Restart & Run All" sem erro | PR |
 | MA4b | qui 05/11 | ✅ PR da branch `marcos-escala-primeiro-ano` (05/11): o primeiro ano comparado com o seguinte, pela receita e pelo ativo juntos; 2 testes novos (o 1º falhava antes); recarga: NTS +107.154% → +7,3%, só ela mudou; notebook rodado de novo. JBS N.V. fica de fora (receita zero em 2023): limite no MA6 | consertar a **issue #53**, achada pela EDA em 04/11: o `encontrar_escala_errada` (`raiox/limpeza.py:165-192`) só compara cada ano com o anterior, e o erro de escala no primeiro ano da base passa (NTS: 2023 de 1.000 a 2.000 vezes menor, crescimento de +107.154%; o JBS N.V. tem o mesmo salto no ativo, com receita zero em 2023). Guia §2 (limpeza com Pandas) e §5 (qualidade técnica, 30%) | `raiox/limpeza.py`, `tests/test_limpeza.py`; recarga da `data/` | Manual | teste novo com o primeiro ano marcado (e que falha sem o conserto); depois da recarga, o crescimento da NTS perto de +7% e o notebook rodado de novo; o grupo avisado para recarregar. Se não der até o congelamento (sex 06/11): limite no documento (MA6) e a NTS fora da demo | PR que fecha #53 |
 | MA5 | qua 04–qui 05/11 | ✅ PR #52 (na `main` em 04/11): `docs/bpmn/raio-x-comercial.bpmn` e `.png`, desenhados pelo Claude Code a partir do código; o bpmn-js abre com 0 avisos (falta abrir no demo.bpmn.io) e tem as 2 decisões. O de hoje não foi feito (corte 1, seção 7) | BPMN 2.0 com o Raio-X (obrigatório) e o de hoje (se der tempo), no bpmn.io | `docs/bpmn/` | Plan (o Claude só revisa) | abre no bpmn.io; decisões "tem dados?" e "passou no validador?" | PR |
 | MA6 | sáb 07–seg 09/11 | ➡️ com o **Eduardo** (decidido em 04/11); o Marcos revisa o rascunho no sáb 07/11 | montar o documento do projeto, escrito em markdown e gerado em PDF (o R aceita markdown; o G §6 pede PDF: vão os dois) | `docs/documentacao.md`, `docs/documentacao.pdf` | Manual | etapas desenvolvidas no processo (R Documentação; a base é o `docs/HISTORICO.md`) + BPMN + justificativa + ética + arquitetura + seção "Dados e limpeza" (as regras do `raiox/limpeza.py`, no lugar do `docs/Raio-X Comercial.pdf`); o Marcos revisou | PR (Eduardo) |
@@ -228,11 +232,11 @@ Para subir um arquivo:
 | `tests/conftest.py` | todo teste usa a tabela falsa (`RAIOX_DADOS=falsos`) e nada grava em `data/` | Eduardo | sim |
 | `tests/test_raio_x.py` | validador (regra de ouro), contrato C3, fonte, modo sem IA nas 30 empresas falsas, prompt (lê as regras da Náthally, chaves preservadas, só marcadores de indicador), texto sem IA na forma da v2, limite de tempo e de tentativas do Gemini, `RAIOX_DADOS`, segmentação (k = 3, 29 de 30; menor grupo ≥ 5%; empresas pequenas fora do treino; `segmentos.csv` refeito quando o código muda), gráficos, checador | Eduardo | sim |
 | `tests/test_avaliar.py` | `avaliar.py`: colunas do C4, casos válidos, caso com erro, formato do `casos_avaliacao.csv` (5 colunas, `cd_cvm` inteiro em todos) | Eduardo | sim |
-| `tests/test_limpeza.py`, `test_carregar_dfp.py`, `test_dados.py`, `test_banco.py`, `test_verificar_automatico.py` (PRs #4 e #21) | regras de limpeza, carga da DFP (rede simulada), catálogo e C1 em PostgreSQL (banco de teste separado: `tests/banco_teste.py`); o C2 (CSV padrão, `cd_cvm` int, mesma tabela no banco) em `test_publicar_grava_o_mesmo_c2_no_csv_e_no_banco` (#46; era `test_calcular_grava_csv_padrao_com_cd_cvm_inteiro`, do #22) | Marcos | sim: o CI sobe um PostgreSQL desde o #22 (sem ele, os testes do banco pulam; `-rs` mostra quais) |
+| `tests/test_limpeza.py`, `test_carregar_dfp.py`, `test_dados.py`, `test_banco.py` (PRs #4 e #21; `test_verificar_automatico.py` saiu no #64) | regras de limpeza, carga da DFP (rede simulada), catálogo e C1 em PostgreSQL (banco de teste separado: `tests/banco_teste.py`); o C2 (CSV padrão, `cd_cvm` int, mesma tabela no banco) em `test_publicar_grava_o_mesmo_c2_no_csv_e_no_banco` (#46; era `test_calcular_grava_csv_padrao_com_cd_cvm_inteiro`, do #22) | Marcos | sim: o CI sobe um PostgreSQL desde o #22 (sem ele, os testes do banco pulam; `-rs` mostra quais) |
 | C1 e C2 no banco, ano do exercício (MA3, PR #46) | `test_busca_exige_cadastro_ativo_e_indicadores`, `test_sem_a_tabela_indicadores_a_busca_volta_vazia`, `test_publicar_grava_o_mesmo_c2_no_csv_e_no_banco` (`tests/test_dados.py`); `test_ano_do_exercicio_e_o_ano_com_mais_meses` e `test_limpar_demo_usa_o_ano_do_exercicio_e_nao_o_do_arquivo` (`tests/test_limpeza.py`); `test_main_usa_o_exercicio_de_quem_fecha_fora_de_dezembro`, `test_main_segue_sem_o_arquivo_do_ano_seguinte` e `test_main_para_se_falta_o_arquivo_de_um_dos_anos` (`tests/test_carregar_dfp.py`); `test_desiste_rapido_se_o_banco_nao_responde` (`tests/test_banco.py`) | Marcos | sim |
 | `tests/test_tela.py` (MG4, MG4b) | a tela com os falsos: busca, gerar, 6 métricas, sem erro; com a IA fora do ar, aviso de uma frase (o erro em "Detalhes técnicos" e no log) e o topo e o rodapé sem "escrito pelo Gemini"; os avisos do banco com os comandos do Terraform | Miguel | sim |
 | `tests/test_ponta_a_ponta.py` | C2 real, raio-x sem IA de 3 setores, `cd_cvm` dos casos (todos preenchidos e na tabela real) | Eduardo | **não**: pula sem `data/`. Rodar local antes de `v0.1-demo`, `v1.0` e no teste do zero |
-| `tests/test_aprender.py` | o notebook `aprender/passo_a_passo.ipynb` roda inteiro e vai para o Git sem saídas | Eduardo | sim |
+| `tests/test_aprender.py` | o notebook `aprender/passo_a_passo.ipynb` roda inteiro e vai para o Git sem saídas; os três atalhos param se não criarem o ambiente (esses três testes pulam no Windows) | Eduardo | sim |
 | `tests/test_guarda.py` (#30, 137 testes) | as travas do Claude Code (`.claude/hooks/guarda.py`): o que bloqueia, o que pergunta e o que libera; o teste do fim de resposta; e o repositório inteiro sem `data/`, `.env`, chave nem arquivo acima de 10 MB (vale para os 4, inclusive upload pelo navegador) | Eduardo | sim (os de Git pulam no contêiner, que não tem `git`) |
 | Docker | `curl localhost:8501/_stcore/health` → `ok`; os testes dentro do contêiner: `docker compose run --rm tela python -m pytest -q` (87 passed em 30/10) | Miguel | não (checklist da demo) |
 | Terraform | `terraform fmt -check` e `terraform validate` no CI (`.github/workflows/terraform.yml`, PRs que mexem em `infra/`); `apply`, `docker exec raiox-tela python -m pytest -q` (87 passed em 31/10) e `destroy` + `apply` na mão | Miguel | só o `fmt` e o `validate` |
@@ -247,7 +251,7 @@ Para subir um arquivo:
 | sáb 31/10 | Marcos → todos | PostgreSQL na `main` e C2 cumprido (MA2) | formato e colunas do C2; `DATABASE_URL` |
 | dom 01/11 | Miguel | Terraform na `main` (MG3, obrigatório) | infra |
 | ter 03/11 | os 4 | demo ponta a ponta; tag `v0.1-demo` | **interfaces** (C1, C3, `RAIOX_DADOS`) e escopo: nada novo |
-| sex 06/11 | os 4 | tag `v1.0` | código |
+| sáb 07/11/2026 (previsto: 06/11) | os 4 | tag `v1.0` publicada no merge do #67 (`2c3e942`) | código |
 | dom 08/11 | todos → Náthally | conteúdo dos slides | roteiro |
 | qua 11/11 | os 4 | tudo pronto para entregar | entregáveis |
 
@@ -299,8 +303,8 @@ Para subir um arquivo:
 | ter 03/11 | o PostgreSQL não sobe no Docker na demo | `docker compose up` ensaiado no teste do zero (ED10); vídeo gravado (MG6/MG7); a busca falsa (`falsos/`) ainda mostra a tela sem banco |
 | ter 03/11 | a demo não roda inteira | qua e qui 04–05/11 só para isso; o vídeo vira obrigatório; demo por `docker run` ou `streamlit run` local |
 | dia da banca | a API falha ou o crédito acaba (erro 402) | a tela volta sozinha para o modo sem IA, com aviso (MG4); vídeo; saldo conferido em 08/11 |
-| qualquer dia | a banca é **antes** | o código já congela em 06/11 e os entregáveis ficam prontos em 11/11 |
-| sex 06/11 | o PR da MA3 (#42) não entra antes do congelamento | a demo usa a busca da `main`, que já funciona; o C1 e o C2 ficam pela metade, e a ética diz isso |
+| qualquer dia | a banca é **antes** | o código está congelado na `v1.0` (07/11); meta de entregáveis prontos em 11/11 |
+| resolvido em 03/11 | MA3 (#42 e #17) antes do congelamento | PR #46 mesclado; C1 e C2 atendidos, sem cortar requisito |
 | qualquer dia | uma pessoa com sessões demais (era o Marcos, com MA3, MA4, MA5 e MA6) | feito em 04/11: o Eduardo monta o documento (MA6) e o Marcos revisa |
 | qualquer dia | alguém fica indisponível | duplas de reserva: Marcos ↔ Eduardo (dados), Miguel ↔ Eduardo (infra), Náthally ↔ Marcos (deck e PDF) |
 

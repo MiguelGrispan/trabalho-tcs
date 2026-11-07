@@ -3,7 +3,7 @@
 **Projeto final da trilha IA Aplicada (SENAI/TCS)** · Equipe: Marcos (dados), Eduardo (IA e gestão), Náthally (produto e métricas),
 Miguel (tela e infraestrutura) · Repositório: `MiguelGrispan/trabalho-tcs` (GitHub)
 
-**Versão:** rascunho 3 (para revisão do grupo), 07/11/2026 · Final prevista: seg 09/11/2026 · Entrega: seg 16/11/2026,
+**Versão:** rascunho 4 (para revisão do grupo), 07/11/2026 · Final prevista: seg 09/11/2026 · Entrega: seg 16/11/2026,
 48 h antes da banca, prevista para qua 18/11/2026 [PENDENTE: data e horário da banca a confirmar com o professor]
 
 > **Versão para revisão.** O BPMN, a arquitetura e a EDA já estão no documento. Ainda faltam, marcados com **[PENDENTE]**:
@@ -61,7 +61,7 @@ ganho de tempo nem ROI**: os 2,15 s não incluem o tempo do vendedor para escolh
 
 ## 2. Etapas desenvolvidas
 
-O projeto durou 4 semanas (19/10 a 16/11/2026). O detalhe de cada passo está nos pull requests do repositório
+O projeto foi planejado para 4 semanas (19/10 a 16/11/2026). O detalhe de cada passo está nos pull requests do repositório
 (`gh pr list --state all`) e o resumo diário em `docs/HISTORICO.md`.
 
 ### Semana 1 (19 a 25/10): cada um no seu canto
@@ -102,10 +102,12 @@ O projeto durou 4 semanas (19/10 a 16/11/2026). O detalhe de cada passo está no
 - **Consertos antes do congelamento** (Eduardo, PR #63, 05/11): o validador passou a barrar quantidade sem algarismo ("dobrou",
   "um quarto"), a tela acha empresas carregadas depois de aberta e as travas funcionam no Windows. **Limpeza** do código que
   ninguém usava (Marcos, PR #64, 05/11).
-- **Candidata ao congelamento, 07/11:** instruções de Python corrigidas; dependências instaladas num venv vazio; testes com PostgreSQL e ensaio funcional do Streamlit com dados reais e falha simulada de IA aprovados. Sem inspeção visual da demo e sem chamada paga nesta sessão. [PENDENTE: aprovação do PR, merge e tag `v1.0`; vídeo final do Miguel ainda não apresentado]
+- **Código congelado, 07/11:** PR #67 mesclado, com CI verde; tag anotada `v1.0` publicada no commit `2c3e9428902665872811e9d6383a2e8976827825`. Instruções Python corrigidas; 259 testes locais aprovados, nenhum pulado; instalação num venv vazio e ensaio funcional do Streamlit com dados reais e falha simulada de IA conferidos. Sem inspeção visual da demo nem nova chamada paga. [PENDENTE: vídeo final do Miguel ainda não apresentado]
+
+- **EDA reconferida, 07/11:** as 15 células de código de `notebooks/eda.ipynb` executaram com dados reais, gerando quatro gráficos e o resumo de 595 empresas e 384.591 linhas de contas. Notebook e PNG originais foram preservados; as saídas de auditoria ficaram fora do Git. As figuras já estão na seção 3.
 
 ### Semana 4 (09 a 16/11): entregar e ensaiar
-- Documento, deck e vídeo da demo prontos em qua 11/11; ensaios cronometrados; entrega em seg 16/11; banca prevista para qua 18/11
+- Documento, deck e vídeo da demo previstos para qua 11/11; ensaios cronometrados; entrega em seg 16/11; banca prevista para qua 18/11
   (a confirmar).
 
 ### As decisões que mais mudaram o projeto
@@ -548,7 +550,7 @@ de 312 empresas. Na 1ª rodada (29/10), com os dados antigos, os números eram p
 patrimônio líquido da RD Saúde vêm da coluna comparativa de 31/12/2025 do ITR de 30/06/2026.
 
 ### 8.3 Qualidade do código
-- Testes automáticos: 256 passando, nenhum pulado (06/11, Mac do Eduardo, com o PostgreSQL do compose ligado). Os testes não chamam a API.
+- Testes automáticos: 259 passando, nenhum pulado (07/11, Mac do Eduardo, com o PostgreSQL do compose ligado; mais dois subtestes aprovados). Os testes não chamam a API.
 - O CI roda os testes em todo pull request, com um PostgreSQL só para eles; a `main` só recebe mudanças por PR com o CI verde.
 
 ---
@@ -614,7 +616,7 @@ recebe) é outro: `avaliacao/regras_prompt.md`.
 | WEG com o Gemini: US$ 0,0011 | demo de 03/11 (`docs/HISTORICO.md`) | tabela `consultas` do banco da demo |
 | 15 s por tentativa, 2 tentativas, `temperature=0.2` | `TEMPO_LIMITE_S`, `TENTATIVAS`, `raiox/ia.py` | ler o arquivo |
 | banco desiste em 5 s | `TEMPO_LIMITE_S`, `raiox/banco.py` | ler o arquivo |
-| 256 testes passando, nenhum pulado | Mac do Eduardo, 06/11, branch do PR #49 com a `main` mesclada | `python -m pytest -q -rs` com o PostgreSQL ligado |
+| 259 testes passando, nenhum pulado | Mac do Eduardo, 07/11, código da `v1.0` (PR #67); mais dois subtestes aprovados | `python -m pytest -q` com o PostgreSQL ligado |
 
 ## Apêndice B · Pendências desta versão (sai da versão final)
 
@@ -622,6 +624,5 @@ recebe) é outro: `avaliacao/regras_prompt.md`.
 |---|---|---|
 | ROI: 1 raio-x montado à mão e cronometrado, contra a ferramenta (seções 1 e 7.7) | Náthally (NA3) | o quanto antes; sem ele, o documento não fala em ganho de tempo |
 | texto final de ética na seção 7 e a viabilidade | Náthally (NA5) | sáb 07 a dom 08/11 |
-| validar o fechamento, fazer merge e publicar `v1.0` (seção 2); métricas existentes conferidas, sem repetir chamadas pagas | Eduardo | candidata técnica conferida em 07/11; publicação aguarda aprovação |
 | data e horário da banca; respostas às perguntas 2 e 3 do REQUISITOS (prompts de vibecoding e base de conhecimento) | professor (o Eduardo pergunta) | rascunho não enviado em `docs/conteudo_eduardo.md` |
 | leitura do documento inteiro (seção 4 contra o BPMN; seção 3 contra a EDA) | Marcos | sáb 07/11 |

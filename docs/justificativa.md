@@ -6,10 +6,10 @@ Atende:
 - `guia_projeto_final.pdf` §7: "motivos da escolha por RAG em relação ao Fine-tuning, e como configuraram as chains e a memória";
 - `requisitos_projeto.MD`, "Integração com IA de terceiro": "base de dados de conhecimento para a IA utilizar".
 
-Vai para o `documentacao.pdf` (MA6).
+Já integra o `documentacao.pdf` (MA6, seção 6). O rascunho ainda aguarda as contribuições externas listadas no Apêndice B.
 
 > Escrito em 02/11/2026 pelo Claude Code a partir do código. Cada afirmação tem arquivo e linha, conferidos no mesmo dia e revisados
-> pelo `revisor` no PR #31. Responsável: Eduardo. "Pronto quando" (PLANO, ED8): o Marcos lê e entende.
+> pelo `revisor` no PR #31. Referências atualizadas em 07/11/2026 após a auditoria da `v1.0`. Responsável: Eduardo. "Pronto quando" (PLANO, ED8): o Marcos lê e entende; essa leitura ainda não foi confirmada.
 
 ## 1. O problema decide a arquitetura
 
@@ -21,7 +21,7 @@ Número errado numa reunião de vendas destrói a confiança no produto. Por iss
 | código (Pandas) | calcula todos os números a partir da DFP da CVM | cálculo é determinístico e auditável: cada número tem conta e ano (`raiox/ia.py:36-44`, coluna "fonte") |
 | ML (scikit-learn) | acha o grupo de empresas parecidas e as 5 mais próximas | não há rótulo de "empresa parecida": é aprendizado não supervisionado |
 | LLM (Gemini) | escreve o texto usando **marcadores** como `{margem_ebit}`, nunca o número | escrever é o que o LLM faz bem; copiar e arredondar número é onde ele erra |
-| validador (código) | apaga o texto que tem número fora de marcador e troca cada marcador pelo valor calculado | é a **regra de ouro**: o LLM nunca escreve números (`raiox/ia.py:230`, `:248`) |
+| validador (código) | apaga o texto que tem número fora de marcador e troca cada marcador pelo valor calculado | é a **regra de ouro**: o LLM nunca escreve números (`raiox/ia.py:246`, `:264`) |
 
 ## 2. Machine learning: K-means + vizinhos mais próximos
 
@@ -40,7 +40,7 @@ Número errado numa reunião de vendas destrói a confiança no produto. Por iss
   outras num grupo só (`docs/HISTORICO.md`, "O que aprendemos"; `raiox/segmentos.py:78`). Com a regra dos 5%, saem 4 grupos e silhueta 0,30. Com os dados do PR #46 (recarregados em 05/11),
   0,29 e grupos de 60, 310, 88 e 106 empresas no treino (`docs/REQUISITOS.md`, R5; dados do #46 e do #59). A legenda do `grupos.png` mostra 66, 312, 103 e 114:
   são as 595 empresas, contando as que ficaram fora do treino e recebem o grupo mais próximo.
-  Silhueta menor, grupos úteis. Os gráficos de antes e depois são `docs/graficos/silhueta_antes_ed4.png` e `silhueta.png`
+  A silhueta atual é 0,286, com sobreposição entre os grupos; os dez casos avaliados caem no maior grupo (312 empresas). A comparação é exploratória, com esse limite declarado na ética e no documento (issue #60). Os gráficos de antes e depois são `docs/graficos/silhueta_antes_ed4.png` e `silhueta.png`
   (refeito em 05/11: 0,29 em k = 4).
 - **5 empresas parecidas:** `NearestNeighbors` com 6 vizinhos, porque o 1º vizinho é a própria empresa e sai da lista
   (`raiox/segmentos.py:97-103`).
@@ -48,8 +48,8 @@ Número errado numa reunião de vendas destrói a confiança no produto. Por iss
 ## 3. IA generativa: por que nem RAG vetorial nem fine-tuning
 
 **De onde a IA tira o conhecimento.** A base é a tabela de indicadores calculada da DFP da CVM pelos scripts do Marcos
-(`data/indicadores.csv`, com o grupo e as parecidas do `data/segmentos.csv`; lida em `raiox/ia.py:52-54`).
-O código busca a linha exata da empresa pelo código CVM (`montar()`, `raiox/ia.py:74`) e entrega ao Gemini, para cada indicador
+(`data/indicadores.csv`, com o grupo e as parecidas do `data/segmentos.csv`; lida por `_base()` e `_base_em_cache()`, `raiox/ia.py:51` e `:61`).
+O código busca a linha exata da empresa pelo código CVM (`montar()`, `raiox/ia.py:86`) e entrega ao Gemini, para cada indicador
 (`raiox/ia.py:99`):
 - o nome;
 - o valor da empresa e a mediana do grupo, já formatados (ex.: "R$ 12,3 bi");
@@ -62,7 +62,7 @@ O PostgreSQL guarda as contas da DFP (tabelas `contas` e `empresas`, `scripts/ca
 (`raiox/dados.py`); a tela usa o banco desde a MG4 (PR #36, 02/11).
 
 Se isso conta como a "base de dados de conhecimento" que o `requisitos_projeto.MD` pede, é a pergunta 3 ao professor, ainda sem
-resposta (`docs/REQUISITOS.md`). O projeto também segue o caminho "Treinamento de Machine Learning" (seção 2), que fica completo quando a EDA entrar (MA4, REQUISITOS R4).
+resposta (`docs/REQUISITOS.md`). O projeto também segue o caminho "Treinamento de Machine Learning" (seção 2), cuja EDA já está na `main` desde o PR #54, atualizada no #59. Em 07/11, as 15 células de código de `notebooks/eda.ipynb` foram executadas com dados reais e produziram os quatro gráficos, sem erro; as imagens já estão na seção 3 do documento (REQUISITOS R4).
 
 | opção | o que seria | por que não usamos |
 |---|---|---|
@@ -75,45 +75,45 @@ da DFP. Ficou fora do escopo (`docs/PLANO.md`, seção 7).
 
 ## 4. Chain, memória e agentes no LangChain
 
-- **Uma chain só, de dois passos** (`_chain()`, `raiox/ia.py:165`):
+- **Uma chain só, de dois passos** (`_chain()`, `raiox/ia.py:177`):
   1. `ChatPromptTemplate`, com as regras como `SystemMessage` e o pedido;
   2. `ChatGoogleGenerativeAI(...).with_structured_output(RaioX)`.
-- **Saída estruturada:** a resposta volta no formato `RaioX` (resumo, perguntas e lacunas; `raiox/ia.py:113-125`).
+- **Saída estruturada:** a resposta volta no formato `RaioX` (resumo, perguntas e lacunas; `RaioX`, `raiox/ia.py:131`).
   O Pydantic garante esse formato. As quantidades (3 a 5 perguntas, 2 a 4 lacunas) vão como instrução ao modelo e não são impostas por código.
-- **O prompt de sistema** (`regras()`, `raiox/ia.py:141-144`) é o arquivo de regras da Náthally (`avaliacao/regras_prompt.md`, lido sem
+- **O prompt de sistema** (`regras()`, `raiox/ia.py:153`) é o arquivo de regras da Náthally (`avaliacao/regras_prompt.md`, lido sem
   cópia) mais 3 notas do código (`NOTAS_DO_CODIGO`). Assim, o que ela escreve chega inteiro ao Gemini.
 - **Modelo:** `gemini-3.1-flash-lite` (`raiox/ia.py:28`). A tarefa é escrever 3 frases e algumas perguntas: um modelo pequeno
-  basta e custa menos. `temperature=0.2` dá pouca variação entre uma chamada e outra (`raiox/ia.py:161`).
+  basta e custa menos. `temperature=0.2` dá pouca variação entre uma chamada e outra (`raiox/ia.py:173`).
 - **Limites:** 15 s por tentativa e 2 tentativas (`raiox/ia.py:32-33`). Se a API travar, o erro chega em uns 30 s, e a tela não fica
   girando sem fim.
 - **Sem memória, de propósito:** cada raio-x é independente (uma empresa, um produto, um objetivo). Memória de conversa só traria
   risco de misturar dados de uma empresa na outra.
 - **Sem agente, de propósito:** o caminho é sempre o mesmo (buscar → calcular → escrever → validar), então não há decisão para um
   agente tomar. Um pipeline fixo é mais previsível e mais fácil de testar.
-- **Plano B sem IA:** `texto_sem_ia()` (`raiox/ia.py:186`) monta o texto por modelo fixo, com os mesmos marcadores e o mesmo validador.
+- **Plano B sem IA:** `texto_sem_ia()` (`raiox/ia.py:198`) monta o texto por modelo fixo, com os mesmos marcadores e o mesmo validador.
   A demo funciona sem a chave do Gemini (sem `RAIOX_IA_REAL`).
 
 ## 5. Segurança (a parte técnica; a análise de ética é a NA5, da Náthally)
 
 - **O modelo não escreve número:**
   - o validador barra algarismos de qualquer escrita (inclusive ½ e ²), números por extenso ("dez", "o dobro") e marcadores
-    inventados (`checar()`, `raiox/ia.py:230-240`);
-  - se o resumo tiver um número, ele sai inteiro; perguntas e lacunas saem uma a uma (`raiox/ia.py:248-281`);
+    inventados (`checar()`, `raiox/ia.py:246-255`);
+  - se o resumo tiver um número, ele sai inteiro; perguntas e lacunas saem uma a uma (`validar_e_preencher()`, `raiox/ia.py:264-296`);
   - tudo o que sai fica registrado em `removidos`, que aparece na tela;
   - testes: `test_validador_*` e `test_regra_de_ouro_*`, em `tests/test_raio_x.py`.
 - **Chave do Gemini** só no `.env`, que não vai para o Git (`.gitignore`). No Terraform, o `.env` é montado só para leitura e a chave
   não passa por variável, então não fica no `terraform.tfstate` (`infra/main.tf:123-130`; conferido pelo Miguel no PR #29).
   Ponto fraco: a senha do PostgreSQL local passa por variável (`var.senha_banco`, padrão `postgres`; `infra/main.tf:112-113`) e fica no
   `terraform.tfstate`. Ele não vai para o Git, e o banco só abre em `127.0.0.1`.
-- **Não é recomendação de investimento:** o aviso aparece na tela (`app/streamlit_app.py:187-188`).
+- **Não é recomendação de investimento:** o aviso aparece na tela (`app/streamlit_app.py:205-207`).
 
 ## 6. Perguntas prováveis da banca (respostas curtas)
 
 | pergunta | resposta |
 |---|---|
 | Por que não RAG? | Os dados são números em tabela: buscar pela chave da empresa é exato, e busca semântica poderia trazer a empresa errada. A recuperação existe, mas é estruturada. |
-| Por que não fine-tuning? | Faltam exemplos rotulados, custa mais, os dados mudam todo ano, e não resolve o risco principal (número errado). O validador resolve. |
+| Por que não fine-tuning? | Faltam exemplos rotulados, custa mais, os dados mudam todo ano, e não resolve o risco principal (número errado). O validador controla os números fora de marcador; não garante o sentido correto de todas as frases. |
 | Como vocês sabem que a IA não inventa número? | Ela pode ler os valores, mas só pode escrever marcadores. Os números do texto são colocados pelo código, e se ela escrever um dígito o validador apaga o trecho. Nos 10 casos reais, 0 trechos removidos. |
-| Por que a silhueta é só 0,29? | Porque a de 0,77 enganava: separava 9 extremas e juntava todo o resto. Preferimos grupos úteis a um número bonito. |
+| Por que a silhueta é só 0,29? | Porque a de 0,77 enganava: separava 9 extremas e juntava todo o resto. A correção evitou um grupo minúsculo de extremas; os grupos atuais ainda se sobrepõem e os dez casos avaliados caem no mesmo grupo. É um limite, não uma medida de acerto. |
 | Qual a memória do agente? | Não há agente nem memória, de propósito: cada raio-x é independente e o caminho é fixo. |
 | E se a API do Gemini cair na demo? | A tela monta o texto sem IA, com os mesmos números e o mesmo validador, e mostra um aviso (`app/streamlit_app.py:49-55`, MG4). Conferido em 03/11 com uma chave inválida: WEG gerada sem IA e consulta gravada com custo 0. |

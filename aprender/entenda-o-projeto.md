@@ -185,7 +185,7 @@ python scripts/indicadores.py        # → data/indicadores.csv
 e `docker compose run --rm tela python -m pytest -q` roda os testes dentro do contêiner. Os outros comandos (carregar a CVM,
 ligar a IA, desligar) estão no `aprender/COMANDOS.md`, seção 6.
 
-> Atenção: hoje esses dois passos ainda não conversam com o resto (detalhe em `seguindo-o-projeto.md`, item "o que falta para funcionar").
+> Integração conferida: a carga grava o PostgreSQL e os CSV; a tela busca empresas e registra consultas no PostgreSQL, enquanto o raio-x lê os indicadores do CSV. A EDA está em `notebooks/eda.ipynb`. O `seguindo-o-projeto.md` é uma fotografia histórica de 26/10, não o status atual.
 
 ---
 
