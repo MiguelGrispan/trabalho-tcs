@@ -65,13 +65,13 @@ O status de cada item, com a prova, fica no `docs/REQUISITOS.md`.
   professor fixou o PostgreSQL: vale o PostgreSQL. Nada novo com `sqlite3`; desde a MA2 (PRs #21 e #22) a `main` usa só o PostgreSQL.
   O endereço do banco (`DATABASE_URL`) tem senha: fica no `.env`, como a chave do Gemini.
 - **O Streamlit vale como backend e frontend, em 2 contêineres** (resposta à pergunta 1, registrada em 02/11): um com a tela e a
-  aplicação (Streamlit + `raiox/`) e outro com o PostgreSQL. Leitura do grupo: não precisa de API separada. O compose e o Terraform já sobem os 2; a tela
-  precisa usar o banco de verdade (MG4).
+  aplicação (Streamlit + `raiox/`) e outro com o PostgreSQL. Leitura do grupo: não precisa de API separada. O compose e o Terraform sobem os 2; a tela
+  usa o PostgreSQL para buscar empresas e registrar consultas desde a MG4 (PR #36, 02/11).
 
 **Entregáveis (48 h antes da banca; G §6 e R "Composição do projeto"):**
 (1) repositório Git organizado, com README em markdown sobre o tema, o objetivo e as tecnologias, com a arquitetura, os pré-requisitos
 e as instruções para rodar; os scripts de infraestrutura (Terraform), os notebooks e os arquivos de prompts do vibecoding;
-(2) documento (PDF, ou markdown) com as etapas desenvolvidas no processo (R), o BPMN 2.0, a justificativa técnica das escolhas
+(2) documento em **PDF** (G §6; o R também aceita markdown), com fonte em markdown, com as etapas desenvolvidas no processo (R), o BPMN 2.0, a justificativa técnica das escolhas
 (ex.: RAG × fine-tuning) e a análise de ética e segurança (G); (3) slides (deck em PDF ou PPTX) para no máximo 20 minutos.
 Também: vídeo gravado da demo, como reserva (dica do G §3).
 

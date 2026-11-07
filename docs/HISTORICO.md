@@ -134,7 +134,8 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   índice das entregas (`docs/ENTREGAS.md`); sai o PDF velho que falava de SQLite. Achado: o professor ainda não tem acesso ao
   repositório privado.
 
-- **07/11** · Eduardo com o Codex: candidata técnica ao congelamento, Python 3.14 explícito nos seis guias/atalhos (#57), instalação num venv vazio, testes com PostgreSQL e ensaio funcional com dados reais, sem chamada paga. Conteúdo técnico dos slides e rascunho não enviado ao professor em `docs/conteudo_eduardo.md`; PDF atualizado. Merge/tag, revisão humana e contribuições externas continuam pendentes.
+- **07/11** · Eduardo com o Codex: candidata técnica ao congelamento, Python 3.14 explícito nos seis guias/atalhos (#57), instalação num venv vazio, testes com PostgreSQL e ensaio funcional com dados reais, sem chamada paga. Conteúdo técnico dos slides e rascunho não enviado ao professor em `docs/conteudo_eduardo.md`; PDF atualizado. Naquele momento, merge/tag, revisão humana e contribuições externas continuavam pendentes.
+- **07/11, fechamento** · PR #67 mesclado e tag `v1.0` publicada em `2c3e942`: código congelado, #57 fechada. EDA do Marcos reconferida com dados reais (15 células de código, quatro gráficos), sem alterar seus arquivos. Auditoria dos 114 arquivos e atualização dos registros e da memória compartilhada; sem mudança no produto.
 
 ## Decisões (e por quê)
 

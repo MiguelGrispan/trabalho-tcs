@@ -1,7 +1,7 @@
 # Entregas da banca · índice
 
 Abra no VS Code com **Cmd+Shift+V** (preview): cada link abre o arquivo do repositório.
-Entrega: **seg 16/11/2026**, 48 h antes da banca (`guia_projeto_final.pdf` §6). Atualizado em 07/11/2026; fechamento técnico nesta branch, ainda sem tag `v1.0`.
+Entrega: **seg 16/11/2026**, 48 h antes da banca (`guia_projeto_final.pdf` §6). Atualizado em 07/11/2026; código congelado na [v1.0](https://github.com/MiguelGrispan/trabalho-tcs/tree/v1.0), commit `2c3e942`, PR #67 mesclado.
 
 Status: **pronto** = existe e foi conferido · **rascunho** = existe, mas falta conteúdo · **a confirmar** = está fora do repositório,
 ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marcados.
@@ -28,12 +28,12 @@ ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marc
   [REGRAS-IA.md](../REGRAS-IA.md), skills ([inicio-de-sessao](../.claude/skills/inicio-de-sessao/SKILL.md),
   [fim-de-sessao](../.claude/skills/fim-de-sessao/SKILL.md), [explicar](../.claude/skills/explicar/SKILL.md)),
   [revisor](../.claude/agents/revisor.md), [settings.json](../.claude/settings.json), [guarda.py](../.claude/hooks/guarda.py),
-  [pre-commit](../.githooks/pre-commit), [modelo de PR](../.github/pull_request_template.md). O prompt do produto (o que o
+  [pre-commit](../.githooks/pre-commit), [modelo de PR](../.github/pull_request_template.md). Esses arquivos existem; a pergunta 2 ao professor (se também quer prompts digitados) continua em aberto no REQUISITOS. O prompt do produto (o que o
   Gemini recebe): [avaliacao/regras_prompt.md](../avaliacao/regras_prompt.md).
 
 ## Documento do projeto (guia §6, item 2)
 
-- [ ] **Documento em Markdown** · rascunho · [docs/documentacao.md](documentacao.md). Rascunho 3 (07/11), com BPMN, arquitetura
+- [ ] **Documento em Markdown** · rascunho · [docs/documentacao.md](documentacao.md). Rascunho 4 (07/11), com BPMN, arquitetura
   e EDA; faltam o ROI, o texto final de ética e as respostas do professor (Apêndice B do documento).
 - [ ] **Documento em PDF** · rascunho · [docs/documentacao.pdf](documentacao.pdf). Regenerado do Markdown em 07/11;
   precisa ser gerado de novo depois de cada mudança no `.md`.
@@ -41,7 +41,7 @@ ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marc
   (PRs #52 e #65). Também na seção 4 do documento.
 - [x] **EDA** · pronto · [notebooks/eda.ipynb](../notebooks/eda.ipynb) e os gráficos
   [nulos](graficos/eda_1_nulos.png), [distribuições](graficos/eda_2_distribuicoes.png),
-  [extremos](graficos/eda_3_extremos.png), [cobertura](graficos/eda_4_cobertura.png). Também na seção 3 do documento.
+  [extremos](graficos/eda_3_extremos.png), [cobertura](graficos/eda_4_cobertura.png). Na `main` desde o #54, atualizada no #59 e reexecutada com dados reais em 07/11: 15 células de código, quatro figuras e nenhum erro. Notebook/PNG originais preservados. Também na seção 3 do documento.
 - [x] **Avaliação dos dez casos** · pronto · [casos](../avaliacao/casos_avaliacao.csv), [resultados](../avaliacao/resultados.csv)
   (0 trechos removidos, 2,15 s e US$ 0,001185 em média) e [conferência contra o RI](../avaliacao/conferencia.csv). O "8 de 10"
   da conferência manual está no `revisao_manual.md`, que ainda não está na `main` (branch `feat/metricas`).
@@ -65,6 +65,6 @@ ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marc
 
 ## Fechamento técnico de 07/11/2026
 
-- [x] **Ambiente e banco:** venv vazio com dependências instaladas, PostgreSQL ativo e testes locais aprovados; resultados completos no PR desta branch.
+- [x] **Ambiente e banco:** venv vazio com dependências instaladas, PostgreSQL ativo e testes locais aprovados; resultados completos no [PR #67](https://github.com/MiguelGrispan/trabalho-tcs/pull/67).
 - [x] **Demo funcional:** WEG, Embraer e Ambev pelo Streamlit AppTest, dados reais, seis indicadores e cinco parecidas; erro de IA simulado também registra a consulta com custo zero. Sem inspeção visual da demo.
-- [ ] **Versão congelada:** falta aprovar o PR, fazer o merge e publicar `v1.0`. A data prevista de 06/11 não é prova de congelamento.
+- [x] **Versão congelada:** PR #67 mesclado, CI verde e tag anotada `v1.0` publicada em 07/11/2026, apontando para `2c3e942`. A versão fixa o código; PDF/deck e ensaios continuam sendo finalizados.
