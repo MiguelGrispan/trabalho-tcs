@@ -13,12 +13,13 @@ Legenda: ✅ conferido em 27/10/2026 · ⏳ depende de um PR ou sessão que aind
 
 | o que | onde | comando | o que deve aparecer |
 |---|---|---|---|
-| criar o ambiente Python | raiz | `python3 -m venv .venv` | nada (cria a pasta `.venv/`) |
-| ativar o ambiente (toda vez que abrir o terminal) | raiz | `source .venv/bin/activate` | `(.venv)` no começo da linha |
-| instalar as bibliotecas | raiz | `pip install -r requirements.txt` | `Successfully installed ...` |
+| criar o ambiente Python | raiz | `python3.14 -m venv .venv` (Windows: `py -3.14 -m venv .venv`) | nada (cria a pasta `.venv/`) |
+| ativar o ambiente (toda vez que abrir o terminal) | raiz | `source .venv/bin/activate` (PowerShell: `.venv\Scripts\Activate.ps1`) | `(.venv)` no começo da linha; `python --version` mostra `3.14.x` |
+| instalar as bibliotecas | raiz | `python -m pip install -r requirements.txt` | `Successfully installed ...` |
 | guardar a chave do Gemini (só para usar a IA) | raiz | `cp .env.example .env` e depois cole a chave no `.env`, ou dê dois cliques em `aprender/atalhos/configurar_chave.command` | o arquivo `.env` existe (`ls -a`). **Nunca** mande esse arquivo para ninguém |
 
 No Mac do Eduardo, o ambiente é `~/bootcamp`: `source ~/bootcamp/bin/activate`.
+Depois de ativar o ambiente, `python` é o Python 3.14 dele; não depende do `python3` do sistema.
 
 ---
 

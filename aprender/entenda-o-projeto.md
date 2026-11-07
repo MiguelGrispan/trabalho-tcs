@@ -164,9 +164,9 @@ python -m raiox.ia --cvm 90001 --produto "software de gestão de frota" --objeti
 Pré-requisito: Python 3.14 e Git. Todos os comandos rodam na **pasta do repositório** (`trabalho-tcs`).
 
 ```bash
-python -m venv .venv                 # cria um ambiente só do projeto (1 vez)
+python3.14 -m venv .venv             # Windows: py -3.14 -m venv .venv (1 vez)
 source .venv/bin/activate            # Mac/Linux   |   Windows: .venv\Scripts\Activate.ps1
-pip install -r requirements.txt      # instala as bibliotecas (1 vez)
+python -m pip install -r requirements.txt  # com o ambiente ativo, python é o 3.14
 python -m pytest -q                  # deve terminar com "passed" e nenhum "failed"
 cd app && streamlit run streamlit_app.py     # abre a tela em http://localhost:8501
 ```

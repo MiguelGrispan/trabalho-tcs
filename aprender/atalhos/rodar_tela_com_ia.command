@@ -7,7 +7,7 @@ if [ -f .venv/bin/activate ]; then
 elif [ -f "$HOME/bootcamp/bin/activate" ]; then
   source "$HOME/bootcamp/bin/activate"
 else
-  python3 -m venv .venv && source .venv/bin/activate
+  python3.14 -m venv .venv && source .venv/bin/activate || exit 1
 fi
 pip install -q -r requirements.txt
 export RAIOX_IA_REAL=1

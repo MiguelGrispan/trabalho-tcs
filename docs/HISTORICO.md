@@ -134,6 +134,8 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   índice das entregas (`docs/ENTREGAS.md`); sai o PDF velho que falava de SQLite. Achado: o professor ainda não tem acesso ao
   repositório privado.
 
+- **07/11** · Eduardo com o Codex: candidata técnica ao congelamento, Python 3.14 explícito nos seis guias/atalhos (#57), instalação num venv vazio, testes com PostgreSQL e ensaio funcional com dados reais, sem chamada paga. Conteúdo técnico dos slides e rascunho não enviado ao professor em `docs/conteudo_eduardo.md`; PDF atualizado. Merge/tag, revisão humana e contribuições externas continuam pendentes.
+
 ## Decisões (e por quê)
 
 | data | decisão | por quê |

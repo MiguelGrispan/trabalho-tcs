@@ -3,11 +3,11 @@
 **Projeto final da trilha IA Aplicada (SENAI/TCS)** · Equipe: Marcos (dados), Eduardo (IA e gestão), Náthally (produto e métricas),
 Miguel (tela e infraestrutura) · Repositório: `MiguelGrispan/trabalho-tcs` (GitHub)
 
-**Versão:** rascunho 2 (para revisão do grupo), sex 06/11/2026 · Final prevista: seg 09/11/2026 · Entrega: seg 16/11/2026,
+**Versão:** rascunho 3 (para revisão do grupo), 07/11/2026 · Final prevista: seg 09/11/2026 · Entrega: seg 16/11/2026,
 48 h antes da banca, prevista para qua 18/11/2026 [PENDENTE: data e horário da banca a confirmar com o professor]
 
 > **Versão para revisão.** O BPMN, a arquitetura e a EDA já estão no documento. Ainda faltam, marcados com **[PENDENTE]**:
-> o ROI (nenhuma medição manual de tempo foi feita até 06/11), o texto final de ética da Náthally e respostas do professor.
+> o ROI (nenhuma medição manual comparável foi entregue até 07/11), o texto final de ética da Náthally e respostas do professor.
 > A lista completa está no fim (Apêndice B) e sai da versão final.
 
 ## O que este documento cobre
@@ -102,8 +102,7 @@ O projeto durou 4 semanas (19/10 a 16/11/2026). O detalhe de cada passo está no
 - **Consertos antes do congelamento** (Eduardo, PR #63, 05/11): o validador passou a barrar quantidade sem algarismo ("dobrou",
   "um quarto"), a tela acha empresas carregadas depois de aberta e as travas funcionam no Windows. **Limpeza** do código que
   ninguém usava (Marcos, PR #64, 05/11).
-- Código congelado e tag `v1.0` na sex 06/11; vídeo final gravado na `v1.0` no sáb 07/11. [PENDENTE: a tag `v1.0` ainda não existe
-  em 06/11, manhã; confirmar as datas reais no fim da semana]
+- **Candidata ao congelamento, 07/11:** instruções de Python corrigidas; dependências instaladas num venv vazio; testes com PostgreSQL e ensaio funcional do Streamlit com dados reais e falha simulada de IA aprovados. Sem inspeção visual da demo e sem chamada paga nesta sessão. [PENDENTE: aprovação do PR, merge e tag `v1.0`; vídeo final do Miguel ainda não apresentado]
 
 ### Semana 4 (09 a 16/11): entregar e ensaiar
 - Documento, deck e vídeo da demo prontos em qua 11/11; ensaios cronometrados; entrega em seg 16/11; banca prevista para qua 18/11
@@ -623,6 +622,6 @@ recebe) é outro: `avaliacao/regras_prompt.md`.
 |---|---|---|
 | ROI: 1 raio-x montado à mão e cronometrado, contra a ferramenta (seções 1 e 7.7) | Náthally (NA3) | o quanto antes; sem ele, o documento não fala em ganho de tempo |
 | texto final de ética na seção 7 e a viabilidade | Náthally (NA5) | sáb 07 a dom 08/11 |
-| tag `v1.0` e datas reais do congelamento (seção 2); números do Apêndice A conferidos de novo na `v1.0` | Eduardo | seg 09/11 |
-| data e horário da banca; resposta à pergunta 3 (seção 6.3) | professor (o Eduardo pergunta) | — |
+| validar o fechamento, fazer merge e publicar `v1.0` (seção 2); métricas existentes conferidas, sem repetir chamadas pagas | Eduardo | candidata técnica conferida em 07/11; publicação aguarda aprovação |
+| data e horário da banca; respostas às perguntas 2 e 3 do REQUISITOS (prompts de vibecoding e base de conhecimento) | professor (o Eduardo pergunta) | rascunho não enviado em `docs/conteudo_eduardo.md` |
 | leitura do documento inteiro (seção 4 contra o BPMN; seção 3 contra a EDA) | Marcos | sáb 07/11 |

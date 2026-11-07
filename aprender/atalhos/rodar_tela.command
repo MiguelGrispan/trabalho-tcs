@@ -7,7 +7,7 @@ if [ -f .venv/bin/activate ]; then
 elif [ -f "$HOME/bootcamp/bin/activate" ]; then
   source "$HOME/bootcamp/bin/activate"
 else
-  python3 -m venv .venv && source .venv/bin/activate
+  python3.14 -m venv .venv && source .venv/bin/activate || exit 1
 fi
 pip install -q -r requirements.txt
 echo "Abrindo a tela em http://localhost:8501 ... Para parar, feche esta janela."

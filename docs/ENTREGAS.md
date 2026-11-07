@@ -1,12 +1,12 @@
 # Entregas da banca · índice
 
 Abra no VS Code com **Cmd+Shift+V** (preview): cada link abre o arquivo do repositório.
-Entrega: **seg 16/11/2026**, 48 h antes da banca (`guia_projeto_final.pdf` §6). Atualizado em sex 06/11/2026.
+Entrega: **seg 16/11/2026**, 48 h antes da banca (`guia_projeto_final.pdf` §6). Atualizado em 07/11/2026; fechamento técnico nesta branch, ainda sem tag `v1.0`.
 
 Status: **pronto** = existe e foi conferido · **rascunho** = existe, mas falta conteúdo · **a confirmar** = está fora do repositório,
 ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marcados.
 
-> **Atenção:** o repositório é **privado** e, em 06/11, o professor não está entre os colaboradores (Miguel, Marcos, Náthally e
+> **Atenção:** o repositório é **privado** e, em 07/11, o professor não está entre os colaboradores (Miguel, Marcos, Náthally e
 > Eduardo). Sem o acesso dele, nenhum item abaixo chega à banca.
 
 ## Prazo e acesso
@@ -18,10 +18,9 @@ ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marc
 
 ## Repositório (`requisitos_projeto.MD`, Documentação e Aplicação; guia §6, item 1)
 
-- [ ] **README** · a confirmar · [README.md](../README.md). Tem tema, objetivo, tecnologias, arquitetura e como rodar; falta
-  seguir o README do zero num computador limpo (ED10).
+- [ ] **README** · a confirmar · [README.md](../README.md). Tem tema, objetivo, tecnologias, arquitetura e como rodar; em 07/11, instalação de dependências num venv vazio e build Docker conferidos no mesmo Mac. Falta outra pessoa seguir o README em outro computador (ED10).
 - [x] **Arquitetura** · pronto · [docs/arquitetura.png](arquitetura.png) e o diagrama Mermaid na seção "Arquitetura" do
-  [README.md](../README.md). Falta só olhar o Mermaid desenhado na página do GitHub.
+  [README.md](../README.md). O Mermaid renderizado foi identificado na árvore de acessibilidade do Chrome em 07/11; sem revisão visual de layout.
 - [x] **Terraform** · pronto · [infra/main.tf](../infra/main.tf), [infra/variables.tf](../infra/variables.tf),
   [infra/outputs.tf](../infra/outputs.tf), [infra/providers.tf](../infra/providers.tf), [infra/versions.tf](../infra/versions.tf);
   o mesmo pelo [docker-compose.yml](../docker-compose.yml) e o [Dockerfile](../Dockerfile). Conferido no Mac em 03/11.
@@ -34,9 +33,9 @@ ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marc
 
 ## Documento do projeto (guia §6, item 2)
 
-- [ ] **Documento em Markdown** · rascunho · [docs/documentacao.md](documentacao.md). Rascunho 2 (06/11), com BPMN, arquitetura
+- [ ] **Documento em Markdown** · rascunho · [docs/documentacao.md](documentacao.md). Rascunho 3 (07/11), com BPMN, arquitetura
   e EDA; faltam o ROI, o texto final de ética e as respostas do professor (Apêndice B do documento).
-- [ ] **Documento em PDF** · rascunho · [docs/documentacao.pdf](documentacao.pdf). Gerado do Markdown em 06/11 (21 páginas);
+- [ ] **Documento em PDF** · rascunho · [docs/documentacao.pdf](documentacao.pdf). Regenerado do Markdown em 07/11;
   precisa ser gerado de novo depois de cada mudança no `.md`.
 - [x] **BPMN 2.0** · pronto · [imagem](bpmn/raio-x-comercial.png) e [arquivo editável](bpmn/raio-x-comercial.bpmn)
   (PRs #52 e #65). Também na seção 4 do documento.
@@ -54,6 +53,8 @@ ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marc
 
 ## Apresentação (guia §3 e §6, item 3)
 
+- [x] **Conteúdo técnico do Eduardo** · preparado · [dois slides, falas e perguntas de defesa](conteudo_eduardo.md). Falta incorporar ao deck e ensaiar; o arquivo também contém rascunho não enviado ao professor.
+
 - [ ] **Deck** · a confirmar · o grupo diz que o deck existe, mas ele não está no repositório. Falta colar o link e conferir se a
   versão usa os números do documento de 06/11 (8 de 10, 0 removidos, 2,15 s, US$ 0,001185, k = 4, silhueta 0,286).
   Arquivo ou link a inserir: ________ · versão conferida em: ________
@@ -61,3 +62,9 @@ ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marc
   2 lugares. Arquivo ou link a inserir: ________
 - [ ] **Ensaio de até 20 minutos** · a confirmar · falta registrar data, tempo medido e quem falou cada parte (guia §3).
   Arquivo ou link a inserir: ________
+
+## Fechamento técnico de 07/11/2026
+
+- [x] **Ambiente e banco:** venv vazio com dependências instaladas, PostgreSQL ativo e testes locais aprovados; resultados completos no PR desta branch.
+- [x] **Demo funcional:** WEG, Embraer e Ambev pelo Streamlit AppTest, dados reais, seis indicadores e cinco parecidas; erro de IA simulado também registra a consulta com custo zero. Sem inspeção visual da demo.
+- [ ] **Versão congelada:** falta aprovar o PR, fazer o merge e publicar `v1.0`. A data prevista de 06/11 não é prova de congelamento.
