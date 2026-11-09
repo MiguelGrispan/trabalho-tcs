@@ -40,3 +40,5 @@ a cronometrar).
 2. Passou do alvo da etapa? Corte um slide ou uma frase; não fale mais rápido.
 3. A demo (etapa 3) é a que mais estoura: ensaiar com o vídeo de reserva pronto, para trocar sem perder tempo.
 4. Treinar também as perguntas da banca: são 12 min, quase metade do tempo total.
+
+Texto corrido para ensaio: `docs/roteiro_fala.md` (rascunho, com lacunas [PREENCHER]).
