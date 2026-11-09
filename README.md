@@ -209,6 +209,10 @@ docker compose down                 # desliga os 2; o banco continua guardado no
 - **IA ligada:** `RAIOX_IA_REAL=1 docker compose up -d`. A chave vem do `GOOGLE_API_KEY` do `.env`, que o Compose lê sozinho.
   A chave e a `data/` nunca entram na imagem (`.dockerignore`): a `data/` entra como volume.
 - **Porta 5432 ocupada** por outro PostgreSQL: `PORTA_BANCO=5433 docker compose up -d`.
+- **Antes de apresentar** (e sempre depois de reiniciar o computador ou o Docker): `docker compose up -d` e `docker compose ps`,
+  com os 2 `healthy` e a tela abrindo em http://localhost:8501. Só o banco volta sozinho (`restart: unless-stopped`); a tela
+  fica `Exited`. Se o código mudou desde o último build (ex.: veio a `v1.0.1`), use `docker compose up -d --build`. A lista
+  completa está em [docs/roteiro_demo.md](docs/roteiro_demo.md).
 
 ## Como rodar com Terraform (infraestrutura automatizada)
 
@@ -293,10 +297,15 @@ Com `RAIOX_DADOS=falsos` (ou sem a `data/`), usa as empresas inventadas de `fals
 **Outros módulos**:
 
 ```bash
-python -m raiox.ia --cvm 90001 --produto "software de gestão de frota" --objetivo "primeira conversa" --sem-ia
+RAIOX_DADOS=falsos python -m raiox.ia --cvm 90001 --produto "software de gestão de frota" --objetivo "primeira conversa" --sem-ia
 python -m raiox.segmentos          # refaz os grupos e o gráfico da silhueta
 python -m raiox.checagem --teste   # checador com dados que têm erros de propósito (sem IA)
 ```
+
+A empresa 90001 é inventada e só existe em `falsos/`: por isso o `RAIOX_DADOS=falsos` na frente, que faz o exemplo funcionar
+em qualquer computador (com a `data/` real e sem ele, dá `ValueError: Empresa 90001 não está na tabela de indicadores`).
+No Windows (PowerShell), rode antes `$env:RAIOX_DADOS="falsos"`, depois o comando sem o começo e, no fim,
+`Remove-Item Env:RAIOX_DADOS` (senão a tela aberta nessa mesma janela também usa as empresas inventadas).
 
 ## Dados
 
