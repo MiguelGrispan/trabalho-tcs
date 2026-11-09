@@ -103,6 +103,10 @@ O projeto foi planejado para 4 semanas (19/10 a 16/11/2026). O detalhe de cada p
   "um quarto"), a tela acha empresas carregadas depois de aberta e as travas funcionam no Windows. **Limpeza** do código que
   ninguém usava (Marcos, PR #64, 05/11).
 - **Código congelado, 07/11:** PR #67 mesclado, com CI verde; tag anotada `v1.0` publicada no commit `2c3e9428902665872811e9d6383a2e8976827825`. Instruções Python corrigidas; 259 testes locais aprovados, nenhum pulado; instalação num venv vazio e ensaio funcional do Streamlit com dados reais e falha simulada de IA conferidos. Sem inspeção visual da demo nem nova chamada paga. [PENDENTE: vídeo final do Miguel ainda não apresentado]
+- **Conserto depois do congelamento, 09/11 (`v1.0.1`):** a revisão final (issue #69) achou duas brechas na regra de ouro, ambas
+  consertadas com teste: o validador deixava passar "bilionária", "milionária" e "uma vez e meia"; e, se o Gemini devolvesse o
+  formato errado, a mensagem de erro em "Detalhes técnicos" copiava o texto dele, com números. Nenhum dos 10 textos reais do
+  Gemini (`resultados.csv`) seria barrado pelas palavras novas. 263 testes aprovados, nenhum pulado.
 
 - **EDA reconferida, 07/11:** as 15 células de código de `notebooks/eda.ipynb` executaram com dados reais, gerando quatro gráficos e o resumo de 595 empresas e 384.591 linhas de contas. Notebook e PNG originais foram preservados; as saídas de auditoria ficaram fora do Git. As figuras já estão na seção 3.
 
@@ -192,7 +196,7 @@ O notebook `notebooks/eda.ipynb` (Marcos, PR #54) olha os dados antes de usá-lo
 ![EDA: nulos](graficos/eda_1_nulos.png)
 
 *Figura 1. Nulos. Todas as empresas têm as 5 contas do último ano; o único indicador com vazios é o crescimento (falta a DFP de
-2 anos antes ou a receita daquele ano era zero). Decisão: o vazio continua vazio até a tela ("sem dado"); só o K-means usa a mediana.*
+2 anos antes ou a receita daquele ano era zero ou negativa). Decisão: o vazio continua vazio até a tela ("sem dado"); só o K-means usa a mediana.*
 
 ![EDA: distribuições dos 6 indicadores](graficos/eda_2_distribuicoes.png)
 
@@ -610,13 +614,13 @@ recebe) é outro: `avaliacao/regras_prompt.md`.
 | "dobrou" barrado; marcador no indicador errado e afirmação sem número passam | `checar()`, `raiox/ia.py`, conferido em 06/11 | `python -c "from raiox.ia import checar; print(checar('A margem EBIT de {endividamento} está acima do grupo.', {'endividamento'}))"` → `None` |
 | US$ 0,25 e US$ 1,50 por milhão de tokens | `PRECO_US_POR_MILHAO`, `raiox/ia.py` | página oficial de preços do Google (20/10/2026) |
 | 13 valores de 5 empresas, 0,00% | `avaliacao/conferencia.csv` | coluna `diferenca_pct` |
-| 7 de 10 (29/10) e 8 de 10 (05/11) na conferência manual | Náthally; ED16 (`docs/PLANO.md`, seção 0) | `revisao_manual.md`, na branch `feat/metricas`, contra os raio-x de `avaliacao/resultados.csv` |
+| 7 de 10 (29/10) e 8 de 10 (05/11) na conferência manual | Náthally; ED16 (`docs/PLANO.md`, seção 0) | `Semana_02/revisao_manual.md`, na branch `feat/metricas`, contra os raio-x de `avaliacao/resultados.csv` |
 | RD Saúde Pré-IFRS 16: ativo R$ 20.630,8 mi, PL R$ 7.749,6 mi, EBIT ajustado R$ 2.331,9 mi | PDF da DFP 2025 da RD (link da Náthally), Relatório da Administração, p. 48 da DFP | tabela "Pré-IFRS 16 / IFRS 16" |
 | Magalu: EBIT R$ 1.918,7 mi; perdas de crédito R$ 455,8 mi; equivalência R$ 127,3 mi | DRE consolidada da DFP 2025, PDF p. 13 | (1.918,7 + 455,8 − 127,3) ÷ 38.703,4 = 5,81% |
 | WEG com o Gemini: US$ 0,0011 | demo de 03/11 (`docs/HISTORICO.md`) | tabela `consultas` do banco da demo |
 | 15 s por tentativa, 2 tentativas, `temperature=0.2` | `TEMPO_LIMITE_S`, `TENTATIVAS`, `raiox/ia.py` | ler o arquivo |
 | banco desiste em 5 s | `TEMPO_LIMITE_S`, `raiox/banco.py` | ler o arquivo |
-| 259 testes passando, nenhum pulado | Mac do Eduardo, 07/11, código da `v1.0` (PR #67); mais dois subtestes aprovados | `python -m pytest -q` com o PostgreSQL ligado |
+| 263 testes passando, nenhum pulado | Mac do Eduardo, 09/11, código da `v1.0.1` (a `v1.0` mais o conserto do validador); mais dois subtestes aprovados | `python -m pytest -q` com o PostgreSQL ligado |
 
 ## Apêndice B · Pendências desta versão (sai da versão final)
 

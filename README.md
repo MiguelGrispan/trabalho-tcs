@@ -15,7 +15,7 @@ Projeto final da trilha IA Aplicada (SENAI/TCS) · Marcos, Eduardo, Náthally e 
 O que o projeto precisa ter vem dos arquivos do professor, em [docs/professor/](docs/professor/)
 (`requisitos_projeto.MD` e `guia_projeto_final.pdf`); o status de cada requisito está em [docs/REQUISITOS.md](docs/REQUISITOS.md).
 
-**Código congelado para a banca:** [v1.0](https://github.com/MiguelGrispan/trabalho-tcs/tree/v1.0), publicada em 07/11/2026 (commit `2c3e942`, PR #67). A documentação continua na `main`; o status das entregas está no [índice](docs/ENTREGAS.md).
+**Código congelado para a banca:** [v1.0.1](https://github.com/MiguelGrispan/trabalho-tcs/tree/v1.0.1), de 09/11/2026: a [v1.0](https://github.com/MiguelGrispan/trabalho-tcs/tree/v1.0) de 07/11 (commit `2c3e942`, PR #67) mais o conserto do validador achado na revisão final (issue #69). A documentação continua na `main`; o status das entregas está no [índice](docs/ENTREGAS.md).
 
 ## Tecnologias
 

@@ -14,6 +14,7 @@ Rodar um exemplo (na raiz do repositório):
 import argparse
 import json
 import re
+import sys
 import time
 import unicodedata
 from functools import lru_cache
@@ -188,7 +189,11 @@ def gerar_llm(entrada: dict, marcadores: list[str]) -> tuple[RaioX, dict]:
     r = _chain().invoke({"marcadores": ", ".join("{" + m + "}" for m in marcadores),
                          "entrada": json.dumps(entrada, ensure_ascii=False, indent=1)})
     if r.get("parsed") is None:
-        raise RuntimeError(f"O modelo não devolveu o formato esperado: {r.get('parsing_error')}")
+        # Só o tipo do erro vai para a tela: a mensagem do Pydantic copia o texto do Gemini, com os números dele,
+        # e apareceria em "Detalhes técnicos" sem passar pelo validador (revisão de 09/11). O texto inteiro fica no log.
+        erro = r.get("parsing_error")
+        print(f"Formato inesperado do Gemini: {erro}", file=sys.stderr)
+        raise RuntimeError(f"O modelo não devolveu o formato esperado ({type(erro).__name__ if erro else 'vazio'}).")
     uso = getattr(r["raw"], "usage_metadata", None) or {}
     t_in, t_out = uso.get("input_tokens") or 0, uso.get("output_tokens") or 0
     custo = (t_in * PRECO_US_POR_MILHAO["entrada"] + t_out * PRECO_US_POR_MILHAO["saida"]) / 1_000_000
@@ -238,7 +243,9 @@ POR_EXTENSO = re.compile(
     # quantidade em verbo ou fração (issue #50): "a receita dobrou", "triplicou", "um quarto da receita".
     # "quarto" sozinho fica de fora: é ordinal em "quarto trimestre". "duplicata" e "duplicidade" ficam: não são quantidade.
     r"|dobr(?:a|am|e|em|ou|aram|ar|ará|arão|aria|ariam|ando|ad[oa]s?)|duplic(?!at|id)\w*|triplic\w*|quadruplic\w*"
-    r"|qu[aá]drupl[oa]s?|um\s+(?:quarto|quinto|sexto|sétimo|oitavo|nono|décimo)|meio\s+(?:ponto|por\s+cento))\b",
+    r"|qu[aá]drupl[oa]s?|um\s+(?:quarto|quinto|sexto|sétimo|oitavo|nono|décimo)|meio\s+(?:ponto|por\s+cento)"
+    # revisão de 09/11: "empresa bilionária" e "cresceu uma vez e meia" passavam. "às vezes" e "uma vez que" ficam.
+    r"|(?:m|b|tr)ilion\w*|vez(?:es)?\s+e\s+meia)\b",
     re.IGNORECASE)
 NOMES_DOS_INDICADORES = re.compile("|".join(re.escape(v[1]) for v in INDICADORES.values()), re.IGNORECASE)
 

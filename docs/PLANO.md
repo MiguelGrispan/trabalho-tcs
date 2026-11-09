@@ -21,19 +21,35 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual
 
-**Em 07/11/2026, ~14h55 (Brasília)**
+**Em 09/11/2026, ~08h30 (Brasília)**
 
-**Foco: PDF, slides, vídeo e ensaios; código congelado na `v1.0`.**
-Último PR levado: **#67**, mesclado em 07/11/2026 às 14h51 (Brasília). A tag anotada `v1.0` está publicada e aponta para
-`2c3e9428902665872811e9d6383a2e8976827825`. A conferência e os ajustes documentais desta branch não alteram o código da versão.
-A fotografia detalhada de 06/11 permanece no Git: `git show b675119:docs/PLANO.md`.
+**Foco: PDF, slides, vídeo e ensaios; código congelado na `v1.0.1`.**
+Último PR levado: **#68** (07/11) e a branch `eduardo-revisao-final` (09/11). A `v1.0` (07/11, `2c3e942`) continua publicada;
+a `v1.0.1` é a `v1.0` mais o conserto do validador abaixo e vira a versão da banca no merge desta branch.
+A fotografia detalhada de 07/11 permanece no Git: `git show 45686db:docs/PLANO.md`.
+
+### Revisão final (09/11, issue #69)
+
+Três revisores em paralelo (aplicação e infra, IA e ML, dados e documentação), só lendo; cada achado foi reproduzido antes de entrar aqui.
+- **Certo:** 259 testes com o PostgreSQL ligado, nenhum pulado (sem o banco, 16 pulam); CI verde nos 5 últimos merges; desde a `v1.0`, só
+  documentos mudaram; nenhum dado nem segredo no Git; Terraform `fmt` e `validate` aprovados; tela e banco só em `127.0.0.1`; médias do
+  `resultados.csv` iguais às do documento; SQL parametrizado; BPMN 2.0; justificativa (RAG × fine-tuning, chain, memória) e ética completas.
+- **Consertado nesta branch (`v1.0.1`):** o validador barra também "bilionária", "milionária" e "uma vez e meia"; o erro de formato do Gemini
+  não leva mais o texto dele, com números, para "Detalhes técnicos". Três frases e um teste novos; nenhum dos 10 textos reais seria barrado.
+  263 testes, nenhum pulado. No documento: legenda da Figura 1 ("zero ou negativa") e caminho do "8 de 10" (`Semana_02/revisao_manual.md`).
+- **Bloqueio fora do código:** o repositório é privado e o professor não é colaborador. O grupo vai dar o acesso (Miguel é o admin).
+- **Com dono:** Miguel conserta o exemplo do `README.md:296` (`--cvm 90001` só existe em `falsos/`; com a `data/` real dá `ValueError`) e põe
+  na lista de antes da demo `docker compose up -d` e `docker compose ps` com os 2 `healthy` (depois de reiniciar o Docker, só o banco volta
+  sozinho). Náthally mede o ROI hoje (NA3). Eduardo regera o PDF quando o ROI e a ética chegarem e tira o "Versão para revisão".
+- **Não conferido:** `docker compose config` (a trava bloqueia: o comando imprime o `.env`), tela no navegador, Gemini real, deck, vídeo e ensaio.
+- **Cuidado em revisão só leitura:** `python -m raiox.checagem --teste` grava `anomalias.csv` na raiz (ignorado pelo Git).
 
 ### Fechamento do Eduardo
 
 | sessão | estado verificável em 07/11 | falta para encerrar |
 |---|---|---|
 | ED15 · instruções Python, issue #57 | ✅ na `main`, PR #67, issue #57 fechada: Python 3.14 nos seis pontos; atalhos param se a criação do ambiente falhar; três testes novos | nada nesta sessão |
-| ED9 · congelamento | ✅ `v1.0` publicada no commit `2c3e942`; CI do PR #67 verde e 259 testes locais aprovados | só consertos indispensáveis; nenhum recurso novo |
+| ED9 · congelamento | ✅ `v1.0` publicada no commit `2c3e942`; CI do PR #67 verde e 259 testes locais aprovados. 09/11: `v1.0.1` com o conserto do validador da revisão final | só consertos indispensáveis; nenhum recurso novo |
 | ED10 · instalação do zero | venv vazio com Python 3.14.10, dependências instaladas e 256 testes aprovados; imagem Docker reconstruída | outra pessoa seguir o README em outro computador; não foi feito nesta sessão |
 | ED11 · avaliação e defesa | avaliação existente conferida: dez casos, zero removidos, 2,15 s; conteúdo e perguntas em [conteudo_eduardo.md](conteudo_eduardo.md) | o Eduardo ensaiar e responder em voz alta; não declarado concluído pela IA |
 | MA6 · documento | rascunho 4; BPMN, arquitetura, EDA, justificativa e limites presentes; EDA reexecutada em 07/11 | ROI e ética final da Náthally; revisão do Marcos; respostas do professor |
@@ -58,8 +74,8 @@ Backups, recibos e logs locais: `../fechamento-2026-11-07/`, com a auditoria em 
 |---|---|
 | Eduardo | entregar os dois slides e falas de [conteudo_eduardo.md](conteudo_eduardo.md); perguntar data/horário e perguntas 2–3 ao professor; finalizar MA6 quando as contribuições chegarem |
 | Marcos | EDA pronta e verificada; ler o documento e a justificativa; preparar a fala de dados, EDA e BPMN. As limpezas do código e a conferência das travas no Windows já entraram no #64 |
-| Miguel | roteiro e vídeo da demo no Mac do Eduardo, guardado em dois lugares; confirmar acesso do professor ao GitHub privado; conteúdo da infraestrutura para o deck. A legenda da tela já foi corrigida no #61 |
-| Náthally | disponibilizar o link do deck; medir preparação manual × ferramenta (incluindo digitar, ler e conferir), finalizar ética e slide de métricas; confirmar a conta de EBIT usada no Magalu |
+| Miguel | dar acesso ao professor no GitHub privado; consertar o exemplo do `README.md:296` e a lista de antes da demo (revisão final); roteiro e vídeo da demo na `v1.0.1`, guardado em dois lugares; conteúdo da infraestrutura para o deck |
+| Náthally | ROI hoje, 09/11 (preparação manual × ferramenta, incluindo digitar, ler e conferir); link do deck; ética final e slide de métricas; confirmar a conta de EBIT usada no Magalu |
 
 Todos enviam conteúdo à Náthally até **08/11/2026**. PDF/deck finais previstos para **09/11/2026**; ensaios em **10 e 11/11/2026**.
 Entrega prevista em **16/11/2026**, condicionada à confirmação da banca em **18/11/2026** (guia §6: 48 h antes).
@@ -68,7 +84,7 @@ Entrega prevista em **16/11/2026**, condicionada à confirmação da banca em **
 
 | parte | estado | o que resta |
 |---|---|---|
-| aplicação | **código congelado e publicado: `v1.0`** | conferir instalação por outra pessoa (ED10); não ampliar o produto |
+| aplicação | **código congelado: `v1.0.1`** (a `v1.0` mais o conserto do validador, 09/11) | conferir instalação por outra pessoa (ED10); não ampliar o produto |
 | documento | **~80%** (estimativa de esforço) | ROI, ética final, revisão e respostas externas |
 | slides e ensaios | **não verificado** | deck relatado fora do repositório, sem link; vídeo e tempos de ensaio não apresentados |
 
@@ -79,7 +95,7 @@ Não calcular percentual total sem conferir o deck. A estimativa antiga de ~61% 
 - Issue **#60**, Eduardo: os dez casos caem no mesmo grupo de 312 empresas; limite já declarado na ética e no documento. Levar ao deck e à defesa; **não retreinar antes da banca**.
 - O validador barra números, mas não garante sentido correto do texto. A revisão humana permanece necessária.
 - ROI sem medição comparável, ética final, link do deck, vídeo e ensaio não podem ser marcados como concluídos por inferência.
-- O repositório continua privado; só os quatro integrantes aparecem como colaboradores em 07/11. O acesso do professor depende do Miguel e do aceite do professor.
+- O repositório continua privado; só os quatro integrantes aparecem como colaboradores em 09/11 (`gh api repos/MiguelGrispan/trabalho-tcs/collaborators`). O acesso do professor depende do Miguel e do aceite do professor.
 - Perguntas externas: data/horário da banca; se os prompts digitados também são exigidos; se a tabela da CVM atende à expressão “base de conhecimento”. Rascunho **não enviado** em [conteudo_eduardo.md](conteudo_eduardo.md).
 - Melhorias de estilo, novas funções, alterações de contrato e refatorações ficam para depois da banca. Continuam valendo os requisitos do professor e os cortes da seção 7.
 
