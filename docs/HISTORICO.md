@@ -137,6 +137,14 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
 - **07/11** · Eduardo com o Codex: candidata técnica ao congelamento, Python 3.14 explícito nos seis guias/atalhos (#57), instalação num venv vazio, testes com PostgreSQL e ensaio funcional com dados reais, sem chamada paga. Conteúdo técnico dos slides e rascunho não enviado ao professor em `docs/conteudo_eduardo.md`; PDF atualizado. Naquele momento, merge/tag, revisão humana e contribuições externas continuavam pendentes.
 - **07/11, fechamento** · PR #67 mesclado e tag `v1.0` publicada em `2c3e942`: código congelado, #57 fechada. EDA do Marcos reconferida com dados reais (15 células de código, quatro gráficos), sem alterar seus arquivos. Auditoria dos 114 arquivos e atualização dos registros e da memória compartilhada; sem mudança no produto.
 
+### Semana 4 (09 a 15/11): entregar
+
+- **09/11** · **Revisão final** (Eduardo com o Claude Code, issue #69): três revisores em paralelo, só lendo, e cada achado reproduzido.
+  O código passou (263 testes com o banco, CI verde, Terraform válido, nada de segredo no Git), mas duas brechas na regra de ouro
+  apareceram: "bilionária" e "uma vez e meia" passavam pelo validador, e o erro de formato do Gemini mostrava o texto dele, com números,
+  em "Detalhes técnicos". Consertadas com teste na `v1.0.1`. Fora do código: o professor ainda não tem acesso ao repositório privado,
+  o ROI ainda não foi medido e o exemplo do README com a empresa 90001 só funciona com os dados falsos.
+
 ## Decisões (e por quê)
 
 | data | decisão | por quê |
