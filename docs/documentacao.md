@@ -229,9 +229,11 @@ são carregados antes da reunião (anotação à esquerda).*
 O caminho, na ordem do diagrama:
 
 1. o vendedor digita parte do nome; a aplicação busca companhias ativas com indicadores no PostgreSQL;
-2. decisão **"Tem dados da empresa?"**: se não, avisa (nenhuma empresa, banco vazio ou desligado) e o processo acaba sem raio-x;
+2. decisão **"A busca achou empresa?"**: se o nome não foi encontrado, o vendedor vê o aviso e tenta outro nome; se o banco está
+   vazio ou desligado, a aplicação avisa e o processo acaba sem raio-x;
 3. o vendedor escolhe a empresa e informa o produto e o objetivo; a aplicação monta os 6 indicadores e a posição contra o grupo,
-   já calculados (`indicadores.csv` e `segmentos.csv`);
+   já calculados (`indicadores.csv` e `segmentos.csv`); se a empresa não estiver nessa tabela (evento de erro), avisa que o raio-x
+   não pôde ser gerado e o processo acaba;
 4. decisão **"IA ligada?"**: se sim, pede ao Gemini o texto com marcadores; se não, ou se o Gemini falhar (evento de erro: tempo,
    erro da API ou formato errado), monta o texto sem IA, com os mesmos números;
 5. para cada item (resumo, cada pergunta, cada lacuna), decisão **"Passou no validador?"**: se sim, troca os marcadores pelos
@@ -335,7 +337,7 @@ O ML faz **duas coisas diferentes**, com dois algoritmos:
 o grupo mais próximo: 66, 312, 103 e 114. Silhueta dos outros k: 0,265 (k = 3), 0,250 (5), 0,253 (6), 0,217 (7) e 0,219 (8).
 
 **Por que a silhueta de 0,77 enganava.** Antes da regra dos 5%, a silhueta era 0,77 e parecia ótima, mas o modelo só separava
-9 empresas extremas e juntava todas as outras num grupo só: 567 das 595. Com a regra, a silhueta cai para 0,30 (0,286 com os
+28 empresas extremas, em 3 grupos pequenos, e juntava todas as outras num grupo só: 567 das 595. Com a regra, a silhueta cai para 0,30 (0,286 com os
 dados de 05/11) e os grupos passam a servir para comparar. Preferimos grupos úteis a um número bonito.
 
 **O limite: os 10 casos de avaliação caem no mesmo grupo** (issue #60). As 10 empresas da avaliação (seção 8) estão todas no
@@ -581,7 +583,7 @@ recebe) é outro: `avaliacao/regras_prompt.md`.
 
 ## 10. Lições aprendidas
 
-- **Número bonito pode enganar:** a silhueta de 0,77 media só a separação de 9 empresas extremas.
+- **Número bonito pode enganar:** a silhueta de 0,77 media só a separação de 28 empresas extremas.
 - **Teste que passa nem sempre testa:** dois testes passavam com o campo vazio. Passamos a estragar o código de propósito para
   ver o teste falhar.
 - **Teste pulado não é teste que passou:** o CI ficou verde com 17 testes de banco pulados, porque não havia PostgreSQL nele.
