@@ -293,10 +293,15 @@ Com `RAIOX_DADOS=falsos` (ou sem a `data/`), usa as empresas inventadas de `fals
 **Outros módulos**:
 
 ```bash
-python -m raiox.ia --cvm 90001 --produto "software de gestão de frota" --objetivo "primeira conversa" --sem-ia
+RAIOX_DADOS=falsos python -m raiox.ia --cvm 90001 --produto "software de gestão de frota" --objetivo "primeira conversa" --sem-ia
 python -m raiox.segmentos          # refaz os grupos e o gráfico da silhueta
 python -m raiox.checagem --teste   # checador com dados que têm erros de propósito (sem IA)
 ```
+
+A empresa 90001 é inventada e só existe em `falsos/`: por isso o `RAIOX_DADOS=falsos` na frente, que faz o exemplo funcionar
+em qualquer computador (com a `data/` real e sem ele, dá `ValueError: Empresa 90001 não está na tabela de indicadores`).
+No Windows (PowerShell), rode antes `$env:RAIOX_DADOS="falsos"`, depois o comando sem o começo e, no fim,
+`Remove-Item Env:RAIOX_DADOS` (senão a tela aberta nessa mesma janela também usa as empresas inventadas).
 
 ## Dados
 
