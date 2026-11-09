@@ -1,7 +1,7 @@
 # Entregas da banca · índice
 
 Abra no VS Code com **Cmd+Shift+V** (preview): cada link abre o arquivo do repositório.
-Entrega: **seg 16/11/2026**, 48 h antes da banca (`guia_projeto_final.pdf` §6). Atualizado em 07/11/2026; código congelado na [v1.0](https://github.com/MiguelGrispan/trabalho-tcs/tree/v1.0), commit `2c3e942`, PR #67 mesclado.
+Entrega: **seg 16/11/2026**, 48 h antes da banca (`guia_projeto_final.pdf` §6). Atualizado em 09/11/2026; código congelado na [v1.0.1](https://github.com/MiguelGrispan/trabalho-tcs/tree/v1.0.1): a `v1.0` (commit `2c3e942`, PR #67) mais o conserto do validador da revisão final (issue #69).
 
 Status: **pronto** = existe e foi conferido · **rascunho** = existe, mas falta conteúdo · **a confirmar** = está fora do repositório,
 ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marcados.
@@ -67,4 +67,4 @@ ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marc
 
 - [x] **Ambiente e banco:** venv vazio com dependências instaladas, PostgreSQL ativo e testes locais aprovados; resultados completos no [PR #67](https://github.com/MiguelGrispan/trabalho-tcs/pull/67).
 - [x] **Demo funcional:** WEG, Embraer e Ambev pelo Streamlit AppTest, dados reais, seis indicadores e cinco parecidas; erro de IA simulado também registra a consulta com custo zero. Sem inspeção visual da demo.
-- [x] **Versão congelada:** PR #67 mesclado, CI verde e tag anotada `v1.0` publicada em 07/11/2026, apontando para `2c3e942`. A versão fixa o código; PDF/deck e ensaios continuam sendo finalizados.
+- [x] **Versão congelada:** PR #67 mesclado, CI verde e tag anotada `v1.0` publicada em 07/11/2026, apontando para `2c3e942`. Em 09/11, a `v1.0.1` (só o conserto do validador, com teste) substitui a `v1.0` como versão da banca. A versão fixa o código; PDF/deck e ensaios continuam sendo finalizados.
