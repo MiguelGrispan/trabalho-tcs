@@ -1,7 +1,7 @@
 # Plano até a banca (versão acelerada)
 
 Meta: **feito, não perfeito**. O congelamento estava previsto para **06/11/2026**; a versão **`v1.0` foi validada e publicada em 07/11/2026**, no commit `2c3e942` (merge do PR #67). Tudo deve ficar pronto na **11/11/2026**, com folga
-até a entrega de **seg 16/11** (banca prevista para qua 18/11, a confirmar). Se a banca vier antes, já estamos prontos.
+até a entrega de **ter 17/11** (banca em qui 19/11, dita pelo professor; horário a confirmar). Se a banca vier antes, já estamos prontos.
 
 **O que o projeto precisa ter** vem dos arquivos do professor, em `docs/professor/` (`requisitos_projeto.MD` e
 `guia_projeto_final.pdf`). Eles valem mais que este plano: nada que esteja neles pode ser cortado (seção 7).
@@ -78,7 +78,7 @@ Backups, recibos e logs locais: `../fechamento-2026-11-07/`, com a auditoria em 
 | Náthally | ROI hoje, 09/11 (preparação manual × ferramenta, incluindo digitar, ler e conferir); link do deck; ética final e slide de métricas; confirmar a conta de EBIT usada no Magalu |
 
 Todos enviam conteúdo à Náthally até **08/11/2026**. PDF/deck finais previstos para **09/11/2026**; ensaios em **10 e 11/11/2026**.
-Entrega prevista em **16/11/2026**, condicionada à confirmação da banca em **18/11/2026** (guia §6: 48 h antes).
+Entrega em **17/11/2026**, 48 h antes da banca de **19/11/2026** (dita pelo professor ao Eduardo; guia §6; horário a confirmar).
 
 ### Progresso: separar produto de entrega
 
@@ -156,8 +156,8 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | seg 09/11 | MA6 final (o `.md` e o PDF gerado dele) | trocar a citação do `raiox/limpeza.py`; o PDF velho sai | | NA6 deck final |
 | ter 10/11 | **ensaio 1 (alvo 15 min, máx. 18, todos)** | | | |
 | qua 11/11 | **ensaio 2; tudo pronto para entregar** | | | |
-| 12–15/11 | reserva (e prontos, se a banca vier antes) | | | |
-| seg 16/11 | **entrega** (48 h antes de qua 18/11) | | | |
+| 12–16/11 | reserva (e prontos, se a banca vier antes) | | | |
+| ter 17/11 | **entrega** (48 h antes de qui 19/11) | | | |
 
 ### Eduardo (Claude Code)
 

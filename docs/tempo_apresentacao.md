@@ -1,7 +1,7 @@
 # Tempo da apresentação (18 min + 12 min da banca)
 
-**Regra:** a apresentação tem no máximo **18 min**; depois vêm **12 min de perguntas da banca** (total de 30 min). Informada pelo
-Eduardo em 09/11/2026; **fonte exata (aula ou mensagem) e data da banca: a confirmar**. O `guia_projeto_final.pdf` (§3) ainda diz
+**Regra:** a apresentação tem no máximo **18 min**; depois vêm **12 min de perguntas da banca** (total de 30 min). Dita pelo
+professor ao Eduardo (registrada em 09/11/2026). A banca é em **qui 19/11/2026** (horário a confirmar). O `guia_projeto_final.pdf` (§3) ainda diz
 20 min: vale o mais exigente, 18. Registro em `docs/REQUISITOS.md`, "Regras do professor".
 
 **Alvo do grupo: 15 min.** Sobram 3 min de folga para gaguejar, dar branco, demo lenta ou pergunta no meio. Se o ensaio passar

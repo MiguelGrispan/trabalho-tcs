@@ -1,7 +1,7 @@
 # Entregas da banca · índice
 
 Abra no VS Code com **Cmd+Shift+V** (preview): cada link abre o arquivo do repositório.
-Entrega: **seg 16/11/2026**, 48 h antes da banca (`guia_projeto_final.pdf` §6). Atualizado em 09/11/2026; código congelado na [v1.0.1](https://github.com/MiguelGrispan/trabalho-tcs/tree/v1.0.1): a `v1.0` (commit `2c3e942`, PR #67) mais o conserto do validador da revisão final (issue #69).
+Entrega: **ter 17/11/2026**, 48 h antes da banca de qui 19/11/2026 (`guia_projeto_final.pdf` §6). Atualizado em 09/11/2026; código congelado na [v1.0.1](https://github.com/MiguelGrispan/trabalho-tcs/tree/v1.0.1): a `v1.0` (commit `2c3e942`, PR #67) mais o conserto do validador da revisão final (issue #69).
 
 Status: **pronto** = existe e foi conferido · **rascunho** = existe, mas falta conteúdo · **a confirmar** = está fora do repositório,
 ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marcados.
@@ -11,7 +11,7 @@ ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marc
 
 ## Prazo e acesso
 
-- [ ] **Data de entrega** · a confirmar · seg 16/11/2026, se a banca for mesmo na qua 18/11/2026. Falta o professor confirmar
+- [ ] **Data de entrega** · a confirmar · ter 17/11/2026 (banca em qui 19/11/2026, dita pelo professor ao Eduardo (registrada em 09/11)). Falta confirmar o horário e o prazo exato
   a data e o horário da banca. Arquivo ou link a inserir: ________
 - [ ] **Acesso do professor ao GitHub** · a confirmar · `MiguelGrispan/trabalho-tcs` é privado. Falta o Miguel (admin) convidar
   o login do professor, ou conferir se já há convite, e o professor aceitar. Arquivo ou link a inserir: ________

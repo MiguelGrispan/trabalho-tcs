@@ -1,8 +1,8 @@
 # Raio-X Comercial · contexto para o Claude Code
 
 Projeto final da trilha IA Aplicada (SENAI/TCS). Equipe: Marcos (dados), Eduardo (IA e gestão),
-Náthally (produto e métricas, deck), Miguel (tela e infraestrutura). Banca prevista para qua 18/11/2026
-(**data e horário a confirmar**; professores + especialistas da TCS). Os entregáveis vão **48 h antes**: seg 16/11.
+Náthally (produto e métricas, deck), Miguel (tela e infraestrutura). Banca em qui 19/11/2026
+(data dita pelo professor ao Eduardo (registrada em 09/11); **horário a confirmar**; professores + especialistas da TCS). Os entregáveis vão **48 h antes**: ter 17/11.
 
 ## Fonte da verdade: os arquivos do professor (leia antes de tudo)
 O que o projeto precisa ter vem de dois arquivos do professor (André Santos, repositório do curso), guardados sem mudança em `docs/professor/`:
@@ -72,10 +72,10 @@ O status de cada item, com a prova, fica no `docs/REQUISITOS.md`.
 (1) repositório Git organizado, com README em markdown sobre o tema, o objetivo e as tecnologias, com a arquitetura, os pré-requisitos
 e as instruções para rodar; os scripts de infraestrutura (Terraform), os notebooks e os arquivos de prompts do vibecoding;
 (2) documento em **PDF** (G §6; o R também aceita markdown), com fonte em markdown, com as etapas desenvolvidas no processo (R), o BPMN 2.0, a justificativa técnica das escolhas
-(ex.: RAG × fine-tuning) e a análise de ética e segurança (G); (3) slides (deck em PDF ou PPTX) para no máximo 18 minutos (regra nova, ver abaixo).
+(ex.: RAG × fine-tuning) e a análise de ética e segurança (G); (3) slides (deck em PDF ou PPTX) para no máximo 18 minutos (regra dita pelo professor, ver abaixo).
 Também: vídeo gravado da demo, como reserva (dica do G §3).
 
-**Apresentação (máximo 18 min + 12 min de perguntas da banca; tempo é avaliado; G §3, com a regra de 09/11 informada pelo Eduardo, fonte a confirmar):**
+**Apresentação (máximo 18 min + 12 min de perguntas da banca; tempo é avaliado; G §3, com a regra dita pelo professor ao Eduardo, registrada em 09/11):**
 alvo do grupo **15 min**, com 3 min de folga: contexto e problema 2 · BPMN e arquitetura 2:30 · demo ao vivo 5 ·
 detalhe técnico (dados, ML/GenAI e infraestrutura com Terraform) 3 · governança e ética 1:30 · conclusão 1. Tempo por pessoa: `docs/tempo_apresentacao.md`.
 O guia §3 ainda diz 20 min (3 · 3 · 6 · 4 · 2 · 2): vale o mais exigente.
