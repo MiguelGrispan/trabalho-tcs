@@ -1,6 +1,6 @@
 # Roteiro da demo
 
-Demo ao vivo: 6 minutos, das 06:00 às 12:00 da apresentação (`guia_projeto_final.pdf` §3: "aplicação rodando em tempo
+Demo ao vivo: **5 minutos** (alvo de `docs/tempo_apresentacao.md`; o guia §3 dava 6, das 06:00 às 12:00 de uma apresentação de 20 min: "aplicação rodando em tempo
 real"). Versão da banca: tag `v1.0.1`. Dono: Miguel (MG6).
 
 ## Antes de apresentar
@@ -22,6 +22,6 @@ esta lista, não uma mudança no compose.
 portas, um de cada vez. Rode `terraform destroy` dentro de `infra/` antes do passo 1 (README, "Como rodar com Terraform").
 No Terraform a tela também não volta sozinha (`infra/main.tf:68`: o `restart` está só no banco).
 
-## Roteiro dos 6 minutos
+## Roteiro dos 5 minutos
 
 A escrever (MG6), com o vídeo de reserva gravado na `v1.0.1` e guardado em 2 lugares (`guia_projeto_final.pdf` §3, dica).

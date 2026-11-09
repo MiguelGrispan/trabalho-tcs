@@ -60,7 +60,7 @@ ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marc
   Arquivo ou link a inserir: ________ · versão conferida em: ________
 - [ ] **Vídeo de reserva da demo** · a confirmar · não está no repositório. Falta gravar no Mac do Eduardo (MG6) e guardar em
   2 lugares. Arquivo ou link a inserir: ________
-- [ ] **Ensaio de até 20 minutos** · a confirmar · falta registrar data, tempo medido e quem falou cada parte (guia §3).
+- [ ] **Ensaio de até 18 minutos (alvo 15)** · a confirmar · falta registrar data, tempo medido e quem falou cada parte (guia §3; tempos em `docs/tempo_apresentacao.md`).
   Arquivo ou link a inserir: ________
 
 ## Fechamento técnico de 07/11/2026
