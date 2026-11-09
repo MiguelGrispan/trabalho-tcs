@@ -82,6 +82,9 @@ def test_regra_de_ouro_remove_numero_por_extenso(frase):
     "Um décimo da receita vem de serviços.",               # achados do revisor no #63
     "A margem dobraria com a solução.",
     "O endividamento subiu meio ponto.",
+    "A empresa é bilionária.",                               # revisão final de 09/11
+    "O grupo reúne empresas milionárias.",
+    "A receita cresceu uma vez e meia.",
 ])
 def test_regra_de_ouro_remove_quantidade_sem_algarismo(frase):
     r = ia.validar_e_preencher(rx(resumo=frase), VALORES)
@@ -107,9 +110,28 @@ def test_regra_de_ouro_aceita_texto_sem_numero():
     # nome do indicador com "dois", ordinais, "um/uma" e palavras que contêm um número ("dezembro")
     frase = ("O crescimento em dois anos ficou acima do grupo; em dezembro, a primeira reunião "
              "pode mostrar um caminho para o segundo semestre e para o quarto trimestre, "
-             "com as duplicatas a receber no meio da conversa.")
+             "com as duplicatas a receber no meio da conversa. Às vezes o grupo muda, uma vez que a "
+             "receita varia.")
     r = ia.validar_e_preencher(rx(resumo=frase), VALORES)
     assert r["resumo"] == frase and r["removidos"] == []
+
+
+def test_formato_errado_do_gemini_nao_leva_o_numero_dele_para_a_tela(monkeypatch):
+    # revisão de 09/11: o erro do Pydantic copiava o texto do Gemini ("12%") e a tela o mostrava em
+    # "Detalhes técnicos", sem passar pelo validador. Não chama a API: a chain é trocada por uma falsa.
+    from pydantic import ValidationError
+    try:
+        ia.RaioX.model_validate({"resumo": "ok", "perguntas": ["Como a margem de 12% caiu?"], "lacunas": []})
+    except ValidationError as e:
+        erro_do_pydantic = e
+
+    class ChainFalsa:
+        def invoke(self, _):
+            return {"parsed": None, "parsing_error": erro_do_pydantic, "raw": None}
+    monkeypatch.setattr(ia, "_chain", lambda: ChainFalsa())
+    with pytest.raises(RuntimeError) as falha:
+        ia.gerar_llm({}, [])
+    assert "12" not in str(falha.value) and "ValidationError" in str(falha.value)
 
 
 @pytest.mark.parametrize("produto", ["10%", "dez por cento"])
