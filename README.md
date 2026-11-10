@@ -98,10 +98,13 @@ dados da CVM). A mesma figura em PNG, para o documento e os slides: [docs/arquit
 O caminho de cada número, da CVM até a tela:
 
 ```
-CVM (ZIPs da DFP 2023–2025 + cadastro)
+CVM (ZIPs da DFP 2023–2026 + cadastro)
    │  scripts/carregar_dfp.py      limpa contas, prefere consolidado      → data/contas.csv, PostgreSQL (contas, empresas)
    ▼
 scripts/indicadores.py             6 indicadores por empresa (C2)        → data/indicadores.csv, PostgreSQL (indicadores)
+   │
+   ▼
+scripts/carregar_links.py          LINK_DOC por exercício (C5)           → data/links_dfp.csv, PostgreSQL (links_dfp)
    │
    ▼
 raiox/checagem.py                  regras de sanidade; IA só aponta suspeitas, pessoa decide
@@ -206,6 +209,10 @@ docker compose down                 # desliga os 2; o banco continua guardado no
 - **Dados da CVM no banco do contêiner:** `docker compose run --rm --user "$(id -u):$(id -g)" tela python scripts/carregar_dfp.py`
   e o mesmo com `scripts/indicadores.py` (no Linux, o `--user` deixa o contêiner gravar na sua `data/`; no Mac não precisa).
   A tela já aberta passa a usar os dados novos sozinha (issue #43, consertada no PR #63).
+- **Links para conferir as fontes:** depois de carregar a DFP, rode `docker compose run --rm tela python scripts/carregar_links.py`.
+  O script lê o arquivo principal dos zips anuais, calcula o ano do exercício e grava `data/links_dfp.csv` e a tabela
+  `links_dfp`. Na tela, o expander **De onde vem cada número** mostra as contas usadas e o botão **Baixar DFP (CVM)**.
+  O botão baixa o `.zip` oficial; ele não abre uma página legível.
 - **IA ligada:** `RAIOX_IA_REAL=1 docker compose up -d`. A chave vem do `GOOGLE_API_KEY` do `.env`, que o Compose lê sozinho.
   A chave e a `data/` nunca entram na imagem (`.dockerignore`): a `data/` entra como volume.
 - **Porta 5432 ocupada** por outro PostgreSQL: `PORTA_BANCO=5433 docker compose up -d`.
