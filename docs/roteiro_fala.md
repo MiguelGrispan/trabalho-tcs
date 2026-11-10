@@ -56,7 +56,7 @@ avisa que o texto veio sem IA. Passo ao Marcos e ao Eduardo, para explicar o que
 ## 4. Detalhe técnico · 09:30 a 12:30 · Marcos 0:45, Eduardo 1:30, Miguel 0:45
 
 **Marcos (0:45):** "Os dados vêm das demonstrações da CVM. Com Python e Pandas, limpamos, tratamos valores nulos e calculamos os
-indicadores. Depois gravamos tudo no PostgreSQL, e a tela consulta com SQL. São 595 empresas e 3 exercícios, de 2023 a 2025."
+indicadores. Depois gravamos tudo no PostgreSQL, e a tela consulta com SQL. São 595 empresas, com indicadores do exercício de 2025, calculados sobre as contas de 2023 a 2025."
 
 **Eduardo (1:30):** "Na parte de IA temos duas peças. A primeira é o K-means, que agrupa as empresas pelo perfil financeiro; os
 vizinhos mais próximos sugerem as cinco parecidas. Escolhemos quatro grupos, e a silhueta deu 0,286: os grupos se sobrepõem. Nos
