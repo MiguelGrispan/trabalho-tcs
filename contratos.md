@@ -61,9 +61,9 @@ preparar_raio_x(cd_cvm: int, produto: str, objetivo: str) -> dict
                    "posicao": "abaixo", "fonte": "DFP 2025 · DRE consolidada · contas 3.05 ÷ 3.01",
                    "valor_num": 6.2, "grupo_num": 11.8, "unidade": "%",
                    "conferir": {"contas": [{"conta": "3.05", "descricao": "Resultado Antes do Resultado Financeiro e dos Tributos",
-                                            "ano": 2025, "valor": "R$ 148 mi"},
+                                            "ano": 2025, "valor": "R$ 148.800.000"},
                                            {"conta": "3.01", "descricao": "Receita de Venda de Bens e/ou Serviços",
-                                            "ano": 2025, "valor": "R$ 2,4 bi"}],
+                                            "ano": 2025, "valor": "R$ 2.400.000.000"}],
                                 "link": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=154939"}}],
   "grupo": {"numero": 3, "tamanho": 41},
   "parecidas": [{"cd_cvm": 0, "nome": "...", "setor": "..."}],
@@ -77,11 +77,11 @@ preparar_raio_x(cd_cvm: int, produto: str, objetivo: str) -> dict
 
 > `valor_num`, `grupo_num` e `unidade` ("%" ou "R$ milhões") servem para o gráfico da tela. `posicao` pode ser: acima, abaixo, em linha, sem dado.
 >
-> `conferir` (desde 10/11, fontes dos números; ED17): `contas` são as linhas do DFP usadas no indicador, na ordem da fórmula (valor já formatado, ex.: "R$ 2,4 bi"); `link` é o `LINK_DOC` da CVM (https) e **baixa um `.zip`**. Os dois vêm do banco, nunca do LLM. `contas` pode ser `[]` e `link` pode ser `null` (banco fora do ar, modo `falsos`, empresa sem link): a tela então não mostra nada e o raio-x sai como na `v1.0.1`. Quem recebe (Miguel) trata `conferir` como opcional (`i.get("conferir")`).
+> `conferir` (desde 10/11, fontes dos números; ED17): `contas` são as linhas do DFP usadas no indicador, na ordem da fórmula (valor em reais inteiros, com pontos de milhar, sem abreviar, para bater com o DFP); `link` é o `LINK_DOC` da CVM (https) e **baixa um `.zip`**. Os dois vêm do banco, nunca do LLM. `contas` pode ser `[]` e `link` pode ser `null` (banco fora do ar, modo `falsos`, empresa sem link): a tela então não mostra nada e o raio-x sai como na `v1.0.1`. Quem recebe (Miguel) trata `conferir` como opcional (`i.get("conferir")`).
 
 ## C5 · `data/links_dfp.csv` e tabela `links_dfp` · Marcos → Eduardo
 
-Gerado por `scripts/carregar_links.py` (MA7), à parte do `carregar_dfp.py`; **não altera** o C2 nem o `contas.csv`. CSV padrão (vírgula, ponto decimal, UTF-8, cabeçalho), uma linha por (`cd_cvm`, `ano`, `versao`). O `raiox/fontes.py` (ED17) lê a tabela e, sem ela, devolve `link: null`.
+Gerado por `scripts/carregar_links.py` (MA7), à parte do `carregar_dfp.py`; **não altera** o C2 nem o `contas.csv`. CSV padrão (vírgula, ponto decimal, UTF-8, cabeçalho), uma linha por (`cd_cvm`, `ano`, `versao`). O `raiox/fontes.py` (ED17) lê a tabela `links_dfp`; se ela não existir, lê o `data/links_dfp.csv`; sem os dois, devolve `link: null`.
 
 | coluna | tipo | exemplo |
 |---|---|---|
