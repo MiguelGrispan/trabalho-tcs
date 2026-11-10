@@ -18,7 +18,7 @@ ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marc
 
 ## Repositório (`requisitos_projeto.MD`, Documentação e Aplicação; guia §6, item 1)
 
-- [ ] **README** · a confirmar · [README.md](../README.md). Tem tema, objetivo, tecnologias, arquitetura e como rodar; em 07/11, instalação de dependências num venv vazio e build Docker conferidos no mesmo Mac. Falta outra pessoa seguir o README em outro computador (ED10).
+- [ ] **README** · a confirmar · [README.md](../README.md). Tem tema, objetivo, tecnologias, arquitetura, como rodar e, após os PRs #75–#77 e #79, como carregar e conferir as fontes da DFP. Em 07/11, instalação de dependências num venv vazio e build Docker conferidos no mesmo Mac. Falta outra pessoa seguir o README em outro computador (ED10).
 - [x] **Arquitetura** · pronto · [docs/arquitetura.png](arquitetura.png) e o diagrama Mermaid na seção "Arquitetura" do
   [README.md](../README.md). O Mermaid renderizado foi identificado na árvore de acessibilidade do Chrome em 07/11; sem revisão visual de layout.
 - [x] **Terraform** · pronto · [infra/main.tf](../infra/main.tf), [infra/variables.tf](../infra/variables.tf),
@@ -33,10 +33,8 @@ ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marc
 
 ## Documento do projeto (guia §6, item 2)
 
-- [ ] **Documento em Markdown** · rascunho · [docs/documentacao.md](documentacao.md). Rascunho 4 (07/11), com BPMN, arquitetura
-  e EDA; faltam o ROI, o texto final de ética e as respostas do professor (Apêndice B do documento).
-- [ ] **Documento em PDF** · rascunho · [docs/documentacao.pdf](documentacao.pdf). Regenerado do Markdown em 07/11;
-  precisa ser gerado de novo depois de cada mudança no `.md`.
+- [ ] **Documento em Markdown** · rascunho · [docs/documentacao.md](documentacao.md). Rascunho 5 (10/11), com BPMN, arquitetura, EDA e o fluxo de conferência das contas e do link da CVM; faltam o ROI, o texto final de ética e as respostas do professor (Apêndice B do documento).
+- [ ] **Documento em PDF** · rascunho · [docs/documentacao.pdf](documentacao.pdf). Regerado em 10/11 (ED18, 22 páginas, com as fontes e o BPMN da MA8); precisa ser gerado de novo depois da entrada do ROI e da ética.
 - [x] **BPMN 2.0** · pronto · [imagem](bpmn/raio-x-comercial.png) e [arquivo editável](bpmn/raio-x-comercial.bpmn)
   (PRs #52 e #65). Também na seção 4 do documento.
 - [x] **EDA** · pronto · [notebooks/eda.ipynb](../notebooks/eda.ipynb) e os gráficos

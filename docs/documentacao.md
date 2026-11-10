@@ -3,10 +3,10 @@
 **Projeto final da trilha IA Aplicada (SENAI/TCS)** · Equipe: Marcos (dados), Eduardo (IA e gestão), Náthally (produto e métricas),
 Miguel (tela e infraestrutura) · Repositório: `MiguelGrispan/trabalho-tcs` (GitHub)
 
-**Versão:** rascunho 4 (para revisão do grupo), 07/11/2026 · Final prevista: seg 09/11/2026 · Entrega: ter 17/11/2026,
+**Versão:** rascunho 5 (fontes conferíveis; ROI e ética ainda pendentes), 10/11/2026 · Final: quando chegarem o ROI e a ética · Entrega: ter 17/11/2026,
 48 h antes da banca, em qui 19/11/2026 (dita pelo professor) [PENDENTE: horário da banca a confirmar com o professor]
 
-> **Versão para revisão.** O BPMN, a arquitetura e a EDA já estão no documento. Ainda faltam, marcados com **[PENDENTE]**:
+> **Versão para revisão.** O BPMN, a arquitetura, a EDA e o fluxo de conferência das fontes já estão no documento. Ainda faltam, marcados com **[PENDENTE]**:
 > o ROI (nenhuma medição manual comparável foi entregue até 07/11), o texto final de ética da Náthally e respostas do professor.
 > A lista completa está no fim (Apêndice B) e sai da versão final.
 
@@ -165,6 +165,19 @@ A Camil fecha em fevereiro: o "2025" dela vai de mar/2025 a fev/2026. O ano de c
 parte dos meses do exercício (`ano_do_exercicio()`, `raiox/limpeza.py`). Mudaram as 9 empresas que fecham fora de dezembro; a receita
 da Camil foi de R$ 12,26 bi (o exercício anterior) para R$ 11,12 bi, o valor do RI.
 
+### Como conferir um número na tela
+
+Cada indicador mantém a descrição da fonte e, quando os dados estão carregados, o campo `conferir` do contrato C3 acrescenta
+as linhas da DFP usadas na fórmula: código da conta, descrição, ano do exercício e valor em reais sem abreviação. O módulo
+`raiox/fontes.py` lê essas linhas do PostgreSQL (`contas`) ou dos falsos usados nos testes; o LLM não recebe nem escreve esse
+campo.
+
+O script `scripts/carregar_links.py` lê o `LINK_DOC` do arquivo principal dos zips anuais da CVM, aplica a mesma regra de ano
+do exercício usada nas contas e grava a tabela `links_dfp` e o arquivo local `data/links_dfp.csv`. A tela cria uma aba por
+indicador no expander **De onde vem cada número** e mostra o botão **Baixar DFP (CVM)** quando o link existe. Esse botão baixa
+o `.zip` oficial da CVM; o trecho das contas é a conferência rápida na reunião. Se o banco ou a tabela de links estiverem
+indisponíveis, o campo é omitido e o raio-x continua funcionando como no modo sem a fonte adicional.
+
 ### Os 6 indicadores
 Uma linha por empresa, no último exercício (`montar_indicadores()`, `scripts/indicadores.py`; formato no contrato C2, `contratos.md`).
 
@@ -253,7 +266,8 @@ O caminho, na ordem do diagrama:
 ### Os componentes
 O diagrama completo é a Figura 6, logo abaixo.
 
-- **Preparação** (roda uma vez; refaz quando sai DFP nova): `scripts/carregar_dfp.py` baixa e limpa a DFP da CVM e grava as tabelas
+- **Preparação** (roda uma vez; refaz quando sai DFP nova): `scripts/carregar_dfp.py` baixa e limpa a DFP da CVM, `scripts/indicadores.py`
+  calcula o C2 e `scripts/carregar_links.py` registra os links dos documentos. Os scripts gravam as tabelas
   `contas` e `empresas`; `scripts/indicadores.py` calcula os 6 indicadores (tabela `indicadores` e `data/indicadores.csv`);
   `raiox/segmentos.py` treina o K-means e acha as parecidas (`data/segmentos.csv`).
 - **Consulta** (a cada uso, alguns segundos): a tela (`app/streamlit_app.py`) busca a empresa no PostgreSQL (`raiox/dados.py`),
@@ -506,8 +520,8 @@ O que resolve, no fim, é a leitura humana. Por isso o raio-x é apoio, e não d
   oficial; não inclui o computador onde a aplicação roda.
 - **Tempo para gerar um raio-x:** 2,15 s em média (rodada de 05/11), contando a montagem dos indicadores, a chamada ao Gemini e
   a validação.
-- **Manutenção:** a DFP é anual; a base é recarregada uma vez por ano com 2 comandos (`scripts/carregar_dfp.py` e
-  `scripts/indicadores.py`), e o K-means com `python -m raiox.segmentos`.
+- **Manutenção:** a DFP é anual; a base é recarregada uma vez por ano com `scripts/carregar_dfp.py`,
+  `scripts/indicadores.py` e `scripts/carregar_links.py`, e o K-means com `python -m raiox.segmentos`.
 - **Ganho para o vendedor (ROI):** não medido. Sem um tempo manual comparável, não afirmamos redução de tempo (seção 1).
   [PENDENTE: ROI · NA3, Náthally]
 
@@ -624,7 +638,7 @@ recebe) é outro: `avaliacao/regras_prompt.md`.
 | WEG com o Gemini: US$ 0,0011 | demo de 03/11 (`docs/HISTORICO.md`) | tabela `consultas` do banco da demo |
 | 15 s por tentativa, 2 tentativas, `temperature=0.2` | `TEMPO_LIMITE_S`, `TENTATIVAS`, `raiox/ia.py` | ler o arquivo |
 | banco desiste em 5 s | `TEMPO_LIMITE_S`, `raiox/banco.py` | ler o arquivo |
-| 263 testes passando, nenhum pulado | Mac do Eduardo, 09/11, código da `v1.0.1` (a `v1.0` mais o conserto do validador); mais dois subtestes aprovados | `python -m pytest -q` com o PostgreSQL ligado |
+| 287 testes passando, nenhum pulado | Mac do Eduardo, 10/11, `main` com as fontes (PRs #75–#79), PostgreSQL no Docker; mais dois subtestes aprovados. Na `v1.0.1` (09/11) eram 263 | `python -m pytest -q` com o PostgreSQL ligado |
 
 ## Apêndice B · Pendências desta versão (sai da versão final)
 
