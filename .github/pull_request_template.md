@@ -7,7 +7,7 @@
 - Feito com IA:
 - O que eu entendi ou conferi (vale "ainda não li"; não vale inventar):
 
-## Para as notas (o Eduardo leva para o PLANO, o REQUISITOS e o HISTORICO)
+## Registro nas notas (você já escreveu estes 3 pontos no PLANO §3, no HISTORICO e no REQUISITOS; a Náthally escreve aqui e o Eduardo leva)
 
 - Sessão e status (✅ ou 🟡):
 - O que mudou, com prova (arquivo, linha ou comando):
@@ -15,6 +15,10 @@
 - Linha do `docs/REQUISITOS.md` afetada (ou "nenhuma"):
 - Issues abertas nesta sessão (ou "nenhuma"):
 - Próximo passo:
+
+## Para o Eduardo
+
+<!-- Algo errado na seção 0 do PLANO ou em nota de outra pessoa? Uma linha (ou "nada"). -->
 
 ## Achados não consertados
 
@@ -29,7 +33,7 @@ O `/fim-de-sessao` confere estes itens antes do merge:
 - [ ] Mexeu no `contratos.md` ou na pasta de outro dono? O dono deu o ok no grupo.
 - [ ] O modo sem IA continua funcionando.
 - [ ] Nada no PR contradiz os arquivos do professor (`docs/professor/`) nem marca como opcional algo que eles exigem.
-- [ ] "Para as notas" preenchido. PLANO, REQUISITOS e HISTORICO só mudam no PR do Eduardo.
+- [ ] Registrei a sessão no PLANO (§3), no HISTORICO e no REQUISITOS (só a minha parte) e "Registro nas notas" está preenchido.
 
 ## Revisão
 

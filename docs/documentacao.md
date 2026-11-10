@@ -570,8 +570,8 @@ A IA escreveu muito do código; **quem responde por ele é a pessoa**. Para isso
    do projeto antes de mexer em qualquer coisa.
 2. **Durante:** a IA segue o `CLAUDE.md` (donos de cada pasta, regra de ouro, contratos) e o `REGRAS-IA.md` (o que nunca vai para
    uma IA: chave, senha, dados pessoais). Toda afirmação sobre o código vem com arquivo e linha, ou com um comando que prova.
-3. **Fim:** `/fim-de-sessao` roda os testes, escreve na descrição do PR o que mudou e abre o PR (desde 05/11, só o Eduardo
-   edita as notas do projeto, uma vez por dia, para os PRs não brigarem pelo mesmo arquivo). O CI roda os testes de novo; um segundo
+3. **Fim:** `/fim-de-sessao` roda os testes, registra a sessão nas notas do projeto (desde 10/11, cada um só a sua parte; de 05 a 09/11 só o Eduardo
+   as editava, para os PRs não brigarem pelo mesmo arquivo), escreve no PR o que mudou e abre o PR. O CI roda os testes de novo; um segundo
    Claude (o `revisor`), que não escreveu o código, lê o diff; o merge só acontece depois de um "pode" da pessoa.
 4. **Travas:** as regras que custam caro quebrar viraram bloqueios automáticos (`.claude/settings.json` e `.claude/hooks/guarda.py`):
    a IA não lê o `.env`, não apaga trabalho no Git, não faz commit na `main` nem com dados ou chaves, e pergunta antes do merge.

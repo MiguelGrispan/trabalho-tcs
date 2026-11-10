@@ -20,9 +20,9 @@ arquivo, o PLANO e o REQUISITOS. Quando os dois diferem, vale o mais exigente: o
 - Nunca diga que algo exigido nesses arquivos é opcional, extra, "já coberto por outra coisa" ou que pode ser cortado.
   Toda afirmação sobre o que o professor exige vem com o arquivo e o item (ex.: "`requisitos_projeto.MD`, Aplicação: Terraform").
 - Se uma nota (PLANO, REQUISITOS, guias de `aprender/`) contradiz os arquivos do professor, a nota está errada: avise a pessoa e corrija a nota
-  (PLANO, REQUISITOS e HISTORICO, só o Eduardo corrige: nos outros PRs, escreva em "Para as notas").
+  (PLANO, REQUISITOS e HISTORICO: corrija a sua parte no seu PR, como manda o `/fim-de-sessao`; o resto, avise o Eduardo em "Para o Eduardo").
 - Se o arquivo do professor não é claro (ex.: se a tabela de indicadores conta como "base de dados de conhecimento"), diga que não sabe e escreva a pergunta
-  em "Para as notas" (o Eduardo a põe no `docs/REQUISITOS.md` e leva ao professor). Não decida sozinho.
+  em "Para o Eduardo" na descrição do PR (ele a põe no `docs/REQUISITOS.md` e leva ao professor). Não decida sozinho.
 - Cortar escopo (PLANO, seção 7) só vale para o que **não** está nos arquivos do professor.
 
 **Depois,** leia o `docs/PLANO.md` (seção 0: o que está acontecendo agora; seção 3: a sessão da pessoa, ex.: "MA2"; seção 7: o que
@@ -113,9 +113,12 @@ Caminhos: todo código que usa `data/` ou `docs/` aponta para a **raiz** do repo
    `contratos.md` ou na pasta dela. No PR, 2 linhas: o que foi feito com IA e o que o autor entendeu ou conferiu
    (vale "ainda não li": o que não vale é inventar).
 8. **Git: o Claude Code faz.** O `/inicio-de-sessao` cria a branch `pessoa-tarefa` a partir da `main`. O `/fim-de-sessao` roda os
-   testes, escreve na descrição do PR o que mudou ("Para as notas"), abre o PR, mostra quem mais tem PR aberto, espera o CI,
-   revisa numa rodada e faz o merge. **Só o Eduardo edita a seção 0 do `docs/PLANO.md`, o `docs/REQUISITOS.md` e o
-   `docs/HISTORICO.md`**, uma vez por dia (desde 05/11: quando todo PR editava os três, todo merge virava conflito).
+   testes, registra a sessão nas notas e na descrição do PR, abre o PR, mostra quem mais tem PR aberto, espera o CI,
+   revisa numa rodada e faz o merge. **Desde 10/11, cada pessoa registra no próprio PR o que fez e quando**, só em 3 pontos que
+   não se cruzam: a linha da sua sessão na seção 3 do `docs/PLANO.md` (e a sua linha em "Próxima entrega"), uma linha no fim do
+   `docs/HISTORICO.md` e a linha do requisito afetado no `docs/REQUISITOS.md`. **O resto da seção 0 do PLANO é do Eduardo**, que
+   consolida (de 05 a 09/11 só ele editava: quando todo PR reescrevia os mesmos parágrafos, todo merge virava conflito; agora o
+   `.gitattributes` guarda as duas linhas do HISTORICO e o `git merge main` antes do push resolve o resto).
    Ninguém espera ninguém: PRs que não mexem nos mesmos arquivos entram na hora. Para trazer a `main`, `git merge main`.
    Nunca `rebase`, `push --force` nem commit na `main`.
 
