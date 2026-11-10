@@ -3,7 +3,7 @@
 **Projeto final da trilha IA Aplicada (SENAI/TCS)** · Equipe: Marcos (dados), Eduardo (IA e gestão), Náthally (produto e métricas),
 Miguel (tela e infraestrutura) · Repositório: `MiguelGrispan/trabalho-tcs` (GitHub)
 
-**Versão:** rascunho 5 (fontes conferíveis; ROI e ética ainda pendentes), 10/11/2026 · Final prevista: seg 09/11/2026 · Entrega: ter 17/11/2026,
+**Versão:** rascunho 5 (fontes conferíveis; ROI e ética ainda pendentes), 10/11/2026 · Final: quando chegarem o ROI e a ética · Entrega: ter 17/11/2026,
 48 h antes da banca, em qui 19/11/2026 (dita pelo professor) [PENDENTE: horário da banca a confirmar com o professor]
 
 > **Versão para revisão.** O BPMN, a arquitetura, a EDA e o fluxo de conferência das fontes já estão no documento. Ainda faltam, marcados com **[PENDENTE]**:
@@ -638,7 +638,7 @@ recebe) é outro: `avaliacao/regras_prompt.md`.
 | WEG com o Gemini: US$ 0,0011 | demo de 03/11 (`docs/HISTORICO.md`) | tabela `consultas` do banco da demo |
 | 15 s por tentativa, 2 tentativas, `temperature=0.2` | `TEMPO_LIMITE_S`, `TENTATIVAS`, `raiox/ia.py` | ler o arquivo |
 | banco desiste em 5 s | `TEMPO_LIMITE_S`, `raiox/banco.py` | ler o arquivo |
-| 263 testes passando, nenhum pulado | Mac do Eduardo, 09/11, código da `v1.0.1` (a `v1.0` mais o conserto do validador); mais dois subtestes aprovados | `python -m pytest -q` com o PostgreSQL ligado |
+| 287 testes passando, nenhum pulado | Mac do Eduardo, 10/11, `main` com as fontes (PRs #75–#79), PostgreSQL no Docker; mais dois subtestes aprovados. Na `v1.0.1` (09/11) eram 263 | `python -m pytest -q` com o PostgreSQL ligado |
 
 ## Apêndice B · Pendências desta versão (sai da versão final)
 

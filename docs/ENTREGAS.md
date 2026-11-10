@@ -18,7 +18,7 @@ ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marc
 
 ## Repositório (`requisitos_projeto.MD`, Documentação e Aplicação; guia §6, item 1)
 
-- [ ] **README** · a confirmar · [README.md](../README.md). Tem tema, objetivo, tecnologias, arquitetura, como rodar e, após os PRs #75–#77, como carregar e conferir as fontes da DFP. Em 07/11, instalação de dependências num venv vazio e build Docker conferidos no mesmo Mac. Falta outra pessoa seguir o README em outro computador (ED10).
+- [ ] **README** · a confirmar · [README.md](../README.md). Tem tema, objetivo, tecnologias, arquitetura, como rodar e, após os PRs #75–#77 e #79, como carregar e conferir as fontes da DFP. Em 07/11, instalação de dependências num venv vazio e build Docker conferidos no mesmo Mac. Falta outra pessoa seguir o README em outro computador (ED10).
 - [x] **Arquitetura** · pronto · [docs/arquitetura.png](arquitetura.png) e o diagrama Mermaid na seção "Arquitetura" do
   [README.md](../README.md). O Mermaid renderizado foi identificado na árvore de acessibilidade do Chrome em 07/11; sem revisão visual de layout.
 - [x] **Terraform** · pronto · [infra/main.tf](../infra/main.tf), [infra/variables.tf](../infra/variables.tf),
