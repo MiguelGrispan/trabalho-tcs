@@ -44,6 +44,16 @@ Três revisores em paralelo (aplicação e infra, IA e ML, dados e documentaçã
 - **Não conferido:** `docker compose config` (a trava bloqueia: o comando imprime o `.env`), tela no navegador, Gemini real, deck, vídeo e ensaio.
 - **Cuidado em revisão só leitura:** `python -m raiox.checagem --teste` grava `anomalias.csv` na raiz (ignorado pelo Git).
 
+### Fontes dos números: trecho do DFP + link da CVM (10/11, pedido da Náthally)
+
+A Náthally pediu (ROI: "como faríamos o ROI sem os links?") que o usuário possa conferir de onde vem cada número. Decidido com ela em 10/11: **as duas coisas**.
+- **A · trecho:** em "De onde vem cada número", as contas usadas (código, descrição, ano, valor) de cada indicador, lidas da tabela `contas` do PostgreSQL.
+- **B · link:** "Baixar DFP (CVM)" por indicador. O `LINK_DOC` vem do arquivo principal de cada zip anual da CVM (`dfp_cia_aberta_AAAA.csv`) e **baixa um `.zip`**, não abre uma página (testado em 10/11 com a AXIA).
+- **Desenho:** campo novo `conferir` no C3 (`contratos.md`); módulo novo `raiox/fontes.py` (Eduardo); `scripts/carregar_links.py` grava `data/links_dfp.csv` e a tabela `links_dfp` (Marcos). **Não muda o C2, o `indicadores.csv` nem o K-means e não recarrega as contas.** O texto vem do banco; o LLM não escreve nada disso (regra de ouro).
+- **Cuidado:** o link se casa pelo **ano do exercício** (`ano_do_exercicio`, `raiox/limpeza.py:42`), não pelo ano do calendário: a Camil fecha em fev. e um cruzamento por calendário a liga ao DFP errado (fev./2025). Inclui o zip de 2026. Duas empresas (CD_CVM 26239 e 26824) têm dois documentos para a mesma chave: o Marcos decide a regra e anota.
+- **Exceção ao congelamento:** a `v1.0.1` continua sendo o plano B. Só entra a `v1.1` se ED17, MA7 e MG8 estiverem na `main` com o CI verde até **qui 12/11, 18h**; senão, corta-se e a Náthally usa o ROI pelo tempo (sem o link). Se o banco estiver fora do ar, `conferir` vem vazio e a demo continua (regra 6).
+- **Sessões:** ED17, MA7, MG8, NA7 e ED18 (seção 3). Ordem: ED17 (contrato) libera MA7 e MG8, que andam em paralelo; depois a integração com os dados reais.
+
 ### Fechamento do Eduardo
 
 | sessão | estado verificável em 07/11 | falta para encerrar |
@@ -97,7 +107,7 @@ Não calcular percentual total sem conferir o deck. A estimativa antiga de ~61% 
 - ROI sem medição comparável, ética final, link do deck, vídeo e ensaio não podem ser marcados como concluídos por inferência.
 - O repositório continua privado; só os quatro integrantes aparecem como colaboradores em 09/11 (`gh api repos/MiguelGrispan/trabalho-tcs/collaborators`). O acesso do professor depende do Miguel e do aceite do professor.
 - Perguntas externas: data/horário da banca; se os prompts digitados também são exigidos; se a tabela da CVM atende à expressão “base de conhecimento”. Rascunho **não enviado** em [conteudo_eduardo.md](conteudo_eduardo.md).
-- Melhorias de estilo, novas funções, alterações de contrato e refatorações ficam para depois da banca. Continuam valendo os requisitos do professor e os cortes da seção 7.
+- Melhorias de estilo, novas funções, alterações de contrato e refatorações ficam para depois da banca; **a única exceção é a das fontes dos números (bloco acima), com prazo qui 12/11 18h**. Continuam valendo os requisitos do professor e os cortes da seção 7.
 
 ---
 
@@ -180,6 +190,8 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | ED15 | sex 06/11 | ✅ PR #67 mesclado em 07/11; #57 fechada | consertar a **issue #57**: o `CLAUDE.md:142` e o `aprender/entenda-o-projeto.md:167` mandam `python -m venv .venv` (no Linux do Miguel não existe `python`); o `aprender/COMANDOS.md:16` e os 3 atalhos `.command` usam `python3 -m venv`, que lá é o 3.12. O README já usa `python3.14` (#55). `requisitos_projeto.MD`, Documentação: "instruções para executar" | `CLAUDE.md` (ok no grupo), `aprender/` | Manual | os 6 lugares com `python3.14 -m venv .venv` (Windows: `py -3.14`); antes do ED10 (sáb 07/11) | PR que fecha #57 |
 | ED16 | qui 05/11 | ✅ PR desta sessão | 10 raio-x para a Náthally com a Camil corrigida (#46), com o Gemini; K-means e PNG refeitos com os dados do #46 e do #59; diferenças da RD e do Magalu explicadas | `avaliacao/resultados.csv`, `docs/graficos/`, `data/nathally_05_11/` (só no Mac) | Manual | 8 de 10 batem com a conferência dela; 0 removidos; números do K-means trocados nos docs | `eduardo-raiox-nathally` |
 | ED12 | sáb 31/10 | ✅ PR #30 (na `main` em 02/11) | travas do Claude Code (R14 e guia §2, agentic coding): `.claude/settings.json`, `.claude/hooks/guarda.py`, subagent `revisor`, import do `requisitos_projeto.MD` | `.claude/`, `CLAUDE.md`, `AGENTS.md`, `README.md`, `aprender/claude-code.md`, `tests/test_guarda.py` | Plan | testes verdes; o hook bloqueia de verdade numa sessão | `eduardo-claude-config` |
+| ED17 | ter 10–qua 11/11 | — | **fontes dos números, lado da IA** (pedido da Náthally, R10/R11; guia §2 "confiabilidade" e §7 ROI): (1) campo `conferir` no C3 de `contratos.md` (`contas`: conta, descricao, ano, valor; `link`: URL ou null); (2) `raiox/fontes.py`: lê as contas da tabela `contas` (PostgreSQL) ou de `falsos/contas_falsas.csv` e o link de `links_dfp`; se não achar, `conferir` vai vazio, sem erro; (3) `montar()` em `raiox/ia.py` preenche `conferir` por indicador (3.01; 3.01 de ano e ano−2; 3.05 e 3.01; 3.11 e 3.01; 2.03 e 1; 1); (4) testes. **Duração ~1h30 · energia média · 1º passo: escrever o campo `conferir` no `contratos.md`** | `contratos.md` (ok do grupo), `raiox/fontes.py`, `raiox/ia.py`, `tests/` | Manual | o `conferir` aparece nos 6 indicadores da WEG com dados reais; sem banco ou sem link, o raio-x sai igual ao da `v1.0.1`; o texto do LLM e o validador não mudam; testes verdes | `eduardo-fontes-ia` |
+| ED18 | qui 12/11 | — | **fechar as fontes:** integração com dados reais (ED17 + MA7 + MG8), documento (`docs/documentacao.md`), README ("como conferir um número"), `docs/roteiro_demo.md`, REQUISITOS/HISTORICO e tag `v1.1`. Se passar das 18h de qui 12/11: não taguear, registrar o corte. **Duração ~40 min · energia baixa · 1º passo: listar os documentos que citam "fonte"** | `docs/`, `README.md`, tag | Manual | WEG, Camil e uma empresa individual mostram trecho e link; PDF regerado | PR + tag `v1.1` |
 
 ### Marcos (Claude Code)
 
@@ -193,6 +205,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | MA4b | qui 05/11 | ✅ PR da branch `marcos-escala-primeiro-ano` (05/11): o primeiro ano comparado com o seguinte, pela receita e pelo ativo juntos; 2 testes novos (o 1º falhava antes); recarga: NTS +107.154% → +7,3%, só ela mudou; notebook rodado de novo. JBS N.V. fica de fora (receita zero em 2023): limite no MA6 | consertar a **issue #53**, achada pela EDA em 04/11: o `encontrar_escala_errada` (`raiox/limpeza.py:165-192`) só compara cada ano com o anterior, e o erro de escala no primeiro ano da base passa (NTS: 2023 de 1.000 a 2.000 vezes menor, crescimento de +107.154%; o JBS N.V. tem o mesmo salto no ativo, com receita zero em 2023). Guia §2 (limpeza com Pandas) e §5 (qualidade técnica, 30%) | `raiox/limpeza.py`, `tests/test_limpeza.py`; recarga da `data/` | Manual | teste novo com o primeiro ano marcado (e que falha sem o conserto); depois da recarga, o crescimento da NTS perto de +7% e o notebook rodado de novo; o grupo avisado para recarregar. Se não der até o congelamento (sex 06/11): limite no documento (MA6) e a NTS fora da demo | PR que fecha #53 |
 | MA5 | qua 04–qui 05/11 | ✅ PR #52 (na `main` em 04/11): `docs/bpmn/raio-x-comercial.bpmn` e `.png`, desenhados pelo Claude Code a partir do código; o bpmn-js abre com 0 avisos (falta abrir no demo.bpmn.io) e tem as 2 decisões. O de hoje não foi feito (corte 1, seção 7) | BPMN 2.0 com o Raio-X (obrigatório) e o de hoje (se der tempo), no bpmn.io | `docs/bpmn/` | Plan (o Claude só revisa) | abre no bpmn.io; decisões "tem dados?" e "passou no validador?" | PR |
 | MA6 | sáb 07–seg 09/11 | ➡️ com o **Eduardo** (decidido em 04/11); o Marcos revisa o rascunho no sáb 07/11 | montar o documento do projeto, escrito em markdown e gerado em PDF (o R aceita markdown; o G §6 pede PDF: vão os dois) | `docs/documentacao.md`, `docs/documentacao.pdf` | Manual | etapas desenvolvidas no processo (R Documentação; a base é o `docs/HISTORICO.md`) + BPMN + justificativa + ética + arquitetura + seção "Dados e limpeza" (as regras do `raiox/limpeza.py`, no lugar do `docs/Raio-X Comercial.pdf`); o Marcos revisou | PR (Eduardo) |
+| MA7 | qua 11/11 | — | **links da CVM:** `scripts/carregar_links.py` lê o arquivo principal (`dfp_cia_aberta_AAAA.csv`: `CD_CVM`, `DT_REFER`, `VERSAO`, `ID_DOC`, `LINK_DOC`) dos zips de 2023 a 2026 (o de 2026 pode dar 404, como no `carregar_dfp.py`); calcula o ano com `ano_do_exercicio(DT_REFER)`, troca `http` por `https`, resolve as duplicatas (CD_CVM 26239 e 26824) e grava `data/links_dfp.csv` + tabela `links_dfp` (`cd_cvm` int, `ano`, `versao`, `id_doc`, `link_doc`). **Duração ~1h30 · energia média · 1º passo: baixar o zip de 2026 e abrir o CSV principal** | `scripts/carregar_links.py`, `tests/test_links.py`, `aprender/COMANDOS.md` | Manual | teste com um zip pequeno falso; cobertura conferida empresa por empresa contra o `indicadores.csv` (Camil = fim em fev./2026); lista das sem link; `links_dfp.csv` no zip do Drive; não mexe em `contas.csv` nem em `indicadores.csv` | `marcos-links-dfp` |
 
 ### Miguel (Claude Code)
 
@@ -207,6 +220,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | MG5b | qui 05/11 | ✅ PR #61, na main desde 05/11 | consertar a **issue #56**: com os dados reais, a tela diz "Empresas e números da CVM (DFP), buscados no banco PostgreSQL." (`app/streamlit_app.py:71`), mas os números vêm da `data/indicadores.csv`; só a busca e o registro usam o banco. Achada pelo `revisor` no #55. Guia §3 (a frase aparece na demo) e §2, "Governança e Ética" (confiabilidade) | `app/streamlit_app.py`, `tests/test_tela.py` (se algum teste procura o texto) | Manual | a legenda diz de onde vem cada coisa, igual ao README ("Arquitetura"); tela aberta depois da mudança; antes do vídeo v0 (MG6) e do congelamento (sex 06/11) | PR que fecha #56 |
 | MG6 | qui 05/11 | — | roteiro de 6 min da demo + vídeo v0 | — | — | vídeo salvo em 2 lugares | — |
 | MG7 | sáb 07/11 | — | vídeo final na `v1.0` | — | — | vídeo salvo em 2 lugares | — |
+| MG8 | qua 11/11 (depois do C3 do ED17) | — | **tela das fontes:** em "De onde vem cada número", por indicador, uma tabela com as contas (`conferir.contas`) e o botão "Baixar DFP (CVM)" (`conferir.link`; explicar em uma linha que baixa um `.zip`); sem `conferir`, a tela fica como na `v1.0.1`; print novo para o deck. **Duração ~45 min · energia baixa · 1º passo: abrir `app/streamlit_app.py:189`** | `app/streamlit_app.py`, `tests/test_tela.py` | Manual | WEG mostra tabela e botão; sem `conferir` (modo `falsos` ou banco fora) a tela não quebra; teste novo; print salvo | `miguel-tela-fontes` |
 
 ### Náthally (sem IA de código: GitHub pelo navegador)
 
@@ -232,6 +246,7 @@ Para subir um arquivo:
 | NA4 | qua 04/11 | — | **Obrigatório: 1 slide de métricas** com os números do `avaliacao/resultados.csv` (10 casos, 0 trechos removidos, US$ 0,0012 por raio-x, 2,2 s; rodada de 05/11) e o acerto: **8 de 10 batem com o RI** na conferência manual dela; nas 2 que diferem, a diferença é de definição: RD Saúde em "Pré-IFRS 16", Magalu com outra conta do EBIT (ED16). Sem o acerto, o slide parece melhor que a realidade, que o Eduardo tira com o Claude Code. *Sugestão:* `revisao.csv`, com a nota dela para cada raio-x | deck (e `avaliacao/revisao.csv`, se fizer) | o slide de métricas existe |
 | NA5 | sáb 07–dom 08/11 | — | **Obrigatório: o texto de governança e ética** (guia §2; §6: "análise de ética e segurança", no PDF): viabilidade, limites, viés, confiabilidade, alucinação, segurança de dados e uso responsável. Base pronta: `docs/justificativa.md`, seção 5. Deck com o tempo de cada parte | `docs/etica.md`, deck | o Marcos recebe a ética; todos os slides chegaram |
 | NA6 | seg 09–qua 11/11 | — | **Obrigatório: o deck final** (`requisitos_projeto.MD`, Documentação; guia §6) e ensaios cronometrados (guia §3 diz 20 min, mas vale a regra de 09/11: máx. 18 min + 12 de banca, alvo 15; guia §7 pede o ensaio; o grupo marcou 2) | deck | ensaio de 15 min, nunca acima de 18 |
+| NA7 | qua 11/11 | — | **ROI com as fontes:** refazer 1 vez o tempo do passo "conferir" com a tela nova (trecho + link) e escrever no ROI "fonte em 1 clique"; slide de métricas ganha o print do Miguel (MG8). **Duração ~20 min · energia baixa · 1º passo: cronometrar 1 conferência** | `docs/produto/`, deck | Manual | 1 tempo medido e 1 frase no ROI | PR |
 
 ---
 
@@ -270,6 +285,7 @@ Para subir um arquivo:
 | sáb 07/11/2026 (previsto: 06/11) | os 4 | tag `v1.0` publicada no merge do #67 (`2c3e942`) | código |
 | dom 08/11 | todos → Náthally | conteúdo dos slides | roteiro |
 | qua 11/11 | os 4 | tudo pronto para entregar | entregáveis |
+| qui 12/11, 18h | Eduardo, Marcos, Miguel | fontes dos números na `main` (ED17, MA7, MG8) e tag `v1.1`, ou corte | código (volta a congelar) |
 
 **Como os dados chegam a cada um:**
 - O Marcos publica um zip da pasta `data/` (os CSV) no Drive na sex 30/10 e na sex 06/11.
@@ -295,8 +311,8 @@ Para subir um arquivo:
 | R7 Interface | MG4, MG4b, MG6 |
 | R8 Boas práticas e agentic coding | ED0, ED2, ED6, ED8, todos os PRs |
 | R9 Arquitetura e infra com Terraform (obrigatório) | MG2, MG3, MG5 |
-| R10 Governança e ética | NA5, ED8, MG4, MG4b |
-| R11 ROI | NA1, NA3 |
+| R10 Governança e ética | NA5, ED8, MG4, MG4b, ED17, MA7, MG8 |
+| R11 ROI | NA1, NA3, NA7 |
 | R12 Métricas | NA2, ED5, ED7, NA4, ED11 |
 | R13 Backend, frontend e banco na aplicação | MG4, MG4b (pergunta ao professor respondida em 02/11: Streamlit vale, em 2 contêineres) |
 | R14 Prompts do vibecoding | ED8 |
