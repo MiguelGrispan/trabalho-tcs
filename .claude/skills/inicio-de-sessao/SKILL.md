@@ -28,8 +28,9 @@ O time é iniciante em Git. Você faz o Git; a pessoa só diz qual tarefa vai fa
 - **Primeiro, os arquivos do professor, inteiros:** `docs/professor/requisitos_projeto.MD` e `docs/professor/guia_projeto_final.pdf`
   (o PDF com a ferramenta Read). Eles valem mais que o CLAUDE.md, o PLANO e o REQUISITOS; quando os dois diferem, vale o mais
   exigente (ex.: o Terraform é obrigatório). Se uma nota contradiz esses arquivos, avise a pessoa antes de seguir.
-- Leia a seção 0 do `docs/PLANO.md` e as últimas linhas do `docs/HISTORICO.md`. Só o Eduardo atualiza essas notas, uma vez
-  por dia: o que entrou depois está na seção "Para as notas" dos PRs mesclados depois do "último PR levado: #N" da seção 0 (`gh pr view <número>`).
+- Leia a seção 0 do `docs/PLANO.md` e as últimas linhas do `docs/HISTORICO.md`. Desde 10/11 cada pessoa registra a própria sessão
+  nessas notas (no `/fim-de-sessao`); o Eduardo consolida a seção 0. A seção 0 pode estar atrasada: o que entrou depois está nos PRs
+  mesclados depois do "último PR levado: #N" ("Registro nas notas", `gh pr view <número>`) e no `docs/HISTORICO.md`.
 - Confira o estado real: `gh pr list --state all --limit 8` e `git log --oneline -10`.
 - **Quem está trabalhando agora:** `gh pr list --state open --json number,title,author,files --jq '.[] | "#\(.number) \(.author.login): \(.title) · \([.files[].path] | join(", "))"'`.
   Logins: Marcos `MarcosIurak`, Miguel `MiguelGrispan`, Náthally `Hawkie06`, Eduardo `Mindoim`.

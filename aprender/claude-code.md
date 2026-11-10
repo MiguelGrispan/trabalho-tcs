@@ -10,8 +10,8 @@ As regras de uso de IA do time estão no [REGRAS-IA.md](../REGRAS-IA.md); este g
    Ele atualiza a `main`, cria a sua branch e diz o que mudou e por onde começar.
 3. Trabalhe numa tarefa só. O Claude pede licença antes de mudar arquivos.
 4. No fim, digite `/fim-de-sessao`. Ele roda os testes, escreve no PR o que mudou, abre o PR, mostra quem mais tem PR aberto,
-   espera o CI, lê o diff e, depois do seu "pode", faz o merge na `main`. Você não precisa mexer no GitHub nem nas notas
-   (PLANO, REQUISITOS, HISTORICO): só o Eduardo mexe nelas. Não precisa esperar ninguém, a não ser que ele avise que outro PR
+   espera o CI, lê o diff e, depois do seu "pode", faz o merge na `main`. Você não precisa mexer no GitHub: ele registra o que você fez
+   e quando no PLANO (a linha da sua sessão), no HISTORICO e no REQUISITOS, só a sua parte, desde 10/11. Não precisa esperar ninguém, a não ser que ele avise que outro PR
    aberto mexe no mesmo arquivo.
 5. Antes da próxima tarefa, digite `/clear`.
 
@@ -87,7 +87,7 @@ como `python -m pytest -q` e `git status`.
 Digite `/fim-de-sessao`. Ele faz, nesta ordem:
 1. roda os testes;
 2. lê o `git status` com você;
-3. escreve na descrição do PR o que mudou ("Para as notas"; só o Eduardo mexe no PLANO, no REQUISITOS e no HISTORICO);
+3. registra a sua sessão no PLANO (§3), no HISTORICO e no REQUISITOS (só a sua parte) e escreve no PR o que mudou ("Registro nas notas");
 4. mostra quem mais tem PR aberto e se mexe nos mesmos arquivos (se não mexe, ninguém espera ninguém);
 5. faz o commit, o push e abre o PR;
 6. espera o CI e pede a revisão do diff ao `revisor`, um segundo Claude que só lê e não viu a sessão;

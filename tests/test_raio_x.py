@@ -149,7 +149,9 @@ def test_preparar_raio_x_segue_o_contrato_c3():
         assert chave in r, chave
     assert len(r["indicadores"]) == 6
     for i in r["indicadores"]:
-        assert set(i) == {"id", "nome", "valor", "grupo", "posicao", "fonte", "valor_num", "grupo_num", "unidade"}
+        assert set(i) == {"id", "nome", "valor", "grupo", "posicao", "fonte", "valor_num", "grupo_num", "unidade",
+                    "conferir"}
+        assert set(i["conferir"]) == {"contas", "link"}
         assert i["posicao"] in {"acima", "abaixo", "em linha", "sem dado"}
     assert len(r["parecidas"]) == 5
     assert r["removidos"] == []

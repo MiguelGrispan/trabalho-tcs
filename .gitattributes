@@ -1,0 +1,2 @@
+# O histórico é uma lista que todos acrescentam no fim: em conflito de dois PRs, o Git guarda as duas linhas (merge local, no /fim-de-sessao).
+docs/HISTORICO.md merge=union

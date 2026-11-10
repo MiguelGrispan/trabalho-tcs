@@ -23,7 +23,7 @@ from pathlib import Path
 import pandas as pd
 from pydantic import BaseModel, Field
 
-from raiox import segmentos
+from raiox import fontes, segmentos
 
 ARQ_REGRAS = Path(__file__).resolve().parent.parent / "avaliacao" / "regras_prompt.md"   # da Náthally
 MODELO = "gemini-3.1-flash-lite"
@@ -307,7 +307,11 @@ def validar_e_preencher(rx: RaioX, valores: dict) -> dict:
 # ------------------------------------------------------------------ função do contrato C3
 def preparar_raio_x(cd_cvm: int, produto: str, objetivo: str, usar_ia: bool = True) -> dict:
     t0 = time.time()
-    entrada, valores, raio_x = montar(_base(), int(cd_cvm), produto, objetivo)
+    base = _base()
+    entrada, valores, raio_x = montar(base, int(cd_cvm), produto, objetivo)
+    versao = base.loc[base["cd_cvm"] == int(cd_cvm)].iloc[0].get("versao")   # a tabela falsa também tem; None se faltar
+    fontes.anexar(raio_x["indicadores"], int(cd_cvm), raio_x["ano"], None if pd.isna(versao) else versao,
+                  segmentos.usando_falsos())   # campo `conferir` do C3: vem do banco, nunca do LLM
     if usar_ia:
         rx, uso = gerar_llm(entrada, marcadores_do_llm(valores))
     else:

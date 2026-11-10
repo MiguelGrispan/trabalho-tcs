@@ -1,6 +1,6 @@
 ---
 name: fim-de-sessao
-description: Fecha uma sessão de trabalho do Raio-X do começo ao fim, sem a pessoa precisar saber Git ou GitHub: roda os testes, confere o git status, escreve no PR o que mudou (só o Eduardo atualiza o PLANO, o REQUISITOS e o HISTORICO), faz o commit, abre o PR, espera o CI, revisa o diff numa rodada e faz o merge na main depois de um "pode". Use quando a pessoa disser que terminou a sessão ou a tarefa (ex.: "/fim-de-sessao", "acabei a MA2", "pode fechar").
+description: Fecha uma sessão de trabalho do Raio-X do começo ao fim, sem a pessoa precisar saber Git ou GitHub: roda os testes, confere o git status, registra no PLANO, no HISTORICO e no REQUISITOS o que a pessoa fez e quando (cada um só a sua parte), escreve no PR o que mudou, faz o commit, abre o PR, espera o CI, revisa o diff numa rodada e faz o merge na main depois de um "pode". Use quando a pessoa disser que terminou a sessão ou a tarefa (ex.: "/fim-de-sessao", "acabei a MA2", "pode fechar").
 ---
 
 # Fim de sessão
@@ -32,32 +32,40 @@ Siga os passos **em ordem** e pare no primeiro que falhar.
 - Veja se algum arquivo é de outro dono (tabela "Estrutura e donos" do CLAUDE.md) ou se o `contratos.md` mudou.
   Se sim, o dono precisa dar o ok **no grupo** (WhatsApp) antes do merge: escreva para a pessoa a mensagem pronta para ela mandar.
 
-## 4. O que mudou: na descrição do PR (as notas do projeto são só do Eduardo)
+## 4. Registrar nas notas: o que você fez e quando (desde 10/11, cada um escreve a sua parte)
 
-**Por quê (decidido em 05/11):** todo PR reescrevia a seção 0 do PLANO, o REQUISITOS e o HISTORICO. Com três pessoas ao mesmo
-tempo, o mesmo parágrafo mudava em três branches e todo merge virava conflito (os PRs #46 a #59 mexeram todos nesses 3 arquivos).
+**Mudança de regra (10/11):** antes só o Eduardo editava PLANO, REQUISITOS e HISTORICO, porque todo PR reescrevia os mesmos
+parágrafos e todo merge virava conflito (PRs #46 a #59). Agora **cada pessoa registra a própria sessão no PR dela**, mas só nos
+pontos abaixo, que não se cruzam. O Eduardo continua dono da visão geral (seção 0) e consolida no fim.
 
 - **Antes de escrever qualquer coisa, releia `docs/professor/requisitos_projeto.MD` e `docs/professor/guia_projeto_final.pdf`.**
   Nenhum texto pode dizer que algo exigido ali é opcional, extra ou cortável; toda frase sobre o que o professor exige cita o
   arquivo e o item. Separe "verifiquei" de "suponho".
-- **A pessoa não é o Eduardo:** não mexa em `docs/PLANO.md`, `docs/REQUISITOS.md` nem `docs/HISTORICO.md` (nem na coluna de status).
-  Se o `git status` mostra mudança neles, não ponha no commit e pergunte à pessoa o que fazer. Escreva o que mudou na seção
-  **"Para as notas"** da descrição do PR (passo 5); o Eduardo leva para as notas.
-  **Branch que já tem commit nessas notas** (feito antes desta regra): copie o que ela escreveu nelas para "Para as notas" e
-  volte os 3 arquivos para a versão da `main`: `git fetch`, `git checkout origin/main -- docs/PLANO.md docs/REQUISITOS.md
-  docs/HISTORICO.md` e um commit "Notas saem do PR: só o Eduardo edita". Assim o PR não conflita com ninguém nas notas.
-- **A pessoa é o Eduardo:** ele atualiza as notas **uma vez por dia**, num PR dele (pode ser o da própria sessão). Já atualizou
-  hoje e nada entrou na `main` depois? Não mexa. Se for atualizar:
+- **Registre estes 3 pontos, no mesmo PR da sessão (e nada além deles):**
+  1. `docs/PLANO.md`, **seção 3, a linha da sua sessão** (ex.: MA7): coluna "status" com ✅ (feito) ou 🟡 (em parte), o número do PR
+     (ou "PR da branch `pessoa-tarefa`" se ainda não existe), a data em DD/MM e a prova em uma frase (arquivo, linha ou comando).
+     Sessão nova que você criou: acrescente a linha na tabela da sua pessoa. Na seção 0, "Próxima entrega de cada pessoa",
+     troque só a **sua** linha.
+  2. `docs/HISTORICO.md`: **uma linha no fim da lista da semana atual** (em "Linha do tempo"):
+     `- **DD/MM** · **tema:** o que mudou, em português simples, por quê, a prova e como reverter (PR ou `git revert`).`
+     Não edite linhas de outras pessoas.
+  3. `docs/REQUISITOS.md`: só a **linha do requisito** que a sessão afeta (status e prova). Não reescreva a de outro.
+- **Não mexa** no resto da seção 0 do PLANO (situação, fotografia, "último PR levado"), nem nas linhas de outras pessoas. Isso
+  é o Eduardo. Se achar algo errado lá, escreva em "Para o Eduardo" na descrição do PR.
+- **Conflito:** antes do push, `git fetch` e `git merge origin/main`. O HISTORICO resolve sozinho (o `.gitattributes` guarda as
+  duas linhas). Conflito no PLANO ou no REQUISITOS: **mantenha os dois lados** e nunca apague a linha de outra pessoa. Na
+  dúvida, `git merge --abort` e fale com o Eduardo.
+- **A pessoa é a Náthally** (sem terminal): ela não edita as notas. Escreva em "Registro nas notas" da descrição do PR as 3 linhas
+  prontas, e o Eduardo as leva (tarefa ED19).
+- **A pessoa é o Eduardo:** além da própria sessão, ele **consolida** quando precisar (não é obrigatório em todo PR):
   - confira o GitHub: `git fetch --prune`, `git branch -r --no-merged origin/main` e, para cada branch, `gh pr list --head <branch>
     --state all` (branch com commit novo e sem PR vira linha na seção 0; em 03/11, a MA3 ficou pronta numa branch sem PR);
-  - a seção 0 diz o último PR levado para as notas ("último PR levado: #N"). Para cada PR mesclado com número maior
-    (`gh pr list --state all --limit 30`, coluna do estado), leia "Para as notas" e "Achados não consertados" (`gh pr view <número>`);
-  - **`docs/PLANO.md`, seção 0:** data e hora aproximada; "último PR levado: #N"; o que mudou, com prova; os testes; o próximo
+  - a seção 0 diz o último PR levado ("último PR levado: #N"). Para cada PR mesclado com número maior
+    (`gh pr list --state all --limit 30`), leia "Registro nas notas", "Para o Eduardo" e "Achados não consertados" (`gh pr view <número>`);
+  - **seção 0 do PLANO:** data e hora aproximada; "último PR levado: #N"; o que mudou, com prova; os testes; o próximo
     passo de cada um; as issues novas. Apague o que ficou velho, em vez de só acrescentar;
-  - **`docs/PLANO.md`, seção 3:** a coluna "status" das sessões que terminaram (✅ feito, 🟡 em parte);
-  - **`docs/REQUISITOS.md`:** se um PR fechou ou mudou uma linha, troque o status e escreva a prova;
-  - **`docs/HISTORICO.md`:** de 1 a 3 linhas no dia (o que mudou, em português simples, com os números dos PRs); decisão nova
-    vira uma linha na tabela de decisões, com o porquê.
+  - confira se os registros que os outros fizeram batem com o que está na `main` (status ✅ sem PR mesclado é erro);
+  - decisão nova vira uma linha na tabela de decisões do HISTORICO, com o porquê.
 
 ## 5. Commit, push e PR
 
@@ -68,8 +76,9 @@ tempo, o mesmo parágrafo mudava em três branches e todo merge virava conflito 
 - `git push -u origin pessoa-tarefa` e `gh pr create`, seguindo `.github/pull_request_template.md`:
   - "Feito com IA": o que a IA fez nesta sessão;
   - "O que eu entendi ou conferi": **pergunte à pessoa** e escreva o que ela disser, mesmo que seja "ainda não li". Não invente;
-  - "Para as notas": a sessão e o status (✅ ou 🟡), o que mudou com prova (arquivo, linha ou comando), os testes (quantos
+  - "Registro nas notas": a sessão e o status (✅ ou 🟡), o que mudou com prova (arquivo, linha ou comando), os testes (quantos
     passaram e quantos foram pulados, em qual máquina), a linha do `docs/REQUISITOS.md` afetada (ou "nenhuma") e o próximo passo.
+    Isto repete o que você acabou de registrar no passo 4: o PR conta a mesma história que as notas.
 - Nunca `push --force`, `rebase` nem commit na `main`.
 
 ## 6. Revisão (uma rodada) e merge
@@ -80,7 +89,7 @@ tempo, o mesmo parágrafo mudava em três branches e todo merge virava conflito 
   - **nenhum arquivo em comum:** diga "pode seguir, não precisa esperar ninguém". Os dois PRs entram na `main` sem conflito;
   - **arquivo em comum:** diga quem é o dono do outro PR e qual arquivo. Quem terminar primeiro faz o merge; o outro faz
     `git fetch` e `git merge origin/main` na própria branch e roda os testes. Conflito: `git merge --abort` e a pessoa fala com o
-    dono do arquivo (conflito nas 3 notas: quem resolve é o Eduardo).
+    dono do arquivo (conflito nas notas: mantenha os dois lados; na dúvida, o Eduardo resolve).
 - Se o `gh pr merge` recusar porque a branch está desatualizada: `git fetch`, `git merge origin/main`, testes, `git push` e espere
   o CI de novo. Sem conflito, não precisa falar com ninguém.
 - Espere o CI: `gh pr checks <número> --watch`. Se aparecer "no checks reported", o CI ainda não começou: espere uns
@@ -103,7 +112,7 @@ tempo, o mesmo parágrafo mudava em três branches e todo merge virava conflito 
     (o repositório vai para o professor) e diz: o que acontece, onde (arquivo e linha), por que importa na banca (arquivo do
     professor e item), como reproduzir, sugestão de conserto e prazo. Logins: Marcos `MarcosIurak`, Miguel `MiguelGrispan`,
     Náthally `Hawkie06`, Eduardo `Mindoim`;
-  - não escreva a sessão nova no PLANO: ponha o número da issue em "Para as notas", e o Eduardo a põe no PLANO na próxima atualização;
+  - não escreva a sessão nova no PLANO: ponha o número da issue em "Registro nas notas", e o Eduardo a põe no PLANO (ED19);
   - entregue à pessoa a mensagem pronta para o dono, com o link da issue (a Náthally não usa terminal: ela vê pela aba
     "Issues" do GitHub ou pela mensagem).
 - Commit novo depois do CI? Espere o `pass` de novo antes do merge.
