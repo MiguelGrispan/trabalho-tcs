@@ -3,8 +3,8 @@
 **Projeto final da trilha IA Aplicada (SENAI/TCS)** · Equipe: Marcos (dados), Eduardo (IA e gestão), Náthally (produto e métricas),
 Miguel (tela e infraestrutura) · Repositório: `MiguelGrispan/trabalho-tcs` (GitHub)
 
-**Versão:** rascunho 4 (para revisão do grupo), 07/11/2026 · Final prevista: seg 09/11/2026 · Entrega: seg 16/11/2026,
-48 h antes da banca, prevista para qua 18/11/2026 [PENDENTE: data e horário da banca a confirmar com o professor]
+**Versão:** rascunho 4 (para revisão do grupo), 07/11/2026 · Final prevista: seg 09/11/2026 · Entrega: ter 17/11/2026,
+48 h antes da banca, em qui 19/11/2026 (dita pelo professor) [PENDENTE: horário da banca a confirmar com o professor]
 
 > **Versão para revisão.** O BPMN, a arquitetura e a EDA já estão no documento. Ainda faltam, marcados com **[PENDENTE]**:
 > o ROI (nenhuma medição manual comparável foi entregue até 07/11), o texto final de ética da Náthally e respostas do professor.
@@ -110,8 +110,8 @@ O projeto foi planejado para 4 semanas (19/10 a 16/11/2026). O detalhe de cada p
 
 - **EDA reconferida, 07/11:** as 15 células de código de `notebooks/eda.ipynb` executaram com dados reais, gerando quatro gráficos e o resumo de 595 empresas e 384.591 linhas de contas. Notebook e PNG originais foram preservados; as saídas de auditoria ficaram fora do Git. As figuras já estão na seção 3.
 
-### Semana 4 (09 a 16/11): entregar e ensaiar
-- Documento, deck e vídeo da demo previstos para qua 11/11; ensaios cronometrados; entrega em seg 16/11; banca prevista para qua 18/11
+### Semana 4 (09 a 17/11): entregar e ensaiar
+- Documento, deck e vídeo da demo previstos para qua 11/11; ensaios cronometrados; entrega em ter 17/11; banca em qui 19/11
   (a confirmar).
 
 ### As decisões que mais mudaram o projeto

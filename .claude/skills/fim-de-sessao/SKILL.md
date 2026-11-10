@@ -95,7 +95,7 @@ tempo, o mesmo parágrafo mudava em três branches e todo merge virava conflito 
     PR (`gh pr edit <número> --body-file <arquivo>`).
   Depois, diga em 3 linhas o que o PR muda e o risco que sobrou.
 - **Erro achado fora do PR, na pasta de outro dono** (na sessão ou pelo revisor): não conserte lá (CLAUDE.md, regra 1).
-  - **Até a entrega (16/11), só vira issue o que quebra a demo, um requisito do professor ou a regra de ouro.** Texto que
+  - **Até a entrega (17/11), só vira issue o que quebra a demo, um requisito do professor ou a regra de ouro.** Texto que
     contradiz os arquivos do professor ou deixa um entregável errado (README, documento, deck) conta como requisito: vira issue.
     O resto (nota, frase de guia, estilo) vai para "Achados não consertados".
   - A issue: `gh issue create --assignee <login> --label bug --body-file <arquivo>`. O título vai na linha de comando: sem `.env`

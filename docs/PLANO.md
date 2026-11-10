@@ -1,7 +1,7 @@
 # Plano até a banca (versão acelerada)
 
 Meta: **feito, não perfeito**. O congelamento estava previsto para **06/11/2026**; a versão **`v1.0` foi validada e publicada em 07/11/2026**, no commit `2c3e942` (merge do PR #67). Tudo deve ficar pronto na **11/11/2026**, com folga
-até a entrega de **seg 16/11** (banca prevista para qua 18/11, a confirmar). Se a banca vier antes, já estamos prontos.
+até a entrega de **ter 17/11** (banca em qui 19/11, dita pelo professor; horário a confirmar). Se a banca vier antes, já estamos prontos.
 
 **O que o projeto precisa ter** vem dos arquivos do professor, em `docs/professor/` (`requisitos_projeto.MD` e
 `guia_projeto_final.pdf`). Eles valem mais que este plano: nada que esteja neles pode ser cortado (seção 7).
@@ -78,7 +78,7 @@ Backups, recibos e logs locais: `../fechamento-2026-11-07/`, com a auditoria em 
 | Náthally | ROI hoje, 09/11 (preparação manual × ferramenta, incluindo digitar, ler e conferir); link do deck; ética final e slide de métricas; confirmar a conta de EBIT usada no Magalu |
 
 Todos enviam conteúdo à Náthally até **08/11/2026**. PDF/deck finais previstos para **09/11/2026**; ensaios em **10 e 11/11/2026**.
-Entrega prevista em **16/11/2026**, condicionada à confirmação da banca em **18/11/2026** (guia §6: 48 h antes).
+Entrega em **17/11/2026**, 48 h antes da banca de **19/11/2026** (dita pelo professor ao Eduardo; guia §6; horário a confirmar).
 
 ### Progresso: separar produto de entrega
 
@@ -154,10 +154,10 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | sáb 07/11 | ED10 teste do zero; MA6 rascunho (`docs/documentacao.md`) | revisar o rascunho do MA6 | MG7 vídeo final na `v1.0` (no Mac do Eduardo) | NA5 ética |
 | dom 08/11 | **todos mandam o conteúdo dos slides à Náthally** | | | NA5 deck |
 | seg 09/11 | MA6 final (o `.md` e o PDF gerado dele) | trocar a citação do `raiox/limpeza.py`; o PDF velho sai | | NA6 deck final |
-| ter 10/11 | **ensaio 1 (20 min, todos)** | | | |
+| ter 10/11 | **ensaio 1 (alvo 15 min, máx. 18, todos)** | | | |
 | qua 11/11 | **ensaio 2; tudo pronto para entregar** | | | |
-| 12–15/11 | reserva (e prontos, se a banca vier antes) | | | |
-| seg 16/11 | **entrega** (48 h antes de qua 18/11) | | | |
+| 12–16/11 | reserva (e prontos, se a banca vier antes) | | | |
+| ter 17/11 | **entrega** (48 h antes de qui 19/11) | | | |
 
 ### Eduardo (Claude Code)
 
@@ -231,7 +231,7 @@ Para subir um arquivo:
 | NA3 | até qui 05/11 | — | **Obrigatório, versão mínima: o ROI.** Cronometrar 1 vez a montagem manual de um raio-x (1 empresa, pelo site de RI) e 1 vez com a ferramenta, contando digitar, ler e conferir (não só os ~2 s da API), com a conta do ganho em 3 linhas (guia §7: "ROI ou a redução do tempo operacional"). *Sugestão:* 3 empresas no `tempo_manual.csv` e 3 testes com usuários (sem nome) | `docs/produto/` (ou `avaliacao/`) | 1 tempo medido e a conta do ROI |
 | NA4 | qua 04/11 | — | **Obrigatório: 1 slide de métricas** com os números do `avaliacao/resultados.csv` (10 casos, 0 trechos removidos, US$ 0,0012 por raio-x, 2,2 s; rodada de 05/11) e o acerto: **8 de 10 batem com o RI** na conferência manual dela; nas 2 que diferem, a diferença é de definição: RD Saúde em "Pré-IFRS 16", Magalu com outra conta do EBIT (ED16). Sem o acerto, o slide parece melhor que a realidade, que o Eduardo tira com o Claude Code. *Sugestão:* `revisao.csv`, com a nota dela para cada raio-x | deck (e `avaliacao/revisao.csv`, se fizer) | o slide de métricas existe |
 | NA5 | sáb 07–dom 08/11 | — | **Obrigatório: o texto de governança e ética** (guia §2; §6: "análise de ética e segurança", no PDF): viabilidade, limites, viés, confiabilidade, alucinação, segurança de dados e uso responsável. Base pronta: `docs/justificativa.md`, seção 5. Deck com o tempo de cada parte | `docs/etica.md`, deck | o Marcos recebe a ética; todos os slides chegaram |
-| NA6 | seg 09–qua 11/11 | — | **Obrigatório: o deck final** (`requisitos_projeto.MD`, Documentação; guia §6) e ensaios cronometrados (guia §3: no máximo 20 min; guia §7 pede o ensaio; o grupo marcou 2) | deck | ensaio abaixo de 20 min |
+| NA6 | seg 09–qua 11/11 | — | **Obrigatório: o deck final** (`requisitos_projeto.MD`, Documentação; guia §6) e ensaios cronometrados (guia §3 diz 20 min, mas vale a regra de 09/11: máx. 18 min + 12 de banca, alvo 15; guia §7 pede o ensaio; o grupo marcou 2) | deck | ensaio de 15 min, nunca acima de 18 |
 
 ---
 
@@ -306,7 +306,7 @@ Para subir um arquivo:
 | D2 Documento (etapas, BPMN, justificativa, ética) | MA6, do Eduardo desde 04/11 (com MA5, ED8, NA5, MG5) |
 | D3 Deck | NA5, NA6 |
 | D4 Vídeo | MG6, MG7 |
-| D5 20 minutos | NA6 + ensaios de 10–11/11 |
+| D5 18 minutos (alvo 15) | NA6 + ensaios de 10–11/11 |
 
 ---
 

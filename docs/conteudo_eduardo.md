@@ -89,7 +89,7 @@ O cliente da API tem limite de tempo e tentativas. A tela captura a falha e usa 
 
 > Professor, estamos fechando o Raio-X Comercial. Pode confirmar três pontos?
 >
-> 1. A banca será em 18/11/2026? Qual o horário e o prazo exato de entrega?
+> 1. A banca será em 19/11/2026? Qual o horário e o prazo exato de entrega?
 > 2. Os “arquivos utilizados de prompts para o vibecoding” incluem os nossos arquivos de instruções e skills, ou também precisamos entregar os prompts digitados nas sessões?
 > 3. A tabela de indicadores calculados da CVM, recuperada por empresa e passada ao Gemini, atende à “base de dados de conhecimento para a IA”? Também temos o K-means treinado com dados públicos limpos.
 

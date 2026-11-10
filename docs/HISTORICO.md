@@ -144,6 +144,7 @@ número do PR) e, se houve, a decisão na tabela de decisões. Sem detalhe técn
   apareceram: "bilionária" e "uma vez e meia" passavam pelo validador, e o erro de formato do Gemini mostrava o texto dele, com números,
   em "Detalhes técnicos". Consertadas com teste na `v1.0.1`. Fora do código: o professor ainda não tem acesso ao repositório privado,
   o ROI ainda não foi medido e o exemplo do README com a empresa 90001 só funciona com os dados falsos.
+- **09/11** · **Tempo da apresentação:** o professor disse ao Eduardo 18 min + 12 min de banca (guia §3 dizia 20) e que a banca é em qui 19/11 (não qua 18/11); entrega 48 h antes: ter 17/11. Alvo do grupo: 15 min, com 3 min de folga; tempo por etapa e por pessoa em `docs/tempo_apresentacao.md` (divisão proposta, não confirmada). Para reverter: reverter este PR.
 
 ## Decisões (e por quê)
 
