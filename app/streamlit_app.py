@@ -47,6 +47,27 @@ def md(texto: str) -> str:
     return str(texto).replace("$", "\\$")
 
 
+def tem_fonte(ind: dict) -> bool:
+    """O campo `conferir` (C3, desde a ED17) é opcional: sem ele, ou vazio, o indicador fica como na v1.0.1."""
+    conferir = ind.get("conferir") or {}
+    return bool(conferir.get("contas") or conferir.get("link"))
+
+
+def mostrar_fonte(ind: dict) -> None:
+    """As contas do DFP usadas no indicador e o botão para baixar o documento na CVM (MG8). Tudo vem do banco, nada do LLM."""
+    conferir = ind.get("conferir") or {}
+    st.caption(md(ind["fonte"]))
+    contas = conferir.get("contas") or []
+    if contas:
+        st.dataframe(pd.DataFrame([{"Conta": c["conta"], "Descrição": c["descricao"], "Ano": str(c["ano"]),
+                                    "Valor": c["valor"]} for c in contas]), hide_index=True)
+    else:
+        st.caption("As contas deste indicador não foram encontradas no banco.")
+    if conferir.get("link"):
+        st.link_button("Baixar DFP (CVM)", conferir["link"])
+        st.caption("O botão baixa um arquivo .zip do site da CVM com o documento (DFP) entregue pela empresa.")
+
+
 def gerar_raio_x(cd_cvm: int, produto: str, objetivo: str) -> tuple[dict, str | None]:
     """Devolve (raio-x, erro da IA). Se a IA falhar, monta o texto sem IA: os números são os mesmos (plano B da demo)."""
     if USAR_IA_REAL:
@@ -188,6 +209,13 @@ with dir_:
 with st.expander("De onde vem cada número"):
     st.dataframe(pd.DataFrame([{"Indicador": i["nome"], "Empresa": i["valor"], "Grupo": i["grupo"],
                                 "Fonte": i["fonte"]} for i in rx["indicadores"]]), hide_index=True)
+    # Fontes dos números (MG8): uma aba por indicador. Sem `conferir` (banco fora do ar), esta parte não aparece.
+    com_fonte = [i for i in rx["indicadores"] if tem_fonte(i)]
+    if com_fonte:
+        st.markdown("**Confira no DFP:** as contas usadas em cada indicador, com o valor em reais como está no documento.")
+        for aba, ind in zip(st.tabs([i["nome"] for i in com_fonte]), com_fonte):
+            with aba:
+                mostrar_fonte(ind)
 
 with st.expander("Detalhes técnicos"):
     uso = rx.get("uso", {})
