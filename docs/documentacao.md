@@ -3,7 +3,7 @@
 **Projeto final da trilha IA Aplicada (SENAI/TCS)** · Equipe: Marcos (dados), Eduardo (IA e gestão), Náthally (produto e métricas),
 Miguel (tela e infraestrutura) · Repositório: `MiguelGrispan/trabalho-tcs` (GitHub)
 
-**Versão:** rascunho 5 (fontes conferíveis; ROI e ética ainda pendentes), 11/11/2026 · Final prevista: seg 09/11/2026 · Entrega: ter 17/11/2026,
+**Versão:** rascunho 5 (fontes conferíveis; ROI e ética ainda pendentes), 10/11/2026 · Final prevista: seg 09/11/2026 · Entrega: ter 17/11/2026,
 48 h antes da banca, em qui 19/11/2026 (dita pelo professor) [PENDENTE: horário da banca a confirmar com o professor]
 
 > **Versão para revisão.** O BPMN, a arquitetura, a EDA e o fluxo de conferência das fontes já estão no documento. Ainda faltam, marcados com **[PENDENTE]**:

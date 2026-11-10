@@ -33,8 +33,8 @@ ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marc
 
 ## Documento do projeto (guia §6, item 2)
 
-- [ ] **Documento em Markdown** · rascunho · [docs/documentacao.md](documentacao.md). Rascunho 5 (11/11), com BPMN, arquitetura, EDA e o fluxo de conferência das contas e do link da CVM; faltam o ROI, o texto final de ética e as respostas do professor (Apêndice B do documento).
-- [ ] **Documento em PDF** · rascunho · [docs/documentacao.pdf](documentacao.pdf). A versão versionada ainda é a de 07/11; precisa ser gerado de novo depois desta mudança no `.md` e depois da entrada do ROI e da ética.
+- [ ] **Documento em Markdown** · rascunho · [docs/documentacao.md](documentacao.md). Rascunho 5 (10/11), com BPMN, arquitetura, EDA e o fluxo de conferência das contas e do link da CVM; faltam o ROI, o texto final de ética e as respostas do professor (Apêndice B do documento).
+- [ ] **Documento em PDF** · rascunho · [docs/documentacao.pdf](documentacao.pdf). Regerado em 10/11 (ED18, 22 páginas, com as fontes e o BPMN da MA8); precisa ser gerado de novo depois da entrada do ROI e da ética.
 - [x] **BPMN 2.0** · pronto · [imagem](bpmn/raio-x-comercial.png) e [arquivo editável](bpmn/raio-x-comercial.bpmn)
   (PRs #52 e #65). Também na seção 4 do documento.
 - [x] **EDA** · pronto · [notebooks/eda.ipynb](../notebooks/eda.ipynb) e os gráficos
