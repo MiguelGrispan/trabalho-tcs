@@ -94,7 +94,7 @@ Entrega em **17/11/2026**, 48 h antes da banca de **19/11/2026** (dita pelo prof
 
 | parte | estado | o que resta |
 |---|---|---|
-| aplicação | **código congelado: `v1.0.1`** (a `v1.0` mais o conserto do validador, 09/11) | conferir instalação por outra pessoa (ED10); não ampliar o produto |
+| aplicação | **plano B: `v1.0.1`** (09/11). Versão da banca não decidida (10/11): provavelmente a mais nova depois da conferência das fontes (`v1.1`); o vídeo de reserva será gravado nela | conferir instalação por outra pessoa (ED10); não ampliar o produto |
 | documento | **~80%** (estimativa de esforço) | ROI, ética final, revisão e respostas externas |
 | slides e ensaios | **não verificado** | deck relatado fora do repositório, sem link; vídeo e tempos de ensaio não apresentados |
 

@@ -1,7 +1,7 @@
 # Roteiro da demo
 
 Demo ao vivo: **5 minutos** (alvo de `docs/tempo_apresentacao.md`; o guia §3 dava 6, das 06:00 às 12:00 de uma apresentação de 20 min: "aplicação rodando em tempo
-real"). Versão do código: `main` após os PRs #75, #76 e #77; a tag `v1.0.1` continua como plano B. Dono: Miguel (MG6).
+real"). Versão do código: a mais nova que passar na conferência das fontes (provavelmente a `v1.1`, ainda não decidido em 10/11); a tag `v1.0.1` continua como plano B. Dono: Miguel (MG6).
 
 ## Antes de apresentar
 
@@ -28,4 +28,4 @@ Depois de abrir a tela, gere um raio-x da WEG. No expander **De onde vem cada n�
 **Baixar DFP (CVM)** e explique que o botão baixa o `.zip` oficial para uma conferência detalhada. Se o link
 não aparecer, a carga de links não foi feita; rode `scripts/carregar_links.py` antes da demo.
 
-A escrever (MG6), com o vídeo de reserva gravado na `v1.0.1` e guardado em 2 lugares (`guia_projeto_final.pdf` §3, dica).
+A escrever (MG6). O vídeo de reserva **ainda não foi gravado** (10/11): grava-se na mesma versão da demo, já com o botão das fontes, e guarda-se em 2 lugares (`guia_projeto_final.pdf` §3, dica).
