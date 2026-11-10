@@ -2,7 +2,7 @@
 <!--
   BPMN 2.0 do processo de negócio do Raio-X Comercial (MA5).
   Abre no https://demo.bpmn.io (arraste o arquivo para a página). A imagem é o raio-x-comercial.png, na mesma pasta.
-  Cada passo vem do código: app/streamlit_app.py (tela) e raiox/ia.py (indicadores, Gemini e validador).
+  Cada passo vem do código: app/streamlit_app.py (tela), raiox/ia.py (indicadores, Gemini e validador) e raiox/fontes.py (fontes dos números).
 -->
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
                   xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
@@ -45,6 +45,7 @@
         <bpmn:flowNodeRef>Erro_Calcular</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Tarefa_AvisoFalha</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Fim_Falha</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Tarefa_Fontes</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Decisao_IA</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Tarefa_Gemini</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Erro_Gemini</bpmn:flowNodeRef>
@@ -134,9 +135,20 @@
       <bpmn:incoming>Fluxo_30</bpmn:incoming>
     </bpmn:endEvent>
 
+    <!-- Aplicação: fontes dos números (raiox/ia.py, preparar_raio_x; raiox/fontes.py, anexar) -->
+    <bpmn:serviceTask id="Tarefa_Fontes" name="Anexar as fontes: contas do DFP e link da CVM">
+      <bpmn:incoming>Fluxo_08</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_31</bpmn:outgoing>
+      <bpmn:property id="Propriedade_Fontes" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="Leitura_Fontes">
+        <bpmn:sourceRef>Banco_Fontes</bpmn:sourceRef>
+        <bpmn:targetRef>Propriedade_Fontes</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+    </bpmn:serviceTask>
+
     <!-- Aplicação: texto com ou sem IA (app/streamlit_app.py, gerar_raio_x) -->
     <bpmn:exclusiveGateway id="Decisao_IA" name="IA ligada?">
-      <bpmn:incoming>Fluxo_08</bpmn:incoming>
+      <bpmn:incoming>Fluxo_31</bpmn:incoming>
       <bpmn:outgoing>Fluxo_09</bpmn:outgoing>
       <bpmn:outgoing>Fluxo_10</bpmn:outgoing>
     </bpmn:exclusiveGateway>
@@ -209,6 +221,7 @@
     <!-- Dados -->
     <bpmn:dataStoreReference id="Banco_Busca" name="PostgreSQL: empresas e indicadores" dataStoreRef="DataStore_Postgres" />
     <bpmn:dataStoreReference id="Arquivos_Indicadores" name="indicadores.csv e segmentos.csv (K-means e vizinhos)" dataStoreRef="DataStore_Arquivos" />
+    <bpmn:dataStoreReference id="Banco_Fontes" name="PostgreSQL: contas e links_dfp" dataStoreRef="DataStore_Postgres" />
     <bpmn:dataStoreReference id="Banco_Consultas" name="PostgreSQL: consultas" dataStoreRef="DataStore_Postgres" />
 
     <!-- Fluxos -->
@@ -219,7 +232,7 @@
     <bpmn:sequenceFlow id="Fluxo_05" name="Não: banco vazio ou desligado" sourceRef="Decisao_TemDados" targetRef="Tarefa_Aviso" />
     <bpmn:sequenceFlow id="Fluxo_06" sourceRef="Tarefa_Aviso" targetRef="Fim_SemRaioX" />
     <bpmn:sequenceFlow id="Fluxo_07" sourceRef="Tarefa_Escolher" targetRef="Tarefa_Calcular" />
-    <bpmn:sequenceFlow id="Fluxo_08" sourceRef="Tarefa_Calcular" targetRef="Decisao_IA" />
+    <bpmn:sequenceFlow id="Fluxo_08" sourceRef="Tarefa_Calcular" targetRef="Tarefa_Fontes" />
     <bpmn:sequenceFlow id="Fluxo_09" name="Não" sourceRef="Decisao_IA" targetRef="Tarefa_SemIA" />
     <bpmn:sequenceFlow id="Fluxo_10" name="Sim" sourceRef="Decisao_IA" targetRef="Tarefa_Gemini" />
     <bpmn:sequenceFlow id="Fluxo_11" sourceRef="Erro_Gemini" targetRef="Tarefa_SemIA" />
@@ -242,12 +255,17 @@
     <bpmn:sequenceFlow id="Fluxo_28" sourceRef="Tarefa_TentarOutro" targetRef="Tarefa_Digitar" />
     <bpmn:sequenceFlow id="Fluxo_29" sourceRef="Erro_Calcular" targetRef="Tarefa_AvisoFalha" />
     <bpmn:sequenceFlow id="Fluxo_30" sourceRef="Tarefa_AvisoFalha" targetRef="Fim_Falha" />
+    <bpmn:sequenceFlow id="Fluxo_31" sourceRef="Tarefa_Fontes" targetRef="Decisao_IA" />
 
     <!-- Notas (no esquema BPMN 2.0, as anotações vêm depois de todos os fluxos) -->
     <bpmn:textAnnotation id="Nota_Dados">
-      <bpmn:text>Carregados antes da reunião: a DFP da CVM (carregar_dfp.py e indicadores.py); os grupos pelo K-means e as parecidas pelos vizinhos mais próximos (raiox/segmentos.py).</bpmn:text>
+      <bpmn:text>Carregados antes da reunião: a DFP da CVM (carregar_dfp.py, indicadores.py e carregar_links.py); os grupos pelo K-means e as parecidas pelos vizinhos mais próximos (raiox/segmentos.py).</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:association id="Ligacao_Nota_Dados" sourceRef="Nota_Dados" targetRef="Banco_Busca" />
+    <bpmn:textAnnotation id="Nota_Fontes">
+      <bpmn:text>As contas e o link vêm do banco, nunca do Gemini. Se faltar dado, o raio-x sai igual, sem essa parte.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Ligacao_Nota_Fontes" sourceRef="Nota_Fontes" targetRef="Banco_Fontes" />
     <bpmn:textAnnotation id="Nota_Gemini">
       <bpmn:text>O Gemini recebe os valores, mas só pode escrever marcadores como {margem_ebit}, nunca números. Se ele falhar (tempo, erro da API ou formato errado), a tela segue sem IA e avisa.</bpmn:text>
     </bpmn:textAnnotation>
@@ -262,16 +280,16 @@
   <bpmndi:BPMNDiagram id="Desenho_RaioX">
     <bpmndi:BPMNPlane id="Plano_RaioX" bpmnElement="Colaboracao_RaioX">
       <bpmndi:BPMNShape id="Participante_RaioX_di" bpmnElement="Participante_RaioX" isHorizontal="true">
-        <dc:Bounds x="100" y="80" width="2380" height="560" />
+        <dc:Bounds x="100" y="80" width="2570" height="560" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Raia_Vendedor_di" bpmnElement="Raia_Vendedor" isHorizontal="true">
-        <dc:Bounds x="130" y="80" width="2350" height="170" />
+        <dc:Bounds x="130" y="80" width="2540" height="170" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Raia_Aplicacao_di" bpmnElement="Raia_Aplicacao" isHorizontal="true">
-        <dc:Bounds x="130" y="250" width="2350" height="390" />
+        <dc:Bounds x="130" y="250" width="2540" height="390" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Participante_Gemini_di" bpmnElement="Participante_Gemini" isHorizontal="true">
-        <dc:Bounds x="100" y="730" width="2380" height="70" />
+        <dc:Bounds x="100" y="730" width="2570" height="70" />
       </bpmndi:BPMNShape>
 
       <!-- Vendedor -->
@@ -286,11 +304,11 @@
         <dc:Bounds x="705" y="115" width="130" height="100" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Tarefa_Ler_di" bpmnElement="Tarefa_Ler">
-        <dc:Bounds x="2210" y="115" width="130" height="100" />
+        <dc:Bounds x="2400" y="115" width="130" height="100" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Fim_Preparado_di" bpmnElement="Fim_Preparado">
-        <dc:Bounds x="2392" y="147" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="2375" y="188" width="70" height="40" /></bpmndi:BPMNLabel>
+        <dc:Bounds x="2582" y="147" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="2565" y="188" width="70" height="40" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <!-- Aplicação: busca -->
@@ -325,66 +343,78 @@
         <dc:Bounds x="160" y="548" width="240" height="84" />
       </bpmndi:BPMNShape>
 
+      <!-- Aplicação: fontes dos números -->
+      <bpmndi:BPMNShape id="Tarefa_Fontes_di" bpmnElement="Tarefa_Fontes">
+        <dc:Bounds x="880" y="280" width="130" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Banco_Fontes_di" bpmnElement="Banco_Fontes">
+        <dc:Bounds x="920" y="440" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="822" y="445" width="74" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Nota_Fontes_di" bpmnElement="Nota_Fontes">
+        <dc:Bounds x="835" y="556" width="205" height="72" />
+      </bpmndi:BPMNShape>
+
       <!-- Aplicação: IA -->
       <bpmndi:BPMNShape id="Decisao_IA_di" bpmnElement="Decisao_IA" isMarkerVisible="true">
-        <dc:Bounds x="860" y="305" width="50" height="50" />
-        <bpmndi:BPMNLabel><dc:Bounds x="857" y="282" width="56" height="14" /></bpmndi:BPMNLabel>
+        <dc:Bounds x="1050" y="305" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1047" y="282" width="56" height="14" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Tarefa_Gemini_di" bpmnElement="Tarefa_Gemini">
-        <dc:Bounds x="820" y="430" width="130" height="100" />
+        <dc:Bounds x="1010" y="430" width="130" height="100" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Erro_Gemini_di" bpmnElement="Erro_Gemini">
-        <dc:Bounds x="932" y="412" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="972" y="436" width="70" height="14" /></bpmndi:BPMNLabel>
+        <dc:Bounds x="1122" y="412" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1162" y="436" width="70" height="14" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Tarefa_SemIA_di" bpmnElement="Tarefa_SemIA">
-        <dc:Bounds x="980" y="280" width="130" height="100" />
+        <dc:Bounds x="1170" y="280" width="130" height="100" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Juncao_Texto_di" bpmnElement="Juncao_Texto" isMarkerVisible="true">
-        <dc:Bounds x="1140" y="305" width="50" height="50" />
+        <dc:Bounds x="1330" y="305" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Nota_Gemini_di" bpmnElement="Nota_Gemini">
-        <dc:Bounds x="990" y="540" width="250" height="84" />
+        <dc:Bounds x="1180" y="540" width="250" height="84" />
       </bpmndi:BPMNShape>
 
       <!-- Aplicação: validador -->
       <bpmndi:BPMNShape id="Juncao_Laco_di" bpmnElement="Juncao_Laco" isMarkerVisible="true">
-        <dc:Bounds x="1220" y="305" width="50" height="50" />
+        <dc:Bounds x="1410" y="305" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Tarefa_Conferir_di" bpmnElement="Tarefa_Conferir">
-        <dc:Bounds x="1300" y="280" width="130" height="100" />
+        <dc:Bounds x="1490" y="280" width="130" height="100" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Nota_Validador_di" bpmnElement="Nota_Validador">
-        <dc:Bounds x="1260" y="430" width="235" height="98" />
+        <dc:Bounds x="1450" y="430" width="235" height="98" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Decisao_Validador_di" bpmnElement="Decisao_Validador" isMarkerVisible="true">
-        <dc:Bounds x="1480" y="305" width="50" height="50" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1512" y="362" width="60" height="40" /></bpmndi:BPMNLabel>
+        <dc:Bounds x="1670" y="305" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1702" y="362" width="60" height="40" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Tarefa_Trocar_di" bpmnElement="Tarefa_Trocar">
-        <dc:Bounds x="1580" y="280" width="130" height="100" />
+        <dc:Bounds x="1770" y="280" width="130" height="100" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Tarefa_Remover_di" bpmnElement="Tarefa_Remover">
-        <dc:Bounds x="1580" y="430" width="130" height="100" />
+        <dc:Bounds x="1770" y="430" width="130" height="100" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Juncao_Frase_di" bpmnElement="Juncao_Frase" isMarkerVisible="true">
-        <dc:Bounds x="1760" y="305" width="50" height="50" />
+        <dc:Bounds x="1950" y="305" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Decisao_MaisFrases_di" bpmnElement="Decisao_MaisFrases" isMarkerVisible="true">
-        <dc:Bounds x="1840" y="305" width="50" height="50" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1835" y="362" width="60" height="27" /></bpmndi:BPMNLabel>
+        <dc:Bounds x="2030" y="305" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="2025" y="362" width="60" height="27" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <!-- Aplicação: registro e resultado -->
       <bpmndi:BPMNShape id="Tarefa_Registrar_di" bpmnElement="Tarefa_Registrar">
-        <dc:Bounds x="1940" y="280" width="130" height="100" />
+        <dc:Bounds x="2130" y="280" width="130" height="100" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Banco_Consultas_di" bpmnElement="Banco_Consultas">
-        <dc:Bounds x="1980" y="440" width="50" height="50" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1960" y="495" width="90" height="27" /></bpmndi:BPMNLabel>
+        <dc:Bounds x="2170" y="440" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="2150" y="495" width="90" height="27" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Tarefa_Mostrar_di" bpmnElement="Tarefa_Mostrar">
-        <dc:Bounds x="2210" y="280" width="130" height="100" />
+        <dc:Bounds x="2400" y="280" width="130" height="100" />
       </bpmndi:BPMNShape>
 
       <!-- Correções: tentar outro nome e falha ao montar o raio-x -->
@@ -428,67 +458,70 @@
         <di:waypoint x="770" y="215" /><di:waypoint x="770" y="280" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Fluxo_08_di" bpmnElement="Fluxo_08">
-        <di:waypoint x="835" y="330" /><di:waypoint x="860" y="330" />
+        <di:waypoint x="835" y="330" /><di:waypoint x="880" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_31_di" bpmnElement="Fluxo_31">
+        <di:waypoint x="1010" y="330" /><di:waypoint x="1050" y="330" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Fluxo_09_di" bpmnElement="Fluxo_09">
-        <di:waypoint x="910" y="330" /><di:waypoint x="980" y="330" />
-        <bpmndi:BPMNLabel><dc:Bounds x="933" y="312" width="20" height="14" /></bpmndi:BPMNLabel>
+        <di:waypoint x="1100" y="330" /><di:waypoint x="1170" y="330" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1123" y="312" width="20" height="14" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Fluxo_10_di" bpmnElement="Fluxo_10">
-        <di:waypoint x="885" y="355" /><di:waypoint x="885" y="430" />
-        <bpmndi:BPMNLabel><dc:Bounds x="861" y="390" width="20" height="14" /></bpmndi:BPMNLabel>
+        <di:waypoint x="1075" y="355" /><di:waypoint x="1075" y="430" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1051" y="390" width="20" height="14" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Fluxo_11_di" bpmnElement="Fluxo_11">
-        <di:waypoint x="950" y="412" /><di:waypoint x="950" y="400" /><di:waypoint x="1045" y="400" /><di:waypoint x="1045" y="380" />
+        <di:waypoint x="1140" y="412" /><di:waypoint x="1140" y="400" /><di:waypoint x="1235" y="400" /><di:waypoint x="1235" y="380" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Fluxo_12_di" bpmnElement="Fluxo_12">
-        <di:waypoint x="950" y="480" /><di:waypoint x="1165" y="480" /><di:waypoint x="1165" y="355" />
+        <di:waypoint x="1140" y="480" /><di:waypoint x="1355" y="480" /><di:waypoint x="1355" y="355" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Fluxo_13_di" bpmnElement="Fluxo_13">
-        <di:waypoint x="1110" y="330" /><di:waypoint x="1140" y="330" />
+        <di:waypoint x="1300" y="330" /><di:waypoint x="1330" y="330" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Fluxo_14_di" bpmnElement="Fluxo_14">
-        <di:waypoint x="1190" y="330" /><di:waypoint x="1220" y="330" />
+        <di:waypoint x="1380" y="330" /><di:waypoint x="1410" y="330" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Fluxo_15_di" bpmnElement="Fluxo_15">
-        <di:waypoint x="1270" y="330" /><di:waypoint x="1300" y="330" />
+        <di:waypoint x="1460" y="330" /><di:waypoint x="1490" y="330" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Fluxo_16_di" bpmnElement="Fluxo_16">
-        <di:waypoint x="1430" y="330" /><di:waypoint x="1480" y="330" />
+        <di:waypoint x="1620" y="330" /><di:waypoint x="1670" y="330" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Fluxo_17_di" bpmnElement="Fluxo_17">
-        <di:waypoint x="1530" y="330" /><di:waypoint x="1580" y="330" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1545" y="312" width="20" height="14" /></bpmndi:BPMNLabel>
+        <di:waypoint x="1720" y="330" /><di:waypoint x="1770" y="330" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1735" y="312" width="20" height="14" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Fluxo_18_di" bpmnElement="Fluxo_18">
-        <di:waypoint x="1505" y="355" /><di:waypoint x="1505" y="480" /><di:waypoint x="1580" y="480" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1481" y="410" width="20" height="14" /></bpmndi:BPMNLabel>
+        <di:waypoint x="1695" y="355" /><di:waypoint x="1695" y="480" /><di:waypoint x="1770" y="480" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1671" y="410" width="20" height="14" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Fluxo_19_di" bpmnElement="Fluxo_19">
-        <di:waypoint x="1710" y="330" /><di:waypoint x="1760" y="330" />
+        <di:waypoint x="1900" y="330" /><di:waypoint x="1950" y="330" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Fluxo_20_di" bpmnElement="Fluxo_20">
-        <di:waypoint x="1710" y="480" /><di:waypoint x="1785" y="480" /><di:waypoint x="1785" y="355" />
+        <di:waypoint x="1900" y="480" /><di:waypoint x="1975" y="480" /><di:waypoint x="1975" y="355" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Fluxo_21_di" bpmnElement="Fluxo_21">
-        <di:waypoint x="1865" y="305" /><di:waypoint x="1865" y="272" /><di:waypoint x="1245" y="272" /><di:waypoint x="1245" y="305" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1872" y="280" width="20" height="14" /></bpmndi:BPMNLabel>
+        <di:waypoint x="2055" y="305" /><di:waypoint x="2055" y="272" /><di:waypoint x="1435" y="272" /><di:waypoint x="1435" y="305" />
+        <bpmndi:BPMNLabel><dc:Bounds x="2062" y="280" width="20" height="14" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Fluxo_22_di" bpmnElement="Fluxo_22">
-        <di:waypoint x="1810" y="330" /><di:waypoint x="1840" y="330" />
+        <di:waypoint x="2000" y="330" /><di:waypoint x="2030" y="330" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Fluxo_23_di" bpmnElement="Fluxo_23">
-        <di:waypoint x="1890" y="330" /><di:waypoint x="1940" y="330" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1904" y="312" width="20" height="14" /></bpmndi:BPMNLabel>
+        <di:waypoint x="2080" y="330" /><di:waypoint x="2130" y="330" />
+        <bpmndi:BPMNLabel><dc:Bounds x="2094" y="312" width="20" height="14" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Fluxo_24_di" bpmnElement="Fluxo_24">
-        <di:waypoint x="2070" y="330" /><di:waypoint x="2210" y="330" />
+        <di:waypoint x="2260" y="330" /><di:waypoint x="2400" y="330" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Fluxo_25_di" bpmnElement="Fluxo_25">
-        <di:waypoint x="2275" y="280" /><di:waypoint x="2275" y="215" />
+        <di:waypoint x="2465" y="280" /><di:waypoint x="2465" y="215" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Fluxo_26_di" bpmnElement="Fluxo_26">
-        <di:waypoint x="2340" y="165" /><di:waypoint x="2392" y="165" />
+        <di:waypoint x="2530" y="165" /><di:waypoint x="2582" y="165" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Fluxo_27_di" bpmnElement="Fluxo_27">
@@ -512,25 +545,31 @@
       <bpmndi:BPMNEdge id="Leitura_Arquivos_di" bpmnElement="Leitura_Arquivos">
         <di:waypoint x="770" y="440" /><di:waypoint x="770" y="380" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Leitura_Fontes_di" bpmnElement="Leitura_Fontes">
+        <di:waypoint x="945" y="440" /><di:waypoint x="945" y="380" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Ligacao_Nota_Fontes_di" bpmnElement="Ligacao_Nota_Fontes">
+        <di:waypoint x="945" y="556" /><di:waypoint x="945" y="490" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Gravacao_Consulta_di" bpmnElement="Gravacao_Consulta">
-        <di:waypoint x="2005" y="380" /><di:waypoint x="2005" y="440" />
+        <di:waypoint x="2195" y="380" /><di:waypoint x="2195" y="440" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Ligacao_Nota_Dados_di" bpmnElement="Ligacao_Nota_Dados">
         <di:waypoint x="315" y="548" /><di:waypoint x="315" y="490" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Ligacao_Nota_Validador_di" bpmnElement="Ligacao_Nota_Validador">
-        <di:waypoint x="1365" y="380" /><di:waypoint x="1365" y="430" />
+        <di:waypoint x="1555" y="380" /><di:waypoint x="1555" y="430" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Ligacao_Nota_Gemini_di" bpmnElement="Ligacao_Nota_Gemini">
-        <di:waypoint x="950" y="510" /><di:waypoint x="990" y="560" />
+        <di:waypoint x="1140" y="510" /><di:waypoint x="1180" y="560" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Mensagem_Pedido_di" bpmnElement="Mensagem_Pedido">
-        <di:waypoint x="865" y="530" /><di:waypoint x="865" y="730" />
-        <bpmndi:BPMNLabel><dc:Bounds x="670" y="648" width="190" height="54" /></bpmndi:BPMNLabel>
+        <di:waypoint x="1055" y="530" /><di:waypoint x="1055" y="730" />
+        <bpmndi:BPMNLabel><dc:Bounds x="860" y="648" width="190" height="54" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Mensagem_Resposta_di" bpmnElement="Mensagem_Resposta">
-        <di:waypoint x="905" y="730" /><di:waypoint x="905" y="530" />
-        <bpmndi:BPMNLabel><dc:Bounds x="912" y="655" width="190" height="40" /></bpmndi:BPMNLabel>
+        <di:waypoint x="1095" y="730" /><di:waypoint x="1095" y="530" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1102" y="655" width="190" height="40" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

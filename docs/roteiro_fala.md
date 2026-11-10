@@ -25,15 +25,17 @@ que mostra como o processo funciona por dentro."
 
 ## 2. BPMN e arquitetura · 02:00 a 04:30 · Marcos
 
-"Obrigado, Náthally. Aqui está o processo da regra de negócio em BPMN 2.0. [Mostrar o diagrama de `docs/bpmn/`.] O vendedor escolhe
-a empresa, o sistema busca os indicadores no banco, o modelo de agrupamento posiciona a empresa, a IA escreve as perguntas, o
-sistema confere o texto e a tela entrega o resultado. Cada etapa tem um responsável claro no desenho.
+"Obrigado, Náthally. Aqui está o processo da regra de negócio em BPMN 2.0. [Mostrar o diagrama de `docs/bpmn/`.] O vendedor procura
+a empresa no banco, e o sistema monta os indicadores e a posição contra o grupo de parecidas, já calculada pelo modelo de
+agrupamento. Depois, anexa a fonte de cada número: as contas do DFP e o link do documento na CVM. A IA escreve as perguntas, o sistema
+confere o texto e a tela entrega o resultado. Cada etapa tem um responsável claro no desenho.
 
 Na arquitetura, temos dois contêineres. Em um roda a tela, em Streamlit, junto com o código da aplicação. No outro roda o banco,
-um PostgreSQL. A tela busca as empresas no banco e registra cada consulta nele.
+um PostgreSQL. A tela busca as empresas no banco, registra cada consulta nele e lê dali as contas e os links das fontes.
 
-O caminho dos dados é simples: os arquivos da CVM entram, passam por limpeza, viram indicadores, são gravados no banco e a tela
-lê dali. Esse trecho é o que eu detalho daqui a pouco. Agora o Miguel mostra tudo funcionando."
+O caminho dos dados é simples: os arquivos da CVM entram, passam por limpeza e viram indicadores, gravados no banco e num arquivo
+com o mesmo conteúdo; os números do raio-x são lidos desse arquivo. Esse trecho é o que eu detalho daqui a pouco. Agora o Miguel
+mostra tudo funcionando."
 
 ## 3. Demonstração ao vivo · 04:30 a 09:30 · Miguel
 
@@ -42,7 +44,7 @@ lê dali. Esse trecho é o que eu detalho daqui a pouco. Agora o Miguel mostra t
 "Vou mostrar o Raio-X no ar. Esta é a tela. [Digitar] Escolho uma empresa, por exemplo a WEG. Informo o produto que quero vender e o
 objetivo da reunião. [Clicar em gerar.]
 
-Enquanto ele trabalha: o sistema está lendo os indicadores no banco e a IA está escrevendo as perguntas.
+Enquanto ele trabalha: o sistema está montando os indicadores e a IA está escrevendo as perguntas.
 
 Pronto. Aqui estão os seis indicadores, cada um com sua fonte. Aqui a posição da empresa contra o grupo de parecidas, calculada por
 código, não pela IA. Aqui as perguntas para a reunião, ligadas ao produto que informei. Aqui as lacunas: o que o sistema não sabe e
@@ -54,7 +56,7 @@ avisa que o texto veio sem IA. Passo ao Marcos e ao Eduardo, para explicar o que
 ## 4. Detalhe técnico · 09:30 a 12:30 · Marcos 0:45, Eduardo 1:30, Miguel 0:45
 
 **Marcos (0:45):** "Os dados vêm das demonstrações da CVM. Com Python e Pandas, limpamos, tratamos valores nulos e calculamos os
-indicadores. Depois gravamos tudo no PostgreSQL, e a tela consulta com SQL. [PREENCHER: quantas empresas e anos entram na base.]"
+indicadores. Depois gravamos tudo no PostgreSQL, e a tela consulta com SQL. São 595 empresas, com indicadores do exercício de 2025, calculados sobre as contas de 2023 a 2025."
 
 **Eduardo (1:30):** "Na parte de IA temos duas peças. A primeira é o K-means, que agrupa as empresas pelo perfil financeiro; os
 vizinhos mais próximos sugerem as cinco parecidas. Escolhemos quatro grupos, e a silhueta deu 0,286: os grupos se sobrepõem. Nos

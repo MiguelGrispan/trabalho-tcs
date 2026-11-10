@@ -250,7 +250,8 @@ O caminho, na ordem do diagrama:
    vazio ou desligado, a aplicação avisa e o processo acaba sem raio-x;
 3. o vendedor escolhe a empresa e informa o produto e o objetivo; a aplicação monta os 6 indicadores e a posição contra o grupo,
    já calculados (`indicadores.csv` e `segmentos.csv`); se a empresa não estiver nessa tabela (evento de erro), avisa que o raio-x
-   não pôde ser gerado e o processo acaba;
+   não pôde ser gerado e o processo acaba. Em seguida, anexa a cada indicador as contas do DFP usadas e o link do documento na CVM
+   (tabelas `contas` e `links_dfp`, nunca o Gemini); se faltar dado, o raio-x sai igual, sem essa parte;
 4. decisão **"IA ligada?"**: se sim, pede ao Gemini o texto com marcadores; se não, ou se o Gemini falhar (evento de erro: tempo,
    erro da API ou formato errado), monta o texto sem IA, com os mesmos números;
 5. para cada item (resumo, cada pergunta, cada lacuna), decisão **"Passou no validador?"**: se sim, troca os marcadores pelos
@@ -468,10 +469,11 @@ O que resolve, no fim, é a leitura humana. Por isso o raio-x é apoio, e não d
   comparação por porte diz pouco para empresas grandes (seção 6.2, issue #60).
 
 ### 7.4 Confiabilidade dos dados
-- **Dado de até um ano atrás:** a DFP é anual; resultado trimestral não entra. O ano aparece em cada número.
+- **Dado anual, que pode ter mais de um ano:** a DFP sai uma vez por ano; resultado trimestral não entra. O ano aparece em cada número.
 - **Fonte em cada número:** cada indicador mostra a conta da DFP de onde veio, para o vendedor conferir.
 - **Conferência contra o RI** (Marcos, 03/11, `avaliacao/conferencia.csv`): 13 valores de 5 empresas (WEG, Camil, Magalu,
-  RD Saúde e CSN), todos com diferença de 0,00%.
+  RD Saúde e CSN), todos com diferença de 0,00%. O ativo e o patrimônio da RD Saúde vêm da coluna comparativa de 31/12/2025 no ITR
+  de 30/06/2026; os outros 11, das demonstrações do exercício.
 - **A conferência manual** (Náthally) deu 7 de 10 em 29/10 e **8 de 10 em 05/11**: em 8 dos 10 casos, os 6 indicadores
   mostrados batem com os que ela calculou dos documentos da empresa (critério: receita e ativo com até 1% de diferença;
   percentuais com até 0,15 ponto). A Camil era um erro nosso (o ano fiscal), corrigido no PR #46. Esse "8 de 10" mede os
