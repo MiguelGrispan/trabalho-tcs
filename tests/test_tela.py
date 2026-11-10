@@ -14,7 +14,7 @@ from sqlalchemy import create_engine, text
 from streamlit.testing.v1 import AppTest
 
 from falsos import falso_dados
-from raiox import banco, ia, segmentos
+from raiox import banco, fontes, ia, segmentos
 from tests.banco_teste import TEST_DATABASE_URL, banco_disponivel
 
 TELA = Path(__file__).resolve().parent.parent / "app" / "streamlit_app.py"
@@ -67,6 +67,11 @@ def detalhes_tecnicos(at):
     """Tudo o que está escrito dentro do "Detalhes técnicos" (fechado na tela, mas está lá)."""
     bloco = next(e for e in at.expander if e.label == "Detalhes técnicos")
     return " ".join(textos(getattr(bloco, tipo)) for tipo in ("markdown", "text", "code", "caption"))
+
+
+def de_onde_vem(at):
+    """O bloco "De onde vem cada número" (MG8: a tabela de sempre e, abaixo, uma aba por indicador)."""
+    return next(e for e in at.expander if e.label == "De onde vem cada número")
 
 
 # O erro que o Google devolve com a chave errada (encurtado do que a tela mostrou em 03/11, issue #38).
@@ -160,6 +165,43 @@ def test_tela_diz_que_o_texto_e_do_gemini_quando_ele_responde(monkeypatch):     
     assert "escrito pelo Gemini" in legendas
     assert "escrito por IA" in legendas                          # o rodapé
     assert "montado sem IA" not in legendas
+
+
+LINK_CVM = ("https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx"
+            "?CodigoInstituicao=1&NumeroSequencialDocumento=154939")   # o exemplo do C3
+
+
+def test_tela_mostra_as_contas_de_cada_indicador():                              # MG8
+    at = gerar(abrir())
+    assert not at.exception and not at.error
+    bloco = de_onde_vem(at)
+    assert [aba.label for aba in bloco.tabs] == [i["nome"] for i in at.session_state["rx"]["indicadores"]]
+    aba = next(a for a in bloco.tabs if a.label == "Margem EBIT")
+    contas = aba.dataframe[0].value
+    assert list(contas["Conta"]) == ["3.05", "3.01"]                 # a ordem da fórmula: EBIT ÷ receita
+    assert "R$ 826.579.930" in list(contas["Valor"])              # falsos/contas_falsas.csv, em reais e sem abreviar
+    assert not bloco.link_button                                  # os falsos não têm link da CVM: nenhum botão
+
+
+def test_tela_mostra_o_botao_da_cvm_quando_tem_link(monkeypatch):                # MG8
+    monkeypatch.setattr(fontes, "_link", lambda *args: LINK_CVM)  # no lugar da tabela links_dfp (MA7)
+    at = gerar(abrir())
+    assert not at.exception and not at.error
+    bloco = de_onde_vem(at)
+    botoes = bloco.link_button
+    assert len(botoes) == 6                                       # um por indicador, cada um na sua aba
+    assert {b.value for b in botoes} == {"Baixar DFP (CVM)"}
+    assert {b.proto.url for b in botoes} == {LINK_CVM}
+    assert ".zip" in textos(bloco.caption)                        # avisa que baixa um arquivo, não abre uma página
+
+
+def test_tela_fica_como_na_v101_sem_o_campo_conferir(monkeypatch):               # MG8: banco fora, C3 antigo
+    monkeypatch.setattr(fontes, "anexar", lambda *args: None)     # o raio-x sai sem `conferir`
+    at = gerar(abrir())
+    assert not at.exception and not at.error
+    bloco = de_onde_vem(at)
+    assert len(bloco.dataframe) == 1                              # só a tabela de sempre (indicador, empresa, grupo, fonte)
+    assert not bloco.tabs and not bloco.link_button
 
 
 def test_tela_mostra_o_raio_x_mesmo_se_o_registro_falhar(monkeypatch):
