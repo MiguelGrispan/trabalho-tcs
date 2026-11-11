@@ -372,7 +372,7 @@ O que atenua: as **5 parecidas** vêm dos vizinhos, não do grupo, e para esses 
 são CPFL, TIM, Motiva, Neoenergia e Suzano). A comparação de **margens e endividamento** contra o grupo continua útil; a de
 **tamanho**, não. Decidimos não treinar de novo antes da banca (seção 2) e declarar o limite (seção 7.3).
 
-![Silhueta por k antes da regra dos 5%](graficos/silhueta_antes_ed4.png)
+![Silhueta por k antes da regra dos 5%](graficos/silhueta_antes_regra_5pct.png)
 
 *Figura 7. Silhueta por k antes da regra dos 5% (27/10): 0,77 em k = 4, com quase todas as empresas num grupo só.*
 
@@ -625,7 +625,7 @@ recebe) é outro: `avaliacao/regras_prompt.md`.
 | 384.591 linhas de contas; carga em 1 min 48 s | carga do Marcos em 03/11 (`docs/REQUISITOS.md`, R2); mesmo total na carga de 05/11 | `python -c "import pandas as pd; print(len(pd.read_csv('data/contas.csv')))"` → 384591 |
 | k = 4; silhueta 0,286; grupos 60, 310, 88 e 106; 564 no treino; silhueta dos outros k | `segmentar()` com os dados de 05/11, conferido em 06/11 | sem gravar nada: `python -c "import pandas as pd; from raiox import segmentos as s; df = pd.read_csv('data/indicadores.csv'); out, sil, k = s.segmentar(df); b = s.treino(df); print(k, round(sil[k], 3), out.set_index('cd_cvm').loc[b.cd_cvm, 'grupo'].value_counts().sort_index().tolist())"` → `4 0.286 [60, 310, 88, 106]`. O `python -m raiox.segmentos` mostra os grupos com todas as 595 empresas e grava de novo os PNG e o `data/segmentos.csv` |
 | 10 de 10 casos no grupo de 312 empresas (R$ 284 mil a R$ 497,5 bi; mediana R$ 3,6 bi); receita e ativo "acima" nos 10 | `data/segmentos.csv` e `data/indicadores.csv` de 05/11; `avaliacao/resultados.csv` | campo `grupo` e `posicao` de cada raio-x em `raio_x_json`; issue #60 |
-| 567 de 595 num grupo só; silhueta 0,77 antes | ED1 e ED4 (27 e 28/10), `docs/HISTORICO.md` | `docs/graficos/silhueta_antes_ed4.png` |
+| 567 de 595 num grupo só; silhueta 0,77 antes | ED1 e ED4 (27 e 28/10), `docs/HISTORICO.md` | `docs/graficos/silhueta_antes_regra_5pct.png` |
 | 31 empresas abaixo de R$ 10 mi (52%); 564 acima (4%) | `scripts/avaliar_corte_receita.py`, 03/11 | rodar o script |
 | receita da Camil: R$ 12,26 bi → R$ 11,12 bi; 9 empresas mudaram | PR #46 (`docs/PLANO.md`, seção 0) | 11,12 bi: `avaliacao/conferencia.csv`, linha da Camil; 12,26 bi (antes): `git show 8bfb991:avaliacao/resultados.csv`, caso 1 (`valor_num` da receita, em R$ milhões) |
 | nenhum "erro" e 179 "atenção" em 98 empresas | `raiox/checagem.py` com os dados de 05/11 (rodado em 06/11) | `python -m raiox.checagem data/indicadores.csv data/contas.csv` |
