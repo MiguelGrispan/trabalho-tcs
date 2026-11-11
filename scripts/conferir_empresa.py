@@ -9,7 +9,7 @@ import pandas as pd
 from sqlalchemy import text
 
 ROOT = Path(__file__).resolve().parents[1]
-# Permite rodar direto com "python scripts/conferir_s1.py"
+# Permite rodar direto com "python scripts/conferir_empresa.py"
 sys.path.insert(0, str(ROOT))
 
 from raiox.banco import catalogo_existe, conectar  # noqa: E402

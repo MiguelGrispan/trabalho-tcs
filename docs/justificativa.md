@@ -40,7 +40,7 @@ Número errado numa reunião de vendas destrói a confiança no produto. Por iss
   outras num grupo só (`docs/HISTORICO.md`, "O que aprendemos"; `raiox/segmentos.py:78`). Com a regra dos 5%, saem 4 grupos e silhueta 0,30. Com os dados do PR #46 (recarregados em 05/11),
   0,29 e grupos de 60, 310, 88 e 106 empresas no treino (`docs/REQUISITOS.md`, R5; dados do #46 e do #59). A legenda do `grupos.png` mostra 66, 312, 103 e 114:
   são as 595 empresas, contando as que ficaram fora do treino e recebem o grupo mais próximo.
-  A silhueta atual é 0,286, com sobreposição entre os grupos; os dez casos avaliados caem no maior grupo (312 empresas). A comparação é exploratória, com esse limite declarado na ética e no documento (issue #60). Os gráficos de antes e depois são `docs/graficos/silhueta_antes_ed4.png` e `silhueta.png`
+  A silhueta atual é 0,286, com sobreposição entre os grupos; os dez casos avaliados caem no maior grupo (312 empresas). A comparação é exploratória, com esse limite declarado na ética e no documento (issue #60). Os gráficos de antes e depois são `docs/graficos/silhueta_antes_regra_5pct.png` e `silhueta.png`
   (refeito em 05/11: 0,29 em k = 4).
 - **5 empresas parecidas:** `NearestNeighbors` com 6 vizinhos, porque o 1º vizinho é a própria empresa e sai da lista
   (`raiox/segmentos.py:97-103`).
