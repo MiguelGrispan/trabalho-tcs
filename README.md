@@ -38,7 +38,6 @@ O que o projeto precisa ter vem dos arquivos do professor, em [docs/professor/](
 %% Mudou o diagrama? Gere de novo o docs/arquitetura.png: cole este bloco em mermaid.live e exporte em PNG.
 flowchart LR
     vendedor(["Vendedor<br/>(navegador)"])
-    cvm["CVM: dados abertos<br/>DFP 2023–2025"]
     iac["Terraform: infra/*.tf<br/>cria a imagem, a rede<br/>e os 2 contêineres<br/>(o docker-compose.yml<br/>faz o mesmo)"]
 
     subgraph pc["Docker (máquina local)"]
@@ -46,24 +45,30 @@ flowchart LR
             app["app/streamlit_app.py<br/>tela em Streamlit"]
             dados["raiox/dados.py<br/>busca a empresa<br/>e grava a consulta"]
             ia["raiox/ia.py<br/>números pelo código,<br/>texto pelo LLM, validador"]
+            fontes["raiox/fontes.py<br/>contas do DFP e link<br/>da CVM por indicador"]
             seg["raiox/segmentos.py<br/>K-means + 5 vizinhos"]
-            pasta[("data/ (do computador,<br/>montada no contêiner)<br/>contas.csv<br/>indicadores.csv<br/>segmentos.csv")]
-            carga["Carga (antes da demo)<br/>scripts/carregar_dfp.py<br/>scripts/indicadores.py"]
+            pasta[("data/ (do computador,<br/>montada no contêiner)<br/>contas.csv<br/>indicadores.csv<br/>segmentos.csv<br/>links_dfp.csv")]
+            carga["Carga (antes da demo)<br/>scripts/carregar_dfp.py<br/>scripts/indicadores.py<br/>scripts/carregar_links.py"]
         end
         subgraph banco["Contêiner do banco"]
-            pg[("PostgreSQL 17<br/>contas · empresas<br/>indicadores · consultas")]
+            pg[("PostgreSQL 17<br/>contas · empresas<br/>indicadores · consultas<br/>links_dfp")]
         end
     end
 
     gemini["API do Gemini<br/>gemini-3.1-flash-lite"]
+    cvm["CVM (sites públicos)<br/>dados abertos: DFP dos<br/>exercícios 2023–2025<br/>(arquivos de 2023 a 2026)<br/>RAD: o DFP entregue (.zip)"]
 
     vendedor -- "localhost:8501<br/>(só 127.0.0.1)" --> app
+    vendedor -- "botão Baixar DFP (CVM):<br/>baixa o .zip direto da CVM" --> cvm
     app --> dados
     dados -- "SQL" --> pg
     cvm -.-> carga
     carga -.-> pg
     carga -.-> pasta
     app --> ia
+    ia --> fontes
+    fontes -- "SQL" --> pg
+    fontes -- "se o banco falha:<br/>links_dfp.csv" --> pasta
     ia --> seg
     seg --> pasta
     ia -- "LangChain, chave do .env<br/>só com RAIOX_IA_REAL=1" --> gemini
@@ -71,8 +76,8 @@ flowchart LR
     iac -..-> pc
 ```
 
-Linhas cheias: o que acontece a cada raio-x. Tracejadas: o que acontece antes da demo (subir a infraestrutura e carregar os
-dados da CVM). A mesma figura em PNG, para o documento e os slides: [docs/arquitetura.png](docs/arquitetura.png).
+Linhas cheias: o que acontece a cada raio-x (a seta do vendedor para a CVM, só quando ele clica no botão). Tracejadas: o que
+acontece antes da demo (subir a infraestrutura e carregar os dados da CVM). A mesma figura em PNG, para o documento e os slides: [docs/arquitetura.png](docs/arquitetura.png).
 
 - **Dois contêineres.** O da tela roda o Streamlit (a interface, o frontend) e o `raiox/` (o backend: busca, K-means, IA e
   validador) no mesmo processo Python; o do banco roda o PostgreSQL 17. O professor aceitou o Streamlit como backend e frontend,
@@ -82,12 +87,19 @@ dados da CVM). A mesma figura em PNG, para o documento e os slides: [docs/arquit
   `Dockerfile`), a rede entre os contêineres, as portas e as pastas montadas. Use um de cada vez, porque usam as mesmas portas.
 - **Onde ficam os dados:** a busca da empresa e o registro de cada consulta usam o PostgreSQL (`raiox/dados.py`); os números do
   raio-x e os grupos do K-means vêm da `data/`. A carga (que roda com a imagem da tela) grava os indicadores nos dois lugares,
-  a tabela `indicadores` e o `indicadores.csv`; o `raiox/segmentos.py` faz o `segmentos.csv` a partir dele e o refaz quando ele
-  fica mais velho que os dados (se a `data/` não aceitar gravação, os grupos ficam só na memória, com um aviso no log). O banco
+  a tabela `indicadores` e o `indicadores.csv`, e o `scripts/carregar_links.py` faz o mesmo com o link de cada DFP na CVM (a
+  tabela `links_dfp` e o `links_dfp.csv`); o `raiox/segmentos.py` faz o `segmentos.csv` a partir do `indicadores.csv` e o refaz quando ele
+  fica mais velho que os dados (se a `data/` não aceitar gravação, os grupos ficam só na memória, com um aviso no log).
+  **De onde vem cada número:** a cada raio-x, o `raiox/fontes.py` lê no banco as contas do DFP usadas em cada indicador (tabela
+  `contas`) e o link do documento na CVM (tabela `links_dfp`), e a tela mostra os dois em "De onde vem cada número". Se o banco
+  falha, o link vem do `data/links_dfp.csv` e as contas ficam de fora; sem nenhum dos dois, essa parte some e o raio-x sai como
+  na `v1.0.1`. O LLM não escreve nada disso (regra de ouro). O banco
   fica num volume do Docker e a `data/` é uma pasta do seu computador, montada no contêiner da tela: os dois continuam depois
   do `docker compose down` e do `terraform destroy`.
 - **O que sai do computador:** a carga baixa os arquivos públicos da CVM (uma vez, antes da demo), e o raio-x com IA chama a API
   do Gemini (só com `RAIOX_IA_REAL=1`). Sem a IA, ou com o Gemini fora do ar, a tela monta o texto sem IA e avisa (o plano B da demo).
+  O botão "Baixar DFP (CVM)" é só um link: o navegador do vendedor baixa o `.zip` do documento direto do site da CVM
+  (`rad.cvm.gov.br`); a aplicação não baixa nada nessa hora.
 - **Segurança:** a tela e o banco só abrem no próprio computador (`127.0.0.1`); a chave do Gemini fica no `.env`, fora do Git,
   da imagem e do `terraform.tfstate`; a tela roda com um usuário sem poder de administrador (`appuser`, no `Dockerfile`).
 - **CI (GitHub Actions):** em todo PR, os testes rodam com um PostgreSQL 17 (`.github/workflows/testes.yml`); nos PRs que mexem
