@@ -21,11 +21,20 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 ## 0. Situação atual
 
-**Em 10/11/2026, ~11h30 (Brasília)**
+**Em 11/11/2026 (Brasília)**
 
-**Foco: validar as fontes na aplicação e fechar a documentação; ROI e ética continuam pendentes.**
-Último PR levado: **#79** (10/11, MA8). Os PRs #75, #76, #77 e #79 estão na `main` com CI verde; a tag `v1.0.1` continua como plano B
-até a integração real e a conferência final.
+**Foco: código congelado; só falta o que a Náthally entrega (ROI e ética) entrar no documento.**
+Último PR levado: **#80** (11/11, ED18: PDF com a arquitetura nova da MG9). Os PRs #75–#81 estão na `main` com CI verde.
+**Conferido em 11/11 (Mac do Eduardo):** 287 passed com o PostgreSQL; 267 passed e 20 skipped no contêiner; `docker compose up --build` com os 2 `healthy`;
+raio-x sem IA de WEG, Camil e Embraer com 6 indicadores, 5 parecidas e o `conferir` (contas + link); Terraform `fmt` e `validate` ok.
+**Print do MG8 feito:** WEG real na tela, aba "Receita líquida" com a conta 3.01 e o botão "Baixar DFP (CVM)": `docs/graficos/tela_fontes_weg.png` (para o deck, NA7).
+**Versão da banca: tag `v1.1`** (código; o documento continua na `main` até a entrega). A `v1.0.1` fica como plano B.
+
+**Próximos passos (11/11):**
+1. **Miguel:** dar acesso ao professor no repositório (BLOQUEIA desde 09/11: em 11/11 os colaboradores ainda são só os 4 do grupo) e gravar o vídeo de reserva na `v1.1` (MG6/MG7).
+2. **Náthally:** ROI com a tela nova (NA7, print em `docs/graficos/tela_fontes_weg.png`), ética final (NA5) e trocar a figura da arquitetura no deck (MG9).
+3. **Eduardo:** quando o ROI e a ética chegarem, pôr o texto nos `[PENDENTE]` de `docs/documentacao.md`, tirar o "Versão para revisão" e regerar o PDF (só documento; não muda a tag).
+4. **Marcos:** subir o `links_dfp.csv` no Drive (MA7).
 A fotografia detalhada de 07/11 permanece no Git: `git show 45686db:docs/PLANO.md`.
 
 ### Revisão final (09/11, issue #69)
@@ -38,7 +47,7 @@ Três revisores em paralelo (aplicação e infra, IA e ML, dados e documentaçã
   não leva mais o texto dele, com números, para "Detalhes técnicos". Três frases e um teste novos; nenhum dos 10 textos reais seria barrado.
   263 testes, nenhum pulado. No documento: legenda da Figura 1 ("zero ou negativa") e caminho do "8 de 10" (`Semana_02/revisao_manual.md`).
 - **Bloqueio fora do código:** o repositório é privado e o professor não é colaborador. O grupo vai dar o acesso (Miguel é o admin).
-- **Com dono:** Miguel conserta o exemplo do `README.md:296` (`--cvm 90001` só existe em `falsos/`; com a `data/` real dá `ValueError`) e põe
+- **Com dono:** ✅ (conferido em 10/11: `README.md:307` já usa `RAIOX_DADOS=falsos`) Miguel conserta o exemplo do `README.md:296` (`--cvm 90001` só existe em `falsos/`; com a `data/` real dá `ValueError`) e põe
   na lista de antes da demo `docker compose up -d` e `docker compose ps` com os 2 `healthy` (depois de reiniciar o Docker, só o banco volta
   sozinho). Náthally mede o ROI hoje (NA3). Eduardo regera o PDF quando o ROI e a ética chegarem e tira o "Versão para revisão".
 - **Não conferido:** `docker compose config` (a trava bloqueia: o comando imprime o `.env`), tela no navegador, Gemini real, deck, vídeo e ensaio.
@@ -191,7 +200,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | ED16 | qui 05/11 | ✅ PR desta sessão | 10 raio-x para a Náthally com a Camil corrigida (#46), com o Gemini; K-means e PNG refeitos com os dados do #46 e do #59; diferenças da RD e do Magalu explicadas | `avaliacao/resultados.csv`, `docs/graficos/`, `data/nathally_05_11/` (só no Mac) | Manual | 8 de 10 batem com a conferência dela; 0 removidos; números do K-means trocados nos docs | `eduardo-raiox-nathally` |
 | ED12 | sáb 31/10 | ✅ PR #30 (na `main` em 02/11) | travas do Claude Code (R14 e guia §2, agentic coding): `.claude/settings.json`, `.claude/hooks/guarda.py`, subagent `revisor`, import do `requisitos_projeto.MD` | `.claude/`, `CLAUDE.md`, `AGENTS.md`, `README.md`, `aprender/claude-code.md`, `tests/test_guarda.py` | Plan | testes verdes; o hook bloqueia de verdade numa sessão | `eduardo-claude-config` |
 | ED17 | ter 10–qua 11/11 | ✅ PR #75 (10/11): `raiox/fontes.py`, campo `conferir` no C3; 255 passed; WEG e Camil conferidas com o `contas.csv` real em SQLite (PostgreSQL real fica no ED18) | **fontes dos números, lado da IA** (pedido da Náthally, R10/R11; guia §2 "confiabilidade" e §7 ROI): (1) campo `conferir` no C3 de `contratos.md` (`contas`: conta, descricao, ano, valor; `link`: URL ou null); (2) `raiox/fontes.py`: lê as contas da tabela `contas` (PostgreSQL) ou de `falsos/contas_falsas.csv` e o link de `links_dfp`; se não achar, `conferir` vai vazio, sem erro; (3) `montar()` em `raiox/ia.py` preenche `conferir` por indicador (3.01; 3.01 de ano e ano−2; 3.05 e 3.01; 3.11 e 3.01; 2.03 e 1; 1); (4) testes. **Duração ~1h30 · energia média · 1º passo: escrever o campo `conferir` no `contratos.md`** | `contratos.md` (ok do grupo), `raiox/fontes.py`, `raiox/ia.py`, `tests/` | Manual | o `conferir` aparece nos 6 indicadores da WEG com dados reais; sem banco ou sem link, o raio-x sai igual ao da `v1.0.1`; o texto do LLM e o validador não mudam; testes verdes | `eduardo-fontes-ia` |
-| ED18 | qui 12/11 | 🟡 PR #78 (10/11): prova com PostgreSQL feita (WEG, Camil e a 22179, individual, com contas e link); PDF regerado; 287 passed. **Falta:** tag `v1.1` depois do print (MG8) e do ROI (NA7) | **fechar as fontes:** integração com dados reais (ED17 + MA7 + MG8), documento (`docs/documentacao.md`), README ("como conferir um número"), `docs/roteiro_demo.md`, REQUISITOS/HISTORICO e tag `v1.1`. Se passar das 18h de qui 12/11: não taguear, registrar o corte. **Duração ~40 min · energia baixa · 1º passo: listar os documentos que citam "fonte"** | `docs/`, `README.md`, tag | Manual | WEG, Camil e uma empresa individual mostram trecho e link; PDF regerado | PR + tag `v1.1` |
+| ED18 | qui 12/11 | ✅ PR #78 (10/11): prova com PostgreSQL (WEG, Camil e a 22179, com contas e link). PR #80 (11/11): Figura 6 trocada pela arquitetura da MG9 e PDF regerado (22 páginas; a figura cabe na página deitada); print do MG8 salvo; 287 passed; tag `v1.1` no código. O ROI (NA7) entra só no documento | **fechar as fontes:** integração com dados reais (ED17 + MA7 + MG8), documento (`docs/documentacao.md`), README ("como conferir um número"), `docs/roteiro_demo.md`, REQUISITOS/HISTORICO e tag `v1.1`. Se passar das 18h de qui 12/11: não taguear, registrar o corte. **Duração ~40 min · energia baixa · 1º passo: listar os documentos que citam "fonte"** | `docs/`, `README.md`, tag | Manual | WEG, Camil e uma empresa individual mostram trecho e link; PDF regerado | PR + tag `v1.1` |
 | ED19 | qui 12/11 (depois de MA7, MG8 e NA7) | — | **consolidar as notas** (nova regra de 10/11: cada um registra a própria sessão): conferir os registros que Marcos e Miguel fizeram sozinhos no PLANO §3, no HISTORICO e no REQUISITOS contra o que está na `main` (✅ sem PR mesclado é erro); levar as 3 linhas da Náthally (ela não usa terminal) e as issues de "Para o Eduardo"; atualizar a seção 0 ("último PR levado") e o R10/R11; resolver conflito de nota, se houver; se a regra nova der problema, reverter no `CLAUDE.md` e nas duas skills. **Duração ~30 min · energia baixa · 1º passo: `gh pr list --state merged --limit 10`** | `docs/PLANO.md` (§0), `docs/REQUISITOS.md`, `docs/HISTORICO.md` | Manual | todos os PRs desde o #74 aparecem na seção 0 e cada sessão nova está ✅ ou 🟡 com prova; nenhuma linha de outra pessoa apagada | PR |
 
 ### Marcos (Claude Code)
