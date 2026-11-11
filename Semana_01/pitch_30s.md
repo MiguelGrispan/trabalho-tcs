@@ -1,8 +1,5 @@
 # Pitch - 30s
-Imagine a Marina, executiva de contas. Amanhã, primeira reunião com uma grande transportadora, e ela precisa saber se a empresa cresce e se a margem está apertada. Descobrir isso leva de 30 a 60 minutos no site de RI.
+Imagine chegar a uma reunião com uma grande empresa sem saber sua situação financeira, o que perguntar ou quais oportunidades explorar.
 
-Com o Raio-X, ela digita a empresa e o que vende e, em segundos, recebe indicadores com fonte na CVM, comparação com empresas parecidas e perguntas para a reunião.
+O **Raio-X Comercial** transforma essa preparação em minutos. Basta escolher uma empresa, informar o produto e o objetivo da reunião. A ferramenta entrega indicadores financeiros, comparação com concorrentes, perguntas estratégicas para a reunião, lacunas de informação e cinco empresas semelhantes para prospectar.
 
-A IA escreve o texto, mas nenhum número: todos vêm da CVM.
-
-* Alterar depois.

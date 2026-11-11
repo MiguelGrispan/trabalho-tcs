@@ -1,4 +1,4 @@
-# Objetivo
+# Raio-x com IA's genéricas
 
 Analisar as respostas de quatro IAs diferentes em relação à mesma empresa, marcar o tempo e comparar os resultados. Usarei estas perguntas:
 

@@ -1,10 +1,4 @@
-## 1. Objetivo
-
-A persona orienta a investigação sobre como esses profissionais se preparam para reuniões comerciais e se informações empresariais, incluindo indicadores financeiros, podem contribuir para a identificação de oportunidades de negócio.
-
-**Status:** persona provisória, ainda não validada por entrevistas com usuários reais.
-
-## 2. Persona principal
+## Persona principal
 
 ### Rafael Silva — Executivo de Contas B2B
 
