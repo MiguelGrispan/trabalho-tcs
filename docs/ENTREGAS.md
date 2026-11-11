@@ -1,7 +1,7 @@
 # Entregas da banca · índice
 
-Abra no VS Code com **Cmd+Shift+V** (preview): cada link abre o arquivo do repositório.
-Entrega: **ter 17/11/2026**, 48 h antes da banca de qui 19/11/2026 (`guia_projeto_final.pdf` §6). Atualizado em 09/11/2026; código congelado na [v1.0.1](https://github.com/MiguelGrispan/trabalho-tcs/tree/v1.0.1): a `v1.0` (commit `2c3e942`, PR #67) mais o conserto do validador da revisão final (issue #69).
+Cada link abre o arquivo do repositório.
+Entrega: **ter 17/11/2026**, 48 h antes da banca de qui 19/11/2026 (`guia_projeto_final.pdf` §6). Atualizado em 11/11/2026; código congelado na [v1.1](https://github.com/MiguelGrispan/trabalho-tcs/tree/v1.1) (com as fontes dos números); a [v1.0.1](https://github.com/MiguelGrispan/trabalho-tcs/tree/v1.0.1) fica como plano B.
 
 Status: **pronto** = existe e foi conferido · **rascunho** = existe, mas falta conteúdo · **a confirmar** = está fora do repositório,
 ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marcados.
@@ -34,7 +34,7 @@ ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marc
 ## Documento do projeto (guia §6, item 2)
 
 - [ ] **Documento em Markdown** · rascunho · [docs/documentacao.md](documentacao.md). Rascunho 5 (10/11), com BPMN, arquitetura, EDA e o fluxo de conferência das contas e do link da CVM; faltam o ROI, o texto final de ética e as respostas do professor (Apêndice B do documento).
-- [ ] **Documento em PDF** · rascunho · [docs/documentacao.pdf](documentacao.pdf). Regerado em 10/11 (ED18, 22 páginas, com as fontes e o BPMN da MA8); precisa ser gerado de novo depois da entrada do ROI e da ética.
+- [ ] **Documento em PDF** · rascunho · [docs/documentacao.pdf](documentacao.pdf). Regerado em 11/11 (ED18, 22 páginas, com as fontes, o BPMN da MA8 e a arquitetura da MG9); precisa ser gerado de novo depois da entrada do ROI e da ética.
 - [x] **BPMN 2.0** · pronto · [imagem](bpmn/raio-x-comercial.png) e [arquivo editável](bpmn/raio-x-comercial.bpmn)
   (PRs #52 e #65). Também na seção 4 do documento.
 - [x] **EDA** · pronto · [notebooks/eda.ipynb](../notebooks/eda.ipynb) e os gráficos
@@ -51,7 +51,7 @@ ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marc
 
 ## Apresentação (guia §3 e §6, item 3)
 
-- [x] **Conteúdo técnico do Eduardo** · preparado · [dois slides, falas e perguntas de defesa](conteudo_eduardo.md). Falta incorporar ao deck e ensaiar; o arquivo também contém rascunho não enviado ao professor.
+- [x] **Conteúdo técnico do Eduardo** · preparado · [dois slides, falas e perguntas de defesa](conteudo_eduardo.md). Falta incorporar ao deck e ensaiar.
 
 - [ ] **Deck** · a confirmar · o grupo diz que o deck existe, mas ele não está no repositório. Falta colar o link e conferir se a
   versão usa os números do documento de 06/11 (8 de 10, 0 removidos, 2,15 s, US$ 0,001185, k = 4, silhueta 0,286).

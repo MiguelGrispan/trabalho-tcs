@@ -85,12 +85,4 @@ Dez casos, nenhum trecho removido e 2,15 s por geração, incluindo montagem, Ge
 O cliente da API tem limite de tempo e tentativas. A tela captura a falha e usa texto sem IA, mantendo os indicadores e avisando a origem. No ensaio técnico de 07/11, uma falha simulada preservou a geração e o registro da consulta no banco; não houve chamada paga. Fonte: `_llm()`, [ia.py](../raiox/ia.py), e `gerar_raio_x()`, [tela](../app/streamlit_app.py).
 </details>
 
-## 3. Professor: rascunho não enviado
-
-> Professor, estamos fechando o Raio-X Comercial. Pode confirmar três pontos?
->
-> 1. A banca será em 19/11/2026? Qual o horário e o prazo exato de entrega?
-> 2. Os “arquivos utilizados de prompts para o vibecoding” incluem os nossos arquivos de instruções e skills, ou também precisamos entregar os prompts digitados nas sessões?
-> 3. A tabela de indicadores calculados da CVM, recuperada por empresa e passada ao Gemini, atende à “base de dados de conhecimento para a IA”? Também temos o K-means treinado com dados públicos limpos.
-
-**Estado:** conteúdo técnico preparado. Faltam a Náthally incorporá-lo ao deck, o Eduardo ensaiar em voz alta e o professor responder. Nenhuma mensagem foi enviada e nenhum ensaio pessoal foi marcado como concluído.
+**Estado:** conteúdo técnico preparado. Faltam a Náthally incorporá-lo ao deck e o Eduardo ensaiar em voz alta.
