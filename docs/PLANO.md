@@ -29,6 +29,7 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 raio-x sem IA de WEG, Camil e Embraer com 6 indicadores, 5 parecidas e o `conferir` (contas + link); Terraform `fmt` e `validate` ok.
 **Print do MG8 feito:** WEG real na tela, aba "Receita líquida" com a conta 3.01 e o botão "Baixar DFP (CVM)": `docs/graficos/tela_fontes_weg.png` (para o deck, NA7).
 **Versão da banca: tag `v1.1`** (código; o documento continua na `main` até a entrega). A `v1.0.1` fica como plano B.
+**Repositório pronto para ficar público (11/11, PR #82):** README com a tabela "Para quem avalia"; histórico sem chave, senha real nem dados (`git log -G`); a figura velha `grupos_antes_ed4.png` e o rascunho ao professor saíram. Tornar público e convidar o professor: só o Miguel (admin).
 
 **Próximos passos (11/11):**
 1. **Miguel:** dar acesso ao professor no repositório (BLOQUEIA desde 09/11: em 11/11 os colaboradores ainda são só os 4 do grupo) e gravar o vídeo de reserva na `v1.1` (MG6/MG7).

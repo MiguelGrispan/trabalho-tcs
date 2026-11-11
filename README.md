@@ -15,7 +15,25 @@ Projeto final da trilha IA Aplicada (SENAI/TCS) · Marcos, Eduardo, Náthally e 
 O que o projeto precisa ter vem dos arquivos do professor, em [docs/professor/](docs/professor/)
 (`requisitos_projeto.MD` e `guia_projeto_final.pdf`); o status de cada requisito está em [docs/REQUISITOS.md](docs/REQUISITOS.md).
 
-**Código congelado para a banca:** [v1.0.1](https://github.com/MiguelGrispan/trabalho-tcs/tree/v1.0.1), de 09/11/2026: a [v1.0](https://github.com/MiguelGrispan/trabalho-tcs/tree/v1.0) de 07/11 (commit `2c3e942`, PR #67) mais o conserto do validador achado na revisão final (issue #69). A documentação continua na `main`; o status das entregas está no [índice](docs/ENTREGAS.md).
+**Versão da banca:** [v1.1](https://github.com/MiguelGrispan/trabalho-tcs/tree/v1.1) (11/11/2026): o código congelado, com as fontes de cada número (contas do DFP e link da CVM). A [v1.0.1](https://github.com/MiguelGrispan/trabalho-tcs/tree/v1.0.1) fica como plano B.
+
+### Para quem avalia: por onde começar
+
+| O que o professor pede | Onde está |
+|---|---|
+| Documento com as etapas, BPMN, justificativa técnica, ética | [docs/documentacao.pdf](docs/documentacao.pdf) (fonte em [docs/documentacao.md](docs/documentacao.md)) |
+| BPMN 2.0 da regra de negócio | [imagem](docs/bpmn/raio-x-comercial.png) e [arquivo .bpmn](docs/bpmn/raio-x-comercial.bpmn) |
+| Arquitetura | seção [Arquitetura](#arquitetura) abaixo e [docs/arquitetura.png](docs/arquitetura.png) |
+| Dados: limpeza e análise (Python/Pandas, SQL, PostgreSQL) | [scripts/](scripts/), [raiox/limpeza.py](raiox/limpeza.py), [raiox/banco.py](raiox/banco.py), [notebooks/eda.ipynb](notebooks/eda.ipynb) |
+| Machine Learning (K-means + vizinhos) | [raiox/segmentos.py](raiox/segmentos.py) |
+| IA de terceiro (Gemini via LangChain) com base de conhecimento | [raiox/ia.py](raiox/ia.py), [avaliacao/](avaliacao/) |
+| Aplicação web (backend e frontend) | [app/streamlit_app.py](app/streamlit_app.py) e [raiox/](raiox/) |
+| Infraestrutura automatizada com Terraform | [infra/](infra/) (e [docker-compose.yml](docker-compose.yml)) |
+| Prompts do vibecoding | [seção abaixo](#prompts-usados-no-vibecoding): [CLAUDE.md](CLAUDE.md), [AGENTS.md](AGENTS.md), [REGRAS-IA.md](REGRAS-IA.md), [.claude/](.claude/) |
+| Como rodar | [Docker](#como-rodar-com-docker-o-caminho-mais-curto) ou [Terraform](#como-rodar-com-terraform-infraestrutura-automatizada) |
+| Status de cada requisito e índice das entregas | [docs/REQUISITOS.md](docs/REQUISITOS.md) e [docs/ENTREGAS.md](docs/ENTREGAS.md) |
+
+O processo do grupo (plano, histórico, regras de uso de IA, guias para iniciantes em [aprender/](aprender/)) fica no repositório de propósito: mostra como trabalhamos com IA, testes e pull requests.
 
 ## Tecnologias
 
