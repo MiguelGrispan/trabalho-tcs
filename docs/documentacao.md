@@ -271,8 +271,9 @@ O diagrama completo é a Figura 6, logo abaixo.
   `contas` e `empresas`; `scripts/indicadores.py` calcula os 6 indicadores (tabela `indicadores` e `data/indicadores.csv`);
   `raiox/segmentos.py` treina o K-means e acha as parecidas (`data/segmentos.csv`).
 - **Consulta** (a cada uso, alguns segundos): a tela (`app/streamlit_app.py`) busca a empresa no PostgreSQL (`raiox/dados.py`),
-  pede o raio-x a `raiox/ia.py` (números e posição pelo código, texto pelo Gemini só com marcadores, validador) e grava a consulta
-  na tabela `consultas`. Sem IA ou com a API fora do ar, o texto é montado por modelo fixo.
+  pede o raio-x a `raiox/ia.py` (números e posição pelo código, texto pelo Gemini só com marcadores, validador),
+  `raiox/fontes.py` lê no banco as contas do DFP e o link da CVM de cada indicador (tabelas `contas` e `links_dfp`) e a tela grava
+  a consulta na tabela `consultas`. O botão "Baixar DFP (CVM)" leva o vendedor direto ao documento no site da CVM. Sem IA ou com a API fora do ar, o texto é montado por modelo fixo.
 - **De onde vem cada coisa:** a busca e o registro das consultas usam o PostgreSQL; os números do raio-x vêm da
   `data/indicadores.csv`, gerada pelo mesmo script que grava a tabela `indicadores` (a tela diz isso desde o PR #61).
 
@@ -283,7 +284,7 @@ Os formatos entre as partes (C1 a C4) estão no `contratos.md`: cada um trabalho
 
 ![Arquitetura do Raio-X Comercial](arquitetura.png)
 
-*Figura 6. Arquitetura (Miguel, PR #55; o mesmo diagrama está em texto Mermaid na seção "Arquitetura" do `README.md`). O
+*Figura 6. Arquitetura (Miguel, PR #55, atualizada na MG9, PR #81, com as fontes dos números; o mesmo diagrama está em texto Mermaid na seção "Arquitetura" do `README.md`). O
 Terraform cria a imagem, a rede e os 2 contêineres no Docker local; o vendedor abre a tela só em `127.0.0.1:8501`.*
 
 <!-- /pagina-deitada -->
