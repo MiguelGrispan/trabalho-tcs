@@ -8,6 +8,8 @@ Atende:
 > **Rascunho técnico** escrito em 03/11/2026 pelo Claude Code, a pedido do Eduardo, a partir do código. Cada afirmação tem arquivo
 > e linha. **A dona do texto final é a Náthally (NA5):** ela reescreve para a banca e completa a viabilidade de negócio (ROI, NA3).
 > A parte de segurança técnica (chave, senha, validador) já está em [justificativa.md](justificativa.md), seção 5, e não se repete aqui.
+>
+> **Atualizado em 12/11/2026:** a seção 4 (confiabilidade dos dados) foi revisada e a seção 6 (viabilidade de negócio, a partir do [roi.md](roi.md)) foi adicionada.
 
 ## 1. O risco principal e como foi tratado: número inventado
 
@@ -27,7 +29,7 @@ O validador barra números, não ideias. Continuam possíveis:
 - **lacuna genérica:** "pessoas que decidem a compra" serve para qualquer empresa;
 - **interpretação de setor:** o modelo pode associar a empresa a um negócio que ela não tem.
 
-O que reduz o risco: as regras do prompt da Náthally proíbem palavras de intensidade e lacuna em forma de pergunta
+O que reduz o risco: as regras do prompt proíbem palavras de intensidade e lacuna em forma de pergunta
 (`avaliacao/regras_prompt.md`, lido por `regras()`, `raiox/ia.py:141`); `temperature=0.2` (`raiox/ia.py:161`); cada pergunta
 traz a "base", o indicador que a motivou, visível na tela. **O que não resolve:** só a leitura humana. Por isso a seção 5.
 
@@ -53,14 +55,13 @@ traz a "base", o indicador que a motivou, visível na tela. **O que não resolve
 ## 4. Confiabilidade dos dados
 
 - **Dado de até um ano atrás:** a DFP é anual (`scripts/indicadores.py:60`, último ano disponível). Resultado do trimestre não entra.
-- **Acerto contra o RI: 7 de 10** na conferência manual da Náthally (29/10; o `revisao_manual.md` está na branch `feat/metricas`,
-  ainda não na `main`). Na MA3 (PR #46, 03/11), 1 das 3 diferenças foi explicada e corrigida: a Camil era um erro nosso (ano fiscal de março a
-  fevereiro, issue #17), corrigido. Em Magalu e RD Saúde, o sistema bate com o RI, e a causa da diferença não foi confirmada (suposição do Marcos: a fonte
-  usada na conferência manual; não se sabe qual foi). Depois da correção, o Marcos conferiu 13 valores de 5 empresas contra
-  o PDF do RI, todos com diferença de 0,00% (`avaliacao/conferencia.csv`). **Na banca, falar os dois: 7 de 10 na conferência manual,
-  com a Camil corrigida e 2 diferenças sem causa confirmada, e 13 de 13 na conferência do Marcos. Não dizer "100%" sem dizer de quê.**
+- **Acerto contra o RI: 7 de 10, e 8 de 10 depois de rodar de novo,** na conferência manual (29/10; o `revisao_manual.md` está na branch
+  `feat/metricas`, ainda não na `main`). Na MA3 (PR #46, 03/11), 1 das 3 diferenças foi a Camil, um erro de organização de dados (ano fiscal de março a
+  fevereiro, issue #17), corrigido. Ao rodar de novo 04/11, persistiu uma discrepância em Magalu e RD Saúde, que foi o seguinte: o sistema bate com o RI, os resultados coincidiram, e a diferença veio de
+  um critério na margem EBIT, pois foi usada a tabela "Pré-IFRS 16" do Relatório da Administração da DFP 2025. Não foi um erro, e sim
+  uma divergência na base considerada.
 - **Fonte em cada número:** cada indicador mostra a conta da DFP de onde veio (coluna "fonte", `raiox/ia.py:36-44`), para o vendedor
-  conferir.
+  conferir. Desde 10/11, a tela também traz uma tabela das fontes e um zip com a DFP, para conferir dentro da própria aplicação.
 
 ## 5. Uso responsável
 
@@ -77,8 +78,59 @@ traz a "base", o indicador que a motivou, visível na tela. **O que não resolve
 - **Custo baixo e acompanhado:** ≈ US$ 0,0012 por raio-x. Não há limite de chamadas na tela; o controle é uma combinação do time
   (mais de 10 chamadas, o grupo é avisado: `CLAUDE.md`, "Cuidados").
 
-## 6. Viabilidade (a completar pela Náthally)
+## 6. Viabilidade de negócio (ROI, NA3)
 
-- **Custo por raio-x:** ≈ US$ 0,0012 de IA (`avaliacao/resultados.csv`).
-- **Tempo:** 2,2 s de IA; o tempo manual de comparação é o ROI da NA3 (a medir).
+Detalhes, fórmulas e premissas em [roi.md](roi.md). Aqui, o resumo para a banca.
+
+> **Aviso:** todos os números abaixo são **estimativas baseadas em uma única entrevista** (um diretor comercial de tecnologia e
+> software, mais de 10 anos de B2B). Não representam a média dos vendedores B2B. O perfil (diretor) também difere da persona
+> (executivo de contas).
+
+### 6.1 Custo
+
+- **Custo por raio-x:** US$ 0,0011847 de IA (média de 10 casos, 2.262 tokens de entrada e 413 de saída, `gemini-3.1-flash-lite`;
+  `uso_gemini_10_casos_06_11_1.csv`). Com a PTAX de 11/11/2026 (R$ 5,5606 por US$ 1), são **R$ 0,006588 por raio-x**.
+- **Custo mensal da IA:** 8 raio-x por mês (um por primeira reunião) = **R$ 0,0527**, cerca de 5 centavos.
+- **Custo fixo:** zero hoje (Docker e Terraform rodam na máquina do time). O custo de um servidor em uso real **não foi estimado**.
+
+### 6.2 Tempo e economia
+
+| item | valor | origem |
+|---|---|---|
+| Primeiras reuniões por mês | 8 (faixa de 6 a 10) | `respostas.csv`, ponto médio |
+| Preparação hoje, sem o Raio-X | 45 min (faixa de 30 a 60) | `respostas.csv`, ponto médio; tempo **declarado, não medido**; o entrevistado já usa IA "quase sempre" e diz verificar os resultados |
+| Com o Raio-X, cenário A (conferindo as fontes) | 17,5 min (faixa de 15 a 20) | medido com cronômetro |
+| Com o Raio-X, cenário B (sem conferir as fontes) | 12,5 min (faixa de 10 a 15) | medido com cronômetro |
+| Custo da hora | R$ 59,52 / R$ 74,40 / R$ 89,29 | salário de R$ 10 mil a R$ 15 mil ÷ 168 h (informado pelo entrevistado) |
+
+Resultado com o custo médio da hora (R$ 74,40):
+
+| | cenário A (com conferência) | cenário B (sem conferência) |
+|---|---|---|
+| Economia por reunião | 27,5 min | 32,5 min |
+| Horas economizadas por mês | 3,67 h | 4,33 h |
+| Economia por mês | **R$ 272,82** | **R$ 322,42** |
+| ROI (economia ÷ R$ 0,0527) | 5.177 vezes | 6.118 vezes |
+
+- **O cenário A é o recomendado e o mais próximo do comportamento do entrevistado:** ele diz que verifica o que a IA entrega e que
+  só confiaria nos números se pudesse conferir a fonte. Conferir as fontes custa cerca de 5 minutos por reunião (R$ 49,60 por
+  mês) e preserva cerca de 85% da economia do cenário B. Isso une a viabilidade ao uso responsável da seção 5: a economia
+  que a banca deve ouvir é a do cenário A.
+- **Faixa de sensibilidade (cenário A):** de R$ 74,40 por mês (pior caso: 30 min hoje, 6 reuniões) a R$ 558,04 por mês (melhor
+  caso: 60 min hoje, 10 reuniões). ROI de 1.882 a 8.471 vezes.
+- **Ponto de equilíbrio:** a ferramenta se paga se economizar cerca de 0,3 segundo por raio-x.
+- **Como ler o ROI:** um ROI de milhares de vezes vem do custo da API ser ínfimo, e não de um ganho enorme. O número mais
+  informativo é a economia de **cerca de 3,7 a 4,3 horas por mês (R$ 273 a R$ 322) por executivo**.
+- **Evidência qualitativa (não entra na conta):** o entrevistado deu nota 5 de 5 para a utilidade do exemplo, e a parte
+  mais útil seria as perguntas para a reunião.
+
+### 6.3 Limites da viabilidade
+
+- **Um único entrevistado:** tempo atual e reuniões por mês vêm de faixas marcadas por uma pessoa; os pontos médios são premissas.
+- **Tempo atual declarado, não medido.**
+- **O ROI não inclui** desenvolvimento, servidor em uso real nem encargos trabalhistas (FGTS, férias, 13º). Sem os encargos, o
+  custo da hora fica **subestimado**. Com jornada de 173,3 h por mês, o custo médio da hora cairia para R$ 72,12 (cerca de 3%).
+- **Se houver reconsultas**, o custo da IA sobe, mas continua desprezível.
 - **Limite de escala:** a DFP é anual; a base precisa ser recarregada uma vez por ano (`scripts/carregar_dfp.py`).
+- **Tempo da IA:** 2,2 s por raio-x (`avaliacao/resultados.csv`), pequeno perto dos 17,5 min do cenário A, que são quase todos
+  de leitura e conferência humana.
