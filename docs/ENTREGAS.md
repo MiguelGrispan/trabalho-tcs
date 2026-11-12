@@ -33,8 +33,8 @@ ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marc
 
 ## Documento do projeto (guia §6, item 2)
 
-- [ ] **Documento em Markdown** · rascunho · [docs/documentacao.md](documentacao.md). Rascunho 6 (12/11), com BPMN, arquitetura, EDA, o fluxo de conferência das contas e do link da CVM e o ROI (seções 1 e 7.7); faltam o texto final de ética e as respostas do professor (Apêndice B do documento).
-- [ ] **Documento em PDF** · rascunho · [docs/documentacao.pdf](documentacao.pdf). Regerado em 11/11 (ED18, 22 páginas, com as fontes, o BPMN da MA8 e a arquitetura da MG9); regerado em 12/11 com o ROI; precisa ser gerado de novo depois da entrada da ética.
+- [ ] **Documento em Markdown** · rascunho · [docs/documentacao.md](documentacao.md). Versão 7 (12/11), com BPMN, arquitetura, EDA, o fluxo de conferência das contas e do link da CVM, o ROI (seções 1 e 7.7) e a ética final (seção 7); faltam só as respostas do professor (Apêndice B do documento).
+- [ ] **Documento em PDF** · rascunho · [docs/documentacao.pdf](documentacao.pdf). Regerado em 11/11 (ED18, 22 páginas, com as fontes, o BPMN da MA8 e a arquitetura da MG9); regerado em 12/11 com o ROI e a ética (versão 7); só faltam as respostas do professor.
 - [x] **BPMN 2.0** · pronto · [imagem](bpmn/raio-x-comercial.png) e [arquivo editável](bpmn/raio-x-comercial.bpmn)
   (PRs #52 e #65). Também na seção 4 do documento.
 - [x] **EDA** · pronto · [notebooks/eda.ipynb](../notebooks/eda.ipynb) e os gráficos
@@ -47,8 +47,8 @@ ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marc
 - [x] **Medição de ROI** · pronto (12/11, Náthally) · [docs/produto/roi.md](produto/roi.md). Preparo de 45 min (declarado por
   1 diretor comercial entrevistado) contra 17,5 min com a ferramenta conferindo as fontes (ponto médio da faixa cronometrada de 15 a 20 min): 3,7 h e R$ 272,82 por mês
   por executivo; API a R$ 0,05 por mês. Também nas seções 1 e 7.7 do documento. Limite: uma entrevista só.
-- [ ] **Ética** · rascunho · [docs/etica.md](etica.md) e a seção 7 do documento. Falta o texto final da Náthally com a
-  viabilidade (NA5).
+- [x] **Ética** · pronto (12/11, Náthally, NA5) · [docs/etica.md](etica.md) e a seção 7 do documento: alucinação, o que o
+  validador não pega, viés do K-means, confiabilidade dos dados (8 de 10 e as 2 diferenças de definição), segurança e viabilidade (ROI).
 
 ## Apresentação (guia §3 e §6, item 3)
 

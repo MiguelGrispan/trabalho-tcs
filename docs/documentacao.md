@@ -3,12 +3,11 @@
 **Projeto final da trilha IA Aplicada (SENAI/TCS)** · Equipe: Marcos (dados), Eduardo (IA e gestão), Náthally (produto e métricas),
 Miguel (tela e infraestrutura) · Repositório: `MiguelGrispan/trabalho-tcs` (GitHub)
 
-**Versão:** rascunho 6 (com o ROI; ética ainda pendente), 12/11/2026 · Final: quando chegar a ética · Entrega: ter 17/11/2026,
+**Versão:** 7 (com o ROI e a ética final), 12/11/2026 · Entrega: ter 17/11/2026,
 48 h antes da banca, em qui 19/11/2026 (dita pelo professor) [PENDENTE: horário da banca a confirmar com o professor]
 
-> **Versão para revisão.** O BPMN, a arquitetura, a EDA e o fluxo de conferência das fontes já estão no documento. Ainda faltam, marcados com **[PENDENTE]**:
-> o texto final de ética da Náthally e respostas do professor. O ROI entrou em 12/11 (seções 1 e 7.7).
-> A lista completa está no fim (Apêndice B) e sai da versão final.
+> **Quase final.** Todas as seções estão escritas, inclusive o ROI (seções 1 e 7.7) e a ética (seção 7). Faltam só respostas do
+> professor, marcadas com **[PENDENTE]** e listadas no Apêndice B, que sai da versão entregue.
 
 ## O que este documento cobre
 
@@ -436,8 +435,8 @@ pergunta ao professor, ainda sem resposta. O projeto também segue o caminho "Tr
 
 ## 7. Ética, governança e segurança
 
-[PENDENTE: texto final · NA5, Náthally, sáb 07 a dom 08/11] *Esta seção é a base técnica (`docs/etica.md`), atualizada em 06/11.
-A Náthally reescreve para a banca e completa a viabilidade.*
+*Texto final da Náthally (12/11), sobre a base técnica do código; a versão completa, com arquivo e linha de cada afirmação, está em
+`docs/etica.md`.*
 
 ### 7.1 O risco principal: número inventado
 O LLM pode inventar ou arredondar um número, e o vendedor levaria um dado falso para a reunião. Por isso o LLM só escreve
@@ -661,6 +660,5 @@ recebe) é outro: `avaliacao/regras_prompt.md`.
 
 | o que falta | de quem | quando |
 |---|---|---|
-| texto final de ética na seção 7 e a viabilidade | Náthally (NA5) | sáb 07 a dom 08/11 |
 | data e horário da banca; respostas às perguntas 2 e 3 do REQUISITOS (prompts de vibecoding e base de conhecimento) | professor (o Eduardo pergunta) | rascunho não enviado em `docs/conteudo_eduardo.md` |
 | leitura do documento inteiro (seção 4 contra o BPMN; seção 3 contra a EDA) | Marcos | sáb 07/11 |
