@@ -6,15 +6,15 @@ Entrega: **ter 17/11/2026**, 48 h antes da banca de qui 19/11/2026 (`guia_projet
 Status: **pronto** = existe e foi conferido · **rascunho** = existe, mas falta conteúdo · **a confirmar** = está fora do repositório,
 ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marcados.
 
-> **Atenção:** o repositório é **privado** e, em 07/11, o professor não está entre os colaboradores (Miguel, Marcos, Náthally e
-> Eduardo). Sem o acesso dele, nenhum item abaixo chega à banca.
+> **Acesso:** desde 12/11/2026 o repositório é **público**, e o Miguel mandou o link ao professor no mesmo dia
+> (`gh api repos/MiguelGrispan/trabalho-tcs --jq .visibility` → `public`).
 
 ## Prazo e acesso
 
 - [ ] **Data de entrega** · a confirmar · ter 17/11/2026 (banca em qui 19/11/2026, dita pelo professor ao Eduardo (registrada em 09/11)). Falta confirmar o horário e o prazo exato
   a data e o horário da banca. Arquivo ou link a inserir: ________
-- [ ] **Acesso do professor ao GitHub** · a confirmar · `MiguelGrispan/trabalho-tcs` é privado. Falta o Miguel (admin) convidar
-  o login do professor, ou conferir se já há convite, e o professor aceitar. Arquivo ou link a inserir: ________
+- [x] **Acesso do professor ao GitHub** · pronto · `MiguelGrispan/trabalho-tcs` é público desde 12/11/2026, e o Miguel (admin)
+  mandou o link ao professor nesse dia: https://github.com/MiguelGrispan/trabalho-tcs
 
 ## Repositório (`requisitos_projeto.MD`, Documentação e Aplicação; guia §6, item 1)
 
