@@ -23,7 +23,7 @@ a Náthally não programa com IA e sobe arquivos pelo navegador do GitHub (seç�
 
 **Em 12/11/2026 (Brasília)**
 
-**Foco: código congelado; o ROI da Náthally entrou no documento em 12/11 (`docs/produto/roi.md`, seções 1 e 7.7); falta a ética final (NA5).**
+**Foco: código congelado; documento completo (versão 7, 12/11: ROI e ética da Náthally). Faltam o deck, o vídeo, as respostas do professor e os ensaios.**
 Último PR levado: **#80** (11/11, ED18: PDF com a arquitetura nova da MG9). Os PRs #75–#81 estão na `main` com CI verde.
 **Conferido em 11/11 (Mac do Eduardo):** 287 passed com o PostgreSQL; 267 passed e 20 skipped no contêiner; `docker compose up --build` com os 2 `healthy`;
 raio-x sem IA de WEG, Camil e Embraer com 6 indicadores, 5 parecidas e o `conferir` (contas + link); Terraform `fmt` e `validate` ok.
@@ -33,8 +33,8 @@ raio-x sem IA de WEG, Camil e Embraer com 6 indicadores, 5 parecidas e o `confer
 
 **Próximos passos (11/11):**
 1. **Miguel:** dar acesso ao professor no repositório (BLOQUEIA desde 09/11: em 11/11 os colaboradores ainda são só os 4 do grupo) e gravar o vídeo de reserva na `v1.1` (MG6/MG7).
-2. **Náthally:** ✅ ROI entregue (12/11). Falta: ética final (NA5); no deck, o slide do ROI ("45 → 17,5 min, 3,7 h e R$ 273 por mês, 1 entrevista"), o print `docs/graficos/tela_fontes_weg.png` e a figura nova da arquitetura (MG9).
-3. **Eduardo:** ✅ ROI no documento e PDF regerado (12/11). Quando a ética chegar, pôr o texto no `[PENDENTE]` da seção 7, tirar o "Versão para revisão" e regerar o PDF (só documento; não muda a tag).
+2. **Náthally:** ✅ ROI e ✅ ética entregues (12/11). Falta, no deck: o slide do ROI ("45 → 17,5 min, 3,7 h e R$ 273 por mês, 1 entrevista"), o print `docs/graficos/tela_fontes_weg.png` e a figura nova da arquitetura (MG9).
+3. **Eduardo:** ✅ ROI e ética no documento, PDF regerado (12/11, versão 7). Falta: perguntar ao professor o horário da banca e as perguntas 2 e 3, e tirar os últimos `[PENDENTE]`.
 4. **Marcos:** subir o `links_dfp.csv` no Drive (MA7).
 A fotografia detalhada de 07/11 permanece no Git: `git show 45686db:docs/PLANO.md`.
 
@@ -105,7 +105,7 @@ Entrega em **17/11/2026**, 48 h antes da banca de **19/11/2026** (dita pelo prof
 | parte | estado | o que resta |
 |---|---|---|
 | aplicação | **plano B: `v1.0.1`** (09/11). Versão da banca não decidida (10/11): provavelmente a mais nova depois da conferência das fontes (`v1.1`); o vídeo de reserva será gravado nela | conferir instalação por outra pessoa (ED10); não ampliar o produto |
-| documento | **~85%** (estimativa de esforço) | ética final, revisão e respostas externas (o ROI entrou em 12/11) |
+| documento | **~95%** (estimativa de esforço) | revisão do Marcos e respostas do professor (ROI e ética entraram em 12/11) |
 | slides e ensaios | **não verificado** | deck relatado fora do repositório, sem link; vídeo e tempos de ensaio não apresentados |
 
 Não calcular percentual total sem conferir o deck. A estimativa antiga de ~61% e os ~15% de entregáveis eram de 03/11 e foram retirados.
@@ -205,6 +205,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | ED19 | qui 12/11 (depois de MA7, MG8 e NA7) | — | **consolidar as notas** (nova regra de 10/11: cada um registra a própria sessão): conferir os registros que Marcos e Miguel fizeram sozinhos no PLANO §3, no HISTORICO e no REQUISITOS contra o que está na `main` (✅ sem PR mesclado é erro); levar as 3 linhas da Náthally (ela não usa terminal) e as issues de "Para o Eduardo"; atualizar a seção 0 ("último PR levado") e o R10/R11; resolver conflito de nota, se houver; se a regra nova der problema, reverter no `CLAUDE.md` e nas duas skills. **Duração ~30 min · energia baixa · 1º passo: `gh pr list --state merged --limit 10`** | `docs/PLANO.md` (§0), `docs/REQUISITOS.md`, `docs/HISTORICO.md` | Manual | todos os PRs desde o #74 aparecem na seção 0 e cada sessão nova está ✅ ou 🟡 com prova; nenhuma linha de outra pessoa apagada | PR |
 | ED20 | qua 11/11 | ✅ PR #83 | **limpeza para o professor:** saíram a pasta `sql/` (consulta de teste sem uso) e os `.gitkeep` de `docs/graficos/` e `infra/` (pastas com arquivos); nomes sem código de sessão: `docs/graficos/silhueta_antes_regra_5pct.png` e `scripts/conferir_empresa.py`; links conferidos; 287 passed | `docs/graficos/`, `infra/`, `scripts/`, `docs/documentacao.md`, `docs/justificativa.md` | Manual | nenhum nome com código de sessão nem sobra sem uso; links do documento apontam para os nomes novos | `eduardo-limpeza` |
 | ED21 | qui 12/11 | ✅ PR desta sessão | **ROI da Náthally no repositório:** `docs/produto/roi.md` (contas refeitas: batem); documento (seções 1, 2, 7.7 e apêndices), PDF regerado, ENTREGAS, REQUISITOS (R11), ética, roteiro da fala, conteúdo do Eduardo e guia do projeto | `docs/produto/`, `docs/`, `aprender/` | ROI no documento e no PDF |
+| ED22 | qui 12/11 | ✅ PR desta sessão | **ética final da Náthally:** `docs/etica.md` com a versão dela (branch `feat/metricas`, `Semana_03/etica.md`); seção 7 do documento sem o `[PENDENTE]`; versão 7 do PDF | `docs/` | ética no documento e no PDF |
 
 ### Marcos (Claude Code)
 
@@ -259,7 +260,7 @@ Para subir um arquivo:
 | NA2 | sex 30/10 | ✅ códigos (PR #10); ela ainda confere | preencher o `cd_cvm` dos 10 casos (WEG = 5410) | `avaliacao/casos_avaliacao.csv` | `tests/test_ponta_a_ponta.py` passa (o Eduardo roda) |
 | NA3 | até qui 05/11 | ✅ entregue em 12/11 (`docs/produto/roi.md`; 1 entrevista + cronômetro) | **Obrigatório, versão mínima: o ROI.** Cronometrar 1 vez a montagem manual de um raio-x (1 empresa, pelo site de RI) e 1 vez com a ferramenta, contando digitar, ler e conferir (não só os ~2 s da API), com a conta do ganho em 3 linhas (guia §7: "ROI ou a redução do tempo operacional"). *Sugestão:* 3 empresas no `tempo_manual.csv` e 3 testes com usuários (sem nome) | `docs/produto/` (ou `avaliacao/`) | tempo com a ferramenta cronometrado, tempo atual declarado na entrevista, e a conta do ROI |
 | NA4 | qua 04/11 | — | **Obrigatório: 1 slide de métricas** com os números do `avaliacao/resultados.csv` (10 casos, 0 trechos removidos, US$ 0,0012 por raio-x, 2,2 s; rodada de 05/11) e o acerto: **8 de 10 batem com o RI** na conferência manual dela; nas 2 que diferem, a diferença é de definição: RD Saúde em "Pré-IFRS 16", Magalu com outra conta do EBIT (ED16). Sem o acerto, o slide parece melhor que a realidade, que o Eduardo tira com o Claude Code. *Sugestão:* `revisao.csv`, com a nota dela para cada raio-x | deck (e `avaliacao/revisao.csv`, se fizer) | o slide de métricas existe |
-| NA5 | sáb 07–dom 08/11 | — | **Obrigatório: o texto de governança e ética** (guia §2; §6: "análise de ética e segurança", no PDF): viabilidade, limites, viés, confiabilidade, alucinação, segurança de dados e uso responsável. Base pronta: `docs/justificativa.md`, seção 5. Deck com o tempo de cada parte | `docs/etica.md`, deck | o Marcos recebe a ética; todos os slides chegaram |
+| NA5 | sáb 07–dom 08/11 | ✅ entregue em 12/11 (`docs/etica.md`, seção 7 do documento) | **Obrigatório: o texto de governança e ética** (guia §2; §6: "análise de ética e segurança", no PDF): viabilidade, limites, viés, confiabilidade, alucinação, segurança de dados e uso responsável. Base pronta: `docs/justificativa.md`, seção 5. Deck com o tempo de cada parte | `docs/etica.md`, deck | o Marcos recebe a ética; todos os slides chegaram |
 | NA6 | seg 09–qua 11/11 | — | **Obrigatório: o deck final** (`requisitos_projeto.MD`, Documentação; guia §6) e ensaios cronometrados (guia §3 diz 20 min, mas vale a regra de 09/11: máx. 18 min + 12 de banca, alvo 15; guia §7 pede o ensaio; o grupo marcou 2) | deck | ensaio de 15 min, nunca acima de 18 |
 | NA7 | qua 11/11 | ✅ 12/11: cenário A (com conferência das fontes, 17,5 min) × B (sem, 12,5 min) no `roi.md`; falta o print no slide | **ROI com as fontes:** refazer 1 vez o tempo do passo "conferir" com a tela nova (trecho + link) e escrever no ROI "fonte em 1 clique"; slide de métricas ganha o print do Miguel (MG8). **Duração ~20 min · energia baixa · 1º passo: cronometrar 1 conferência** | `docs/produto/`, deck | Manual | tempo do "conferir" cronometrado (cenário A × B) e 1 frase no ROI | PR |
 
