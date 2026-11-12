@@ -3,7 +3,7 @@
 Texto corrido para ensaiar. **É rascunho:** cada um troca pelas próprias palavras e cronometra. Ritmo usado: cerca de 130 palavras por
 minuto, com pausas. Tempos e quem fala: `docs/tempo_apresentacao.md` (divisão por pessoa ainda não confirmada pelo grupo).
 Trechos entre `[ ]` são lacunas que o dono preenche. Nenhum número novo foi inventado: os que aparecem vêm de
-`docs/conteudo_eduardo.md` e `avaliacao/resultados.csv`.
+`docs/conteudo_eduardo.md`, `avaliacao/resultados.csv` e `docs/produto/roi.md`.
 
 ---
 
@@ -59,15 +59,13 @@ avisa que o texto veio sem IA. Passo ao Marcos e ao Eduardo, para explicar o que
 **Marcos (0:45):** "Os dados vêm das demonstrações da CVM. Com Python e Pandas, limpamos, tratamos valores nulos e calculamos os
 indicadores. Depois gravamos tudo no PostgreSQL, e a tela consulta com SQL. São 595 empresas, com indicadores do exercício de 2025, calculados sobre as contas de 2023 a 2025."
 
-**Eduardo (1:30):** "Na parte de IA temos duas peças. A primeira é o K-means, que agrupa as empresas pelo perfil financeiro; os
-vizinhos mais próximos sugerem as cinco parecidas. Escolhemos quatro grupos, e a silhueta deu 0,286: os grupos se sobrepõem. Nos
-dez casos que avaliamos, todas as empresas caíram no mesmo grupo. Por isso tratamos isso como apoio exploratório, não como lista de
-concorrentes.
+**Eduardo (1:30, cerca de 195 palavras):** "Na parte de IA temos duas peças: um modelo de ML e uma IA generativa.
 
-A segunda peça é o Gemini, usado com LangChain. A regra de ouro do projeto: a IA nunca escreve número. Ela usa marcadores no lugar
-dos valores; um validador barra qualquer dígito fora de marcador; só então o código troca os marcadores pelos valores da tabela.
-Nos dez casos, nenhum trecho foi removido e a geração levou em média 2,15 segundos. Isso não prova que o texto está sempre correto:
-afirmação falsa sem número ainda pode passar, então a revisão humana continua necessária."
+O ML é o K-means. Ele agrupa as empresas pelo perfil financeiro com os indicadores limpos: receita em log, extremos cortados e tudo padronizado, para nenhuma variável pesar mais só pela unidade. Os vizinhos mais próximos sugerem as cinco parecidas. Escolhemos quatro grupos; a silhueta deu 0,286: os grupos se sobrepõem, e nos dez casos avaliados todas as empresas caíram no mesmo grupo. Por isso é apoio exploratório, não lista de concorrentes.
+
+A IA generativa é o Gemini, chamado pelo LangChain com saída estruturada. A base de conhecimento são os dados da CVM: buscamos os indicadores pela chave exata da empresa, então não precisamos de busca vetorial nem de fine-tuning. A regra de ouro: a IA nunca escreve número. Ela usa marcadores, o validador barra qualquer dígito fora deles e só então o código troca os marcadores pelos valores da tabela. Se a API falhar, a tela segue sem IA e avisa.
+
+Nos dez casos, nenhum trecho foi removido e cada geração levou em média 2,15 segundos. Mas uma afirmação falsa sem número ainda passa: o vendedor revisa."
 
 **Miguel (0:45):** "A aplicação que vocês viram foi subida pelo Terraform, que o professor exige. [Mostrar `infra/main.tf`.] Aqui
 está declarada a infraestrutura inteira: a tela e o banco, cada um no seu contêiner, a rede entre eles e as pastas montadas. Um
@@ -83,14 +81,11 @@ Os dados são públicos, da CVM, [CONFERIR em `docs/etica.md` antes de afirmar q
 exatamente é registrado, conforme `docs/etica.md`]. A chave da IA fica fora do código. Nossa conclusão é que o Raio-X ajuda a
 preparar a reunião, mas não decide por ninguém."
 
-## 6. Conclusão · 14:00 a 15:00 · Eduardo
+## 6. Conclusão · 14:00 a 15:00 · Eduardo (cerca de 125 palavras)
 
-"Resumindo: entregamos uma aplicação que roda de ponta a ponta, com dados públicos, um modelo de agrupamento, IA generativa
-controlada por validador e infraestrutura declarada em Terraform. O que ainda é limite: o ROI vem de uma única entrevista e o
-agrupamento é exploratório.
+"Para fechar. Entregamos uma aplicação que roda de ponta a ponta: dados públicos da CVM limpos e guardados no PostgreSQL, um modelo de agrupamento treinado com eles, IA generativa controlada por validador e a infraestrutura em Terraform. O valor é tempo: de 45 para cerca de 17 minutos por reunião, numa estimativa de uma entrevista só. E deixamos claros os limites: o agrupamento é exploratório e o texto da IA precisa de revisão. O próximo passo natural é medir esse tempo com mais vendedores.
 
-Em equipe, aprendemos a combinar o formato entre as partes antes de escrever código e a rodar testes antes de dizer que está pronto.
-[PREENCHER: uma lição de cada pessoa, 1 frase.]
+Em equipe, aprendemos a combinar o formato entre as partes antes de escrever código, a só dizer "pronto" com os testes passando e a revisar cada mudança por pull request.
 
 Obrigado. Ficamos à disposição para as perguntas da banca."
 

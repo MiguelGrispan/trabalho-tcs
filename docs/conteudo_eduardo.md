@@ -7,7 +7,7 @@ data: "07/11/2026"
 
 Ficha para a Náthally montar o deck. Números da avaliação de 05/11 e do [documento do projeto](documentacao.md), seções 6–8. Não é o deck final nem registro de ensaio concluído.
 
-## 1. Dois slides técnicos
+## 1. Três slides (dois técnicos e a conclusão)
 
 ### Slide 1 — Como o ML ajuda o vendedor
 
@@ -16,8 +16,7 @@ Ficha para a Náthally montar o deck. Números da avaliação de 05/11 e do [doc
 - Quatro grupos; silhueta de 0,286: os perfis se sobrepõem.
 - Limite: os dez casos avaliados caíram no mesmo grupo; parecida não significa concorrente.
 
-**Fala sugerida (30–45 s; cronometrar no ensaio):**
-“Partimos dos indicadores calculados com dados públicos da CVM. O K-means cria grupos por perfil financeiro, e os vizinhos mais próximos sugerem empresas para prospectar. Escolhemos quatro grupos pelas regras do treino e pela silhueta. A silhueta de 0,286 mostra que os grupos se sobrepõem. Nos nossos dez casos, todas as empresas ficaram no maior grupo. Por isso, tratamos a comparação como apoio exploratório, com limites, e não como classificação exata ou lista de concorrentes.”
+**Fala:** `docs/roteiro_fala.md`, seção 4 (a parte do Eduardo inteira tem 1:30, cerca de 195 palavras).
 
 **Prova:** [segmentos.py](../raiox/segmentos.py), `treino()`, `matriz()`, `escolher_k()` e `segmentar()`; [justificativa](justificativa.md), seção 2; [limite conhecido #60](https://github.com/MiguelGrispan/trabalho-tcs/issues/60).
 
@@ -28,10 +27,21 @@ Ficha para a Náthally montar o deck. Números da avaliação de 05/11 e do [doc
 - O validador barra números fora de marcadores; se a API falhar, há texto sem IA.
 - Dez casos: nenhum trecho removido; geração média de 2,15 s. A conferência numérica é separada.
 
-**Fala sugerida (30–45 s; cronometrar no ensaio):**
-“A IA recebe os indicadores e o contexto da reunião para escrever perguntas. Ela usa marcadores no lugar dos números. O validador verifica esses marcadores e barra trechos com números fora deles; depois, o código insere os valores. Se a API falhar, a aplicação continua com texto sem IA e avisa. Nos dez casos, não houve trecho removido e a geração levou em média 2,15 segundos. Isso não prova que o texto é sempre correto: afirmações falsas sem números ainda podem passar, então a revisão humana continua necessária.”
+**Fala:** `docs/roteiro_fala.md`, seção 4 (a parte do Eduardo inteira tem 1:30, cerca de 195 palavras).
 
 **Prova:** [ia.py](../raiox/ia.py), `gerar_llm()`, `checar()`, `validar_e_preencher()` e `preparar_raio_x()`; [resultados dos dez casos](../avaliacao/resultados.csv); [ética](etica.md), seções 1–2.
+
+### Slide 3 — Conclusão
+
+**Na tela do slide:**
+- Ponta a ponta: dados da CVM → PostgreSQL → K-means → Gemini com validador → tela, tudo subido pelo Terraform.
+- Valor: preparo de 45 para cerca de 17 min por reunião (estimativa de 1 entrevista, [ROI](produto/roi.md)).
+- Limites: agrupamento exploratório; texto da IA precisa de revisão. Próximo passo: medir com mais vendedores.
+- Equipe: contrato antes de código, testes antes de "pronto", toda mudança por pull request.
+
+**Fala:** `docs/roteiro_fala.md`, seção 6 (1:00, cerca de 125 palavras).
+
+**Prova:** [documento](documentacao.md), seções 1 e 7.7; [contratos.md](../contratos.md); [CI](../.github/workflows/).
 
 ## 2. Defesa: respostas curtas para treinar
 
@@ -85,4 +95,4 @@ Dez casos, nenhum trecho removido e 2,15 s por geração, incluindo montagem, Ge
 O cliente da API tem limite de tempo e tentativas. A tela captura a falha e usa texto sem IA, mantendo os indicadores e avisando a origem. No ensaio técnico de 07/11, uma falha simulada preservou a geração e o registro da consulta no banco; não houve chamada paga. Fonte: `_llm()`, [ia.py](../raiox/ia.py), e `gerar_raio_x()`, [tela](../app/streamlit_app.py).
 </details>
 
-**Estado:** conteúdo técnico preparado. Faltam a Náthally incorporá-lo ao deck e o Eduardo ensaiar em voz alta.
+**Estado:** conteúdo técnico preparado. Falas fechadas em 12/11 (`docs/roteiro_fala.md`, seções 4 e 6). Faltam a Náthally pôr os 3 slides no deck e o Eduardo ensaiar em voz alta, cronometrando.
