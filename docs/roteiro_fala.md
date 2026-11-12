@@ -69,8 +69,10 @@ dos valores; um validador barra qualquer dígito fora de marcador; só então o 
 Nos dez casos, nenhum trecho foi removido e a geração levou em média 2,15 segundos. Isso não prova que o texto está sempre correto:
 afirmação falsa sem número ainda pode passar, então a revisão humana continua necessária."
 
-**Miguel (0:45):** "Para rodar tudo, usamos Docker Compose, que sobe a tela e o banco. A mesma infraestrutura também está declarada
-em Terraform, que o professor exige. [Mostrar `infra/` na tela se couber.] Um comando sobe os dois contêineres, e outro desliga."
+**Miguel (0:45):** "A aplicação que vocês viram foi subida pelo Terraform, que o professor exige. [Mostrar `infra/main.tf`.] Aqui
+está declarada a infraestrutura inteira: a tela e o banco, cada um no seu contêiner, a rede entre eles e as pastas montadas. Um
+`terraform apply` constrói a imagem e sobe os dois; um `terraform destroy` desliga, e o banco e os dados continuam guardados. A chave
+da IA não passa pelo Terraform, para não ficar gravada no arquivo de estado. O mesmo também roda com Docker Compose, para quem só quer testar."
 
 ## 5. Governança e ética · 12:30 a 14:00 · Náthally
 
