@@ -11,7 +11,7 @@ e §5 (Inovação e Valor de Negócio, peso 20%: "A solução traz ganhos percep
 
 ## Resumo em 3 linhas
 
-1 - Hoje o entrevistado leva **45 min** (faixa de 30 a 60) para preparar uma primeira reunião; com o Raio-X, **17,5 min** conferindo as fontes (cenário A) ou **12,5 min** sem conferir (cenário B), medidos com cronômetro.
+1 - Hoje o entrevistado leva **45 min** (faixa de 30 a 60) para preparar uma primeira reunião; com o Raio-X, **17,5 min** conferindo as fontes (cenário A) ou **12,5 min** sem conferir (cenário B): pontos médios das faixas cronometradas (15 a 20 e 10 a 15 min).
 2 - Com 8 primeiras reuniões por mês, isso economiza **3,7 h (A) a 4,3 h (B) por mês**, ou **R$ 273 a R$ 322 por mês** por executivo no custo médio da hora (R$ 74,40).
 3 - A API custa **cerca de R$ 0,05 por mês** (8 raio-x); por isso o ROI dá milhares de vezes. O número que importa é o tempo economizado, não o múltiplo.
 
@@ -22,8 +22,8 @@ e §5 (Inovação e Valor de Negócio, peso 20%: "A solução traz ganhos percep
 | Amostra | 1 profissional: diretor comercial, mais de 10 anos de B2B, vende tecnologia e software, clientes grandes, acompanha mais de 30 contas | entrevista (formulário de [roteiro_forms.md](roteiro_forms.md)) | o perfil (diretor) difere da persona (executivo de contas) |
 | Primeiras reuniões por mês | 6 a 10; usado **8** | entrevista | ponto médio da faixa marcada |
 | Tempo atual de preparação (sem o Raio-X) | 30 a 60 min; usado **45 min** | entrevista | ponto médio da faixa marcada. É tempo declarado, não medido. O entrevistado usa IA "quase sempre" (ChatGPT, Copilot e Claude) e diz verificar os resultados, então o cenário já inclui ferramentas de IA |
-| Tempo com o Raio-X, cenário A (com conferência das fontes) | 15 a 20 min; usado **17,5 min** | medido com cronômetro | estimativa medida |
-| Tempo com o Raio-X, cenário B (sem conferência das fontes) | 10 a 15 min; usado **12,5 min** | medido com cronômetro | estimativa medida |
+| Tempo com o Raio-X, cenário A (com conferência das fontes) | 15 a 20 min; usado **17,5 min** | faixa cronometrada | o valor usado é o ponto médio da faixa, não uma leitura única do cronômetro |
+| Tempo com o Raio-X, cenário B (sem conferência das fontes) | 10 a 15 min; usado **12,5 min** | faixa cronometrada | o valor usado é o ponto médio da faixa, não uma leitura única do cronômetro |
 | Salário mensal | R$ 10.000 a R$ 15.000 | informado pelo entrevistado | faixa; não há outra fonte |
 | Jornada mensal | **168 h** (8 h por dia × 21 dias úteis) | premissa | segunda a sexta, 8 h por dia; 21 dias úteis é a média mensal de um ano com cerca de 252 dias úteis |
 | Raio-x por mês | **8** (um por primeira reunião) | premissa | se houver reconsultas, o custo sobe, mas continua desprezível |
@@ -70,7 +70,7 @@ Horas economizadas por mês: 8 × 0,4583 = **3,67 h**.
 | custo da hora | economia por mês (8 × 0,4583 h × custo da hora) | ROI (economia ÷ R$ 0,0527) |
 |---|---|---|
 | R$ 59,52 (inferior) | R$ 218,25 | 4.141 vezes |
-| R$ 74,40 (médio) | **R$ 272,82** | **5.177 vezes** |
+| R$ 74,40 (médio) | **R$ 272,82** | 5.177 vezes |
 | R$ 89,29 (superior) | R$ 327,38 | 6.212 vezes |
 
 ## 6. Cenário B: sem conferência das fontes
@@ -81,7 +81,7 @@ Horas economizadas por mês: 8 × 0,5417 = **4,33 h**.
 | custo da hora | economia por mês (8 × 0,5417 h × custo da hora) | ROI (economia ÷ R$ 0,0527) |
 |---|---|---|
 | R$ 59,52 (inferior) | R$ 257,94 | 4.894 vezes |
-| R$ 74,40 (médio) | **R$ 322,42** | **6.118 vezes** |
+| R$ 74,40 (médio) | **R$ 322,42** | 6.118 vezes |
 | R$ 89,29 (superior) | R$ 386,90 | 7.341 vezes |
 
 ## 7. Comparação entre os cenários (custo médio da hora)

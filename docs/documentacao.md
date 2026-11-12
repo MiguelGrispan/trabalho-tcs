@@ -55,7 +55,7 @@ são o ganho do vendedor: ele ainda escolhe a empresa, lê e confere o texto.
 
 **O ganho para o vendedor (ROI, Náthally, 12/11; conta completa em `docs/produto/roi.md`).** Um diretor comercial B2B entrevistado
 declara gastar **30 a 60 min** (ponto médio 45) para preparar uma primeira reunião, já usando IA, e faz 6 a 10 por mês (usado 8).
-Com o Raio-X, o preparo **medido com cronômetro** levou **15 a 20 min** conferindo as fontes (cenário A, ponto médio 17,5) e 10 a 15 min
+Com o Raio-X, o preparo cronometrado ficou na faixa de **15 a 20 min** conferindo as fontes (cenário A; a conta usa o ponto médio, 17,5) e 10 a 15 min
 sem conferir (cenário B). No cenário A, que é o comportamento dele (só confia no número se puder ver a fonte):
 
 | | por reunião | por mês (8 reuniões) | em reais (hora média de R$ 74,40) |
@@ -538,7 +538,7 @@ O que resolve, no fim, é a leitura humana. Por isso o raio-x é apoio, e não d
 - **Ganho para o vendedor (ROI):** cerca de **3,7 h e R$ 273 por mês** por executivo, conferindo as fontes (seção 1;
   `docs/produto/roi.md`). Na sensibilidade, de 1 h (R$ 74) a 7,5 h (R$ 558) por mês. A ferramenta se paga se economizar 0,3 s por raio-x.
 - **Limites do ROI:** uma única entrevista (um diretor, não a persona de executivo de contas); o tempo atual é declarado, e o com a
-  ferramenta, cronometrado; não entram o desenvolvimento, um servidor num uso real nem os encargos trabalhistas (que aumentariam o
+  ferramenta é o ponto médio de uma faixa cronometrada; não entram o desenvolvimento, um servidor num uso real nem os encargos trabalhistas (que aumentariam o
   custo da hora e, portanto, o ganho). Próximo passo, fora do prazo da banca: medir com vendedores reais.
 
 ---

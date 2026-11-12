@@ -45,7 +45,7 @@ ainda falta ou depende de uma pessoa confirmar. Só os itens prontos estão marc
   da conferência manual está no `revisao_manual.md`, que ainda não está na `main` (branch `feat/metricas`).
   Arquivo ou link a inserir (se a Náthally subir): ________
 - [x] **Medição de ROI** · pronto (12/11, Náthally) · [docs/produto/roi.md](produto/roi.md). Preparo de 45 min (declarado por
-  1 diretor comercial entrevistado) contra 17,5 min com a ferramenta conferindo as fontes (cronometrado): 3,7 h e R$ 272,82 por mês
+  1 diretor comercial entrevistado) contra 17,5 min com a ferramenta conferindo as fontes (ponto médio da faixa cronometrada de 15 a 20 min): 3,7 h e R$ 272,82 por mês
   por executivo; API a R$ 0,05 por mês. Também nas seções 1 e 7.7 do documento. Limite: uma entrevista só.
 - [ ] **Ética** · rascunho · [docs/etica.md](etica.md) e a seção 7 do documento. Falta o texto final da Náthally com a
   viabilidade (NA5).

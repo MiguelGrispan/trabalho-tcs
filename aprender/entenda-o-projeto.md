@@ -23,7 +23,7 @@ No Raio-X, o vendedor escolhe a empresa, diz **o que vende** e **o objetivo da r
 **Por que isso vale dinheiro (o ROI que a banca vai perguntar):**
 economia por mês = reuniões por mês × (minutos à mão − minutos com a ferramenta) × custo da hora do vendedor.
 Com os números da Náthally (12/11, `docs/produto/roi.md`): 8 reuniões × (45 − 17,5 min) × R$ 74,40 por hora ≈ **R$ 273 e 3,7 h por mês** por vendedor.
-Os 45 min foram declarados por um diretor comercial entrevistado; os 17,5 min, cronometrados com a ferramenta, conferindo as fontes. É uma entrevista só: uma estimativa.
+Os 45 min foram declarados por um diretor comercial entrevistado; os 17,5 min são o ponto médio da faixa cronometrada com a ferramenta (15 a 20 min), conferindo as fontes. É uma entrevista só: uma estimativa.
 
 ---
 

@@ -20,7 +20,7 @@ poucos minutos seis indicadores financeiros com a fonte, a posição da empresa 
 a cinco perguntas ligadas ao produto, as lacunas do que não sabemos e cinco empresas parecidas para prospectar.
 
 Todos os dados vêm de uma fonte pública, as demonstrações financeiras da CVM. O ganho é tempo: um diretor comercial que
-entrevistamos leva uns 45 minutos para preparar uma primeira reunião; com o Raio-X, conferindo as fontes, cronometramos 17 minutos e meio.
+entrevistamos leva uns 45 minutos para preparar uma primeira reunião; com o Raio-X, conferindo as fontes, cronometramos entre 15 e 20 minutos.
 São quase 4 horas por mês por vendedor, cerca de 270 reais, para um custo de IA de 5 centavos. É uma entrevista só, então é uma estimativa. Vou passar para o Marcos,
 que mostra como o processo funciona por dentro."
 
