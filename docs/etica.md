@@ -95,5 +95,7 @@ traz a "base", o indicador que a motivou, visível na tela. **O que não resolve
 ## 6. Viabilidade (a completar pela Náthally)
 
 - **Custo por raio-x:** ≈ US$ 0,0012 de IA (`avaliacao/resultados.csv`).
-- **Tempo:** 2,2 s de IA (média da rodada de 05/11); o tempo manual de comparação é o ROI da NA3 (a medir).
+- **Tempo:** 2,2 s de IA (média da rodada de 05/11). O ganho do vendedor é o ROI da Náthally (12/11, [produto/roi.md](produto/roi.md)):
+  preparo de 45 min (declarado, 1 entrevista) para 17,5 min com a ferramenta conferindo as fontes (cronometrado): cerca de 3,7 h e
+  R$ 273 por mês por executivo. Limite: uma única entrevista; não é a média dos vendedores.
 - **Limite de escala:** a DFP é anual; a base precisa ser recarregada uma vez por ano (`scripts/carregar_dfp.py`).

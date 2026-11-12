@@ -76,7 +76,7 @@ Recebe indicadores já formatados no contexto. O dicionário de substituição `
 <details>
 <summary>Qual é o resultado medido? Já podemos afirmar o ROI?</summary>
 
-Dez casos, nenhum trecho removido e 2,15 s por geração, incluindo montagem, Gemini e validação. O “8 de 10” compara os seis indicadores com a conferência manual; as diferenças de Magalu e RD Saúde envolvem definições contábeis. Não é taxa geral de acerto do LLM. O tempo para digitar, ler e conferir também conta no uso real. Sem medição manual comparável, ainda não há ganho de tempo ou ROI comprovado. Fonte: [documento](documentacao.md), seções 7.4 e 8.
+Dez casos, nenhum trecho removido e 2,15 s por geração, incluindo montagem, Gemini e validação. O “8 de 10” compara os seis indicadores com a conferência manual; as diferenças de Magalu e RD Saúde envolvem definições contábeis. Não é taxa geral de acerto do LLM. O ganho de tempo é o ROI da Náthally (12/11): preparo de 45 min hoje (declarado por um diretor comercial entrevistado) contra 17,5 min com a ferramenta, conferindo as fontes (cronometrado); 3,7 h e cerca de R$ 273 por mês por vendedor, com API de R$ 0,05 por mês. É uma entrevista só: estimativa, não média. Fonte: [documento](documentacao.md), seções 1, 7.7 e 8; [produto/roi.md](produto/roi.md).
 </details>
 
 <details>
