@@ -3,11 +3,11 @@
 **Projeto final da trilha IA Aplicada (SENAI/TCS)** · Equipe: Marcos (dados), Eduardo (IA e gestão), Náthally (produto e métricas),
 Miguel (tela e infraestrutura) · Repositório: `MiguelGrispan/trabalho-tcs` (GitHub)
 
-**Versão:** rascunho 5 (fontes conferíveis; ROI e ética ainda pendentes), 10/11/2026 · Final: quando chegarem o ROI e a ética · Entrega: ter 17/11/2026,
+**Versão:** rascunho 6 (com o ROI; ética ainda pendente), 12/11/2026 · Final: quando chegar a ética · Entrega: ter 17/11/2026,
 48 h antes da banca, em qui 19/11/2026 (dita pelo professor) [PENDENTE: horário da banca a confirmar com o professor]
 
 > **Versão para revisão.** O BPMN, a arquitetura, a EDA e o fluxo de conferência das fontes já estão no documento. Ainda faltam, marcados com **[PENDENTE]**:
-> o ROI (nenhuma medição manual comparável foi entregue até 07/11), o texto final de ética da Náthally e respostas do professor.
+> o texto final de ética da Náthally e respostas do professor. O ROI entrou em 12/11 (seções 1 e 7.7).
 > A lista completa está no fim (Apêndice B) e sai da versão final.
 
 ## O que este documento cobre
@@ -50,12 +50,22 @@ pelos valores calculados da tabela. Número inventado num material de vendas é 
 tabela, e o validador barra algarismos e as quantidades por extenso que ele conhece (o que ele não pega está na seção 7.2).
 
 **O que já foi medido e o que não foi.** A ferramenta gera um raio-x em **2,15 s em média** (10 casos, seção 8), contando a
-montagem dos indicadores, a chamada ao Gemini e a validação; o custo estimado da API é **US$ 0,001185 por raio-x**. Não há, até
-06/11, uma medição comparável do tempo de montar o mesmo raio-x à mão (pelo site de RI). Sem ela, este documento **não afirma
-ganho de tempo nem ROI**: os 2,15 s não incluem o tempo do vendedor para escolher a empresa, ler e conferir o texto.
+montagem dos indicadores, a chamada ao Gemini e a validação; o custo estimado da API é **US$ 0,001185 por raio-x**. Os 2,15 s não
+são o ganho do vendedor: ele ainda escolhe a empresa, lê e confere o texto.
 
-[PENDENTE: ROI · NA3, Náthally] *Cronometrar 1 raio-x montado à mão (mesma empresa, mesmos 6 indicadores, pelo site de RI) e
-1 com a ferramenta, os dois contando o tempo de ler e conferir; escrever a conta do ganho em 3 linhas.*
+**O ganho para o vendedor (ROI, Náthally, 12/11; conta completa em `docs/produto/roi.md`).** Um diretor comercial B2B entrevistado
+declara gastar **30 a 60 min** (ponto médio 45) para preparar uma primeira reunião, já usando IA, e faz 6 a 10 por mês (usado 8).
+Com o Raio-X, o preparo cronometrado ficou na faixa de **15 a 20 min** conferindo as fontes (cenário A; a conta usa o ponto médio, 17,5) e 10 a 15 min
+sem conferir (cenário B). No cenário A, que é o comportamento dele (só confia no número se puder ver a fonte):
+
+| | por reunião | por mês (8 reuniões) | em reais (hora média de R$ 74,40) |
+|---|---|---|---|
+| tempo economizado | 27,5 min | **3,7 h** | **R$ 272,82** |
+| custo da API | R$ 0,0066 | R$ 0,05 | |
+
+O cenário B economiza 4,3 h (R$ 322,42) por mês; conferir as fontes custa uns 5 min por reunião e preserva cerca de 85% do ganho.
+O múltiplo (cerca de 5.000 vezes) só é grande porque a API custa centavos: **o número que importa é o tempo**. Limites: é **uma entrevista**,
+o tempo atual é declarado (não cronometrado) e a conta não inclui desenvolvimento, servidor nem encargos (seção 7.7).
 
 ---
 
@@ -113,6 +123,8 @@ O projeto foi planejado para 4 semanas (19/10 a 16/11/2026). O detalhe de cada p
 ### Semana 4 (09 a 17/11): entregar e ensaiar
 - Documento, deck e vídeo da demo previstos para qua 11/11; ensaios cronometrados; entrega em ter 17/11; banca em qui 19/11
   (a confirmar).
+- **ROI, 12/11 (Náthally):** entrevista com um diretor comercial B2B e o preparo com a ferramenta cronometrado, com e sem conferir
+  as fontes da tela nova (seção 1 e `docs/produto/roi.md`).
 
 ### As decisões que mais mudaram o projeto
 
@@ -523,8 +535,11 @@ O que resolve, no fim, é a leitura humana. Por isso o raio-x é apoio, e não d
   a validação.
 - **Manutenção:** a DFP é anual; a base é recarregada uma vez por ano com `scripts/carregar_dfp.py`,
   `scripts/indicadores.py` e `scripts/carregar_links.py`, e o K-means com `python -m raiox.segmentos`.
-- **Ganho para o vendedor (ROI):** não medido. Sem um tempo manual comparável, não afirmamos redução de tempo (seção 1).
-  [PENDENTE: ROI · NA3, Náthally]
+- **Ganho para o vendedor (ROI):** cerca de **3,7 h e R$ 273 por mês** por executivo, conferindo as fontes (seção 1;
+  `docs/produto/roi.md`). Na sensibilidade, de 1 h (R$ 74) a 7,5 h (R$ 558) por mês. A ferramenta se paga se economizar 0,3 s por raio-x.
+- **Limites do ROI:** uma única entrevista (um diretor, não a persona de executivo de contas); o tempo atual é declarado, e o com a
+  ferramenta é o ponto médio de uma faixa cronometrada; não entram o desenvolvimento, um servidor num uso real nem os encargos trabalhistas (que aumentariam o
+  custo da hora e, portanto, o ganho). Próximo passo, fora do prazo da banca: medir com vendedores reais.
 
 ---
 
@@ -639,13 +654,13 @@ recebe) é outro: `avaliacao/regras_prompt.md`.
 | WEG com o Gemini: US$ 0,0011 | demo de 03/11 (`docs/HISTORICO.md`) | tabela `consultas` do banco da demo |
 | 15 s por tentativa, 2 tentativas, `temperature=0.2` | `TEMPO_LIMITE_S`, `TENTATIVAS`, `raiox/ia.py` | ler o arquivo |
 | banco desiste em 5 s | `TEMPO_LIMITE_S`, `raiox/banco.py` | ler o arquivo |
+| 45 min hoje; 17,5 e 12,5 min com a ferramenta; 8 reuniões; 3,7 h e R$ 272,82 por mês; R$ 74,40 a hora; R$ 0,0527 de API por mês | ROI da Náthally (12/11): entrevista com 1 diretor comercial e cronômetro; PTAX de 11/11 (R$ 5,5606) | `docs/produto/roi.md`, seção "Como conferir as contas" |
 | 287 testes passando, nenhum pulado | Mac do Eduardo, 10/11, `main` com as fontes (PRs #75–#79), PostgreSQL no Docker; mais dois subtestes aprovados. Na `v1.0.1` (09/11) eram 263 | `python -m pytest -q` com o PostgreSQL ligado |
 
 ## Apêndice B · Pendências desta versão (sai da versão final)
 
 | o que falta | de quem | quando |
 |---|---|---|
-| ROI: 1 raio-x montado à mão e cronometrado, contra a ferramenta (seções 1 e 7.7) | Náthally (NA3) | o quanto antes; sem ele, o documento não fala em ganho de tempo |
 | texto final de ética na seção 7 e a viabilidade | Náthally (NA5) | sáb 07 a dom 08/11 |
 | data e horário da banca; respostas às perguntas 2 e 3 do REQUISITOS (prompts de vibecoding e base de conhecimento) | professor (o Eduardo pergunta) | rascunho não enviado em `docs/conteudo_eduardo.md` |
 | leitura do documento inteiro (seção 4 contra o BPMN; seção 3 contra a EDA) | Marcos | sáb 07/11 |

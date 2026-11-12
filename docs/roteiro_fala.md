@@ -19,8 +19,9 @@ O Raio-X Comercial resolve isso. O vendedor escolhe uma companhia aberta, inform
 poucos minutos seis indicadores financeiros com a fonte, a posição da empresa em relação a um grupo de empresas parecidas, de três
 a cinco perguntas ligadas ao produto, as lacunas do que não sabemos e cinco empresas parecidas para prospectar.
 
-Todos os dados vêm de uma fonte pública, as demonstrações financeiras da CVM. O ganho esperado é tempo: [PREENCHER: tempo de
-preparo antes e depois, só se a medição do ROI estiver fechada; senão dizer que ainda não foi medido]. Vou passar para o Marcos,
+Todos os dados vêm de uma fonte pública, as demonstrações financeiras da CVM. O ganho é tempo: um diretor comercial que
+entrevistamos leva uns 45 minutos para preparar uma primeira reunião; com o Raio-X, conferindo as fontes, cronometramos entre 15 e 20 minutos.
+São quase 4 horas por mês por vendedor, cerca de 270 reais, para um custo de IA de 5 centavos. É uma entrevista só, então é uma estimativa. Vou passar para o Marcos,
 que mostra como o processo funciona por dentro."
 
 ## 2. BPMN e arquitetura · 02:00 a 04:30 · Marcos
@@ -83,8 +84,8 @@ preparar a reunião, mas não decide por ninguém."
 ## 6. Conclusão · 14:00 a 15:00 · Eduardo
 
 "Resumindo: entregamos uma aplicação que roda de ponta a ponta, com dados públicos, um modelo de agrupamento, IA generativa
-controlada por validador e infraestrutura declarada em Terraform. O que ainda é limite: o ROI [PREENCHER: medido ou ainda não] e o
-agrupamento exploratório.
+controlada por validador e infraestrutura declarada em Terraform. O que ainda é limite: o ROI vem de uma única entrevista e o
+agrupamento é exploratório.
 
 Em equipe, aprendemos a combinar o formato entre as partes antes de escrever código e a rodar testes antes de dizer que está pronto.
 [PREENCHER: uma lição de cada pessoa, 1 frase.]
