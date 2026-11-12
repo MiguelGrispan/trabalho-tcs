@@ -206,6 +206,7 @@ Os comandos, um por um, estão em [aprender/COMANDOS.md](../aprender/COMANDOS.md
 | ED20 | qua 11/11 | ✅ PR #83 | **limpeza para o professor:** saíram a pasta `sql/` (consulta de teste sem uso) e os `.gitkeep` de `docs/graficos/` e `infra/` (pastas com arquivos); nomes sem código de sessão: `docs/graficos/silhueta_antes_regra_5pct.png` e `scripts/conferir_empresa.py`; links conferidos; 287 passed | `docs/graficos/`, `infra/`, `scripts/`, `docs/documentacao.md`, `docs/justificativa.md` | Manual | nenhum nome com código de sessão nem sobra sem uso; links do documento apontam para os nomes novos | `eduardo-limpeza` |
 | ED21 | qui 12/11 | ✅ PR desta sessão | **ROI da Náthally no repositório:** `docs/produto/roi.md` (contas refeitas: batem); documento (seções 1, 2, 7.7 e apêndices), PDF regerado, ENTREGAS, REQUISITOS (R11), ética, roteiro da fala, conteúdo do Eduardo e guia do projeto | `docs/produto/`, `docs/`, `aprender/` | ROI no documento e no PDF |
 | ED22 | qui 12/11 | ✅ PR desta sessão | **ética final da Náthally:** `docs/etica.md` com a versão dela (branch `feat/metricas`, `Semana_03/etica.md`); seção 7 do documento sem o `[PENDENTE]`; versão 7 do PDF | `docs/` | ética no documento e no PDF |
+| ED23 | qui 12/11 | ✅ PR desta sessão | **fala do Eduardo fechada:** seções 4 (1:30) e 6 (1:00) do `docs/roteiro_fala.md`, no tempo; slide 3 (conclusão) no `docs/conteudo_eduardo.md` | `docs/` | falta ensaiar cronometrando |
 
 ### Marcos (Claude Code)
 
