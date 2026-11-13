@@ -1,5 +1,9 @@
 # Roteiro de fala (base, 15 min)
 
+> **Desatualizado desde 13/11/2026.** A apresentação agora tem no máximo 20 min (alvo 17:40) e outra ordem de slides. A fala que vale
+> está nas notas de cada slide do deck "Raio-X Comercial · Banca" (tempos em `docs/tempo_apresentacao.md`). Este texto fica como
+> histórico do rascunho de 09/11.
+
 Texto corrido para ensaiar. **É rascunho:** cada um troca pelas próprias palavras e cronometra. Ritmo usado: cerca de 130 palavras por
 minuto, com pausas. Tempos e quem fala: `docs/tempo_apresentacao.md` (divisão por pessoa ainda não confirmada pelo grupo).
 Trechos entre `[ ]` são lacunas que o dono preenche. Nenhum número novo foi inventado: os que aparecem vêm de

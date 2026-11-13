@@ -7,7 +7,7 @@ Náthally (produto e métricas, deck), Miguel (tela e infraestrutura). Banca em 
 ## Fonte da verdade: os arquivos do professor (leia antes de tudo)
 O que o projeto precisa ter vem de dois arquivos do professor (André Santos, repositório do curso), guardados sem mudança em `docs/professor/`:
 1. `docs/professor/requisitos_projeto.MD` (29/10/2026): o que deve ser entregue (documentação, ML ou IA de terceiro, aplicação com Terraform);
-2. `docs/professor/guia_projeto_final.pdf` (07/10/2026, 10 páginas): requisitos técnicos mínimos, apresentação de 20 min no guia (**18 min + 12 de banca**, ver abaixo), pesos da banca e entregáveis.
+2. `docs/professor/guia_projeto_final.pdf` (07/10/2026, 10 páginas): requisitos técnicos mínimos, apresentação de **20 min + 12 de banca** (ver abaixo), pesos da banca e entregáveis.
 
 Mais as regras ditas em aula, anotadas em `docs/REQUISITOS.md` ("Regras do professor"), como o PostgreSQL.
 
@@ -72,13 +72,13 @@ O status de cada item, com a prova, fica no `docs/REQUISITOS.md`.
 (1) repositório Git organizado, com README em markdown sobre o tema, o objetivo e as tecnologias, com a arquitetura, os pré-requisitos
 e as instruções para rodar; os scripts de infraestrutura (Terraform), os notebooks e os arquivos de prompts do vibecoding;
 (2) documento em **PDF** (G §6; o R também aceita markdown), com fonte em markdown, com as etapas desenvolvidas no processo (R), o BPMN 2.0, a justificativa técnica das escolhas
-(ex.: RAG × fine-tuning) e a análise de ética e segurança (G); (3) slides (deck em PDF ou PPTX) para no máximo 18 minutos (regra dita pelo professor, ver abaixo).
+(ex.: RAG × fine-tuning) e a análise de ética e segurança (G); (3) slides (deck em PDF ou PPTX) para no máximo 20 minutos (ver abaixo).
 Também: vídeo gravado da demo, como reserva (dica do G §3).
 
-**Apresentação (máximo 18 min + 12 min de perguntas da banca; tempo é avaliado; G §3, com a regra dita pelo professor ao Eduardo, registrada em 09/11):**
-alvo do grupo **15 min**, com 3 min de folga: contexto e problema 2 · BPMN e arquitetura 2:30 · demo ao vivo 5 ·
-detalhe técnico (dados, ML/GenAI e infraestrutura com Terraform) 3 · governança e ética 1:30 · conclusão 1. Tempo por pessoa: `docs/tempo_apresentacao.md`.
-O guia §3 ainda diz 20 min (3 · 3 · 6 · 4 · 2 · 2): vale o mais exigente.
+**Apresentação (máximo 20 min + 12 min de perguntas da banca; tempo é avaliado; G §3 e R Documentação; a regra de 18 min de 09/11 mudou, informado pelo Eduardo em 13/11):**
+alvo do grupo **17:40**, com 2:20 de folga: contexto, problema e negócio 4:15 · BPMN e arquitetura 2 · demo ao vivo 5 ·
+detalhe técnico (Terraform, dados, ML/GenAI e como construímos) 3:40 · governança e ética 1:15 · conclusão de negócio 1:30.
+Slide a slide e por pessoa: `docs/tempo_apresentacao.md`; as falas ficam nas notas de cada slide do deck.
 **Pesos da banca (G §5):** inovação e valor de negócio (ROI) 20% · qualidade técnica e arquitetura 30% (inclui "estrutura de
 DevOps/Terraform") · protótipo funcional 20% · governança e ética 15% · comunicação e equipe 15%.
 

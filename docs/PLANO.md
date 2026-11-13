@@ -338,7 +338,7 @@ Para subir um arquivo:
 | D2 Documento (etapas, BPMN, justificativa, ética) | MA6, do Eduardo desde 04/11 (com MA5, ED8, NA5, MG5) |
 | D3 Deck | NA5, NA6 |
 | D4 Vídeo | MG6, MG7 |
-| D5 18 minutos (alvo 15) | NA6 + ensaios de 10–11/11 |
+| D5 20 minutos (alvo 17:40; era 18, mudou em 13/11) | NA6 + ensaios de 10–11/11 |
 
 ---
 
